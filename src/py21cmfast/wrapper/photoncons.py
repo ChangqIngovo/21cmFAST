@@ -7,7 +7,7 @@ calculated from the ionized bubble maps. These models apply approximate correcti
 to bring the bubble maps more in line with the expected global values.
 
 The application of the model is controlled by the flag option PHOTON_CONS_TYPE, which
-can take 4 values:
+can take 5 values:
 
 0. No correction is applied
 1. We use the ionizing emissivity grids from a different redshift when calculating
@@ -22,6 +22,9 @@ can take 4 values:
    F_ESC10_ACG -> X + Y*Q(z), where Q is the expected global ionized fraction. This relation
    is fit by performing a calibration simulation as in (1), and taking its ratio with
    the expected global evolution.
+
+4. ``global-budget`` applies the UV count constraint inside the native C
+   ionization calculation. No preliminary parameter calibration is required.
 
 Notes
 -----
@@ -236,7 +239,7 @@ def setup_photon_cons(
     if inputs is None:
         inputs = initial_conditions.inputs
 
-    if inputs.astro_options.PHOTON_CONS_TYPE == "no-photoncons":
+    if inputs.astro_options.PHOTON_CONS_TYPE in ("no-photoncons", "global-budget"):
         return {}
 
     from ..drivers._param_config import check_consistency_of_outputs_with_inputs

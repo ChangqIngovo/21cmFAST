@@ -363,7 +363,8 @@ class _OutputStructComputationInspect:
 
         # we need photon cons to be done before any non-IC box is computed
         if (
-            inputs.astro_options.PHOTON_CONS_TYPE != "no-photoncons"
+            inputs.astro_options.PHOTON_CONS_TYPE
+            not in ("no-photoncons", "global-budget")
             and _photoncons_state.calibration_inputs != inputs
             and issubclass(self._kls, OutputStructZ)
         ):

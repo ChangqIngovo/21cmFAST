@@ -2082,6 +2082,23 @@ class IonizedBox(OutputStructZ):
     log10_mturn_ave_mcg: float = attrs.field(default=None)
     nion_unconditional_acg: float = attrs.field(default=None)
     nion_unconditional_mcg: float = attrs.field(default=None)
+    # Global-budget diagnostics, in the same normalized count units as n_ion.
+    # pc_ionized_atoms excludes the current X-ray/electron baseline.
+    pc_photons: float = attrs.field(default=0.0)
+    pc_ionized_atoms: float = attrs.field(default=0.0)
+    pc_ionized_atoms_total: float = attrs.field(default=0.0)
+    pc_xray_ionized_atoms: float = attrs.field(default=0.0)
+    pc_xray_baseline_roundoff: float = attrs.field(default=0.0)
+    pc_recombinations: float = attrs.field(default=0.0)
+    pc_recombination_previous: float = attrs.field(default=0.0)
+    pc_remaining_photons: float = attrs.field(default=0.0)
+    pc_budget_residual: float = attrs.field(default=0.0)
+    pc_amplitude_low: float = attrs.field(default=0.0)
+    pc_amplitude_high: float = attrs.field(default=0.0)
+    pc_boundary_weight: float = attrs.field(default=0.0)
+    pc_count_tolerance: float = attrs.field(default=0.0)
+    pc_evaluations: int = attrs.field(default=0)
+    pc_status: int = attrs.field(default=0)
 
     @classmethod
     def new(cls, inputs, redshift: float, **kw) -> Self:

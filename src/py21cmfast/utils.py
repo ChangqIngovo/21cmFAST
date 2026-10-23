@@ -116,7 +116,7 @@ def show_references(inputs: InputParameters, lightcone=True, print_to_stdout=Tru
             "pp 3657-3681, 2022 https://doi.org/10.1093/mnras/stac185\n\n"
         )
 
-    if inputs.astro_options.PHOTON_CONS_TYPE != "no-photoncons":
+    if inputs.astro_options.PHOTON_CONS_TYPE not in ("no-photoncons", "global-budget"):
         ref_string += (
             "Photon conservation correction introduced in:\n"
             "=============================================\n"

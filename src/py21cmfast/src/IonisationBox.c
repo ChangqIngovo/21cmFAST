@@ -2,6 +2,8 @@
 #include "IonisationBox.h"
 
 #include <complex.h>
+#include <float.h>
+#include <stdint.h>
 #include <fftw3.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_rng.h>
@@ -118,6 +120,387 @@ struct FilteredGrids {
     fftwf_complex *stars_unfiltered, *stars_filtered;
     fftwf_complex *sfr_unfiltered, *sfr_filtered;
 };
+
+/* Native ES global UV-budget calibration.  These routines retain the physical
+ * source histories and cache the original scale statistics.  Only the ES
+ * crossing amplitude is varied.  Count sums use the delivered float grids.
+ */
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC push_options
+#pragma GCC optimize("no-fast-math")
+#endif
+
+struct PhotonBudgetState {
+    float *neutral;
+    float *gamma;
+    float *mfp;
+};
+
+struct PhotonBudgetCache {
+    size_t ncell;
+    int nradius;
+    int invalid;
+    bool have_local;
+    double *threshold;
+    float *gamma;
+    double *radius;
+    double *local_nion;
+    float *xray;
+    float *current_mfp;
+    struct PhotonBudgetState lower;
+    struct PhotonBudgetState upper;
+};
+
+static void pc_free_cache(struct PhotonBudgetCache *pc) {
+    if (!pc) return;
+    free(pc->threshold);
+    free(pc->gamma);
+    free(pc->radius);
+    free(pc->local_nion);
+    free(pc->xray);
+    free(pc->current_mfp);
+    free(pc->lower.neutral);
+    free(pc->lower.gamma);
+    free(pc->lower.mfp);
+    free(pc->upper.neutral);
+    free(pc->upper.gamma);
+    free(pc->upper.mfp);
+    free(pc);
+}
+
+static struct PhotonBudgetCache *pc_allocate_cache(int nradius, struct RadiusSpec *radii,
+                                                   TsBox *spin_temp) {
+    struct PhotonBudgetCache *pc = calloc(1, sizeof(*pc));
+    if (!pc) Throw(MemoryAllocError);
+    pc->ncell = (size_t)HII_TOT_NUM_PIXELS;
+    pc->nradius = nradius;
+    if (nradius <= 0 || pc->ncell > SIZE_MAX / (size_t)nradius / sizeof(double)) {
+        pc_free_cache(pc);
+        Throw(MemoryAllocError);
+    }
+    size_t entries = pc->ncell * (size_t)nradius;
+    pc->threshold = malloc(entries * sizeof(double));
+    pc->gamma = calloc(entries, sizeof(float));
+    pc->radius = malloc((size_t)nradius * sizeof(double));
+    pc->local_nion = calloc(pc->ncell, sizeof(double));
+    pc->xray = calloc(pc->ncell, sizeof(float));
+    pc->current_mfp = calloc(pc->ncell, sizeof(float));
+    pc->lower.neutral = malloc(pc->ncell * sizeof(float));
+    pc->lower.gamma = malloc(pc->ncell * sizeof(float));
+    pc->lower.mfp = malloc(pc->ncell * sizeof(float));
+    pc->upper.neutral = malloc(pc->ncell * sizeof(float));
+    pc->upper.gamma = malloc(pc->ncell * sizeof(float));
+    pc->upper.mfp = malloc(pc->ncell * sizeof(float));
+    if (!pc->threshold || !pc->gamma || !pc->radius || !pc->local_nion || !pc->xray ||
+        !pc->current_mfp || !pc->lower.neutral || !pc->lower.gamma || !pc->lower.mfp ||
+        !pc->upper.neutral || !pc->upper.gamma || !pc->upper.mfp) {
+        pc_free_cache(pc);
+        Throw(MemoryAllocError);
+    }
+    for (size_t k = 0; k < entries; ++k) pc->threshold[k] = INFINITY;
+    for (int r = 0; r < nradius; ++r) pc->radius[r] = radii[r].R;
+    if (astro_options_global->USE_TS_FLUCT) {
+        for (size_t j = 0; j < pc->ncell; ++j) {
+            double xe = spin_temp->xray_ionised_fraction[j];
+            if (!isfinite(xe) || xe < 0 || xe > 1) {
+                pc_free_cache(pc);
+                LOG_ERROR("global-budget requires finite X-ray fractions in [0,1]");
+                Throw(ValueError);
+            }
+            pc->xray[j] = (float)xe;
+        }
+    }
+    return pc;
+}
+
+static void pc_record_scale(struct PhotonBudgetCache *pc, size_t j, int r, double nion,
+                            double rec, double xe, double gamma_prefactor) {
+    double demand = (1. - xe) * (1. + rec);
+    double gamma = pc->radius[r] * gamma_prefactor * nion;
+    if (!isfinite(nion) || nion < 0 || !isfinite(demand) || demand < 0 ||
+        !isfinite(gamma) || gamma < 0 || gamma > FLT_MAX) {
+#pragma omp atomic write
+        pc->invalid = 1;
+        return;
+    }
+    size_t k = (size_t)r * pc->ncell + j;
+    pc->threshold[k] = nion > 0 ? demand / nion : INFINITY;
+    pc->gamma[k] = (float)gamma;
+    if (r == 0) pc->local_nion[j] = nion;
+}
+
+static float pc_neutral_baseline(float xe) {
+    /* A nearest-rounded 1-xe can invent UV photons at amplitude zero.  Round
+     * towards neutrality instead; report the resulting X-ray encoding error. */
+    double exact = 1. - (double)xe;
+    float value = (float)exact;
+    if ((double)value < exact) value = nextafterf(value, 1.f);
+    return value;
+}
+
+static void pc_map_at_amplitude(struct PhotonBudgetCache *pc, double amplitude,
+                                IonizedBox *box) {
+#pragma omp parallel for num_threads(simulation_options_global->N_THREADS)
+    for (size_t j = 0; j < pc->ncell; ++j) {
+        double neutral = 1. - (double)pc->xray[j] - amplitude * pc->local_nion[j];
+        float nh = (float)fmax(0., fmin(1., neutral));
+        if (amplitude == 0.) nh = pc_neutral_baseline(pc->xray[j]);
+        float gamma = 0.f;
+        float mfp = 0.f;
+        for (int r = pc->nradius; r--;) {
+            size_t k = (size_t)r * pc->ncell + j;
+            if (amplitude > pc->threshold[k]) {
+                nh = 0.f;
+                gamma = pc->gamma[k];
+                mfp = (float)pc->radius[r];
+                break;
+            }
+        }
+        box->neutral_fraction[j] = nh;
+        box->ionisation_rate_G12[j] = gamma;
+        pc->current_mfp[j] = mfp;
+    }
+}
+
+static void pc_save_state(struct PhotonBudgetCache *pc, IonizedBox *box,
+                           struct PhotonBudgetState *state) {
+    size_t bytes = pc->ncell * sizeof(float);
+    memcpy(state->neutral, box->neutral_fraction, bytes);
+    memcpy(state->gamma, box->ionisation_rate_G12, bytes);
+    memcpy(state->mfp, pc->current_mfp, bytes);
+}
+
+static void pc_restore_state(struct PhotonBudgetCache *pc, IonizedBox *box,
+                              const struct PhotonBudgetState *state) {
+    size_t bytes = pc->ncell * sizeof(float);
+    memcpy(box->neutral_fraction, state->neutral, bytes);
+    memcpy(box->ionisation_rate_G12, state->gamma, bytes);
+    memcpy(pc->current_mfp, state->mfp, bytes);
+}
+
+static void pc_mix_state(struct PhotonBudgetCache *pc, IonizedBox *box, double weight) {
+#pragma omp parallel for num_threads(simulation_options_global->N_THREADS)
+    for (size_t j = 0; j < pc->ncell; ++j) {
+        box->neutral_fraction[j] = (float)((1. - weight) * pc->lower.neutral[j] +
+                                          weight * pc->upper.neutral[j]);
+        box->ionisation_rate_G12[j] = (float)((1. - weight) * pc->lower.gamma[j] +
+                                             weight * pc->upper.gamma[j]);
+        pc->current_mfp[j] = (float)((1. - weight) * pc->lower.mfp[j] +
+                                      weight * pc->upper.mfp[j]);
+    }
+}
+
+static double pc_evaluate_cost(struct PhotonBudgetCache *pc, IonizedBox *box,
+                               IonizedBox *previous, PerturbedField *density,
+                               struct IonBoxConstants *consts) {
+    double uv = 0., rec = 0., total_ionized = 0., xray = 0.;
+    double global_ionized = 0., global_gamma = 0.;
+    int invalid = 0;
+    bool inhom = astro_options_global->RECOMB_MODEL == RECOMB_MODEL_INHOMOGENEOUS;
+    bool hom = astro_options_global->RECOMB_MODEL == RECOMB_MODEL_HOMOGENEOUS;
+#pragma omp parallel for reduction(+ : uv, rec, total_ionized, xray, global_ionized, global_gamma) reduction(| : invalid) num_threads(simulation_options_global->N_THREADS)
+    for (size_t j = 0; j < pc->ncell; ++j) {
+        double rho = 1. + (double)density->density[j];
+        double ionized = 1. - (double)box->neutral_fraction[j];
+        double gamma = box->ionisation_rate_G12[j];
+        if (!isfinite(rho) || rho < 0 || !isfinite(ionized) || ionized < 0 || ionized > 1 ||
+            !isfinite(gamma) || gamma < 0) {
+            invalid = 1;
+            continue;
+        }
+        total_ionized += rho * ionized;
+        xray += rho * pc->xray[j];
+        uv += rho * fmax(0., ionized - pc->xray[j]);
+        if (inhom) {
+            double old = previous->cumulative_recombinations[j];
+            double z_eff = cbrt(rho) * (1. + consts->stored_redshift) - 1.;
+            double increment = splined_recombination_rate_no_accel(z_eff, gamma) *
+                               consts->fabs_dtdz * consts->dz * ionized;
+            double updated = old + increment;
+            if (!isfinite(old) || old < 0 || !isfinite(increment) || increment < 0 ||
+                !isfinite(updated) || updated > FLT_MAX) {
+                invalid = 1;
+                continue;
+            }
+            /* Account for the exact state that will feed the next snapshot. */
+            box->cumulative_recombinations[j] = (float)updated;
+            rec += (double)box->cumulative_recombinations[j];
+        } else if (hom) {
+            global_ionized += ionized;
+            global_gamma += gamma;
+        }
+    }
+    if (hom && !invalid) {
+        double old = previous->cumulative_recombinations[0];
+        double increment = splined_recombination_rate_no_accel(
+                               consts->stored_redshift, global_gamma / pc->ncell) *
+                           consts->fabs_dtdz * consts->dz * global_ionized / pc->ncell;
+        double updated = old + increment;
+        if (!isfinite(old) || old < 0 || !isfinite(increment) || increment < 0 ||
+            !isfinite(updated) || updated > FLT_MAX) invalid = 1;
+        else {
+            box->cumulative_recombinations[0] = (float)updated;
+            rec = pc->ncell * (double)box->cumulative_recombinations[0];
+        }
+    }
+    if (invalid || !isfinite(uv + rec)) {
+        LOG_ERROR("global-budget encountered an invalid density, ionization, or recombination state");
+        Throw(InfinityorNaNError);
+    }
+    box->pc_ionized_atoms = uv;
+    box->pc_recombinations = rec;
+    box->pc_ionized_atoms_total = total_ionized;
+    box->pc_xray_ionized_atoms = xray;
+    box->pc_xray_baseline_roundoff = total_ionized - uv - xray;
+    ++box->pc_evaluations;
+    return uv + rec;
+}
+
+static bool pc_all_ionized(struct PhotonBudgetCache *pc, IonizedBox *box,
+                           PerturbedField *density) {
+    for (size_t j = 0; j < pc->ncell; ++j)
+        if (density->density[j] > -1.f && box->neutral_fraction[j] > 0.f) return false;
+    return true;
+}
+
+static void pc_finalize_state(struct PhotonBudgetCache *pc, IonizedBox *box,
+                              IonizedBox *previous, PerturbedField *density, TsBox *spin_temp,
+                              struct IonBoxConstants *consts, double photons, double cost,
+                              int status) {
+    /* Never conceal an actual overspend by defining a clipped reservoir. */
+    double rounding = 64. * DBL_EPSILON * fmax(1., photons);
+    if (cost > photons + rounding) {
+        LOG_ERROR("global-budget overspent photons: Q %.17g cost %.17g", photons, cost);
+        Throw(PhotonConsError);
+    }
+    box->pc_remaining_photons = cost <= photons ? photons - cost : 0.;
+    box->pc_budget_residual = photons - cost - box->pc_remaining_photons;
+    box->pc_status = status;
+#pragma omp parallel for num_threads(simulation_options_global->N_THREADS)
+    for (size_t j = 0; j < pc->ncell; ++j) {
+        /* A budget-funded local branch may saturate before crossing the ES
+         * recombination barrier.  Its delivered fully ionized state still
+         * starts UV reionization; an X-ray-only xe == 1 baseline does not. */
+        bool fully_crossed = box->neutral_fraction[j] == 0.f && pc->xray[j] < 1.f;
+        box->z_reion[j] = previous->z_reion[j] > 0.f ? previous->z_reion[j] :
+                              (fully_crossed ? (float)consts->redshift : -1.f);
+        if (!matter_options_global->MINIMIZE_MEMORY) {
+            if (uses_recombination(astro_options_global->RECOMB_MODEL))
+                box->mean_free_path[j] = pc->current_mfp[j];
+            double uv = fmax(0., 1. - (double)box->neutral_fraction[j] - pc->xray[j]);
+            double neutral_temperature = astro_options_global->USE_TS_FLUCT ?
+                spin_temp->kinetic_temp_neutral[j] :
+                consts->TK_nofluct * (1. + consts->adia_TK_term * density->density[j]);
+            box->kinetic_temperature[j] = ComputePartiallyIonizedTemperature(
+                neutral_temperature, fmax(0., 1. - uv), consts->T_re);
+        }
+    }
+}
+
+static void pc_calibrate(struct PhotonBudgetCache *pc, IonizedBox *box,
+                          IonizedBox *previous, PerturbedField *density, TsBox *spin_temp,
+                          struct IonBoxConstants *consts) {
+    if (!pc->have_local || pc->invalid) {
+        LOG_ERROR("global-budget did not obtain valid smallest-scale ES statistics");
+        Throw(PhotonConsError);
+    }
+    double photons = pc->ncell * (box->nion_unconditional_acg + box->nion_unconditional_mcg);
+    if (!isfinite(photons) || photons < 0) Throw(PhotonConsError);
+    box->pc_photons = photons;
+    box->pc_evaluations = 0;
+    box->pc_count_tolerance = 8. * FLT_EPSILON * fmax(photons, DBL_MIN);
+    pc_map_at_amplitude(pc, 0., box);
+    double low_cost = pc_evaluate_cost(pc, box, previous, density, consts);
+    box->pc_recombination_previous = box->pc_recombinations;
+    if (low_cost > photons + 64. * DBL_EPSILON * fmax(1., photons)) {
+        LOG_ERROR("global-budget source budget is below already incurred recombinations: Q %.17g Rprev %.17g", photons, low_cost);
+        Throw(PhotonConsError);
+    }
+    double low_a = 0., high_a = 1., high_cost;
+    pc_save_state(pc, box, &pc->lower);
+    if (photons - low_cost <= box->pc_count_tolerance) {
+        box->pc_amplitude_low = box->pc_amplitude_high = 0.;
+        box->pc_boundary_weight = 0.;
+        pc_finalize_state(pc, box, previous, density, spin_temp, consts, photons, low_cost, 1);
+        return;
+    }
+    /* Search for a SIGN bracket, not a monotonicity theorem for the nonlinear
+     * recombination cost.  The first bracket reached from amplitude one fixes
+     * the branch when several solutions exist. */
+    for (;;) {
+        pc_map_at_amplitude(pc, high_a, box);
+        high_cost = pc_evaluate_cost(pc, box, previous, density, consts);
+        if (high_cost >= photons) {
+            pc_save_state(pc, box, &pc->upper);
+            break;
+        }
+        low_a = high_a;
+        low_cost = high_cost;
+        pc_save_state(pc, box, &pc->lower);
+        if (photons - low_cost <= box->pc_count_tolerance ||
+            pc_all_ionized(pc, box, density) || high_a >= 1099511627776.) {
+            int status = photons - low_cost <= box->pc_count_tolerance ? 1 :
+                             (pc_all_ionized(pc, box, density) ? 2 : 3);
+            box->pc_amplitude_low = box->pc_amplitude_high = high_a;
+            box->pc_boundary_weight = 0.;
+            pc_finalize_state(pc, box, previous, density, spin_temp, consts, photons, low_cost, status);
+            return;
+        }
+        high_a *= 2.;
+    }
+    /* Native thresholds are stored in double, but the physical source grids
+     * and delivered state are float32.  No repeated FFTs enter this search. */
+    for (int iteration = 0; iteration < 80; ++iteration) {
+        if (photons - low_cost <= box->pc_count_tolerance) break;
+        if (high_a - low_a <= 8. * FLT_EPSILON * fmax(high_a, DBL_MIN)) break;
+        double mid = low_a + .5 * (high_a - low_a);
+        if (mid == low_a || mid == high_a) break;
+        pc_map_at_amplitude(pc, mid, box);
+        double cost = pc_evaluate_cost(pc, box, previous, density, consts);
+        if (cost <= photons) {
+            low_a = mid;
+            low_cost = cost;
+            pc_save_state(pc, box, &pc->lower);
+        } else {
+            high_a = mid;
+            high_cost = cost;
+            pc_save_state(pc, box, &pc->upper);
+        }
+    }
+    box->pc_amplitude_low = low_a;
+    box->pc_amplitude_high = high_a;
+    double lo = 0., hi = 1.;
+    double chosen_weight = 0.;
+    if (photons - low_cost > box->pc_count_tolerance) {
+        /* Fractional boundary closure.  Mix xHI/Gamma, then recompute current
+         * recombinations from THAT SAME delivered state.  Never mix endpoint
+         * recombination counts independently of the rate equation.  The native
+         * Gamma cutoff and float32 states leave small unattainable intervals;
+         * those photons remain explicitly unabsorbed (status 3). */
+        for (int iteration = 0; iteration < 80; ++iteration) {
+            double mid = lo + .5 * (hi - lo);
+            if (mid == lo || mid == hi) break;
+            pc_mix_state(pc, box, mid);
+            double cost = pc_evaluate_cost(pc, box, previous, density, consts);
+            if (cost <= photons) {
+                lo = mid;
+                chosen_weight = mid;
+                low_cost = cost;
+                if (photons - cost <= box->pc_count_tolerance) break;
+            } else hi = mid;
+        }
+    }
+    if (chosen_weight > 0.) pc_mix_state(pc, box, chosen_weight);
+    else pc_restore_state(pc, box, &pc->lower);
+    double final_cost = pc_evaluate_cost(pc, box, previous, density, consts);
+    box->pc_boundary_weight = chosen_weight;
+    int status = photons - final_cost <= box->pc_count_tolerance ? 1 : 3;
+    pc_finalize_state(pc, box, previous, density, spin_temp, consts, photons, final_cost, status);
+}
+
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC pop_options
+#endif
 
 void set_ionbox_constants(double redshift, double prev_redshift, struct IonBoxConstants *consts) {
     consts->redshift = redshift;
@@ -1013,7 +1396,7 @@ void find_ionised_regions(IonizedBox *box, IonizedBox *previous_ionize_box,
                           PerturbedField *perturbed_field, TsBox *spin_temp,
                           struct RadiusSpec rspec, struct IonBoxConstants *consts,
                           struct FilteredGrids *fg_struct, double nion_limit_acg,
-                          double nion_limit_mcg) {
+                          double nion_limit_mcg, struct PhotonBudgetCache *pc) {
     double mean_fix_term_acg = 1.;
     double mean_fix_term_mcg = 1.;
     int fc_r_idx;
@@ -1120,6 +1503,13 @@ void find_ionised_regions(IonizedBox *box, IonizedBox *previous_ionize_box,
                             rspec.R, curr_dens, curr_nion_acg, curr_nion_mcg, rec, xHII_from_xrays);
                     }
 #endif
+
+                    if (pc) {
+                        pc_record_scale(pc, (size_t)index_r, rspec.R_index,
+                                        curr_nion_acg + curr_nion_mcg, rec,
+                                        xHII_from_xrays, consts->gamma_prefactor);
+                        continue;
+                    }
 
                     // check if fully ionized!
                     if ((curr_nion_acg + curr_nion_mcg >
@@ -1349,8 +1739,26 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
                       TsBox *spin_temp, EmissivityFields *emissivity_fields,
                       InitialConditions *ini_boxes, IonizedBox *box) {
     int status;
+    struct PhotonBudgetCache *pc_cache = NULL;
+
+    /* C callers may reuse output structs across modes; disabled PC diagnostics
+     * must not retain an earlier calibration's values. */
+    box->pc_photons = box->pc_ionized_atoms = box->pc_ionized_atoms_total = 0.;
+    box->pc_xray_ionized_atoms = box->pc_xray_baseline_roundoff = 0.;
+    box->pc_recombinations = box->pc_recombination_previous = 0.;
+    box->pc_remaining_photons = box->pc_budget_residual = 0.;
+    box->pc_amplitude_low = box->pc_amplitude_high = box->pc_boundary_weight = 0.;
+    box->pc_count_tolerance = 0.;
+    box->pc_evaluations = box->pc_status = 0;
 
     Try {  // This Try brackets the whole function, so we don't indent.
+        if (astro_options_global->PHOTON_CONS_TYPE == PHOTON_CONS_GLOBAL_BUDGET &&
+            (matter_options_global->SOURCE_MODEL != SOURCE_MODEL_E_INTEGRAL ||
+             astro_options_global->IONISE_ENTIRE_SPHERE || astro_options_global->USE_EXP_FILTER ||
+             simulation_options_global->HII_DIM <= 1 || HII_D_PARA <= 1)) {
+            LOG_ERROR("global-budget requires E-INTEGRAL, centre-cell ES, no exponential filter, and a three-dimensional grid");
+            Throw(ValueError);
+        }
         LOG_DEBUG("input values:");
         LOG_DEBUG("redshift=%f, prev_redshift=%f", redshift, prev_redshift);
 #if LOG_LEVEL >= DEBUG_LEVEL
@@ -1414,6 +1822,9 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
         struct RadiusSpec *radii_spec;
         int n_radii;
         n_radii = setup_radii(&radii_spec, &ionbox_constants);
+        bool use_global_budget =
+            astro_options_global->PHOTON_CONS_TYPE == PHOTON_CONS_GLOBAL_BUDGET;
+        if (use_global_budget) pc_cache = pc_allocate_cache(n_radii, radii_spec, spin_temp);
 
         // CONSTRUCT GRIDS OUTSIDE R LOOP HERE
         // if we don't have a previous ionised box, make a fake one here
@@ -1464,7 +1875,7 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
         double unconditional_nion = box->nion_unconditional_acg + box->nion_unconditional_mcg;
 
         // TODO: change this from an if-else to an early-exit / cleanup call
-        if (unconditional_nion < HII_ROUND_ERR) {  // way too small to ionize anything...
+        if (unconditional_nion < HII_ROUND_ERR && !use_global_budget) {  // way too small to ionize anything...
             LOG_DEBUG("Unconditional N_ion %.3e too small to ionize, stopping early",
                       unconditional_nion);
             global_xH = set_fully_neutral_box(box, spin_temp, perturbed_field, &ionbox_constants);
@@ -1575,7 +1986,8 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
 
                 find_ionised_regions(box, previous_ionize_box, perturbed_field, spin_temp,
                                      curr_radius, &ionbox_constants, grid_struct, nion_limit_acg,
-                                     nion_limit_mcg);
+                                     nion_limit_mcg, pc_cache);
+                if (pc_cache && curr_radius.R_index == 0) pc_cache->have_local = true;
 
 #if LOG_LEVEL >= ULTRA_DEBUG_LEVEL
                 LOG_ULTRA_DEBUG("z_reion after R=%f: ", curr_radius.R);
@@ -1583,6 +1995,10 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
                                   simulation_options_global->HII_DIM, HII_D_PARA, STANDARD_LAYOUT,
                                   "  ");
 #endif
+            }
+            if (pc_cache) {
+                pc_calibrate(pc_cache, box, previous_ionize_box, perturbed_field, spin_temp,
+                             &ionbox_constants);
             }
             if (!matter_options_global->MINIMIZE_MEMORY) {
                 set_ionized_temperatures(box, perturbed_field, spin_temp, &ionbox_constants);
@@ -1613,7 +2029,7 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
             }
 
             // update the N_rec field
-            if (uses_recombination(astro_options_global->RECOMB_MODEL)) {
+            if (uses_recombination(astro_options_global->RECOMB_MODEL) && !pc_cache) {
                 set_recombination_rates(box, previous_ionize_box, perturbed_field,
                                         &ionbox_constants, global_xH, global_photoionization_rate);
             }
@@ -1633,11 +2049,16 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
         free_conditional_tables();
 
         free(radii_spec);
+        pc_free_cache(pc_cache);
+        pc_cache = NULL;
 
         LOG_DEBUG("finished!\n");
 
     }  // End of Try()
 
-    Catch(status) { return (status); }
+    Catch(status) {
+        pc_free_cache(pc_cache);
+        return (status);
+    }
     return (0);
 }

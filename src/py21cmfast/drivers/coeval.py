@@ -993,7 +993,7 @@ def _setup_ics_and_pfs_for_scrolling(
         **iokw,
     }
     photon_nonconservation_data = {}
-    if inputs.astro_options.PHOTON_CONS_TYPE != "no-photoncons":
+    if inputs.astro_options.PHOTON_CONS_TYPE not in ("no-photoncons", "global-budget"):
         # Note that we need to pass the inputs directly here.
         # Otherwise, they are taken from initial_conditions, which may have
         # a different (compatible) set of inputs.

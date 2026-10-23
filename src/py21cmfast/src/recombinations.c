@@ -89,6 +89,21 @@ double splined_recombination_rate(double z_eff, double gamma12_bg) {
     return gsl_spline_eval(RR_spline[z_ct], lnGamma, RR_acc[z_ct]);
 }
 
+double splined_recombination_rate_no_accel(double z_eff, double gamma12_bg) {
+    /* PC trials run concurrently over cells. GSL accelerators and the legacy
+       warning flag are mutable, so neither is shared in this evaluation. */
+    if (gamma12_bg <= 0.0) return 0.0;
+    int z_ct = (int)(z_eff / RR_DEL_Z + 0.5);
+    double lnGamma = log(gamma12_bg);
+    if (z_ct < 0) z_ct = 0;
+    else if (z_ct >= RR_Z_NPTS) z_ct = RR_Z_NPTS - 1;
+    if (lnGamma < RR_lnGamma_min) return 0.0;
+    if (lnGamma >= RR_lnGamma_min + RR_DEL_lnGamma * (RR_lnGamma_NPTS - 1)) {
+        lnGamma = RR_lnGamma_min + RR_DEL_lnGamma * (RR_lnGamma_NPTS - 1) - FRACT_FLOAT_ERR;
+    }
+    return gsl_spline_eval(RR_spline[z_ct], lnGamma, NULL);
+}
+
 void init_MHR() {
     int z_ct, gamma_ct;
     float z, gamma;

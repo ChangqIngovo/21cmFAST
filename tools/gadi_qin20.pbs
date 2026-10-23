@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+#PBS -N qin20_pc_es
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=32
+#PBS -l mem=128GB
+#PBS -l walltime=24:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${RUN_DIR:?Submit with qsub -v RUN_DIR=/path/to/prepared/run}"
+: "${PBS_JOBID:?Launch with qsub}"
+cd "$RUN_DIR"
+test -f PREPARED
+sha256sum -c prepared.sha256
+mkdir .running || { echo 'Already launched; prepare a fresh run directory.' >&2; exit 2; }
+exec > "run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > FAILED; fi' EXIT
+printf 'Job: %s\nRun: %s\nStart: %s\n' "$PBS_JOBID" "$RUN_DIR" "$(date)"
+module --force purge
+source "$RUN_DIR/runtime.env"
+module load "${PC_MODULES[@]}"
+export OMP_NUM_THREADS="$PBS_NCPUS" OMP_PROC_BIND=spread OMP_PLACES=cores
+export OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+module list
+"$RUN_DIR/venv/bin/python" "$RUN_DIR/source/tools/gadi_qin20_compare.py" \
+    --output "$RUN_DIR/results" --run-prepared --threads "$PBS_NCPUS"
+touch COMPLETED
+printf 'Finished: %s\n' "$(date)"

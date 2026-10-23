@@ -1317,7 +1317,7 @@ class AstroOptions(InputStruct):
         ``SOURCE_MODEL == 'CONST-ION-EFF'``
     PHOTON_CONS_TYPE : str, optional
         Whether to perform a small correction to account for the inherent
-        photon non-conservation. This can be one of three types of correction:
+        photon non-conservation. Available corrections are:
 
         * no-photoncons: No photon cosnervation correction,
         * z-photoncons: Photon conservation correction by adjusting the redshift of the
@@ -1328,6 +1328,10 @@ class AstroOptions(InputStruct):
         * f-photoncons: Adjustment to the escape fraction normalisation, runs one
           calibration simulation to find the adjustment as a function of xH where
           ``f'/f = xH_global/xH_calibration``
+        * global-budget: Coeval native ES amplitude selection with a global UV
+          budget, the current X-ray electron baseline, and current-step recombinations.
+          Supports E-INTEGRAL centre-cell models, including Qin20; does not perform
+          a separate calibration simulation or change escape-fraction parameters.
     USE_REIONIZATION_PHOTOHEATING_FEEDBACK: bool, optional
         Whether to apply the reionization photoheating feedback on the turnover mass, see Sobacchi and Mesinger 2013 (https://arxiv.org/pdf/1301.6776).
     FIX_VCB_AVG: bool or None, optional
@@ -1427,7 +1431,11 @@ class AstroOptions(InputStruct):
     LYA_MULTIPLE_SCATTERING = field(default=False, converter=bool)
     USE_ADIABATIC_FLUCTUATIONS = field(default=True, converter=bool)
     PHOTON_CONS_TYPE: Literal[
-        "no-photoncons", "z-photoncons", "alpha-photoncons", "f-photoncons"
+        "no-photoncons",
+        "z-photoncons",
+        "alpha-photoncons",
+        "f-photoncons",
+        "global-budget",
     ] = choice_field(
         default="no-photoncons",
     )
@@ -2620,10 +2628,26 @@ class InputParameters:
             )
         return cosmo_tables
 
+    def _validate_global_budget_options(self, options):
+        """Reject configurations outside the native count solver's support."""
+        if self.matter_options.SOURCE_MODEL != "E-INTEGRAL":
+            raise ValueError(
+                "global-budget currently requires SOURCE_MODEL='E-INTEGRAL'"
+            )
+        if options.IONISE_ENTIRE_SPHERE or options.USE_EXP_FILTER:
+            raise ValueError(
+                "global-budget requires centre-cell ES without USE_EXP_FILTER"
+            )
+        sim = self.simulation_options
+        if sim.HII_DIM <= 1 or sim.HII_DIM * sim.NON_CUBIC_FACTOR <= 1:
+            raise ValueError("global-budget requires a three-dimensional grid")
+
     @astro_options.validator
     def _astro_options_validator(self, att, val):
         if self.matter_options is None:
             return
+        if val.PHOTON_CONS_TYPE == "global-budget":
+            self._validate_global_budget_options(val)
         if val.USE_MCGS:
             if self.matter_options.V_CB_MODEL == "NONE":
                 warnings.warn(

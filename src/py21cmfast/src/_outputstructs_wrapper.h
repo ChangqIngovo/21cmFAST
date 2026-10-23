@@ -122,6 +122,21 @@ typedef struct TsBox {
 } TsBox;
 
 typedef struct IonizedBox {
+    double pc_photons;
+    double pc_ionized_atoms;
+    double pc_ionized_atoms_total;
+    double pc_xray_ionized_atoms;
+    double pc_xray_baseline_roundoff;
+    double pc_recombinations;
+    double pc_recombination_previous;
+    double pc_remaining_photons;
+    double pc_budget_residual;
+    double pc_amplitude_low;
+    double pc_amplitude_high;
+    double pc_boundary_weight;
+    double pc_count_tolerance;
+    int pc_evaluations;
+    int pc_status;
     double nion_unconditional_acg;
     double nion_unconditional_mcg;
     double log10_mturn_ave_acg;
