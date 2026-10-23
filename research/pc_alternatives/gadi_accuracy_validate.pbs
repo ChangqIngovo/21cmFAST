@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+#PBS -N pc_accuracy
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=8
+#PBS -l mem=32GB
+#PBS -l walltime=02:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+
+set -euo pipefail
+: "${PC_SOURCE_DIR:?Set PC_SOURCE_DIR to the 21cmFAST checkout}"
+: "${PC_PYTHON:?Set PC_PYTHON to a Python environment with NumPy, SciPy and pytest}"
+: "${PBS_JOBID:?Submit with qsub}"
+module --force purge
+module load gcc/12.2.0
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+pc_out="/scratch/qp00/${USER}/pc_accuracy/${PBS_JOBID}"
+mkdir -p "$pc_out/source"
+exec > "$pc_out/run.log" 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$pc_out/FAILED"; fi' EXIT
+pc_rev=$(git -C "$PC_SOURCE_DIR" rev-parse HEAD)
+printf '%s\n' "$pc_rev" > "$pc_out/commit.txt"
+git -C "$PC_SOURCE_DIR" archive "$pc_rev" research/pc_alternatives | tar -x -C "$pc_out/source"
+echo "Numerical validation only; no cosmological simulation. Output: $pc_out"
+"$PC_PYTHON" "$pc_out/source/research/pc_alternatives/run_accuracy_suite.py" \
+    --workers 4 --output-dir "$pc_out/results"
+touch "$pc_out/COMPLETED"

@@ -1,0 +1,349 @@
+{
+  "scope": "Independent discrete-component checks; not a complete coupled Qin20 accuracy certificate",
+  "event_symmetry_clock": {
+    "symmetry_cases": 5,
+    "maximum_symmetry_error": 1.7763568394002505e-15,
+    "clock_rows": [
+      {
+        "rate_scale": 1e-290,
+        "duration": 9.999999999999999e+289,
+        "maximum_field_error": 3.552713678800501e-15
+      },
+      {
+        "rate_scale": 1e-200,
+        "duration": 1e+200,
+        "maximum_field_error": 1.7763568394002505e-15
+      },
+      {
+        "rate_scale": 1e-100,
+        "duration": 1e+100,
+        "maximum_field_error": 1.7763568394002505e-15
+      },
+      {
+        "rate_scale": 1e-20,
+        "duration": 1e+20,
+        "maximum_field_error": 1.7763568394002505e-15
+      },
+      {
+        "rate_scale": 1,
+        "duration": 1.0,
+        "maximum_field_error": 0.0
+      },
+      {
+        "rate_scale": 1e+20,
+        "duration": 1e-20,
+        "maximum_field_error": 3.552713678800501e-15
+      },
+      {
+        "rate_scale": 1e+100,
+        "duration": 1e-100,
+        "maximum_field_error": 1.7763568394002505e-15
+      },
+      {
+        "rate_scale": 1e+200,
+        "duration": 1e-200,
+        "maximum_field_error": 3.552713678800501e-15
+      },
+      {
+        "rate_scale": 1e+290,
+        "duration": 9.999999999999999e-291,
+        "maximum_field_error": 1.7763568394002505e-15
+      }
+    ],
+    "passed": true
+  },
+  "numeric_domain": {
+    "cases": [
+      {
+        "rejected": true,
+        "reason": "Aggregate rate or emitted photons exceed float64; rescale units"
+      },
+      {
+        "rejected": true,
+        "reason": "Aggregate rate or emitted photons exceed float64; rescale units"
+      },
+      {
+        "rejected": true,
+        "reason": "Per-beam rate or photons are subnormal; rescale units"
+      }
+    ],
+    "passed": true
+  },
+  "finite_c_reference": {
+    "cases": [
+      {
+        "case": 0,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 1,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 2,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 3,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 4,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 5,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 6,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 7,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 8,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 9,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 10,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 11,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 12,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 13,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 14,
+        "periodic": true,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      },
+      {
+        "case": 15,
+        "periodic": false,
+        "errors": {
+          "absorbed": 0.0,
+          "source_absorbed": 0.0,
+          "source_escaped": 0.0,
+          "source_range_retained": 0.0,
+          "source_in_flight": 0.0,
+          "source_emitted": 0.0
+        },
+        "passed": true
+      }
+    ],
+    "passed": true
+  },
+  "source_history": {
+    "maximum_integral_error": 0.0,
+    "maximum_subdivision_error": 1.5317608292875207e-15,
+    "passed": true
+  },
+  "chord_geometry": {
+    "cases": 48,
+    "maximum_chord_error": 1.1102230246251565e-16,
+    "passed": true,
+    "reference": "Independent slab intersection with each voxel, without DDA traversal"
+  },
+  "coupled_opacity": {
+    "reference_method": "Radau",
+    "reference_x_error": 1.1032966651391973e-08,
+    "reversed_beam_order_x_error": 5.036826511428671e-10,
+    "slab_rows": [
+      {
+        "cells": 1,
+        "absorbed": 1.888013481490743,
+        "escaped": 0.32198651850925697
+      },
+      {
+        "cells": 2,
+        "absorbed": 1.888013481490743,
+        "escaped": 0.32198651850925697
+      },
+      {
+        "cells": 8,
+        "absorbed": 1.8880134814907432,
+        "escaped": 0.3219865185092571
+      },
+      {
+        "cells": 32,
+        "absorbed": 1.8880134814907432,
+        "escaped": 0.3219865185092571
+      }
+    ],
+    "slab_integrated_absorption_maximum_difference": 2.220446049250313e-16,
+    "passed": true
+  },
+  "angular_scope_counterexample": {
+    "n": 96,
+    "photon_count": 1,
+    "exact_geometric_absorbed_fraction": 9.300236259834016e-06,
+    "computed_absorbed": 0.0,
+    "controller_status": "unresolved",
+    "stop_reason": "zero_absorption_coverage_unresolved",
+    "historical_pre_guard_status": "empirically_converged (same maps and tolerances)",
+    "angular_tolerance_photons": 1e-12,
+    "controller_claims_physical_certificate": false,
+    "limitation": "Zero-hit guard fixes this acceptance error; partially missed features can still agree across finite quadratures",
+    "passed": true
+  },
+  "all_declared_checks_passed": true,
+  "source_hashes": {
+    "accuracy_acceptance.py": "5d5e5d931c3f812a1d3183d3dc067fa13d3fa3deae4b70fbb327bfc64c8d8ba4",
+    "event_front.py": "79315f6623d091fd710bf21a58ceda543b8eae9562a67e412d074af1b9a7d96e",
+    "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+    "finite_c_packets.py": "8cdba95b046481146b8d4ea1868167cdd494f3f3976437a0553c74988c3f2015",
+    "source_history.py": "781741229fda1531e31a7e3805aa3ddba54d855fafa88dec20e8f9dc474adf88",
+    "coupled_opacity.py": "2e882ce94b354daa3e922f9de6272b0a68c553073aa5de053f6f725cb596ce27",
+    "angular_accuracy.py": "9d13c560d03f246d153e25e5f6da5353bac94537b39beaeb47308edc3217586d",
+    "ray_segments.py": "7e57c6f765a05f3a9a1bb468b7f295db31aad93e10d797f96839318446645a20"
+  }
+}

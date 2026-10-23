@@ -1,5 +1,8 @@
 # 事件前沿候选：准确性与剩余工作的验证
 
+后续修复与时空收敛结果见 [ACCURACY_REPAIR_REPORT_zh.md](ACCURACY_REPAIR_REPORT_zh.md)。
+本页保留第一轮验证及其代码哈希；本页所列部分缺口已有组件修复，完整耦合仍未完成。
+
 2026-10-23。本轮针对上一轮研究提交 `e3c85c31` 追加独立验证，并修复研究原型。
 生产 `global-budget` 保留，`src/`、`tools/`、`tests/` 和 `pyproject.toml` 未改。
 

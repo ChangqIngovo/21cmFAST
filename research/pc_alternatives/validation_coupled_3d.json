@@ -1,0 +1,77 @@
+{
+  "scope": "Cross-module validation: 3D chords, time-dependent sources and chemistry.\n\nThree oblique beams share heterogeneous fixed cells. The independent reference\nintegrates the simultaneous Beer--Lambert ODE with continuous linear rates;\nthe candidate integrates fresh emission per interval, then couples exact beam\nflows and recombination. This is a finite-cell closure test, not a Qin20 run or\na claim of convergence to full multi-frequency cosmological RT.\n",
+  "cells": 28,
+  "beams": 3,
+  "emitted": 0.038845,
+  "shared_cells": 10,
+  "independent_DOP853_Radau_max_x": 3.4189318043331696e-12,
+  "axis_permutation_max_tau_difference": 0.0,
+  "rows": [
+    {
+      "subdivisions_per_source_interval": 1,
+      "max_x_error": 0.05315571947071329,
+      "atom_l1_per_photon": 0.02025263808598684,
+      "escape_l1_per_photon": 1.777518864385737e-05,
+      "photon_ledger_error": 4.840285073789974e-17,
+      "atom_ledger_max": 2.862293735361732e-17,
+      "flow_calls": 7509
+    },
+    {
+      "subdivisions_per_source_interval": 2,
+      "max_x_error": 0.014707286573865108,
+      "atom_l1_per_photon": 0.005778265249746604,
+      "escape_l1_per_photon": 9.536466810219436e-06,
+      "photon_ledger_error": 4.655293078109635e-18,
+      "atom_ledger_max": 1.734723475976807e-17,
+      "flow_calls": 7794
+    },
+    {
+      "subdivisions_per_source_interval": 4,
+      "max_x_error": 0.0037625112415178297,
+      "atom_l1_per_photon": 0.0014966119654404105,
+      "escape_l1_per_photon": 2.737707909756431e-06,
+      "photon_ledger_error": 4.580754178751256e-18,
+      "atom_ledger_max": 3.0357660829594124e-17,
+      "flow_calls": 7929
+    },
+    {
+      "subdivisions_per_source_interval": 8,
+      "max_x_error": 0.0009460241248183676,
+      "atom_l1_per_photon": 0.00037752148482716325,
+      "escape_l1_per_photon": 7.082928945948555e-07,
+      "photon_ledger_error": 5.480303168735323e-18,
+      "atom_ledger_max": 3.7730235602495554e-17,
+      "flow_calls": 8070
+    },
+    {
+      "subdivisions_per_source_interval": 16,
+      "max_x_error": 0.0002368314138657679,
+      "atom_l1_per_photon": 9.458790417459946e-05,
+      "escape_l1_per_photon": 1.78544827367252e-07,
+      "photon_ledger_error": 9.66125779638255e-18,
+      "atom_ledger_max": 2.2985086056692694e-17,
+      "flow_calls": 8319
+    },
+    {
+      "subdivisions_per_source_interval": 32,
+      "max_x_error": 5.921560904198486e-05,
+      "atom_l1_per_photon": 2.365553074283832e-05,
+      "escape_l1_per_photon": 4.4685089897500584e-08,
+      "photon_ledger_error": 1.0391400196915757e-17,
+      "atom_ledger_max": 2.1033522146218786e-17,
+      "flow_calls": 8580
+    }
+  ],
+  "hashes": {
+    "coupled_opacity.py": "2e882ce94b354daa3e922f9de6272b0a68c553073aa5de053f6f725cb596ce27",
+    "ray_segments.py": "7e57c6f765a05f3a9a1bb468b7f295db31aad93e10d797f96839318446645a20",
+    "source_history.py": "781741229fda1531e31a7e3805aa3ddba54d855fafa88dec20e8f9dc474adf88",
+    "validation_coupled_3d.py": "6c825501ee99b699a7cf9eb875f8a1fb5701c151e349d8fcde9e4fcb49d6df7e"
+  },
+  "limitations": [
+    "fixed heterogeneous gas; no density advection",
+    "prescribed open straight paths; no angular convergence claim",
+    "infinite c, pure H, fixed temperature; not coupled to finite-c packets",
+    "source quadrature refinement is distinct from chemistry splitting tolerance"
+  ]
+}

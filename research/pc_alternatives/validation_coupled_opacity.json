@@ -1,0 +1,1845 @@
+{
+  "scope": "Fixed-temperature pure-H finite-opacity acyclic-characteristic research solver; not native Qin20 coupled evolution",
+  "code_sha256": {
+    "coupled_opacity.py": "2e882ce94b354daa3e922f9de6272b0a68c553073aa5de053f6f725cb596ce27",
+    "validation_coupled_opacity.py": "5b17bf66a6f9fd86aa818ed03b72e8da9096047c18c7f791c4413a31ff6b1016"
+  },
+  "temporal": [
+    {
+      "name": "recombining_screen",
+      "reference": {
+        "x": [
+          0.5918932719077113
+        ],
+        "absorbed": [
+          0.5389570433789062
+        ],
+        "recombinations": [
+          0.9470637714711931
+        ],
+        "escaped_by_beam": [
+          1.4610429566210936
+        ],
+        "emitted": 2.0,
+        "method": "Radau",
+        "nfev": 4201,
+        "photon_ledger_error": 2.220446049250313e-16,
+        "atom_ledger_max_error": 1.6653345369377348e-15,
+        "trajectory_x_min": 0.5918932719077113,
+        "trajectory_x_max": 1.0
+      },
+      "independent_ode_crosscheck_max": 7.294165271787278e-14,
+      "fixed": [
+        {
+          "steps": 8,
+          "x": [
+            0.5893306831029365
+          ],
+          "max_x_error": 0.00256258880477489,
+          "absorption_l1_per_emitted": 0.0011541209656865115,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8,
+            "rejected_steps": 0,
+            "flow_calls": 8,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0006908699942869134,
+            "photon_ledger_error": 2.220446049250313e-16,
+            "per_beam_ledger_max": 2.220446049250313e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 1.1102230246251565e-16,
+            "state_representation_relative_error": 7.481453998857829e-17,
+            "state_precision_resolved": true,
+            "x_min": 0.5893306831029365,
+            "x_max": 0.5893306831029365
+          }
+        },
+        {
+          "steps": 16,
+          "x": [
+            0.5912490960378523
+          ],
+          "max_x_error": 0.0006441758698590982,
+          "absorption_l1_per_emitted": 0.0002864245810402788,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 16,
+            "rejected_steps": 0,
+            "flow_calls": 16,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0010964949979097582,
+            "photon_ledger_error": 0.0,
+            "per_beam_ledger_max": 0.0,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 3.3306690738754696e-16,
+            "state_representation_relative_error": 2.2420907563602696e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.5912490960378523,
+            "x_max": 0.5912490960378523
+          },
+          "observed_order": 1.9920754760730612
+        },
+        {
+          "steps": 32,
+          "x": [
+            0.5917320057206482
+          ],
+          "max_x_error": 0.000161266187063136,
+          "absorption_l1_per_emitted": 7.144907367440112e-05,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 32,
+            "rejected_steps": 0,
+            "flow_calls": 32,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.001776347002305556,
+            "photon_ledger_error": 0.0,
+            "per_beam_ledger_max": 0.0,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 3.3306690738754696e-16,
+            "state_representation_relative_error": 2.24152190706415e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.5917320057206482,
+            "x_max": 0.5917320057206482
+          },
+          "observed_order": 1.9980106418687762
+        },
+        {
+          "steps": 64,
+          "x": [
+            0.5918529414458812
+          ],
+          "max_x_error": 4.0330461830162534e-05,
+          "absorption_l1_per_emitted": 1.785197713305431e-05,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 64,
+            "rejected_steps": 0,
+            "flow_calls": 64,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0029794479996780865,
+            "photon_ledger_error": 4.440892098500626e-16,
+            "per_beam_ledger_max": 4.440892098500626e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 3.3306690738754696e-16,
+            "state_representation_relative_error": 2.2413809396123025e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.5918529414458812,
+            "x_max": 0.5918529414458812
+          },
+          "observed_order": 1.999502146578744
+        },
+        {
+          "steps": 128,
+          "x": [
+            0.591883188422166
+          ],
+          "max_x_error": 1.0083485545320237e-05,
+          "absorption_l1_per_emitted": 4.462343279554304e-06,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 128,
+            "rejected_steps": 0,
+            "flow_calls": 128,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.006070688999898266,
+            "photon_ledger_error": 0.0,
+            "per_beam_ledger_max": 0.0,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 7.771561172376096e-16,
+            "state_representation_relative_error": 5.229806816166162e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.591883188422166,
+            "x_max": 0.591883188422166
+          },
+          "observed_order": 1.9998755067897982
+        }
+      ],
+      "adaptive": [
+        {
+          "rtol": 0.0001,
+          "x": [
+            0.5918705026577705
+          ],
+          "max_x_error": 2.2769249940823855e-05,
+          "absorption_l1_per_emitted": 1.0780754689854177e-05,
+          "escaped_by_beam": [
+            1.4610645181304738
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 45,
+            "rejected_steps": 4,
+            "flow_calls": 147,
+            "largest_accepted_error_estimate": 0.8891598314665092,
+            "rtol": 0.0001,
+            "atol": 1.0000000000000001e-07,
+            "adaptive": true,
+            "seconds": 0.009802132000913844,
+            "photon_ledger_error": 2.220446049250313e-16,
+            "per_beam_ledger_max": 2.220446049250313e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 1.1102230246251565e-16,
+            "state_representation_relative_error": 7.471215882512627e-17,
+            "state_precision_resolved": true,
+            "x_min": 0.5918705026577705,
+            "x_max": 0.5918705026577705
+          }
+        },
+        {
+          "rtol": 1e-06,
+          "x": [
+            0.5918928732761461
+          ],
+          "max_x_error": 3.986315652015904e-07,
+          "absorption_l1_per_emitted": 1.8457488759615615e-07,
+          "escaped_by_beam": [
+            1.4610433257708701
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 327,
+            "rejected_steps": 3,
+            "flow_calls": 990,
+            "largest_accepted_error_estimate": 0.9422010507178773,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": true,
+            "seconds": 0.05916191599681042,
+            "photon_ledger_error": 1.1102230246251565e-15,
+            "per_beam_ledger_max": 1.1102230246251565e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.220446049250313e-16,
+            "state_representation_relative_error": 1.4942230516562645e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.5918928732761461,
+            "x_max": 0.5918928732761461
+          }
+        },
+        {
+          "rtol": 1e-08,
+          "x": [
+            0.5918932589327957
+          ],
+          "max_x_error": 1.297491569740572e-08,
+          "absorption_l1_per_emitted": 6.297948607070225e-09,
+          "escaped_by_beam": [
+            1.4610429692169917
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 1836,
+            "rejected_steps": 5,
+            "flow_calls": 5523,
+            "largest_accepted_error_estimate": 0.7531682952384964,
+            "rtol": 1e-08,
+            "atol": 1.0000000000000001e-11,
+            "adaptive": true,
+            "seconds": 0.37773152899899287,
+            "photon_ledger_error": 6.661338147750939e-16,
+            "per_beam_ledger_max": 6.661338147750939e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.55351295663786e-15,
+            "state_representation_relative_error": 1.7183561307574176e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.5918932589327957,
+            "x_max": 0.5918932589327957
+          }
+        }
+      ]
+    },
+    {
+      "name": "shared_screen",
+      "reference": {
+        "x": [
+          0.776500569415637,
+          0.3666945084322725,
+          0.6434889254579883
+        ],
+        "absorbed": [
+          0.7681638805976271,
+          1.1901525899258978,
+          2.238415493958476
+        ],
+        "recombinations": [
+          0.991663311181991,
+          0.09006906462907914,
+          0.3079487175845108
+        ],
+        "escaped_by_beam": [
+          0.053792783208226405,
+          0.249475252309771
+        ],
+        "emitted": 4.5,
+        "method": "Radau",
+        "nfev": 4277,
+        "photon_ledger_error": 9.992007221626409e-16,
+        "atom_ledger_max_error": 1.124100812432971e-15,
+        "trajectory_x_min": 0.0,
+        "trajectory_x_max": 1.0
+      },
+      "independent_ode_crosscheck_max": 3.4661162828797387e-13,
+      "fixed": [
+        {
+          "steps": 8,
+          "x": [
+            0.770419649697888,
+            0.36695991115637167,
+            0.644370905226045
+          ],
+          "max_x_error": 0.006080919717749045,
+          "absorption_l1_per_emitted": 0.00432037025661125,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8,
+            "rejected_steps": 0,
+            "flow_calls": 8,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0006639130006078631,
+            "photon_ledger_error": 5.551115123125783e-17,
+            "per_beam_ledger_max": 2.0816681711721685e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.220446049250313e-16,
+            "state_representation_relative_error": 1.2740025044326419e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.36695991115637167,
+            "x_max": 0.770419649697888
+          }
+        },
+        {
+          "steps": 16,
+          "x": [
+            0.7749627755287481,
+            0.36676337896318795,
+            0.6437155250843761
+          ],
+          "max_x_error": 0.0015377938868889052,
+          "absorption_l1_per_emitted": 0.0010959046230640565,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 16,
+            "rejected_steps": 0,
+            "flow_calls": 16,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0010636060032993555,
+            "photon_ledger_error": 1.6653345369377348e-16,
+            "per_beam_ledger_max": 1.1102230246251565e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 3.3306690738754696e-16,
+            "state_representation_relative_error": 1.8972379502135576e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.36676337896318795,
+            "x_max": 0.7749627755287481
+          },
+          "observed_order": 1.9834273933243818
+        },
+        {
+          "steps": 32,
+          "x": [
+            0.776115005357313,
+            0.3667118870976885,
+            0.6435459581257363
+          ],
+          "max_x_error": 0.0003855640583240172,
+          "absorption_l1_per_emitted": 0.00027496893109697003,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 32,
+            "rejected_steps": 0,
+            "flow_calls": 32,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0020654180043493398,
+            "photon_ledger_error": 9.992007221626409e-16,
+            "per_beam_ledger_max": 1.942890293094024e-16,
+            "absorption_crosscheck": 1.7763568394002505e-15,
+            "atom_ledger_max_error": 7.216449660063518e-16,
+            "state_representation_relative_error": 2.8333271433931535e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.3667118870976885,
+            "x_max": 0.776115005357313
+          },
+          "observed_order": 1.9958196722225643
+        },
+        {
+          "steps": 64,
+          "x": [
+            0.7764041083932337,
+            0.3666988632193208,
+            0.6435032075444963
+          ],
+          "max_x_error": 9.646102240334908e-05,
+          "absorption_l1_per_emitted": 6.880430186065014e-05,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 64,
+            "rejected_steps": 0,
+            "flow_calls": 64,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.003918496004189365,
+            "photon_ledger_error": 7.216449660063518e-16,
+            "per_beam_ledger_max": 1.27675647831893e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 5.551115123125783e-16,
+            "state_representation_relative_error": 3.2519379003326816e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.3666988632193208,
+            "x_max": 0.7764041083932337
+          },
+          "observed_order": 1.9989525654575793
+        },
+        {
+          "steps": 128,
+          "x": [
+            0.7764764497800961,
+            0.36669559776246025,
+            0.643492497474423
+          ],
+          "max_x_error": 2.411963554094232e-05,
+          "absorption_l1_per_emitted": 1.720495483587609e-05,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 128,
+            "rejected_steps": 0,
+            "flow_calls": 128,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.00765074799710419,
+            "photon_ledger_error": 1.2212453270876722e-15,
+            "per_beam_ledger_max": 8.326672684688674e-16,
+            "absorption_crosscheck": 8.881784197001252e-16,
+            "atom_ledger_max_error": 7.216449660063518e-16,
+            "state_representation_relative_error": 5.636829456900767e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.36669559776246025,
+            "x_max": 0.7764764497800961
+          },
+          "observed_order": 1.999737993898743
+        }
+      ],
+      "adaptive": [
+        {
+          "rtol": 0.0001,
+          "x": [
+            0.7764645733670851,
+            0.36669614535659323,
+            0.6434943022636502
+          ],
+          "max_x_error": 3.5996048551978355e-05,
+          "absorption_l1_per_emitted": 2.588632577740471e-05,
+          "escaped_by_beam": [
+            0.05379396449338353,
+            0.24949518324078057
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 53,
+            "rejected_steps": 4,
+            "flow_calls": 171,
+            "largest_accepted_error_estimate": 0.8325833452867636,
+            "rtol": 0.0001,
+            "atol": 1.0000000000000001e-07,
+            "adaptive": true,
+            "seconds": 0.015635903997463174,
+            "photon_ledger_error": 1.6653345369377348e-16,
+            "per_beam_ledger_max": 2.220446049250313e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.1094237467877974e-15,
+            "state_representation_relative_error": 1.1987231203525e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.36669614535659323,
+            "x_max": 0.7764645733670851
+          }
+        },
+        {
+          "rtol": 1e-06,
+          "x": [
+            0.7765000078721311,
+            0.36669453316935574,
+            0.6434890070345405
+          ],
+          "max_x_error": 5.615435059169727e-07,
+          "absorption_l1_per_emitted": 3.948510322655036e-07,
+          "escaped_by_beam": [
+            0.05379280119797437,
+            0.24947555688792597
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 421,
+            "rejected_steps": 4,
+            "flow_calls": 1275,
+            "largest_accepted_error_estimate": 0.7954339431047801,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": true,
+            "seconds": 0.10073651999846334,
+            "photon_ledger_error": 1.5543122344752192e-15,
+            "per_beam_ledger_max": 1.0061396160665481e-15,
+            "absorption_crosscheck": 8.881784197001252e-16,
+            "atom_ledger_max_error": 1.9984014443252818e-15,
+            "state_representation_relative_error": 1.135567855751801e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.36669453316935574,
+            "x_max": 0.7765000078721311
+          }
+        },
+        {
+          "rtol": 1e-08,
+          "x": [
+            0.7765005524297278,
+            0.3666945091863447,
+            0.6434889279098964
+          ],
+          "max_x_error": 1.6985909234712437e-08,
+          "absorption_l1_per_emitted": 1.1813214998805202e-08,
+          "escaped_by_beam": [
+            0.053792783750939,
+            0.2494752614558995
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 2438,
+            "rejected_steps": 4,
+            "flow_calls": 7326,
+            "largest_accepted_error_estimate": 0.8304422039072689,
+            "rtol": 1e-08,
+            "atol": 1.0000000000000001e-11,
+            "adaptive": true,
+            "seconds": 0.5968341289990349,
+            "photon_ledger_error": 3.6637359812630166e-15,
+            "per_beam_ledger_max": 2.095545958979983e-15,
+            "absorption_crosscheck": 5.329070518200751e-15,
+            "atom_ledger_max_error": 6.439293542825908e-15,
+            "state_representation_relative_error": 3.659048877479254e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.3666945091863447,
+            "x_max": 0.7765005524297278
+          }
+        }
+      ]
+    },
+    {
+      "name": "opposite_beams",
+      "reference": {
+        "x": [
+          0.9518570756310448,
+          0.9486008257248348
+        ],
+        "absorbed": [
+          0.4892058782035181,
+          1.5953879034124534
+        ],
+        "recombinations": [
+          0.33734880257247424,
+          0.09818625196278334
+        ],
+        "escaped_by_beam": [
+          0.6102708122560192,
+          0.30513540612800966
+        ],
+        "emitted": 3.0,
+        "method": "Radau",
+        "nfev": 3721,
+        "photon_ledger_error": 2.220446049250313e-16,
+        "atom_ledger_max_error": 9.43689570931383e-16,
+        "trajectory_x_min": 0.2,
+        "trajectory_x_max": 0.9518570756310448
+      },
+      "independent_ode_crosscheck_max": 3.4638958368304884e-14,
+      "fixed": [
+        {
+          "steps": 8,
+          "x": [
+            0.9480850622232941,
+            0.9482760081826661
+          ],
+          "max_x_error": 0.003772013407750685,
+          "absorption_l1_per_emitted": 0.00211307784696387,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8,
+            "rejected_steps": 0,
+            "flow_calls": 8,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0006263589966692962,
+            "photon_ledger_error": 1.1102230246251565e-16,
+            "per_beam_ledger_max": 1.1102230246251565e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.7755575615628914e-16,
+            "state_representation_relative_error": 1.6391984457225848e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9480850622232941,
+            "x_max": 0.9482760081826661
+          }
+        },
+        {
+          "steps": 16,
+          "x": [
+            0.950898558504702,
+            0.9485199760946434
+          ],
+          "max_x_error": 0.0009585171263428727,
+          "absorption_l1_per_emitted": 0.0005352824945979809,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 16,
+            "rejected_steps": 0,
+            "flow_calls": 16,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0011739170004148036,
+            "photon_ledger_error": 2.220446049250313e-16,
+            "per_beam_ledger_max": 1.6653345369377348e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 4.0245584642661925e-16,
+            "state_representation_relative_error": 2.376483387822703e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9485199760946434,
+            "x_max": 0.950898558504702
+          },
+          "observed_order": 1.9764586894836247
+        },
+        {
+          "steps": 32,
+          "x": [
+            0.9516164504076104,
+            0.9485806371501487
+          ],
+          "max_x_error": 0.00024062522343437642,
+          "absorption_l1_per_emitted": 0.000134269201509681,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 32,
+            "rejected_steps": 0,
+            "flow_calls": 32,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0020231879971106537,
+            "photon_ledger_error": 6.661338147750939e-16,
+            "per_beam_ledger_max": 4.440892098500626e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 1.2212453270876722e-15,
+            "state_representation_relative_error": 7.211138672631766e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9485806371501487,
+            "x_max": 0.9516164504076104
+          },
+          "observed_order": 1.9940163292137867
+        },
+        {
+          "steps": 64,
+          "x": [
+            0.9517968566550769,
+            0.9485957800978014
+          ],
+          "max_x_error": 6.0218975967973876e-05,
+          "absorption_l1_per_emitted": 3.359550156552723e-05,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 64,
+            "rejected_steps": 0,
+            "flow_calls": 64,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0046866019984008744,
+            "photon_ledger_error": 1.1102230246251565e-16,
+            "per_beam_ledger_max": 4.440892098500626e-16,
+            "absorption_crosscheck": 4.440892098500626e-16,
+            "atom_ledger_max_error": 7.216449660063518e-16,
+            "state_representation_relative_error": 8.732092712671538e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9485957800978014,
+            "x_max": 0.9517968566550769
+          },
+          "observed_order": 1.9984978001660962
+        },
+        {
+          "steps": 128,
+          "x": [
+            0.9518420169635025,
+            0.948599564413286
+          ],
+          "max_x_error": 1.5058667542366955e-05,
+          "absorption_l1_per_emitted": 8.400640568913728e-06,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 128,
+            "rejected_steps": 0,
+            "flow_calls": 128,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.007803307998983655,
+            "photon_ledger_error": 2.220446049250313e-16,
+            "per_beam_ledger_max": 4.996003610813204e-16,
+            "absorption_crosscheck": 4.440892098500626e-16,
+            "atom_ledger_max_error": 1.8735013540549517e-15,
+            "state_representation_relative_error": 1.1062419281721468e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.948599564413286,
+            "x_max": 0.9518420169635025
+          },
+          "observed_order": 1.9996240554350957
+        }
+      ],
+      "adaptive": [
+        {
+          "rtol": 0.0001,
+          "x": [
+            0.9518441955225246,
+            0.9485997614513776
+          ],
+          "max_x_error": 1.2880108520185729e-05,
+          "absorption_l1_per_emitted": 8.764121012416748e-06,
+          "escaped_by_beam": [
+            0.6102936462170373,
+            0.3051388645300266
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 55,
+            "rejected_steps": 3,
+            "flow_calls": 174,
+            "largest_accepted_error_estimate": 0.8025278847407481,
+            "rtol": 0.0001,
+            "atol": 1.0000000000000001e-07,
+            "adaptive": true,
+            "seconds": 0.013020944999880157,
+            "photon_ledger_error": 2.1094237467877974e-15,
+            "per_beam_ledger_max": 1.2212453270876722e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 4.690692279041286e-15,
+            "state_representation_relative_error": 2.7696968377971945e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.9485997614513776,
+            "x_max": 0.9518441955225246
+          }
+        },
+        {
+          "rtol": 1e-06,
+          "x": [
+            0.9518568385982754,
+            0.9486008062010692
+          ],
+          "max_x_error": 2.3703276941233753e-07,
+          "absorption_l1_per_emitted": 1.4593908633416439e-07,
+          "escaped_by_beam": [
+            0.61027116786281,
+            0.3051354883384775
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 443,
+            "rejected_steps": 4,
+            "flow_calls": 1341,
+            "largest_accepted_error_estimate": 0.8924114906991035,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": true,
+            "seconds": 0.10792280699388357,
+            "photon_ledger_error": 0.0,
+            "per_beam_ledger_max": 1.2212453270876722e-15,
+            "absorption_crosscheck": 4.440892098500626e-16,
+            "atom_ledger_max_error": 8.881784197001252e-16,
+            "state_representation_relative_error": 1.074555736042287e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.9486008062010692,
+            "x_max": 0.9518568385982754
+          }
+        },
+        {
+          "rtol": 1e-08,
+          "x": [
+            0.9518570674081691,
+            0.9486008250376542
+          ],
+          "max_x_error": 8.222875713670419e-09,
+          "absorption_l1_per_emitted": 4.749778570456442e-09,
+          "escaped_by_beam": [
+            0.6102708232369303,
+            0.30513540939644423
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 2590,
+            "rejected_steps": 4,
+            "flow_calls": 7782,
+            "largest_accepted_error_estimate": 0.9720219234443328,
+            "rtol": 1e-08,
+            "atol": 1.0000000000000001e-11,
+            "adaptive": true,
+            "seconds": 0.6876696340041235,
+            "photon_ledger_error": 1.0436096431476471e-14,
+            "per_beam_ledger_max": 7.993605777301127e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 1.186550857568136e-14,
+            "state_representation_relative_error": 7.320405728418885e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.9486008250376542,
+            "x_max": 0.9518570674081691
+          }
+        }
+      ]
+    },
+    {
+      "name": "optically_thick_screen",
+      "reference": {
+        "x": [
+          0.9953252314376805
+        ],
+        "absorbed": [
+          1.976974583946659
+        ],
+        "recombinations": [
+          1.9816493525089807
+        ],
+        "escaped_by_beam": [
+          0.02302541605334127
+        ],
+        "emitted": 2.0,
+        "method": "Radau",
+        "nfev": 6528,
+        "photon_ledger_error": 3.0531133177191805e-16,
+        "atom_ledger_max_error": 2.220446049250313e-15,
+        "trajectory_x_min": 0.9953252314376805,
+        "trajectory_x_max": 1.0
+      },
+      "independent_ode_crosscheck_max": 1.4432899320127035e-15,
+      "fixed": [
+        {
+          "steps": 8,
+          "x": [
+            0.8888888888888888
+          ],
+          "max_x_error": 0.10643634254879164,
+          "absorption_l1_per_emitted": 0.23293173641777354,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8,
+            "rejected_steps": 0,
+            "flow_calls": 8,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0006480680021923035,
+            "photon_ledger_error": 3.3306690738754696e-16,
+            "per_beam_ledger_max": 3.3306690738754696e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 1.1102230246251565e-15,
+            "state_representation_relative_error": 3.543264972207946e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.8888888888888888,
+            "x_max": 0.8888888888888888
+          }
+        },
+        {
+          "steps": 16,
+          "x": [
+            0.941176469765094
+          ],
+          "max_x_error": 0.05414876167258653,
+          "absorption_l1_per_emitted": 0.12574219576393253,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 16,
+            "rejected_steps": 0,
+            "flow_calls": 16,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0008004920018720441,
+            "photon_ledger_error": 1.1102230246251565e-16,
+            "per_beam_ledger_max": 1.1102230246251565e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.220446049250313e-16,
+            "state_representation_relative_error": 6.326410543092834e-17,
+            "state_precision_resolved": true,
+            "x_min": 0.941176469765094,
+            "x_max": 0.941176469765094
+          },
+          "observed_order": 0.9749905909301325
+        },
+        {
+          "steps": 32,
+          "x": [
+            0.9696729331073017
+          ],
+          "max_x_error": 0.025652298330378742,
+          "absorption_l1_per_emitted": 0.061627601815697375,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 32,
+            "rejected_steps": 0,
+            "flow_calls": 32,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0017858700011856854,
+            "photon_ledger_error": 6.106226635438361e-16,
+            "per_beam_ledger_max": 6.106226635438361e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 4.218847493575595e-15,
+            "state_representation_relative_error": 1.128708348315963e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.9696729331073017,
+            "x_max": 0.9696729331073017
+          },
+          "observed_order": 1.077840254634229
+        },
+        {
+          "steps": 64,
+          "x": [
+            0.9841564497486168
+          ],
+          "max_x_error": 0.011168781689063656,
+          "absorption_l1_per_emitted": 0.027355323678804,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 64,
+            "rejected_steps": 0,
+            "flow_calls": 64,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.0036086660038563423,
+            "photon_ledger_error": 2.67841304690819e-15,
+            "per_beam_ledger_max": 2.67841304690819e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 1.1102230246251565e-15,
+            "state_representation_relative_error": 2.8759487180092474e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9841564497486168,
+            "x_max": 0.9841564497486168
+          },
+          "observed_order": 1.1996162679845501
+        },
+        {
+          "steps": 128,
+          "x": [
+            0.9908695198646905
+          ],
+          "max_x_error": 0.004455711572989962,
+          "absorption_l1_per_emitted": 0.011039959121802667,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 128,
+            "rejected_steps": 0,
+            "flow_calls": 128,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.005955940003332216,
+            "photon_ledger_error": 1.8596235662471372e-15,
+            "per_beam_ledger_max": 1.8596235662471372e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 6.661338147750939e-16,
+            "state_representation_relative_error": 1.699789347088185e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9908695198646905,
+            "x_max": 0.9908695198646905
+          },
+          "observed_order": 1.3257440703018504
+        },
+        {
+          "steps": 256,
+          "x": [
+            0.9937490925530572
+          ],
+          "max_x_error": 0.0015761388846232682,
+          "absorption_l1_per_emitted": 0.003931762583044063,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 256,
+            "rejected_steps": 0,
+            "flow_calls": 256,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.013849891001882497,
+            "photon_ledger_error": 6.245004513516506e-17,
+            "per_beam_ledger_max": 6.245004513516506e-17,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 6.661338147750939e-16,
+            "state_representation_relative_error": 1.6887777164447175e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9937490925530572,
+            "x_max": 0.9937490925530572
+          },
+          "observed_order": 1.4992611808528773
+        },
+        {
+          "steps": 512,
+          "x": [
+            0.9948479318718297
+          ],
+          "max_x_error": 0.00047729956585074174,
+          "absorption_l1_per_emitted": 0.0011943505986276026,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 512,
+            "rejected_steps": 0,
+            "flow_calls": 512,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.024136993000865914,
+            "photon_ledger_error": 3.122502256758253e-17,
+            "per_beam_ledger_max": 3.122502256758253e-17,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.4424906541753444e-15,
+            "state_representation_relative_error": 6.176759306875092e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9948479318718297,
+            "x_max": 0.9948479318718297
+          },
+          "observed_order": 1.7234277371129874
+        },
+        {
+          "steps": 1024,
+          "x": [
+            0.9951970220318982
+          ],
+          "max_x_error": 0.0001282094057822869,
+          "absorption_l1_per_emitted": 0.0003211451587571412,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 1024,
+            "rejected_steps": 0,
+            "flow_calls": 1024,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.050108473005821,
+            "photon_ledger_error": 9.332812300755222e-16,
+            "per_beam_ledger_max": 9.332812300755222e-16,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.4424906541753444e-15,
+            "state_representation_relative_error": 6.171852615134743e-16,
+            "state_precision_resolved": true,
+            "x_min": 0.9951970220318982,
+            "x_max": 0.9951970220318982
+          },
+          "observed_order": 1.8963929183462114
+        },
+        {
+          "steps": 2048,
+          "x": [
+            0.9952925087122709
+          ],
+          "max_x_error": 3.272272540955079e-05,
+          "absorption_l1_per_emitted": 8.198753211086096e-05,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 2048,
+            "rejected_steps": 0,
+            "flow_calls": 2048,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.10865109299629694,
+            "photon_ledger_error": 1.3877787807814457e-15,
+            "per_beam_ledger_max": 1.3877787807814457e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 2.220446049250313e-16,
+            "state_representation_relative_error": 5.60955446719775e-17,
+            "state_precision_resolved": true,
+            "x_min": 0.9952925087122709,
+            "x_max": 0.9952925087122709
+          },
+          "observed_order": 1.9701372882307882
+        },
+        {
+          "steps": 4096,
+          "x": [
+            0.9953170065766884
+          ],
+          "max_x_error": 8.224860992056549e-06,
+          "absorption_l1_per_emitted": 2.0608939309774144e-05,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 4096,
+            "rejected_steps": 0,
+            "flow_calls": 4096,
+            "largest_accepted_error_estimate": 0.0,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": false,
+            "seconds": 0.20948800499900244,
+            "photon_ledger_error": 1.5959455978986625e-15,
+            "per_beam_ledger_max": 1.5959455978986625e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 3.9968028886505635e-15,
+            "state_representation_relative_error": 1.0096634287158718e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.9953170065766884,
+            "x_max": 0.9953170065766884
+          },
+          "observed_order": 1.992229711179521
+        }
+      ],
+      "adaptive": [
+        {
+          "rtol": 0.0001,
+          "x": [
+            0.9953140200116205
+          ],
+          "max_x_error": 1.1211426059976048e-05,
+          "absorption_l1_per_emitted": 2.674331874541469e-05,
+          "escaped_by_beam": [
+            0.02307890269082372
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 1808,
+            "rejected_steps": 5,
+            "flow_calls": 5439,
+            "largest_accepted_error_estimate": 0.8096061437002988,
+            "rtol": 0.0001,
+            "atol": 1.0000000000000001e-07,
+            "adaptive": true,
+            "seconds": 0.3791594379945309,
+            "photon_ledger_error": 8.07340305719606e-15,
+            "per_beam_ledger_max": 8.07340305719606e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 5.995204332975845e-15,
+            "state_representation_relative_error": 1.5145033882628524e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.9953140200116205,
+            "x_max": 0.9953140200116205
+          }
+        },
+        {
+          "rtol": 1e-06,
+          "x": [
+            0.9953247072931446
+          ],
+          "max_x_error": 5.241445358850072e-07,
+          "absorption_l1_per_emitted": 1.2456022170370673e-06,
+          "escaped_by_beam": [
+            0.023027907257773636
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8390,
+            "rejected_steps": 5,
+            "flow_calls": 25185,
+            "largest_accepted_error_estimate": 0.8350263237861376,
+            "rtol": 1e-06,
+            "atol": 1e-09,
+            "adaptive": true,
+            "seconds": 1.9494025090025389,
+            "photon_ledger_error": 1.4016565685892601e-15,
+            "per_beam_ledger_max": 1.4016565685892601e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 5.773159728050814e-15,
+            "state_representation_relative_error": 1.4583770326640692e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.9953247072931446,
+            "x_max": 0.9953247072931446
+          }
+        },
+        {
+          "rtol": 1e-08,
+          "x": [
+            0.9953252071321089
+          ],
+          "max_x_error": 2.430557155541635e-08,
+          "absorption_l1_per_emitted": 5.776807898705272e-08,
+          "escaped_by_beam": [
+            0.02302553158949239
+          ],
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 38956,
+            "rejected_steps": 6,
+            "flow_calls": 116886,
+            "largest_accepted_error_estimate": 0.7353283749045033,
+            "rtol": 1e-08,
+            "atol": 1.0000000000000001e-11,
+            "adaptive": true,
+            "seconds": 8.5666088700018,
+            "photon_ledger_error": 6.54684639833647e-15,
+            "per_beam_ledger_max": 6.54684639833647e-15,
+            "absorption_crosscheck": 0.0,
+            "atom_ledger_max_error": 9.414691248821327e-14,
+            "state_representation_relative_error": 2.378273837498935e-14,
+            "state_precision_resolved": true,
+            "x_min": 0.9953252071321089,
+            "x_max": 0.9953252071321089
+          }
+        }
+      ]
+    }
+  ],
+  "spatial": {
+    "pure_photo_exact_cell_averages": [
+      {
+        "cells": 2,
+        "max_cell_average_error": 1.1102230246251565e-16,
+        "ionized_atoms": 0.6998762158459163,
+        "escaped": 0.00012378415408367816,
+        "audit": {
+          "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+          "accepted_steps": 1,
+          "rejected_steps": 0,
+          "flow_calls": 1,
+          "largest_accepted_error_estimate": 0.0,
+          "rtol": 1e-06,
+          "atol": 1e-09,
+          "adaptive": false,
+          "seconds": 0.00022945999808143824,
+          "photon_ledger_error": 2.7755575615628914e-17,
+          "per_beam_ledger_max": 2.7755575615628914e-17,
+          "absorption_crosscheck": 0.0,
+          "atom_ledger_max_error": 0.0,
+          "state_representation_relative_error": 0.0,
+          "state_precision_resolved": true,
+          "x_min": 0.4015673428263134,
+          "x_max": 0.9981850888655192
+        }
+      },
+      {
+        "cells": 4,
+        "max_cell_average_error": 1.1102230246251565e-16,
+        "ionized_atoms": 0.6998762158459162,
+        "escaped": 0.00012378415408366428,
+        "audit": {
+          "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+          "accepted_steps": 1,
+          "rejected_steps": 0,
+          "flow_calls": 1,
+          "largest_accepted_error_estimate": 0.0,
+          "rtol": 1e-06,
+          "atol": 1e-09,
+          "adaptive": false,
+          "seconds": 0.00018870000349124894,
+          "photon_ledger_error": 9.71445146547012e-17,
+          "per_beam_ledger_max": 9.71445146547012e-17,
+          "absorption_crosscheck": 0.0,
+          "atom_ledger_max_error": 0.0,
+          "state_representation_relative_error": 0.0,
+          "state_precision_resolved": true,
+          "x_min": 0.06215715616080181,
+          "x_max": 0.9999754858473471
+        }
+      },
+      {
+        "cells": 8,
+        "max_cell_average_error": 2.914335439641036e-16,
+        "ionized_atoms": 0.6998762158459162,
+        "escaped": 0.00012378415408366384,
+        "audit": {
+          "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+          "accepted_steps": 1,
+          "rejected_steps": 0,
+          "flow_calls": 1,
+          "largest_accepted_error_estimate": 0.0,
+          "rtol": 1e-06,
+          "atol": 1e-09,
+          "adaptive": false,
+          "seconds": 0.00019638000230770558,
+          "photon_ledger_error": 1.3444106938820255e-17,
+          "per_beam_ledger_max": 9.75781955236954e-17,
+          "absorption_crosscheck": 1.1102230246251565e-16,
+          "atom_ledger_max_error": 0.0,
+          "state_representation_relative_error": 0.0,
+          "state_precision_resolved": true,
+          "x_min": 0.010909884326794118,
+          "x_max": 0.9999962805913407
+        }
+      },
+      {
+        "cells": 16,
+        "max_cell_average_error": 1.8318679906315083e-15,
+        "ionized_atoms": 0.6998762158459164,
+        "escaped": 0.0001237841540836646,
+        "audit": {
+          "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+          "accepted_steps": 1,
+          "rejected_steps": 0,
+          "flow_calls": 1,
+          "largest_accepted_error_estimate": 0.0,
+          "rtol": 1e-06,
+          "atol": 1e-09,
+          "adaptive": false,
+          "seconds": 0.00031875199783826247,
+          "photon_ledger_error": 1.2522535092207576e-16,
+          "per_beam_ledger_max": 9.681925400295555e-17,
+          "absorption_crosscheck": 2.220446049250313e-16,
+          "atom_ledger_max_error": 0.0,
+          "state_representation_relative_error": 0.0,
+          "state_precision_resolved": true,
+          "x_min": 0.004911034838461456,
+          "x_max": 0.9999983433683634
+        }
+      },
+      {
+        "cells": 32,
+        "max_cell_average_error": 2.831068712794149e-15,
+        "ionized_atoms": 0.6998762158459162,
+        "escaped": 0.0001237841540836634,
+        "audit": {
+          "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+          "accepted_steps": 1,
+          "rejected_steps": 0,
+          "flow_calls": 1,
+          "largest_accepted_error_estimate": 0.0,
+          "rtol": 1e-06,
+          "atol": 1e-09,
+          "adaptive": false,
+          "seconds": 0.0004698350021499209,
+          "photon_ledger_error": 2.0903417885520525e-16,
+          "per_beam_ledger_max": 9.80118763926896e-17,
+          "absorption_crosscheck": 1.1102230246251565e-16,
+          "atom_ledger_max_error": 0.0,
+          "state_representation_relative_error": 0.0,
+          "state_precision_resolved": true,
+          "x_min": 0.003431267366622365,
+          "x_max": 0.9999988448460989
+        }
+      },
+      {
+        "cells": 64,
+        "max_cell_average_error": 9.521029797898706e-15,
+        "ionized_atoms": 0.6998762158459162,
+        "escaped": 0.0001237841540836638,
+        "audit": {
+          "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+          "accepted_steps": 1,
+          "rejected_steps": 0,
+          "flow_calls": 1,
+          "largest_accepted_error_estimate": 0.0,
+          "rtol": 1e-06,
+          "atol": 1e-09,
+          "adaptive": false,
+          "seconds": 0.0006925560010131449,
+          "photon_ledger_error": 9.763240563231967e-17,
+          "per_beam_ledger_max": 1.2441219929271163e-16,
+          "absorption_crosscheck": 2.220446049250313e-16,
+          "atom_ledger_max_error": 0.0,
+          "state_representation_relative_error": 0.0,
+          "state_precision_resolved": true,
+          "x_min": 0.002901248362620448,
+          "x_max": 0.9999990238840422
+        }
+      }
+    ],
+    "recombining_slab": {
+      "tau_total": 20.0,
+      "alpha_n": 0.7,
+      "duration": 1.5,
+      "reference_cells": 1024,
+      "reference_method": "independent simultaneous DOP853 method-of-lines",
+      "reference_nfev": 734,
+      "preceding_reference_nfev": 734,
+      "reference_grid_change_l1": 1.845531752023375e-07,
+      "rows": [
+        {
+          "cells": 4,
+          "l1_ionized_atoms_error": 0.003218742833788202,
+          "mean_x": 0.9336130146698698,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8387,
+            "rejected_steps": 5,
+            "flow_calls": 25176,
+            "largest_accepted_error_estimate": 0.8514981903194685,
+            "rtol": 1e-08,
+            "atol": 1e-11,
+            "adaptive": true,
+            "seconds": 1.7935750589967938,
+            "photon_ledger_error": 1.1032841307212493e-15,
+            "per_beam_ledger_max": 2.213507155346406e-15,
+            "absorption_crosscheck": 1.1102230246251565e-15,
+            "atom_ledger_max_error": 1.6792123247455493e-15,
+            "state_representation_relative_error": 3.763936682174915e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.865528020951776,
+            "x_max": 0.9644653902411231
+          }
+        },
+        {
+          "cells": 8,
+          "l1_ionized_atoms_error": 0.0009539385742915879,
+          "mean_x": 0.9313482104103732,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8718,
+            "rejected_steps": 5,
+            "flow_calls": 26169,
+            "largest_accepted_error_estimate": 0.9517792784322346,
+            "rtol": 1e-08,
+            "atol": 1e-11,
+            "adaptive": true,
+            "seconds": 2.7752264119990286,
+            "photon_ledger_error": 8.354428260304303e-15,
+            "per_beam_ledger_max": 1.5459855617905305e-14,
+            "absorption_crosscheck": 7.105427357601002e-15,
+            "atom_ledger_max_error": 1.915134717478395e-15,
+            "state_representation_relative_error": 6.910266086510296e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.7872769619043558,
+            "x_max": 0.9659336944019954
+          },
+          "observed_spatial_order": 1.7545290383940275
+        },
+        {
+          "cells": 16,
+          "l1_ionized_atoms_error": 0.00024846142812137706,
+          "mean_x": 0.9306427328292384,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8795,
+            "rejected_steps": 6,
+            "flow_calls": 26403,
+            "largest_accepted_error_estimate": 0.7878608675771229,
+            "rtol": 1e-08,
+            "atol": 1e-11,
+            "adaptive": true,
+            "seconds": 4.898288415002753,
+            "photon_ledger_error": 4.3021142204224816e-15,
+            "per_beam_ledger_max": 1.074140776324839e-14,
+            "absorption_crosscheck": 6.439293542825908e-15,
+            "atom_ledger_max_error": 8.396061623727746e-16,
+            "state_representation_relative_error": 8.54562256819983e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.7051536608712473,
+            "x_max": 0.9666110300851188
+          },
+          "observed_spatial_order": 1.9408744706888594
+        },
+        {
+          "cells": 32,
+          "l1_ionized_atoms_error": 6.271478233836614e-05,
+          "mean_x": 0.9304569835066838,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8812,
+            "rejected_steps": 6,
+            "flow_calls": 26454,
+            "largest_accepted_error_estimate": 0.7983525073949512,
+            "rtol": 1e-08,
+            "atol": 1e-11,
+            "adaptive": true,
+            "seconds": 5.246894764000899,
+            "photon_ledger_error": 1.0359768598533492e-14,
+            "per_beam_ledger_max": 1.4134526882259024e-14,
+            "absorption_crosscheck": 3.774758283725532e-15,
+            "atom_ledger_max_error": 4.787836793695988e-16,
+            "state_representation_relative_error": 8.049123747085646e-15,
+            "state_precision_resolved": true,
+            "x_min": 0.6476318537434766,
+            "x_max": 0.9669368752750666
+          },
+          "observed_spatial_order": 1.9861444588520234
+        },
+        {
+          "cells": 64,
+          "l1_ionized_atoms_error": 1.5676306398971357e-05,
+          "mean_x": 0.930409942829262,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8817,
+            "rejected_steps": 6,
+            "flow_calls": 26469,
+            "largest_accepted_error_estimate": 0.8044254482590955,
+            "rtol": 1e-08,
+            "atol": 1e-11,
+            "adaptive": true,
+            "seconds": 9.17889923099574,
+            "photon_ledger_error": 1.5779044737485037e-14,
+            "per_beam_ledger_max": 1.4002687898084787e-14,
+            "absorption_crosscheck": 1.7763568394002505e-15,
+            "atom_ledger_max_error": 3.642919299551295e-16,
+            "state_representation_relative_error": 1.1083788515753334e-14,
+            "state_precision_resolved": true,
+            "x_min": 0.6150052336226544,
+            "x_max": 0.9670967462847313
+          },
+          "observed_spatial_order": 2.0002198606942825
+        },
+        {
+          "cells": 128,
+          "l1_ionized_atoms_error": 3.878660454160673e-06,
+          "mean_x": 0.9303981441410103,
+          "audit": {
+            "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+            "accepted_steps": 8818,
+            "rejected_steps": 6,
+            "flow_calls": 26472,
+            "largest_accepted_error_estimate": 0.8076874447737312,
+            "rtol": 1e-08,
+            "atol": 1e-11,
+            "adaptive": true,
+            "seconds": 17.560951785002544,
+            "photon_ledger_error": 2.5673907444456745e-16,
+            "per_beam_ledger_max": 1.366962099069724e-15,
+            "absorption_crosscheck": 1.1102230246251565e-15,
+            "atom_ledger_max_error": 2.3505503099485736e-16,
+            "state_representation_relative_error": 1.2666612902124576e-14,
+            "state_precision_resolved": true,
+            "x_min": 0.5979138984965825,
+            "x_max": 0.9671759371104751
+          },
+          "observed_spatial_order": 2.0149552862686084
+        }
+      ]
+    }
+  },
+  "history": {
+    "order_bias": [
+      {
+        "steps": 8,
+        "max_order_bias": 0.0009191313014505487
+      },
+      {
+        "steps": 16,
+        "max_order_bias": 0.00023135043161420787
+      },
+      {
+        "steps": 32,
+        "max_order_bias": 5.793070865939276e-05
+      },
+      {
+        "steps": 64,
+        "max_order_bias": 1.4488398221268461e-05
+      },
+      {
+        "steps": 128,
+        "max_order_bias": 3.622455476859354e-06
+      }
+    ],
+    "source_on_off_on": {
+      "segments": [
+        [
+          0.2,
+          [
+            1,
+            2
+          ]
+        ],
+        [
+          0.5,
+          [
+            0,
+            0
+          ]
+        ],
+        [
+          0.3,
+          [
+            2,
+            0.5
+          ]
+        ]
+      ],
+      "result": {
+        "x": [
+          0.6944300669789056,
+          0.19531253937040818,
+          0.14994148289153883
+        ],
+        "absorbed": [
+          0.2600836933724071,
+          0.594784391637008,
+          0.46600705010956955
+        ],
+        "recombinations": [
+          0.565653626393499,
+          0.00884677352578233,
+          0.01618260143495317
+        ],
+        "escaped_by_beam": [
+          0.01703645609642213,
+          0.012088408784593042
+        ],
+        "emitted": 1.35,
+        "intervals": [
+          {
+            "x": [
+              0.8709824906297241,
+              0.06054667742086639,
+              0.12054341923353612
+            ],
+            "absorbed": [
+              0.04261672127754284,
+              0.18194322949424593,
+              0.36283562138418174
+            ],
+            "recombinations": [
+              0.17163423064781777,
+              0.0003031972316466622,
+              0.001205363683573164
+            ],
+            "escaped_by_beam": [
+              0.0038511963043624487,
+              0.008753231539666872
+            ],
+            "beam_absorbed": [
+              0.19614880369563756,
+              0.3912467684603332
+            ],
+            "emitted": 0.6000000000000001,
+            "ionized_atom_increment": [
+              -0.12901750937027492,
+              0.18164003226259928,
+              0.3616302577006086
+            ],
+            "absorption_rate": [
+              0.3631242738009185,
+              0.8584483311813415,
+              1.7057705693462104
+            ],
+            "incoming_rate": [
+              3.0,
+              0.8789585753996938,
+              1.7579171507993876
+            ],
+            "Gamma": [
+              2.814534829987797,
+              0.3045914436084294,
+              0.6465244586452836
+            ],
+            "outgoing_rate": [
+              0.020510244218352347,
+              0.05214658145317719
+            ],
+            "audit": {
+              "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+              "accepted_steps": 313,
+              "rejected_steps": 3,
+              "flow_calls": 948,
+              "largest_accepted_error_estimate": 0.876897200228313,
+              "rtol": 1e-08,
+              "atol": 1e-11,
+              "adaptive": true,
+              "seconds": 0.08264004299417138,
+              "photon_ledger_error": 2.7755575615628914e-16,
+              "per_beam_ledger_max": 3.2959746043559335e-17,
+              "absorption_crosscheck": 2.220446049250313e-16,
+              "atom_ledger_max_error": 9.71445146547012e-16,
+              "state_representation_relative_error": 4.534146232803847e-15,
+              "state_precision_resolved": true,
+              "x_min": 0.06054667742086639,
+              "x_max": 0.8709824906297241
+            }
+          },
+          {
+            "x": [
+              0.6067487304241148,
+              0.05982226949018512,
+              0.11770568996715935
+            ],
+            "absorbed": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "recombinations": [
+              0.2642337602056093,
+              0.0021732237920438257,
+              0.00851318779913035
+            ],
+            "escaped_by_beam": [
+              0.0,
+              0.0
+            ],
+            "beam_absorbed": [
+              0.0,
+              0.0
+            ],
+            "emitted": 0.0,
+            "ionized_atom_increment": [
+              -0.2642337602056093,
+              -0.0021732237920438257,
+              -0.00851318779913035
+            ],
+            "absorption_rate": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "incoming_rate": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "Gamma": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "outgoing_rate": [
+              0.0,
+              0.0
+            ],
+            "audit": {
+              "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+              "accepted_steps": 1,
+              "rejected_steps": 0,
+              "flow_calls": 3,
+              "largest_accepted_error_estimate": 7.611978169518378e-09,
+              "rtol": 1e-08,
+              "atol": 1e-11,
+              "adaptive": true,
+              "seconds": 0.00023322200286202133,
+              "photon_ledger_error": 0.0,
+              "per_beam_ledger_max": 0.0,
+              "absorption_crosscheck": 0.0,
+              "atom_ledger_max_error": 5.551115123125783e-17,
+              "state_representation_relative_error": 6.520606914947709e-15,
+              "state_precision_resolved": true,
+              "x_min": 0.05982226949018512,
+              "x_max": 0.6067487304241148
+            }
+          },
+          {
+            "x": [
+              0.6944300669789056,
+              0.19531253937040818,
+              0.14994148289153883
+            ],
+            "absorbed": [
+              0.2174669720948643,
+              0.41284116214276206,
+              0.10317142872538781
+            ],
+            "recombinations": [
+              0.12978563554007191,
+              0.006370352502091842,
+              0.006464049952249653
+            ],
+            "escaped_by_beam": [
+              0.013185259792059681,
+              0.0033351772449261704
+            ],
+            "beam_absorbed": [
+              0.5868147402079402,
+              0.14666482275507373
+            ],
+            "emitted": 0.75,
+            "ionized_atom_increment": [
+              0.08768133655479238,
+              0.4064708096406702,
+              0.09670737877313816
+            ],
+            "absorption_rate": [
+              0.6582415421631176,
+              1.4144630702211338,
+              0.35606146821439233
+            ],
+            "incoming_rate": [
+              2.5,
+              1.4734067662695058,
+              0.36835169156737646
+            ],
+            "Gamma": [
+              2.1541436870285184,
+              0.585926478467574,
+              0.13962233620714432
+            ],
+            "outgoing_rate": [
+              0.05894369604837202,
+              0.012290223352984131
+            ],
+            "audit": {
+              "model": "infinite-c, fixed homogeneous H cells, finite opacity, fixed T, case-B local recombination",
+              "accepted_steps": 432,
+              "rejected_steps": 4,
+              "flow_calls": 1308,
+              "largest_accepted_error_estimate": 0.7535498037898088,
+              "rtol": 1e-08,
+              "atol": 1e-11,
+              "adaptive": true,
+              "seconds": 0.14066504199581686,
+              "photon_ledger_error": 4.85722573273506e-17,
+              "per_beam_ledger_max": 9.80118763926896e-17,
+              "absorption_crosscheck": 2.220446049250313e-16,
+              "atom_ledger_max_error": 1.5543122344752192e-15,
+              "state_representation_relative_error": 4.4760275381697196e-15,
+              "state_precision_resolved": true,
+              "x_min": 0.14994148289153883,
+              "x_max": 0.6944300669789056
+            }
+          }
+        ],
+        "photon_ledger_error": 2.2898349882893854e-16,
+        "atom_ledger_max_error": 2.4424906541753444e-15
+      },
+      "reference_x": [
+        0.694430079415665,
+        0.1953125373835379,
+        0.14994148125191006
+      ],
+      "max_x_error": 1.2436759400102915e-08,
+      "absorption_l1_per_emitted": 2.2532277114087852e-08
+    },
+    "fully_ionized_Gamma": {
+      "absorption_rate": [
+        0.0,
+        0.0
+      ],
+      "incoming_rate": [
+        3.0,
+        3.0
+      ],
+      "Gamma": [
+        9.0,
+        6.0
+      ],
+      "outgoing_rate": [
+        2.0,
+        1.0
+      ]
+    },
+    "Gamma_definition": "sum_b F_in,b*(-expm1(-tau_b*(1-x)))/(N_H*(1-x)); neutral->0 limit sum_b F_in,b*tau_b/N_H"
+  }
+}

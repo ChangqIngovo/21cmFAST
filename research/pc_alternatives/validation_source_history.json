@@ -1,0 +1,283 @@
+{
+  "scope": "Source time interpolation and fresh-emission ledger; no production replacement or coupled reionization accuracy claim",
+  "implementation_sha256": "781741229fda1531e31a7e3805aa3ddba54d855fafa88dec20e8f9dc474adf88",
+  "validation_sha256": "99489619557d68b8ea428d6681505bb4b49f6b34cfa2a281c5131443a1f561b9",
+  "analytic": {
+    "exponential_quadrature": [
+      {
+        "intervals": 2,
+        "relative_integral_error": 0.08197670686932645,
+        "observed_order": null
+      },
+      {
+        "intervals": 4,
+        "relative_integral_error": 0.020747041268399213,
+        "observed_order": 1.9823084271893605
+      },
+      {
+        "intervals": 8,
+        "relative_integral_error": 0.005202916046949557,
+        "observed_order": 1.995513275042401
+      },
+      {
+        "intervals": 16,
+        "relative_integral_error": 0.0013017443752298963,
+        "observed_order": 1.9988742555777883
+      },
+      {
+        "intervals": 32,
+        "relative_integral_error": 0.0003254996425416934,
+        "observed_order": 1.9997183087703296
+      },
+      {
+        "intervals": 64,
+        "relative_integral_error": 8.137888381654079e-05,
+        "observed_order": 1.9999295612281713
+      }
+    ],
+    "random_piecewise_linear_with_jumps_cases": 64,
+    "maximum_partition_relative_error": 1.2851370389653238e-16,
+    "source_switch": {
+      "turnoff_time": 0.375,
+      "rate": 2.0,
+      "exact_emission": 0.75,
+      "before_checkpoint": 0.5,
+      "fresh_after_checkpoint": 0.25,
+      "final_emission": 0.75
+    },
+    "interpretation": "Second-order quadrature for a smooth source; subdivision exact within the declared interpolation up to rounding. No bound on unsampled source variability."
+  },
+  "native": {
+    "extraction": {
+      "intervals": 32,
+      "feedback_redshift": 8.0,
+      "start_redshift": 7.999999,
+      "end_redshift": 7.5,
+      "seconds": 13.276095014996827,
+      "threads": 4,
+      "clock": {
+        "integrated_seconds": 1808596998647720.0,
+        "quadrature_error_seconds": 20.07946030166652,
+        "definition": "Native dtdz matter+Lambda clock; not native radiation-inclusive hubble()",
+        "native_endpoint_approximation_seconds": 1941934363288442.2,
+        "native_hubble_integrated_seconds": 1806412109462592.5,
+        "native_hubble_quadrature_error_seconds": 20.05520315887069,
+        "dtdz_over_hubble_interval": 1.0012095186772068
+      },
+      "fixture_sha256": {
+        "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/frozen_native_step/previous_density.h5": "05756a5893bc66238d333eab0e1566ea8d60e543431a057d0c1e9d9cfb5d6922",
+        "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/frozen_native_step/spin.h5": "e146b71d7569644c7738be841ec48908f386fdb3712f4c397e40354dd59d5756",
+        "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/frozen_native_step/density.h5": "293d25d2c4b91b7655f041dcb1ce1f18329264eaf5e986e8fe1776b3707ecdc7",
+        "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/frozen_native_step/previous_ionized.h5": "d4e8dbb9fbc8a385c6405a0023ea77dcc1b0996a55b087a3082e27c5bec9e91a",
+        "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/frozen_native_step/initial.h5": "c40b6831c64812aae985a2c438d5f1de71e9948cde9f64e9ea94599114e1b3db",
+        "/workspace/scratch/40b418003e4a/validation_native_rates_grid32/spin_previous.h5": "6e2ad35e766d17a327d649356eb5616aef5aee9c496e6d2f74bd6f5dbd3e2f35"
+      },
+      "grid": 32,
+      "rate_shape": [
+        33,
+        32,
+        32,
+        32
+      ],
+      "source_unit": "effective photons per mean-nucleon cell per second; native SFRD includes density",
+      "policy": "Hold z8 Ts and ionization feedback for every sample; use actual native perturbed density at each sampled z. No ionization, chemistry or feedback evolution between samples.",
+      "model_choice": "Instantaneous SFRD integration; do not renormalize to legacy cumulative delta nion",
+      "native_source_sha256": {
+        "EmissivityFields.c": "25f6f3e692b795384728ba2a0d1248147574937d8ffde0080c5742ccc1f17047",
+        "scaling_relations.c": "2a8d2d96bfe69f09fe095d98162fe2b8c3a3e4b4713fdac525c69d9dff746510",
+        "Constants.c": "fd99ed35973fd37655bd290183275d3e6848f7967a1dc76ca20b820ad23d77c0",
+        "Constants.h": "8abec348c2ceb1b877e1e7d578cf57bd2a2b2b18ec5ea008ae28f0d85dc51a02",
+        "hmf.c": "35f25e29598c2c6484807741b6dbef4da6b01bfd80aa6c8945a1c27a5969684d"
+      }
+    },
+    "sample_file_sha256": "ca2a5a6e11b6a3ed95d58374598c71c56fecd6f82923154ab212b72a4f6b23c4",
+    "species": {
+      "acg": {
+        "rows": [
+          {
+            "intervals": 1,
+            "total_emission": 1782.246391259711,
+            "minimum_cell_emission": 0.003982247478886624,
+            "relative_total_difference_to_32": 0.0027466764167209945,
+            "atom_l1_difference_to_32_over_fine_total": 0.002804977831007425,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.0028077213391041788
+          },
+          {
+            "intervals": 2,
+            "total_emission": 1778.5813763679967,
+            "minimum_cell_emission": 0.003976967315747212,
+            "relative_total_difference_to_32": 0.0006846262312318885,
+            "atom_l1_difference_to_32_over_fine_total": 0.0007000899336111502,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.0007028287324494425
+          },
+          {
+            "intervals": 4,
+            "total_emission": 1777.6651976641601,
+            "minimum_cell_emission": 0.003975702266372604,
+            "relative_total_difference_to_32": 0.0001691558929100001,
+            "atom_l1_difference_to_32_over_fine_total": 0.00017299164538809832,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.00017573117261952906
+          },
+          {
+            "intervals": 8,
+            "total_emission": 1777.4361565109662,
+            "minimum_cell_emission": 0.003975413556719992,
+            "relative_total_difference_to_32": 4.0290290345579294e-05,
+            "atom_l1_difference_to_32_over_fine_total": 4.119994552279359e-05,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 4.3941982526893075e-05
+          },
+          {
+            "intervals": 16,
+            "total_emission": 1777.3788708963261,
+            "minimum_cell_emission": 0.003975355839483367,
+            "relative_total_difference_to_32": 8.059640325130957e-06,
+            "atom_l1_difference_to_32_over_fine_total": 8.260614920168432e-06,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 1.1014182817076324e-05
+          },
+          {
+            "intervals": 32,
+            "total_emission": 1777.3645459773588,
+            "minimum_cell_emission": 0.003975335443273781,
+            "relative_total_difference_to_32": 0.0,
+            "atom_l1_difference_to_32_over_fine_total": 0.0,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 2.7535457043198966e-06
+          }
+        ],
+        "simpson_32_total": 1777.3597710043698,
+        "trapezoid_32_total": 1777.3645459773588,
+        "simpson_vs_trapezoid32_total_fraction": -2.6865467750436522e-06,
+        "final_rule_difference_is_error_estimate_not_bound": true
+      },
+      "mcg": {
+        "rows": [
+          {
+            "intervals": 1,
+            "total_emission": 1048.538124647926,
+            "minimum_cell_emission": 0.008916811708825958,
+            "relative_total_difference_to_32": 0.0068892283107062635,
+            "atom_l1_difference_to_32_over_fine_total": 0.006933771127933528,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.0069516738382315235
+          },
+          {
+            "intervals": 2,
+            "total_emission": 1052.7676785552515,
+            "minimum_cell_emission": 0.008920133466236007,
+            "relative_total_difference_to_32": 0.00288325518863608,
+            "atom_l1_difference_to_32_over_fine_total": 0.0032228109326499325,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.0032426978929976044
+          },
+          {
+            "intervals": 4,
+            "total_emission": 1054.632857947095,
+            "minimum_cell_emission": 0.008919597099011224,
+            "relative_total_difference_to_32": 0.0011166720748415626,
+            "atom_l1_difference_to_32_over_fine_total": 0.0013284778515560947,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.001348412649038981
+          },
+          {
+            "intervals": 8,
+            "total_emission": 1055.5012612118644,
+            "minimum_cell_emission": 0.008918782446970393,
+            "relative_total_difference_to_32": 0.00029417395470676677,
+            "atom_l1_difference_to_32_over_fine_total": 0.0003638447138527403,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.0003837922145527588
+          },
+          {
+            "intervals": 16,
+            "total_emission": 1055.7600772219998,
+            "minimum_cell_emission": 0.008918451816512862,
+            "relative_total_difference_to_32": 4.9039360638047924e-05,
+            "atom_l1_difference_to_32_over_fine_total": 6.025966953457492e-05,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 8.034491269174675e-05
+          },
+          {
+            "intervals": 32,
+            "total_emission": 1055.8118535602525,
+            "minimum_cell_emission": 0.008918384870952846,
+            "relative_total_difference_to_32": 0.0,
+            "atom_l1_difference_to_32_over_fine_total": 0.0,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 2.0086228172959067e-05
+          }
+        ],
+        "simpson_32_total": 1055.82911233967,
+        "trapezoid_32_total": 1055.8118535602525,
+        "simpson_vs_trapezoid32_total_fraction": 1.6346453545867945e-05,
+        "final_rule_difference_is_error_estimate_not_bound": true
+      },
+      "total": {
+        "rows": [
+          {
+            "intervals": 1,
+            "total_emission": 2830.784515907637,
+            "minimum_cell_emission": 0.012899059187712583,
+            "relative_total_difference_to_32": 0.0008442409834999998,
+            "atom_l1_difference_to_32_over_fine_total": 0.0027963092234071533,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.002802013239514115
+          },
+          {
+            "intervals": 2,
+            "total_emission": 2831.3490549232483,
+            "minimum_cell_emission": 0.01289710078198322,
+            "relative_total_difference_to_32": 0.0006449808824686709,
+            "atom_l1_difference_to_32_over_fine_total": 0.0012259231385590183,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.001232621775935508
+          },
+          {
+            "intervals": 4,
+            "total_emission": 2832.2980556112557,
+            "minimum_cell_emission": 0.012895299365383828,
+            "relative_total_difference_to_32": 0.00031002091027554357,
+            "atom_l1_difference_to_32_over_fine_total": 0.0004955149330085159,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.0005027015300579989
+          },
+          {
+            "intervals": 8,
+            "total_emission": 2832.93741772283,
+            "minimum_cell_emission": 0.012894196003690385,
+            "relative_total_difference_to_32": 8.435119494154542e-05,
+            "atom_l1_difference_to_32_over_fine_total": 0.00013497092452472093,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 0.00014231560430169517
+          },
+          {
+            "intervals": 16,
+            "total_emission": 2833.138948118326,
+            "minimum_cell_emission": 0.012893807655996228,
+            "relative_total_difference_to_32": 1.3218880155707602e-05,
+            "atom_l1_difference_to_32_over_fine_total": 2.262252395589197e-05,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 3.0163232366492644e-05
+          },
+          {
+            "intervals": 32,
+            "total_emission": 2833.1763995376114,
+            "minimum_cell_emission": 0.012893720314226628,
+            "relative_total_difference_to_32": 0.0,
+            "atom_l1_difference_to_32_over_fine_total": 0.0,
+            "atom_l1_difference_to_simpson32_over_simpson_total": 7.540808091639116e-06
+          }
+        ],
+        "simpson_32_total": 2833.18888334404,
+        "trapezoid_32_total": 2833.1763995376114,
+        "simpson_vs_trapezoid32_total_fraction": 4.406293385272875e-06,
+        "final_rule_difference_is_error_estimate_not_bound": true
+      }
+    },
+    "legacy_cumulative_delta": 5669.407905562313,
+    "instantaneous_simpson32_over_legacy_delta": 0.4997327640800673,
+    "source_models_differ": true,
+    "start_offset_note": "New integral starts at z=7.999999, the actual left evaluation; older legacy delta is z=8 to 7.5. This 107-year omission is reported, not silently integrated with the z=8 timestamp.",
+    "persistent_ledger": {
+      "checkpoint_after_interval": 13,
+      "final_time_seconds": 1808596998647720.0,
+      "relative_l1_partition_error": 4.054684704909546e-17,
+      "repeat_final_advance_emission": 0.0,
+      "changed_gas_rejected": true
+    },
+    "limitations": [
+      "Holding feedback fixed isolates source quadrature; it does not establish chronological feedback accuracy",
+      "The finest source sampling and Simpson rule are numerical references, not rigorous bounds on unsampled variability",
+      "SourceLedger freezes transport atoms and rejects density changes; conservative gas advection is still required for evolving density",
+      "Effective stellar-yield photon units are retained; a physical H/He chemistry conversion is not implemented",
+      "The source integral cannot be used as fresh cumulative emission repeatedly; transport must also preserve photons in flight"
+    ]
+  }
+}

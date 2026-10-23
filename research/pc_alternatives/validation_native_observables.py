@@ -97,11 +97,17 @@ def main():
             audits[str(count)] = run['audit']
             if args.legacy_maps is not None:
                 legacy_file = args.legacy_maps/f'event_K{count}.npz'
+                legacy_manifest_file = args.legacy_maps/'validation_map_manifest.json'
+                legacy_manifest = (json.loads(legacy_manifest_file.read_text())
+                                   if legacy_manifest_file.exists() else {})
                 with np.load(legacy_file) as legacy:
                     delta = run['absorbed']-legacy['absorbed']
                     audits[str(count)]['numerical_fix_regression'] = dict(
                         legacy_map_sha256=digest(legacy_file),
-                        legacy_solver_hashes=old['source_files_sha256'],
+                        # A caller may supply maps from any revision. Do not
+                        # silently attach the original benchmark's provenance.
+                        legacy_solver_hashes=legacy_manifest.get('source_files_sha256'),
+                        legacy_provenance='supplied map manifest' if legacy_manifest else 'unavailable; map checksum only',
                         maximum_absorbed_change=float(np.max(np.abs(delta))),
                         absorption_L1_over_emitted=float(np.abs(delta).sum()/fields['source'].sum()))
         map_manifest.write_text(json.dumps(dict(source_files_sha256=hashes,

@@ -1,0 +1,3498 @@
+{
+  "scope": "Fixed native-derived 32^3 rate fixture: angular self-comparison only",
+  "input_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+  "map_provenance": {
+    "source_files_sha256": {
+      "event_front.py": "79315f6623d091fd710bf21a58ceda543b8eae9562a67e412d074af1b9a7d96e",
+      "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+      "characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26"
+    },
+    "input_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+    "audits": {
+      "48": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.760440175334,
+        "escaped": 0.0,
+        "retained": 0.17777070904393372,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 2.842170943040401e-14,
+        "per_angle_ledger_max": 5.115907697472721e-12,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16781,
+        "rays_materialized": 805488,
+        "queries": 10355929,
+        "assignments": 2707989,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 49.1630859375,
+        "angles": 48,
+        "n": 32,
+        "workers": 1,
+        "seconds": 1.0721505170004093,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 2740757,
+        "ray_allocated_bytes": 51642368,
+        "per_source_relative_ledger_max": 5.2395949581906744e-15,
+        "per_angle_relative_ledger_max": 9.553910430936733e-15,
+        "numerical_fix_regression": {
+          "legacy_map_sha256": "b0a9c1a9a161591cbf02799bd3087c1c328860dfcc38721eb8781563b3de8a0c",
+          "legacy_solver_hashes": {
+            "event_front.py": "1fea8965df8f480d06857a01b15b08e8ad03741420552daa7eda5dac6e374688",
+            "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+            "characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26"
+          },
+          "legacy_provenance": "supplied map manifest",
+          "maximum_absorbed_change": 0.0,
+          "absorption_L1_over_emitted": 0.0
+        }
+      },
+      "192": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.855919622823,
+        "escaped": 0.0,
+        "retained": 0.08229126155177682,
+        "ledger_residual": 3.637978807091713e-12,
+        "per_source_ledger_max": 8.171241461241152e-14,
+        "per_angle_ledger_max": 9.947598300641403e-13,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16788,
+        "rays_materialized": 3223296,
+        "queries": 41482739,
+        "assignments": 10834450,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 196.734375,
+        "angles": 192,
+        "n": 32,
+        "workers": 1,
+        "seconds": 16.49921787600033,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 10867218,
+        "ray_allocated_bytes": 206307328,
+        "per_source_relative_ledger_max": 2.0323723569400275e-14,
+        "per_angle_relative_ledger_max": 7.430819224061904e-15,
+        "numerical_fix_regression": {
+          "legacy_map_sha256": "b20579e071e7d52063578a3f8553910dac87e9c892b9a7a6279b91f1dd6b4224",
+          "legacy_solver_hashes": {
+            "event_front.py": "1fea8965df8f480d06857a01b15b08e8ad03741420552daa7eda5dac6e374688",
+            "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+            "characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26"
+          },
+          "legacy_provenance": "supplied map manifest",
+          "maximum_absorbed_change": 0.0,
+          "absorption_L1_over_emitted": 0.0
+        }
+      },
+      "768": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.77027211267,
+        "escaped": 0.0,
+        "retained": 0.1679387717052252,
+        "ledger_residual": 3.637978807091713e-12,
+        "per_source_ledger_max": 1.7408297026122455e-13,
+        "per_angle_ledger_max": 3.339550858072471e-13,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16770,
+        "rays_materialized": 12879360,
+        "queries": 165639859,
+        "assignments": 43257099,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 786.09375,
+        "angles": 768,
+        "n": 32,
+        "workers": 1,
+        "seconds": 29.529516110997065,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 43289867,
+        "ray_allocated_bytes": 824442880,
+        "per_source_relative_ledger_max": 7.732523218570491e-14,
+        "per_angle_relative_ledger_max": 9.978528672311699e-15,
+        "numerical_fix_regression": {
+          "legacy_map_sha256": "0e70a5949aa2054d12e31096478c80178d36e4336b1c5ed5dc263195adedfca4",
+          "legacy_solver_hashes": {
+            "event_front.py": "1fea8965df8f480d06857a01b15b08e8ad03741420552daa7eda5dac6e374688",
+            "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+            "characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26"
+          },
+          "legacy_provenance": "supplied map manifest",
+          "maximum_absorbed_change": 0.0,
+          "absorption_L1_over_emitted": 0.0
+        }
+      }
+    }
+  },
+  "spin_sha256": "e146b71d7569644c7738be841ec48908f386fdb3712f4c397e40354dd59d5756",
+  "source_files_sha256": {
+    "event_front.py": "79315f6623d091fd710bf21a58ceda543b8eae9562a67e412d074af1b9a7d96e",
+    "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+    "characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26"
+  },
+  "redshift": 7.5,
+  "box_cMpc": 200.0,
+  "reference": "K768 original Fibonacci directions; finite, not an RT truth field",
+  "fields": {
+    "xHI": "neutral fraction",
+    "neutral_density": "rho*xHI",
+    "frozen_brightness_proxy": "rho*xHI*(1-Tcmb/Ts), fixed Ts, no RSD, no mK prefactor"
+  },
+  "rotation_seed": 20261023,
+  "definitions": {
+    "power_summary": "sum Nmodes*abs(Pcandidate-Pref) / sum Nmodes*Pref",
+    "residual_power": "P(candidate-reference) / P(reference), includes phase differences",
+    "shell_limit": "0<k<=Cartesian Nyquist; all-mode residual also includes cube corners"
+  },
+  "pairs": [
+    {
+      "candidate_K": 48,
+      "reference_K": 192,
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19153853257282877,
+          "reference_mean": 0.19153759991260672,
+          "mean_abs_difference": 0.004545084608153746,
+          "max_abs_difference": 0.2272496224564572,
+          "rms_difference": 0.014522230404241715,
+          "correlation": 0.9980339995793515,
+          "all_nonzero_modes_residual_power_over_reference": 0.003932534781586203,
+          "shell_weighted_absolute_power_difference": 0.0018104618786079028,
+          "shell_weighted_residual_power_over_reference": 0.002632541019856817,
+          "max_shell_relative_auto_power_difference": 0.010796852607956153,
+          "min_shell_cross_coherence": 0.9874616130790251,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9892031473920438,
+              "cross_coherence": 0.9999714209856365,
+              "residual_power_over_reference": 8.615003058087036e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0028199013538752,
+              "cross_coherence": 0.9999758827773874,
+              "residual_power_over_reference": 5.028756845257759e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9971454712343572,
+              "cross_coherence": 0.9999685263827102,
+              "residual_power_over_reference": 6.489732430055849e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9992567310954751,
+              "cross_coherence": 0.9999411826496277,
+              "residual_power_over_reference": 0.00011772913902776112
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9992497128987208,
+              "cross_coherence": 0.9998424793739583,
+              "residual_power_over_reference": 0.00031506382971604313
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9977472558074699,
+              "cross_coherence": 0.9997498498468985,
+              "residual_power_over_reference": 0.000501006609330451
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9984738740052188,
+              "cross_coherence": 0.9993763654221562,
+              "residual_power_over_reference": 0.0012468997572160222
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9994683728294289,
+              "cross_coherence": 0.9990683967742039,
+              "residual_power_over_reference": 0.001862781795813188
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0020412601972015,
+              "cross_coherence": 0.998338238794603,
+              "residual_power_over_reference": 0.003327953392508165
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0019716594606913,
+              "cross_coherence": 0.9970783656255482,
+              "residual_power_over_reference": 0.005849997283681588
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.002621026637177,
+              "cross_coherence": 0.9948722738013555,
+              "residual_power_over_reference": 0.010270598707281234
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0048857440050551,
+              "cross_coherence": 0.9874616130790251,
+              "residual_power_over_reference": 0.025143911638382282
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.16737012035966337,
+          "reference_mean": 0.16736720655816523,
+          "mean_abs_difference": 0.004094055464004693,
+          "max_abs_difference": 0.1815355333311503,
+          "rms_difference": 0.012827774980604643,
+          "correlation": 0.9978580895977138,
+          "all_nonzero_modes_residual_power_over_reference": 0.004284525731585914,
+          "shell_weighted_absolute_power_difference": 0.0019523419735014743,
+          "shell_weighted_residual_power_over_reference": 0.0028703034387174858,
+          "max_shell_relative_auto_power_difference": 0.009645875610501453,
+          "min_shell_cross_coherence": 0.9865264131178758,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9903541243894985,
+              "cross_coherence": 0.9999591286355832,
+              "residual_power_over_reference": 0.00010472112847561895
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.002655828076714,
+              "cross_coherence": 0.9999750558951206,
+              "residual_power_over_reference": 5.171543107375155e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9967624485381459,
+              "cross_coherence": 0.9999695216295578,
+              "residual_power_over_reference": 6.348267096177097e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9994191043111695,
+              "cross_coherence": 0.9999378278938508,
+              "residual_power_over_reference": 0.00012439247600512328
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9985235495917772,
+              "cross_coherence": 0.9998272364745098,
+              "residual_power_over_reference": 0.0003458172591203785
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9977680083503807,
+              "cross_coherence": 0.9997228540273995,
+              "residual_power_over_reference": 0.0005549198506842125
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9992042451612935,
+              "cross_coherence": 0.99930612362339,
+              "residual_power_over_reference": 0.0013873588573054014
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9985603973761941,
+              "cross_coherence": 0.9989517181060088,
+              "residual_power_over_reference": 0.0020955726223001146
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.001501255275864,
+              "cross_coherence": 0.9980345259843998,
+              "residual_power_over_reference": 0.003934460622148169
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0032498703386914,
+              "cross_coherence": 0.9965392948076867,
+              "residual_power_over_reference": 0.0069352842374018845
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.0029653536672676,
+              "cross_coherence": 0.9941101367732337,
+              "residual_power_over_reference": 0.011799374129554882
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0059269880032282,
+              "cross_coherence": 0.9865264131178758,
+              "residual_power_over_reference": 0.027035669938821633
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.16393978391266106,
+          "reference_mean": 0.16393691415213713,
+          "mean_abs_difference": 0.004011780328866484,
+          "max_abs_difference": 0.17788709402932096,
+          "rms_difference": 0.01256971352544476,
+          "correlation": 0.9978559273807983,
+          "all_nonzero_modes_residual_power_over_reference": 0.004288851718091174,
+          "shell_weighted_absolute_power_difference": 0.0019536033746841088,
+          "shell_weighted_residual_power_over_reference": 0.0028732336445373005,
+          "max_shell_relative_auto_power_difference": 0.009662712312770716,
+          "min_shell_cross_coherence": 0.986522499446192,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9903372876872293,
+              "cross_coherence": 0.9999589961502036,
+              "residual_power_over_reference": 0.00010506599096214651
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0026560756028018,
+              "cross_coherence": 0.9999750175687858,
+              "residual_power_over_reference": 5.179251969487647e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9967591352272496,
+              "cross_coherence": 0.9999694752959907,
+              "residual_power_over_reference": 6.358046598877414e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9994171838256755,
+              "cross_coherence": 0.9999377519228196,
+              "residual_power_over_reference": 0.0001245448133153311
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9985210139594236,
+              "cross_coherence": 0.9998270411719091,
+              "residual_power_over_reference": 0.00034620901252975945
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9977697765602234,
+              "cross_coherence": 0.9997225561708563,
+              "residual_power_over_reference": 0.0005555134138731605
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9992075776921422,
+              "cross_coherence": 0.9993055284032125,
+              "residual_power_over_reference": 0.0013885498152332763
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9985569421210032,
+              "cross_coherence": 0.9989509825567209,
+              "residual_power_over_reference": 0.0020970415271349156
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.001499137149494,
+              "cross_coherence": 0.9980331757682273,
+              "residual_power_over_reference": 0.003937157330874685
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0032554818922477,
+              "cross_coherence": 0.9965372284863706,
+              "residual_power_over_reference": 0.006939452093945277
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.002968041108143,
+              "cross_coherence": 0.9941074192005398,
+              "residual_power_over_reference": 0.011804837117629646
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0059304921720487,
+              "cross_coherence": 0.986522499446192,
+              "residual_power_over_reference": 0.027043577873953367
+            }
+          ]
+        }
+      }
+    },
+    {
+      "candidate_K": 192,
+      "reference_K": 768,
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19153759991260672,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.0012896755682511025,
+          "max_abs_difference": 0.058309715670185724,
+          "rms_difference": 0.0041377517557413595,
+          "correlation": 0.9998403825746758,
+          "all_nonzero_modes_residual_power_over_reference": 0.00031922178623532447,
+          "shell_weighted_absolute_power_difference": 0.0007428379835221938,
+          "shell_weighted_residual_power_over_reference": 0.00020154470959087334,
+          "max_shell_relative_auto_power_difference": 0.0032901585689648627,
+          "min_shell_cross_coherence": 0.9989452423969951,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0032901585689649,
+              "cross_coherence": 0.9999987237426473,
+              "residual_power_over_reference": 5.258553277628626e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0001186222784353,
+              "cross_coherence": 0.9999973053052905,
+              "residual_power_over_reference": 5.393226663070125e-06
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0003365173773309,
+              "cross_coherence": 0.9999979116696682,
+              "residual_power_over_reference": 4.2056695880850815e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 1.0006617091433418,
+              "cross_coherence": 0.9999930636734582,
+              "residual_power_over_reference": 1.3986670701779422e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.997699147060289,
+              "cross_coherence": 0.9999897337664548,
+              "residual_power_over_reference": 2.1833838216919247e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9994469553753373,
+              "cross_coherence": 0.9999793911350169,
+              "residual_power_over_reference": 4.128281650870031e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9979517126505363,
+              "cross_coherence": 0.9999604969029402,
+              "residual_power_over_reference": 7.997518478673927e-05
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9998372814721991,
+              "cross_coherence": 0.9999412468682953,
+              "residual_power_over_reference": 0.00011750332266580113
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.000030486937272,
+              "cross_coherence": 0.999889047013615,
+              "residual_power_over_reference": 0.0002219095877209369
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0001124428783361,
+              "cross_coherence": 0.9997908256681947,
+              "residual_power_over_reference": 0.0004183753437860889
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.0011211236361095,
+              "cross_coherence": 0.9995864006821982,
+              "residual_power_over_reference": 0.0008279762552128076
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.001665446746723,
+              "cross_coherence": 0.9989452423969951,
+              "residual_power_over_reference": 0.002111963969221025
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.16736720655816523,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.0011663801787157293,
+          "max_abs_difference": 0.05528144824665698,
+          "rms_difference": 0.003671435359022675,
+          "correlation": 0.9998245201649881,
+          "all_nonzero_modes_residual_power_over_reference": 0.00035094986558932735,
+          "shell_weighted_absolute_power_difference": 0.0007315187656025289,
+          "shell_weighted_residual_power_over_reference": 0.0002213754649902255,
+          "max_shell_relative_auto_power_difference": 0.0028457186904089493,
+          "min_shell_cross_coherence": 0.9988515566589447,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.002845718690409,
+              "cross_coherence": 0.9999990417418506,
+              "residual_power_over_reference": 3.940894504984337e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0001617876092785,
+              "cross_coherence": 0.9999972828095031,
+              "residual_power_over_reference": 5.4413638619330205e-06
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0002605807132403,
+              "cross_coherence": 0.9999978490582813,
+              "residual_power_over_reference": 4.319417260396896e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 1.0005628517414684,
+              "cross_coherence": 0.9999924480351614,
+              "residual_power_over_reference": 1.518735795551789e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9978486800269398,
+              "cross_coherence": 0.9999888318083722,
+              "residual_power_over_reference": 2.3470634635117418e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9997744074445989,
+              "cross_coherence": 0.9999777776573312,
+              "residual_power_over_reference": 4.445239629530654e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.997666332780018,
+              "cross_coherence": 0.9999557442124041,
+              "residual_power_over_reference": 8.977132822565746e-05
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9999238803685222,
+              "cross_coherence": 0.9999328883869747,
+              "residual_power_over_reference": 0.00013421956604695246
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0001869488544368,
+              "cross_coherence": 0.9998694052513785,
+              "residual_power_over_reference": 0.0002612226472927263
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0003637477314873,
+              "cross_coherence": 0.9997515481495356,
+              "residual_power_over_reference": 0.0004970271385971824
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.0012794726898588,
+              "cross_coherence": 0.9995200528907723,
+              "residual_power_over_reference": 0.0009609171023554781
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.001284244475713,
+              "cross_coherence": 0.9988515566589447,
+              "residual_power_over_reference": 0.002298773147324499
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.16393691415213713,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.0011429440903992698,
+          "max_abs_difference": 0.054187263326602425,
+          "rms_difference": 0.0035975801261926782,
+          "correlation": 0.9998243425362525,
+          "all_nonzero_modes_residual_power_over_reference": 0.0003513051274710762,
+          "shell_weighted_absolute_power_difference": 0.0007318511409952633,
+          "shell_weighted_residual_power_over_reference": 0.0002216018884190012,
+          "max_shell_relative_auto_power_difference": 0.0028470741917745457,
+          "min_shell_cross_coherence": 0.9988512063532593,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0028470741917745,
+              "cross_coherence": 0.9999990391670706,
+              "residual_power_over_reference": 3.9479777253945205e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0001623561075303,
+              "cross_coherence": 0.9999972793338113,
+              "residual_power_over_reference": 5.448363417921004e-06
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0002605091930448,
+              "cross_coherence": 0.9999978453878432,
+              "residual_power_over_reference": 4.326749623772422e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 1.0005623794728025,
+              "cross_coherence": 0.9999924389713674,
+              "residual_power_over_reference": 1.5205354277515321e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9978482182292809,
+              "cross_coherence": 0.9999888200771639,
+              "residual_power_over_reference": 2.3494564225127132e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9997750449606629,
+              "cross_coherence": 0.9999777562019867,
+              "residual_power_over_reference": 4.449524450612626e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9976646672839107,
+              "cross_coherence": 0.9999557086393108,
+              "residual_power_over_reference": 8.984426495497166e-05
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9999239375226021,
+              "cross_coherence": 0.9999328392117803,
+              "residual_power_over_reference": 0.00013431791435641194
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0001875501719857,
+              "cross_coherence": 0.9998693189362717,
+              "residual_power_over_reference": 0.0002613954285057587
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0003646647997972,
+              "cross_coherence": 0.999751400938662,
+              "residual_power_over_reference": 0.0004973220087831885
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.0012801960270064,
+              "cross_coherence": 0.9995198249936156,
+              "residual_power_over_reference": 0.0009613739977024889
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.001284262692689,
+              "cross_coherence": 0.9988512063532593,
+              "residual_power_over_reference": 0.002299474241028902
+            }
+          ]
+        }
+      }
+    },
+    {
+      "candidate_K": 48,
+      "reference_K": 768,
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19153853257282877,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.0043598806514732955,
+          "max_abs_difference": 0.21938973067338918,
+          "rms_difference": 0.014029030505072697,
+          "correlation": 0.9981653534246255,
+          "all_nonzero_modes_residual_power_over_reference": 0.003669605333315052,
+          "shell_weighted_absolute_power_difference": 0.0022382258046334067,
+          "shell_weighted_residual_power_over_reference": 0.002459439085304444,
+          "max_shell_relative_auto_power_difference": 0.007542217396117379,
+          "min_shell_cross_coherence": 0.9884195496693462,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9924577826038826,
+              "cross_coherence": 0.999965156191218,
+              "residual_power_over_reference": 8.369946546334132e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0029388581354342,
+              "cross_coherence": 0.9999818215217543,
+              "residual_power_over_reference": 3.85663960436753e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9974810280131544,
+              "cross_coherence": 0.9999622702625746,
+              "residual_power_over_reference": 7.695268082079296e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9999179484109868,
+              "cross_coherence": 0.9999435489305382,
+              "residual_power_over_reference": 0.00011289919011361551
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9969505862592923,
+              "cross_coherence": 0.9998493957797191,
+              "residual_power_over_reference": 0.00030307711767764184
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9971954570508736,
+              "cross_coherence": 0.9997747188957805,
+              "residual_power_over_reference": 0.0004518990818087371
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.996428712600324,
+              "cross_coherence": 0.9993892576533293,
+              "residual_power_over_reference": 0.0012224958357721462
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9993057408072186,
+              "cross_coherence": 0.9991007873326919,
+              "residual_power_over_reference": 0.0017979214803675145
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.002071809366245,
+              "cross_coherence": 0.9984809834552485,
+              "residual_power_over_reference": 0.0030422505621624653
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0020843240380923,
+              "cross_coherence": 0.9972487033692277,
+              "residual_power_over_reference": 0.00550940984142285
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.0037450887682002,
+              "cross_coherence": 0.995200161461774,
+              "residual_power_over_reference": 0.009621135970897676
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0065593276982367,
+              "cross_coherence": 0.9884195496693462,
+              "residual_power_over_reference": 0.023247457537408932
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.16737012035966337,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.0039296365339340205,
+          "max_abs_difference": 0.1934998182475953,
+          "rms_difference": 0.01240962330677234,
+          "correlation": 0.9979955125694472,
+          "all_nonzero_modes_residual_power_over_reference": 0.004009504684966245,
+          "shell_weighted_absolute_power_difference": 0.0024093411002166438,
+          "shell_weighted_residual_power_over_reference": 0.0026897977205236393,
+          "max_shell_relative_auto_power_difference": 0.007218844180542083,
+          "min_shell_cross_coherence": 0.987538296324744,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9931723936313973,
+              "cross_coherence": 0.999956601676464,
+              "residual_power_over_reference": 9.819384030940543e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0028180453660676,
+              "cross_coherence": 0.9999809837977175,
+              "residual_power_over_reference": 4.0068507827635734e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9970221856079172,
+              "cross_coherence": 0.9999628129521945,
+              "residual_power_over_reference": 7.648342839407834e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9999816290944878,
+              "cross_coherence": 0.9999389992386419,
+              "residual_power_over_reference": 0.0001220004864448633
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9963754059359695,
+              "cross_coherence": 0.9998308174102554,
+              "residual_power_over_reference": 0.00034104179099906344
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9975429193156795,
+              "cross_coherence": 0.9997449872708587,
+              "residual_power_over_reference": 0.0005109096545393889
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9968724349682938,
+              "cross_coherence": 0.9993151236375,
+              "residual_power_over_reference": 0.0013700582995528053
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9984843873267374,
+              "cross_coherence": 0.998983645737011,
+              "residual_power_over_reference": 0.002031742248514171
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0016884847882548,
+              "cross_coherence": 0.998199264316557,
+              "residual_power_over_reference": 0.003605222743436605
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.003614800203142,
+              "cross_coherence": 0.9967363776173563,
+              "residual_power_over_reference": 0.00654229227031299
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.0042486204461594,
+              "cross_coherence": 0.9944731699339017,
+              "residual_power_over_reference": 0.01108161978030958
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.007218844180542,
+              "cross_coherence": 0.987538296324744,
+              "residual_power_over_reference": 0.025026185796379035
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.16393978391266106,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.0038506814623715216,
+          "max_abs_difference": 0.18958513840534938,
+          "rms_difference": 0.01216006377744546,
+          "correlation": 0.9979934593416812,
+          "all_nonzero_modes_residual_power_over_reference": 0.0040136126944830455,
+          "shell_weighted_absolute_power_difference": 0.00241121568037713,
+          "shell_weighted_residual_power_over_reference": 0.0026925834942800415,
+          "max_shell_relative_auto_power_difference": 0.007222371174583575,
+          "min_shell_cross_coherence": 0.9875345454396346,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9931568514201556,
+              "cross_coherence": 0.99995647242324,
+              "residual_power_over_reference": 9.850417623149351e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0028188629404284,
+              "cross_coherence": 0.9999809540359721,
+              "residual_power_over_reference": 4.0129280397519156e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9970188001452277,
+              "cross_coherence": 0.9999627525232545,
+              "residual_power_over_reference": 7.660903470888038e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9999792355346252,
+              "cross_coherence": 0.99993891997427,
+              "residual_power_over_reference": 0.0001221588909505849
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9963724146439058,
+              "cross_coherence": 0.9998306085875195,
+              "residual_power_over_reference": 0.00034146360940652337
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.997545323220888,
+              "cross_coherence": 0.9997447008353422,
+              "residual_power_over_reference": 0.000511479478515958
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9968740955457934,
+              "cross_coherence": 0.9993145222740275,
+              "residual_power_over_reference": 0.0013712576820973643
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9984809894061627,
+              "cross_coherence": 0.998982911707111,
+              "residual_power_over_reference": 0.0020332083175669423
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.00168696848491,
+              "cross_coherence": 0.998198009685578,
+              "residual_power_over_reference": 0.0036077301149295368
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0036213338516975,
+              "cross_coherence": 0.9967343762681842,
+              "residual_power_over_reference": 0.006546335282164838
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 1.004252036809584,
+              "cross_coherence": 0.9944705557787246,
+              "residual_power_over_reference": 0.011086885273288941
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0072223711745836,
+              "cross_coherence": 0.9875345454396346,
+              "residual_power_over_reference": 0.025033771067646635
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "rotations": [
+    {
+      "K": 48,
+      "rotation_index": 0,
+      "matrix": [
+        [
+          0.030761333433392962,
+          0.973271493356767,
+          -0.22758809411849418
+        ],
+        [
+          0.256441463007526,
+          0.21238940356295014,
+          0.9429361151768101
+        ],
+        [
+          0.9660701405260177,
+          -0.08736899606418325,
+          -0.24305378439920955
+        ]
+      ],
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.92993589645,
+        "escaped": 0.0,
+        "retained": 0.008274987928441084,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 1.7763568394002505e-14,
+        "per_angle_ledger_max": 5.08629466669519e-12,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16769,
+        "rays_materialized": 804912,
+        "queries": 10334823,
+        "assignments": 2702201,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 49.1279296875,
+        "angles": 48,
+        "n": 32,
+        "workers": 1,
+        "seconds": 4.222357478000049,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 2734969,
+        "ray_allocated_bytes": 51642368,
+        "per_source_relative_ledger_max": 5.090025965589466e-15,
+        "per_angle_relative_ledger_max": 9.498608369139006e-15
+      },
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19152232300438968,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.004399250917820908,
+          "max_abs_difference": 0.24504692944280915,
+          "rms_difference": 0.014392544320642854,
+          "correlation": 0.998068054553731,
+          "all_nonzero_modes_residual_power_over_reference": 0.0038622326777904316,
+          "shell_weighted_absolute_power_difference": 0.0029190708953104327,
+          "shell_weighted_residual_power_over_reference": 0.0025706089650065584,
+          "max_shell_relative_auto_power_difference": 0.006778531478957905,
+          "min_shell_cross_coherence": 0.9881669455224316,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.006778531478958,
+              "cross_coherence": 0.9999588574738607,
+              "residual_power_over_reference": 9.401182067947401e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.004246256787134,
+              "cross_coherence": 0.9999869741818266,
+              "residual_power_over_reference": 3.060501785162509e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0039131587367833,
+              "cross_coherence": 0.9999784847222063,
+              "residual_power_over_reference": 4.6935396992294734e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9996792298696072,
+              "cross_coherence": 0.9999466608355019,
+              "residual_power_over_reference": 0.00010668694550942508
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9943994437054067,
+              "cross_coherence": 0.9997819376737606,
+              "residual_power_over_reference": 0.00044276526080189833
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9953832048566023,
+              "cross_coherence": 0.9997009426674651,
+              "residual_power_over_reference": 0.0006020734170681521
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9937547665281437,
+              "cross_coherence": 0.9994144233004483,
+              "residual_power_over_reference": 0.0011772719106531173
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9993751319370271,
+              "cross_coherence": 0.9991168914697379,
+              "residual_power_over_reference": 0.001765762793510175
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0019407170474186,
+              "cross_coherence": 0.998363722793121,
+              "residual_power_over_reference": 0.0032766691086955533
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 0.9971030519786932,
+              "cross_coherence": 0.9970666805943558,
+              "residual_power_over_reference": 0.005860236095663389
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9974963726321789,
+              "cross_coherence": 0.9948654807900873,
+              "residual_power_over_reference": 0.010257744443151745
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 0.9988486076047202,
+              "cross_coherence": 0.9881669455224316,
+              "residual_power_over_reference": 0.02365281215920594
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.1673649477607524,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.0039546726716851235,
+          "max_abs_difference": 0.1796099944950551,
+          "rms_difference": 0.012612132925782359,
+          "correlation": 0.9979284274158227,
+          "all_nonzero_modes_residual_power_over_reference": 0.004141432067589804,
+          "shell_weighted_absolute_power_difference": 0.0027778769055655027,
+          "shell_weighted_residual_power_over_reference": 0.002750529220251783,
+          "max_shell_relative_auto_power_difference": 0.0072303269173503715,
+          "min_shell_cross_coherence": 0.9875095907165947,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0042405274844182,
+              "cross_coherence": 0.999956786167921,
+              "residual_power_over_reference": 9.109673158221699e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0038642836814466,
+              "cross_coherence": 0.9999864623050095,
+              "residual_power_over_reference": 3.085362948267889e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0041402131211,
+              "cross_coherence": 0.9999810319589338,
+              "residual_power_over_reference": 4.229102569592547e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.999441875975288,
+              "cross_coherence": 0.9999464980011735,
+              "residual_power_over_reference": 0.000107052030080978
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9939247387457092,
+              "cross_coherence": 0.9997703537790077,
+              "residual_power_over_reference": 0.00046715049127593155
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.997079224927879,
+              "cross_coherence": 0.9996847367022995,
+              "residual_power_over_reference": 0.000631740960932113
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9927696730826496,
+              "cross_coherence": 0.9993638757068773,
+              "residual_power_over_reference": 0.0012807577251596563
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.999698325570639,
+              "cross_coherence": 0.9990212225457661,
+              "residual_power_over_reference": 0.0019572823693635097
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0016804020212937,
+              "cross_coherence": 0.9981306708507464,
+              "residual_power_over_reference": 0.003742503549697023
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 0.9972957738243514,
+              "cross_coherence": 0.9965551186678099,
+              "residual_power_over_reference": 0.006882271305548584
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9979188110112318,
+              "cross_coherence": 0.9941877919040394,
+              "residual_power_over_reference": 0.011613397553364093
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 0.9997751637045461,
+              "cross_coherence": 0.9875095907165947,
+              "residual_power_over_reference": 0.024978022750849944
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.16393471792567135,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.003875211562664865,
+          "max_abs_difference": 0.17599202036874334,
+          "rms_difference": 0.012358401742999,
+          "correlation": 0.9979263373807682,
+          "all_nonzero_modes_residual_power_over_reference": 0.004145608731290926,
+          "shell_weighted_absolute_power_difference": 0.0027785856560345584,
+          "shell_weighted_residual_power_over_reference": 0.0027533263895055,
+          "max_shell_relative_auto_power_difference": 0.0072378464615937554,
+          "min_shell_cross_coherence": 0.9875059348793281,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0042290716857478,
+              "cross_coherence": 0.999956673351981,
+              "residual_power_over_reference": 9.129816632599485e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.003866023512925,
+              "cross_coherence": 0.999986441100269,
+              "residual_power_over_reference": 3.0899497012442944e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0041410306386187,
+              "cross_coherence": 0.9999810093521524,
+              "residual_power_over_reference": 4.233803552997144e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9994411228851185,
+              "cross_coherence": 0.999946434335841,
+              "residual_power_over_reference": 0.00010717949524544106
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.993921007854681,
+              "cross_coherence": 0.9997701324441505,
+              "residual_power_over_reference": 0.0004676023425284167
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9970821143408716,
+              "cross_coherence": 0.9996844516528784,
+              "residual_power_over_reference": 0.000632306912850933
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9927621535384062,
+              "cross_coherence": 0.9993633602534384,
+              "residual_power_over_reference": 0.001281807440708921
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9996979027940087,
+              "cross_coherence": 0.999020548316256,
+              "residual_power_over_reference": 0.0019586302746480897
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0016805771610233,
+              "cross_coherence": 0.9981294117101016,
+              "residual_power_over_reference": 0.0037450244202748956
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 0.9972977691348731,
+              "cross_coherence": 0.9965529708815329,
+              "residual_power_over_reference": 0.006886565250909005
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9979203631517888,
+              "cross_coherence": 0.9941850410986136,
+              "residual_power_over_reference": 0.011618900854254304
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 0.9997772866881918,
+              "cross_coherence": 0.9875059348793281,
+              "residual_power_over_reference": 0.02498535989346149
+            }
+          ]
+        }
+      }
+    },
+    {
+      "K": 48,
+      "rotation_index": 1,
+      "matrix": [
+        [
+          -0.3745199866592337,
+          -0.7726398628985732,
+          0.5126035718299681
+        ],
+        [
+          0.6300415387669708,
+          -0.6176661608708807,
+          -0.4706762933728178
+        ],
+        [
+          0.6802811470420996,
+          0.1466838640583933,
+          0.7181235304625407
+        ]
+      ],
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.88687185257,
+        "escaped": 0.0,
+        "retained": 0.051339031809389035,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 1.7763568394002505e-14,
+        "per_angle_ledger_max": 7.73070496506989e-12,
+        "independent_absorption_ledger": 3.637978807091713e-12,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16789,
+        "rays_materialized": 805872,
+        "queries": 10344753,
+        "assignments": 2709577,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 49.1865234375,
+        "angles": 48,
+        "n": 32,
+        "workers": 1,
+        "seconds": 4.66337883000233,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 2742345,
+        "ray_allocated_bytes": 51642368,
+        "per_source_relative_ledger_max": 5.130782112831932e-15,
+        "per_angle_relative_ledger_max": 1.443702020674884e-14
+      },
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19151744547562716,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.0044503679457856046,
+          "max_abs_difference": 0.25247825568973103,
+          "rms_difference": 0.01443022269270374,
+          "correlation": 0.9980580716644613,
+          "all_nonzero_modes_residual_power_over_reference": 0.003882477187486249,
+          "shell_weighted_absolute_power_difference": 0.002680865753001483,
+          "shell_weighted_residual_power_over_reference": 0.002550180884740173,
+          "max_shell_relative_auto_power_difference": 0.011700433418069811,
+          "min_shell_cross_coherence": 0.9880229030216021,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9882995665819302,
+              "cross_coherence": 0.999984042215767,
+              "residual_power_over_reference": 6.615504180683648e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0015622572725318,
+              "cross_coherence": 0.9999808300619747,
+              "residual_power_over_reference": 3.897949853480433e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9950674323990788,
+              "cross_coherence": 0.9999631702770393,
+              "residual_power_over_reference": 7.957515975056676e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9979183516966568,
+              "cross_coherence": 0.999959102221645,
+              "residual_power_over_reference": 8.279482149208083e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9988711728399492,
+              "cross_coherence": 0.9998661811035526,
+              "residual_power_over_reference": 0.00026780543445360805
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9932956947458045,
+              "cross_coherence": 0.9997197054312427,
+              "residual_power_over_reference": 0.0005699815506230041
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.000084071653802,
+              "cross_coherence": 0.999406542313603,
+              "residual_power_over_reference": 0.0011869670316509628
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9971801476773136,
+              "cross_coherence": 0.9990223281246057,
+              "residual_power_over_reference": 0.001954575613739563
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0036961071379402,
+              "cross_coherence": 0.9982872788838192,
+              "residual_power_over_reference": 0.0034351757993054998
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0017098403262343,
+              "cross_coherence": 0.9972424954033353,
+              "residual_power_over_reference": 0.005520452336482124
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9971574144929826,
+              "cross_coherence": 0.9950820245915868,
+              "residual_power_over_reference": 0.009823984051709185
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0043537116027306,
+              "cross_coherence": 0.9880229030216021,
+              "residual_power_over_reference": 0.024011010563902837
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.1673662619710759,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.003995237555973781,
+          "max_abs_difference": 0.22178367127471313,
+          "rms_difference": 0.012657351677457917,
+          "correlation": 0.9979138783854422,
+          "all_nonzero_modes_residual_power_over_reference": 0.0041711824595769015,
+          "shell_weighted_absolute_power_difference": 0.002994275754573214,
+          "shell_weighted_residual_power_over_reference": 0.002740601674803923,
+          "max_shell_relative_auto_power_difference": 0.011224034835102037,
+          "min_shell_cross_coherence": 0.9872579908951875,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.988775965164898,
+              "cross_coherence": 0.9999755360643738,
+              "residual_power_over_reference": 8.032525059086158e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.001301045391454,
+              "cross_coherence": 0.9999815080618476,
+              "residual_power_over_reference": 3.74308320483346e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9943807220616488,
+              "cross_coherence": 0.9999626977466002,
+              "residual_power_over_reference": 8.231092860346148e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9981896182259735,
+              "cross_coherence": 0.9999574352671723,
+              "residual_power_over_reference": 8.587248540008876e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.000042309214988,
+              "cross_coherence": 0.9998634521770696,
+              "residual_power_over_reference": 0.0002731018705387338
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9929813982992913,
+              "cross_coherence": 0.999693963613555,
+              "residual_power_over_reference": 0.0006222796438965236
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0015363932752497,
+              "cross_coherence": 0.9993527378899809,
+              "residual_power_over_reference": 0.0012961079606940245
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.996702876293289,
+              "cross_coherence": 0.9989056951331001,
+              "residual_power_over_reference": 0.002187720942141809
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0045475259225647,
+              "cross_coherence": 0.9980189324788492,
+              "residual_power_over_reference": 0.0039762920552746115
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0035164828346126,
+              "cross_coherence": 0.9967843430362,
+              "residual_power_over_reference": 0.006445697795979752
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9961673911448358,
+              "cross_coherence": 0.994439569363179,
+              "residual_power_over_reference": 0.011103209136239814
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0038205374219389,
+              "cross_coherence": 0.9872579908951875,
+              "residual_power_over_reference": 0.025536295295984415
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.1639360832386822,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.003914936006180087,
+          "max_abs_difference": 0.21724041306728334,
+          "rms_difference": 0.012402606477754282,
+          "correlation": 0.9979118104667337,
+          "all_nonzero_modes_residual_power_over_reference": 0.00417531891079706,
+          "shell_weighted_absolute_power_difference": 0.002996976697263395,
+          "shell_weighted_residual_power_over_reference": 0.0027433455723714947,
+          "max_shell_relative_auto_power_difference": 0.011229276036271885,
+          "min_shell_cross_coherence": 0.9872544165251628,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9887707239637281,
+              "cross_coherence": 0.9999754475191237,
+              "residual_power_over_reference": 8.053088568019818e-05
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0013015151361815,
+              "cross_coherence": 0.9999814808016534,
+              "residual_power_over_reference": 3.748570192308872e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9943758678674453,
+              "cross_coherence": 0.9999626423954241,
+              "residual_power_over_reference": 8.243483985413757e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9981889193286614,
+              "cross_coherence": 0.9999573878224489,
+              "residual_power_over_reference": 8.596789272350825e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0000502021970337,
+              "cross_coherence": 0.9998633080919554,
+              "residual_power_over_reference": 0.0002733913082865099
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9929778266271245,
+              "cross_coherence": 0.9996936679063516,
+              "residual_power_over_reference": 0.0006228804848802757
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0015366198541593,
+              "cross_coherence": 0.9993522280759632,
+              "residual_power_over_reference": 0.0012971286922320766
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9967006185591565,
+              "cross_coherence": 0.9989049012016845,
+              "residual_power_over_reference": 0.0021893074411164894
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0045522293567561,
+              "cross_coherence": 0.9980175792359784,
+              "residual_power_over_reference": 0.003979024654638542
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0035218079045625,
+              "cross_coherence": 0.9967825239558362,
+              "residual_power_over_reference": 0.006449368796265756
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9961650521885699,
+              "cross_coherence": 0.9944371172438007,
+              "residual_power_over_reference": 0.0111080954280598
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0038212121280372,
+              "cross_coherence": 0.9872544165251628,
+              "residual_power_over_reference": 0.025543467547472
+            }
+          ]
+        }
+      }
+    },
+    {
+      "K": 48,
+      "rotation_index": 2,
+      "matrix": [
+        [
+          0.7726711933002257,
+          -0.6240708449679739,
+          0.11625320427826537
+        ],
+        [
+          -0.612124596543228,
+          -0.6839474104015075,
+          0.396887160427069
+        ],
+        [
+          -0.16817462754766377,
+          -0.37782472161841224,
+          -0.9104755759399445
+        ]
+      ],
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.926850633354,
+        "escaped": 0.0,
+        "retained": 0.011360251024055487,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 3.197442310920451e-14,
+        "per_angle_ledger_max": 4.206412995699793e-12,
+        "independent_absorption_ledger": 3.637978807091713e-12,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16800,
+        "rays_materialized": 806400,
+        "queries": 10371680,
+        "assignments": 2712480,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 49.21875,
+        "angles": 48,
+        "n": 32,
+        "workers": 1,
+        "seconds": 3.988120011999854,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 2745248,
+        "ray_allocated_bytes": 51642368,
+        "per_source_relative_ledger_max": 5.083852977308792e-15,
+        "per_angle_relative_ledger_max": 7.85543746543687e-15
+      },
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19152848624827495,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.0042922459480211825,
+          "max_abs_difference": 0.19978517277813967,
+          "rms_difference": 0.01398347863239004,
+          "correlation": 0.9981768956204092,
+          "all_nonzero_modes_residual_power_over_reference": 0.003645810787961417,
+          "shell_weighted_absolute_power_difference": 0.0021694408295960385,
+          "shell_weighted_residual_power_over_reference": 0.0024569762059781742,
+          "max_shell_relative_auto_power_difference": 0.008208564750604608,
+          "min_shell_cross_coherence": 0.9885596226488607,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0067477305405401,
+              "cross_coherence": 0.9999225360704961,
+              "residual_power_over_reference": 0.00016679440939285997
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0001779358215852,
+              "cross_coherence": 0.9999905819664282,
+              "residual_power_over_reference": 1.884565745910143e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.002724065284431,
+              "cross_coherence": 0.9999658247546404,
+              "residual_power_over_reference": 7.029613346628438e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9991795125788411,
+              "cross_coherence": 0.9999647781103689,
+              "residual_power_over_reference": 7.058324319604801e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0039865173856792,
+              "cross_coherence": 0.9997919705903364,
+              "residual_power_over_reference": 0.00042085248782853315
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 1.0003014167077597,
+              "cross_coherence": 0.9997972946432507,
+              "residual_power_over_reference": 0.0004054945172623367
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9984592143539448,
+              "cross_coherence": 0.9994165754371874,
+              "residual_power_over_reference": 0.0011665438096753636
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9917914352493954,
+              "cross_coherence": 0.9990756074214838,
+              "residual_power_over_reference": 0.0018580962126910862
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0020050814845092,
+              "cross_coherence": 0.9984390723263793,
+              "residual_power_over_reference": 0.003125987648679251
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 0.9996642850556277,
+              "cross_coherence": 0.9973479286571303,
+              "residual_power_over_reference": 0.00530328045188037
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9989663942704861,
+              "cross_coherence": 0.9949941843328494,
+              "residual_power_over_reference": 0.010006723180196915
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0055212719310065,
+              "cross_coherence": 0.9885596226488607,
+              "residual_power_over_reference": 0.022951433332254433
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.16736504191550997,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.003862150961925753,
+          "max_abs_difference": 0.1888314638431159,
+          "rms_difference": 0.012302258282983836,
+          "correlation": 0.9980297556184694,
+          "all_nonzero_modes_residual_power_over_reference": 0.0039404257091771805,
+          "shell_weighted_absolute_power_difference": 0.002172302981297571,
+          "shell_weighted_residual_power_over_reference": 0.0026571737087930816,
+          "max_shell_relative_auto_power_difference": 0.008717014618890406,
+          "min_shell_cross_coherence": 0.9878602857188997,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0087170146188904,
+              "cross_coherence": 0.9999135056084159,
+              "residual_power_over_reference": 0.0001926553576292099
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9999566622263776,
+              "cross_coherence": 0.9999914317366306,
+              "residual_power_over_reference": 1.7136624955898054e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0028263608946544,
+              "cross_coherence": 0.9999649848932872,
+              "residual_power_over_reference": 7.212337064374667e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9993602263231868,
+              "cross_coherence": 0.9999636339319457,
+              "residual_power_over_reference": 7.281122666903664e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0049054052987163,
+              "cross_coherence": 0.999780323549447,
+              "residual_power_over_reference": 0.00044643022536439256
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 1.0001054287269342,
+              "cross_coherence": 0.9997736864549306,
+              "residual_power_over_reference": 0.0004526537281164095
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9986457990606098,
+              "cross_coherence": 0.9993558937154418,
+              "residual_power_over_reference": 0.0012877988000164907
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9913970317391096,
+              "cross_coherence": 0.9989530914118467,
+              "residual_power_over_reference": 0.0021033739860848452
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0022252913777827,
+              "cross_coherence": 0.9981772671261225,
+              "residual_power_over_reference": 0.0036507562104111046
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0003847378992323,
+              "cross_coherence": 0.9968681384548892,
+              "residual_power_over_reference": 0.006264964918873724
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9994516265653414,
+              "cross_coherence": 0.9942911068278883,
+              "residual_power_over_reference": 0.011414730508539363
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.005360819910587,
+              "cross_coherence": 0.9878602857188997,
+              "residual_power_over_reference": 0.02435158580241183
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.1639348148206305,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.0037845229829494057,
+          "max_abs_difference": 0.18503561438730012,
+          "rms_difference": 0.012054674699751005,
+          "correlation": 0.9980277974343092,
+          "all_nonzero_modes_residual_power_over_reference": 0.00394434307376271,
+          "shell_weighted_absolute_power_difference": 0.002173537147317706,
+          "shell_weighted_residual_power_over_reference": 0.0026598357732769244,
+          "max_shell_relative_auto_power_difference": 0.008737006903409616,
+          "min_shell_cross_coherence": 0.9878571096609223,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0087370069034096,
+              "cross_coherence": 0.9999133230713441,
+              "residual_power_over_reference": 0.0001931104144336927
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9999561970810136,
+              "cross_coherence": 0.9999914230192978,
+              "residual_power_over_reference": 1.7154065387729518e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0028271192571712,
+              "cross_coherence": 0.9999649249098703,
+              "residual_power_over_reference": 7.224460303495733e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9993600574754984,
+              "cross_coherence": 0.9999635929556207,
+              "residual_power_over_reference": 7.289320099485319e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0049107857747106,
+              "cross_coherence": 0.9997801200818708,
+              "residual_power_over_reference": 0.00044685249309114953
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 1.0001036005019937,
+              "cross_coherence": 0.9997734342721598,
+              "residual_power_over_reference": 0.0004531576105224418
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.9986475505014207,
+              "cross_coherence": 0.9993553762205968,
+              "residual_power_over_reference": 0.0012888330321231811
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9913939961373441,
+              "cross_coherence": 0.9989523659738618,
+              "residual_power_over_reference": 0.0021048285584688406
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0022284752334578,
+              "cross_coherence": 0.9981760247605177,
+              "residual_power_over_reference": 0.003653253044655961
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0003847898212046,
+              "cross_coherence": 0.99686626136305,
+              "residual_power_over_reference": 0.006268719997336104
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9994524007229586,
+              "cross_coherence": 0.9942885349770929,
+              "residual_power_over_reference": 0.011419877010187452
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.005363317817679,
+              "cross_coherence": 0.9878571096609223,
+              "residual_power_over_reference": 0.024357991842863053
+            }
+          ]
+        }
+      }
+    },
+    {
+      "K": 48,
+      "rotation_index": 3,
+      "matrix": [
+        [
+          0.6147189286091003,
+          0.6251377197595173,
+          -0.4809609860930002
+        ],
+        [
+          0.2280142636713751,
+          0.4428993060315936,
+          0.8670926711021916
+        ],
+        [
+          0.7550696222018738,
+          -0.6426842428833961,
+          0.1297182700212865
+        ]
+      ],
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.66868126065,
+        "escaped": 0.0,
+        "retained": 0.2695296237250786,
+        "ledger_residual": 3.637978807091713e-12,
+        "per_source_ledger_max": 3.197442310920451e-14,
+        "per_angle_ledger_max": 3.296918293926865e-12,
+        "independent_absorption_ledger": -3.637978807091713e-12,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16781,
+        "rays_materialized": 805488,
+        "queries": 10338646,
+        "assignments": 2710345,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 49.1630859375,
+        "angles": 48,
+        "n": 32,
+        "workers": 1,
+        "seconds": 5.848643293997156,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 2743113,
+        "ray_allocated_bytes": 51642368,
+        "per_source_relative_ledger_max": 5.0238947750527626e-15,
+        "per_angle_relative_ledger_max": 6.156964499937006e-15
+      },
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19154744169686955,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.004481184763921306,
+          "max_abs_difference": 0.19913651646800168,
+          "rms_difference": 0.014803437826227266,
+          "correlation": 0.9979570028410741,
+          "all_nonzero_modes_residual_power_over_reference": 0.0040859134145974545,
+          "shell_weighted_absolute_power_difference": 0.0026099731222413557,
+          "shell_weighted_residual_power_over_reference": 0.0027252728340867493,
+          "max_shell_relative_auto_power_difference": 0.008282797266496722,
+          "min_shell_cross_coherence": 0.9872736993369627,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0082827972664967,
+              "cross_coherence": 0.9999400146091684,
+              "residual_power_over_reference": 0.00013754712225308083
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0048160065306826,
+              "cross_coherence": 0.9999814015027101,
+              "residual_power_over_reference": 4.3071016334177034e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9930670503905552,
+              "cross_coherence": 0.9999863604172571,
+              "residual_power_over_reference": 3.9242722134768624e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9964830357905258,
+              "cross_coherence": 0.9999558003685786,
+              "residual_power_over_reference": 9.134138638161394e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0019638010605119,
+              "cross_coherence": 0.999826846330738,
+              "residual_power_over_reference": 0.000347610394237571
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.998205225014387,
+              "cross_coherence": 0.9998132579504424,
+              "residual_power_over_reference": 0.0003739548164310669
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0011576902201924,
+              "cross_coherence": 0.9993556368620645,
+              "residual_power_over_reference": 0.0012898069008505481
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9988050536444254,
+              "cross_coherence": 0.9990257362739483,
+              "residual_power_over_reference": 0.0019477200988597331
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 0.9985870702040428,
+              "cross_coherence": 0.9982057274654168,
+              "residual_power_over_reference": 0.0035865084374539424
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0010080407872368,
+              "cross_coherence": 0.9969963974808452,
+              "residual_power_over_reference": 0.006010485938114882
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9990773582530004,
+              "cross_coherence": 0.9944295613975286,
+              "residual_power_over_reference": 0.011135949414889991
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0046578208292827,
+              "cross_coherence": 0.9872736993369627,
+              "residual_power_over_reference": 0.025517220518230847
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.16737292061951084,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.004022009777145916,
+          "max_abs_difference": 0.17380275930091799,
+          "rms_difference": 0.013000658216510976,
+          "correlation": 0.9977997948373902,
+          "all_nonzero_modes_residual_power_over_reference": 0.004400521886182484,
+          "shell_weighted_absolute_power_difference": 0.002723958118027833,
+          "shell_weighted_residual_power_over_reference": 0.002932846002593034,
+          "max_shell_relative_auto_power_difference": 0.007525781119967601,
+          "min_shell_cross_coherence": 0.9864524955945178,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0075257811199676,
+              "cross_coherence": 0.9999537700747413,
+              "residual_power_over_reference": 0.00010691342927748035
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0049073058515763,
+              "cross_coherence": 0.9999806008377043,
+              "residual_power_over_reference": 4.4899091537111067e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9935869221669845,
+              "cross_coherence": 0.9999830826829115,
+              "residual_power_over_reference": 4.4040961455718404e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9962876339344748,
+              "cross_coherence": 0.9999554082433645,
+              "residual_power_over_reference": 9.246964407471839e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0022080845746837,
+              "cross_coherence": 0.9998206204125448,
+              "residual_power_over_reference": 0.00036037260730277184
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9981037059669559,
+              "cross_coherence": 0.9997919438252615,
+              "residual_power_over_reference": 0.0004166174627224927
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0009894150480607,
+              "cross_coherence": 0.9992997803918938,
+              "residual_power_over_reference": 0.0014013764672821869
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9987883371932955,
+              "cross_coherence": 0.9989174302655006,
+              "residual_power_over_reference": 0.002164194616154467
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 0.9985592089220614,
+              "cross_coherence": 0.9979225194052337,
+              "residual_power_over_reference": 0.004152486239033454
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0015418314080153,
+              "cross_coherence": 0.9964822005682494,
+              "residual_power_over_reference": 0.007041614481395215
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9991530852579747,
+              "cross_coherence": 0.9936672668406807,
+              "residual_power_over_reference": 0.012660281289644122
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0040239389498997,
+              "cross_coherence": 0.9864524955945178,
+              "residual_power_over_reference": 0.027153508308190716
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.16394251375779703,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.003941204423079631,
+          "max_abs_difference": 0.17029278328878494,
+          "rms_difference": 0.01273936622276908,
+          "correlation": 0.9977974873553084,
+          "all_nonzero_modes_residual_power_over_reference": 0.004405136566514913,
+          "shell_weighted_absolute_power_difference": 0.0027247690879584163,
+          "shell_weighted_residual_power_over_reference": 0.0029359736679903797,
+          "max_shell_relative_auto_power_difference": 0.007514122886237873,
+          "min_shell_cross_coherence": 0.986447926811893,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0075141228862379,
+              "cross_coherence": 0.9999536484643764,
+              "residual_power_over_reference": 0.00010711343615616846
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 1.0049102362074973,
+              "cross_coherence": 0.9999805712936346,
+              "residual_power_over_reference": 4.496554712718835e-05
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.993581501127985,
+              "cross_coherence": 0.9999830468532206,
+              "residual_power_over_reference": 4.4129772737398616e-05
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9962844124653827,
+              "cross_coherence": 0.9999553550695137,
+              "residual_power_over_reference": 9.258164904720108e-05
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.002211254017573,
+              "cross_coherence": 0.9998204264993317,
+              "residual_power_over_reference": 0.00036076492610796437
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9981001348576178,
+              "cross_coherence": 0.9997917133259004,
+              "residual_power_over_reference": 0.00041708067357775576
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0009864377408093,
+              "cross_coherence": 0.9992991758218389,
+              "residual_power_over_reference": 0.0014025826502846329
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9987911153435655,
+              "cross_coherence": 0.998916612322234,
+              "residual_power_over_reference": 0.0021658308402641205
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 0.9985581887639495,
+              "cross_coherence": 0.9979209779715358,
+              "residual_power_over_reference": 0.0041555654982565245
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0015425003000282,
+              "cross_coherence": 0.9964799123825109,
+              "residual_power_over_reference": 0.007046197247430873
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9991538107275293,
+              "cross_coherence": 0.9936640104103442,
+              "residual_power_over_reference": 0.01266679568305971
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0040238570568654,
+              "cross_coherence": 0.986447926811893,
+              "residual_power_over_reference": 0.027162662967621782
+            }
+          ]
+        }
+      }
+    },
+    {
+      "K": 192,
+      "rotation_index": 0,
+      "matrix": [
+        [
+          0.030761333433392962,
+          0.973271493356767,
+          -0.22758809411849418
+        ],
+        [
+          0.256441463007526,
+          0.21238940356295014,
+          0.9429361151768101
+        ],
+        [
+          0.9660701405260177,
+          -0.08736899606418325,
+          -0.24305378439920955
+        ]
+      ],
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.844021741974,
+        "escaped": 0.0,
+        "retained": 0.09418914240373313,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 7.460698725481052e-14,
+        "per_angle_ledger_max": 1.7337242752546445e-12,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16770,
+        "rays_materialized": 3219840,
+        "queries": 41471982,
+        "assignments": 10821556,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 196.5234375,
+        "angles": 192,
+        "n": 32,
+        "workers": 1,
+        "seconds": 7.194095610997465,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 10854324,
+        "ray_allocated_bytes": 206307328,
+        "per_source_relative_ledger_max": 1.968310288793853e-14,
+        "per_angle_relative_ledger_max": 1.2950856361936461e-14
+      },
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.19153897410796125,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.0012930788459823881,
+          "max_abs_difference": 0.07421225990042901,
+          "rms_difference": 0.004173191340643556,
+          "correlation": 0.9998376383289884,
+          "all_nonzero_modes_residual_power_over_reference": 0.0003247136061818107,
+          "shell_weighted_absolute_power_difference": 0.0004676152150533089,
+          "shell_weighted_residual_power_over_reference": 0.0002049621121110267,
+          "max_shell_relative_auto_power_difference": 0.0031439855638457637,
+          "min_shell_cross_coherence": 0.9989211151177899,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0031439855638458,
+              "cross_coherence": 0.9999969670843882,
+              "residual_power_over_reference": 8.54264345822006e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9994787130944275,
+              "cross_coherence": 0.9999993734304196,
+              "residual_power_over_reference": 1.3207652173457811e-06
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0002946721758,
+              "cross_coherence": 0.9999993218481921,
+              "residual_power_over_reference": 1.3782081586630427e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 1.0002894540995684,
+              "cross_coherence": 0.999995963332728,
+              "residual_power_over_reference": 8.095445777909108e-06
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0008793836320613,
+              "cross_coherence": 0.9999862822427633,
+              "residual_power_over_reference": 2.7640818928066327e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9990900368110553,
+              "cross_coherence": 0.999986566512213,
+              "residual_power_over_reference": 2.7061851302490504e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 0.999929273630011,
+              "cross_coherence": 0.9999661806175576,
+              "residual_power_over_reference": 6.763762351941991e-05
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9993101027400768,
+              "cross_coherence": 0.9999386569050173,
+              "residual_power_over_reference": 0.00012276289285111786
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 0.9999184518919022,
+              "cross_coherence": 0.9998790018094998,
+              "residual_power_over_reference": 0.00024198817621683973
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0005616223310836,
+              "cross_coherence": 0.9997832904620341,
+              "residual_power_over_reference": 0.00043361960053897873
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.999565060377563,
+              "cross_coherence": 0.9995676961877034,
+              "residual_power_over_reference": 0.000864466881493058
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0003815268253562,
+              "cross_coherence": 0.9989211151177899,
+              "residual_power_over_reference": 0.0021582177324295463
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.16736756965267363,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.001167398636806938,
+          "max_abs_difference": 0.05840843100666864,
+          "rms_difference": 0.0036844891071776383,
+          "correlation": 0.9998232726684184,
+          "all_nonzero_modes_residual_power_over_reference": 0.00035344994617231697,
+          "shell_weighted_absolute_power_difference": 0.0004929363088396661,
+          "shell_weighted_residual_power_over_reference": 0.00022333226120725813,
+          "max_shell_relative_auto_power_difference": 0.0027340484855598035,
+          "min_shell_cross_coherence": 0.9988345559794827,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0027340484855598,
+              "cross_coherence": 0.9999974358267602,
+              "residual_power_over_reference": 7.001557271596307e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9994815789229763,
+              "cross_coherence": 0.9999993981694261,
+              "residual_power_over_reference": 1.2705566305909185e-06
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0005370395576474,
+              "cross_coherence": 0.9999991707943019,
+              "residual_power_over_reference": 1.7309401696653824e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 1.0002381206647761,
+              "cross_coherence": 0.9999958713839515,
+              "residual_power_over_reference": 8.272388823059863e-06
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0009489229333381,
+              "cross_coherence": 0.9999849213603044,
+              "residual_power_over_reference": 3.039659140454632e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9989243190955485,
+              "cross_coherence": 0.9999852362604612,
+              "residual_power_over_reference": 2.9801021770980653e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0001301339394952,
+              "cross_coherence": 0.9999626982747509,
+              "residual_power_over_reference": 7.461253799580888e-05
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9994746696958411,
+              "cross_coherence": 0.999930498920832,
+              "residual_power_over_reference": 0.00013903465362669873
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0001390892079152,
+              "cross_coherence": 0.9998595448739476,
+              "residual_power_over_reference": 0.0002809346233335964
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0007588962053835,
+              "cross_coherence": 0.9997437420741582,
+              "residual_power_over_reference": 0.0005128542142242759
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9995408441586211,
+              "cross_coherence": 0.9995021175889153,
+              "residual_power_over_reference": 0.0009955889084298439
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 0.9997788683975019,
+              "cross_coherence": 0.9988345559794827,
+              "residual_power_over_reference": 0.0023306425364303836
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.16393726056604302,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.0011439400968104823,
+          "max_abs_difference": 0.05723109694630298,
+          "rms_difference": 0.003610363802939639,
+          "correlation": 0.9998230945132164,
+          "all_nonzero_modes_residual_power_over_reference": 0.0003538062715363432,
+          "shell_weighted_absolute_power_difference": 0.000493328914598785,
+          "shell_weighted_residual_power_over_reference": 0.00022355977246317163,
+          "max_shell_relative_auto_power_difference": 0.0027374334123040356,
+          "min_shell_cross_coherence": 0.9988341849700648,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.002737433412304,
+              "cross_coherence": 0.9999974286083758,
+              "residual_power_over_reference": 7.020643117339231e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9994813248525964,
+              "cross_coherence": 0.9999993974751944,
+              "residual_power_over_reference": 1.272010480645198e-06
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 1.0005379323109138,
+              "cross_coherence": 0.999999169391663,
+              "residual_power_over_reference": 1.7339867663716735e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 1.000238201406515,
+              "cross_coherence": 0.9999958674847261,
+              "residual_power_over_reference": 8.280198148138538e-06
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 1.0009497119568211,
+              "cross_coherence": 0.9999849038013604,
+              "residual_power_over_reference": 3.0432112106547904e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9989229427067081,
+              "cross_coherence": 0.9999852213126614,
+              "residual_power_over_reference": 2.98316222842456e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0001309941365972,
+              "cross_coherence": 0.9999626698888151,
+              "residual_power_over_reference": 7.466940181981825e-05
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9994753944903727,
+              "cross_coherence": 0.9999304499830043,
+              "residual_power_over_reference": 0.0001391323636714979
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.000138959156175,
+              "cross_coherence": 0.9998594533657191,
+              "residual_power_over_reference": 0.0002811176252015539
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0007597858089161,
+              "cross_coherence": 0.9997435937201526,
+              "residual_power_over_reference": 0.0005131516003772099
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9995399945099956,
+              "cross_coherence": 0.9995018886870805,
+              "residual_power_over_reference": 0.0009960463789773326
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 0.9997784040516545,
+              "cross_coherence": 0.9988341849700648,
+              "residual_power_over_reference": 0.0023313839832212234
+            }
+          ]
+        }
+      }
+    },
+    {
+      "K": 192,
+      "rotation_index": 1,
+      "matrix": [
+        [
+          -0.3745199866592337,
+          -0.7726398628985732,
+          0.5126035718299681
+        ],
+        [
+          0.6300415387669708,
+          -0.6176661608708807,
+          -0.4706762933728178
+        ],
+        [
+          0.6802811470420996,
+          0.1466838640583933,
+          0.7181235304625407
+        ]
+      ],
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.736783730907,
+        "escaped": 0.0,
+        "retained": 0.20142715346997198,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 6.394884621840902e-14,
+        "per_angle_ledger_max": 1.0516032489249483e-12,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16773,
+        "rays_materialized": 3220416,
+        "queries": 41421537,
+        "assignments": 10822278,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 196.55859375,
+        "angles": 192,
+        "n": 32,
+        "workers": 1,
+        "seconds": 3.5272295149989077,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 10855046,
+        "ray_allocated_bytes": 206307328,
+        "per_source_relative_ledger_max": 1.99077231589527e-14,
+        "per_angle_relative_ledger_max": 7.85543746543687e-15
+      },
+      "fields": {
+        "xHI": {
+          "candidate_mean": 0.1915452447184773,
+          "reference_mean": 0.1915415678426966,
+          "mean_abs_difference": 0.0013809626764803213,
+          "max_abs_difference": 0.06762966256201475,
+          "rms_difference": 0.0045026535637819175,
+          "correlation": 0.999810985055768,
+          "all_nonzero_modes_residual_power_over_reference": 0.0003780078656305667,
+          "shell_weighted_absolute_power_difference": 0.0005094712503978408,
+          "shell_weighted_residual_power_over_reference": 0.00023798238039635133,
+          "max_shell_relative_auto_power_difference": 0.0012031426249412558,
+          "min_shell_cross_coherence": 0.9987508444787162,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 1.0006777867090262,
+              "cross_coherence": 0.9999985070318818,
+              "residual_power_over_reference": 3.1017577796910437e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9997447937463524,
+              "cross_coherence": 0.9999995035723968,
+              "residual_power_over_reference": 1.0090131432105727e-06
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9989160067499145,
+              "cross_coherence": 0.9999992300104313,
+              "residual_power_over_reference": 1.8330639144040494e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9995754292013858,
+              "cross_coherence": 0.9999964695356317,
+              "residual_power_over_reference": 7.104504305798474e-06
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.999908459626369,
+              "cross_coherence": 0.9999906200953125,
+              "residual_power_over_reference": 1.8761045721425417e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9995142858239388,
+              "cross_coherence": 0.9999811053353614,
+              "residual_power_over_reference": 3.7839144649211176e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0012031426249413,
+              "cross_coherence": 0.999953142247238,
+              "residual_power_over_reference": 9.413353564319867e-05
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9993394879443946,
+              "cross_coherence": 0.9999243841310005,
+              "residual_power_over_reference": 0.00015129088963530983
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0002302157336254,
+              "cross_coherence": 0.9998659524366005,
+              "residual_power_over_reference": 0.00026813923317749703
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0002891089756094,
+              "cross_coherence": 0.9997469569184911,
+              "residual_power_over_reference": 0.0005061802077371588
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9995111626756931,
+              "cross_coherence": 0.9995017573301413,
+              "residual_power_over_reference": 0.0009963015054197943
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0007857924384238,
+              "cross_coherence": 0.9987508444787162,
+              "residual_power_over_reference": 0.002499446733595637
+            }
+          ]
+        },
+        "neutral_density": {
+          "candidate_mean": 0.16737084229705432,
+          "reference_mean": 0.16736982031274755,
+          "mean_abs_difference": 0.0012447320662073652,
+          "max_abs_difference": 0.05228424546884522,
+          "rms_difference": 0.003966994087378181,
+          "correlation": 0.9997951205268484,
+          "all_nonzero_modes_residual_power_over_reference": 0.00040972890741838836,
+          "shell_weighted_absolute_power_difference": 0.0005175444407121157,
+          "shell_weighted_residual_power_over_reference": 0.0002580853141092925,
+          "max_shell_relative_auto_power_difference": 0.00124644560849263,
+          "min_shell_cross_coherence": 0.9986560860670447,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9992164305433944,
+              "cross_coherence": 0.9999989025202215,
+              "residual_power_over_reference": 2.347654876577327e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9997382730393032,
+              "cross_coherence": 0.9999995809850099,
+              "residual_power_over_reference": 8.550477977910767e-07
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.998773822316932,
+              "cross_coherence": 0.9999993706979606,
+              "residual_power_over_reference": 1.6339407566727775e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9995074033976629,
+              "cross_coherence": 0.9999964275900772,
+              "residual_power_over_reference": 7.203737670678481e-06
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9999531717942537,
+              "cross_coherence": 0.9999899319709707,
+              "residual_power_over_reference": 2.01361348186331e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.999674538561555,
+              "cross_coherence": 0.9999798247010964,
+              "residual_power_over_reference": 4.037051658854197e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0012464456084926,
+              "cross_coherence": 0.9999492581797517,
+              "residual_power_over_reference": 0.00010193503250744214
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9992981163199666,
+              "cross_coherence": 0.9999151893693986,
+              "residual_power_over_reference": 0.00016968492697238887
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0002479542803349,
+              "cross_coherence": 0.9998433919680834,
+              "residual_power_over_reference": 0.0003132702614844001
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.0002354887790574,
+              "cross_coherence": 0.9997007428826759,
+              "residual_power_over_reference": 0.000598598564302633
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9992604806935038,
+              "cross_coherence": 0.9994305123896632,
+              "residual_power_over_reference": 0.001138690768479599
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.000370627511706,
+              "cross_coherence": 0.9986560860670447,
+              "residual_power_over_reference": 0.0026883602460707552
+            }
+          ]
+        },
+        "frozen_brightness_proxy": {
+          "candidate_mean": 0.16394047417273117,
+          "reference_mean": 0.16393946723972586,
+          "mean_abs_difference": 0.00121972278524054,
+          "max_abs_difference": 0.05120778636238199,
+          "rms_difference": 0.0038872053731248165,
+          "correlation": 0.9997949118503198,
+          "all_nonzero_modes_residual_power_over_reference": 0.00041014620741794156,
+          "shell_weighted_absolute_power_difference": 0.0005175313119055026,
+          "shell_weighted_residual_power_over_reference": 0.00025835184267091485,
+          "max_shell_relative_auto_power_difference": 0.0012456882233424782,
+          "min_shell_cross_coherence": 0.9986556504349181,
+          "shells": [
+            {
+              "k_cMpc_inv": 0.03141592653589793,
+              "full_fft_modes": 6,
+              "auto_power_ratio": 0.9992083089341616,
+              "cross_coherence": 0.9999989002335113,
+              "residual_power_over_reference": 2.3554178723823773e-06
+            },
+            {
+              "k_cMpc_inv": 0.044428829381583664,
+              "full_fft_modes": 12,
+              "auto_power_ratio": 0.9997379704220937,
+              "cross_coherence": 0.9999995806439012,
+              "residual_power_over_reference": 8.55769430162767e-07
+            },
+            {
+              "k_cMpc_inv": 0.05441398092702654,
+              "full_fft_modes": 8,
+              "auto_power_ratio": 0.9987722595081542,
+              "cross_coherence": 0.9999993702725435,
+              "residual_power_over_reference": 1.635749719042775e-06
+            },
+            {
+              "k_cMpc_inv": 0.07240404461691916,
+              "full_fft_modes": 54,
+              "auto_power_ratio": 0.9995073695678868,
+              "cross_coherence": 0.9999964238301488,
+              "residual_power_over_reference": 7.211263889782475e-06
+            },
+            {
+              "k_cMpc_inv": 0.09512161329060435,
+              "full_fft_modes": 66,
+              "auto_power_ratio": 0.9999541814476991,
+              "cross_coherence": 0.9999899211897453,
+              "residual_power_over_reference": 2.0157683554740256e-05
+            },
+            {
+              "k_cMpc_inv": 0.11280872981718398,
+              "full_fft_modes": 104,
+              "auto_power_ratio": 0.9996751279140554,
+              "cross_coherence": 0.9999798051359483,
+              "residual_power_over_reference": 4.040955657802959e-05
+            },
+            {
+              "k_cMpc_inv": 0.14121674267162587,
+              "full_fft_modes": 264,
+              "auto_power_ratio": 1.0012456882233425,
+              "cross_coherence": 0.999949216271748,
+              "residual_power_over_reference": 0.00010201839086015868
+            },
+            {
+              "k_cMpc_inv": 0.17860471065701602,
+              "full_fft_modes": 530,
+              "auto_power_ratio": 0.9992979135090296,
+              "cross_coherence": 0.9999151272276227,
+              "residual_power_over_reference": 0.0001698092209036079
+            },
+            {
+              "k_cMpc_inv": 0.22579963249204646,
+              "full_fft_modes": 1064,
+              "auto_power_ratio": 1.0002479475017023,
+              "cross_coherence": 0.9998432892955161,
+              "residual_power_over_reference": 0.00031347563017324656
+            },
+            {
+              "k_cMpc_inv": 0.28662866117391755,
+              "full_fft_modes": 2228,
+              "auto_power_ratio": 1.000235513055727,
+              "cross_coherence": 0.9997005582524393,
+              "residual_power_over_reference": 0.0005989678783777775
+            },
+            {
+              "k_cMpc_inv": 0.36160835365360094,
+              "full_fft_modes": 4264,
+              "auto_power_ratio": 0.9992601305121533,
+              "cross_coherence": 0.9994302440583955,
+              "residual_power_over_reference": 0.001139227162535788
+            },
+            {
+              "k_cMpc_inv": 0.4544227343778465,
+              "full_fft_modes": 8473,
+              "auto_power_ratio": 1.0003700842863505,
+              "cross_coherence": 0.9986556504349181,
+              "residual_power_over_reference": 0.002689230841050999
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "range_refinement": [
+    {
+      "K": 48,
+      "distance_factor": 2.0,
+      "maximum_distance": 110.85125168440814,
+      "short_retained": 0.17777070904393372,
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.93821088438,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 2.842170943040401e-14,
+        "per_angle_ledger_max": 4.433786671143025e-12,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16782,
+        "rays_materialized": 805536,
+        "queries": 10359368,
+        "assignments": 2708526,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 49.166015625,
+        "angles": 48,
+        "n": 32,
+        "workers": 1,
+        "seconds": 0.7464905189990532,
+        "periodic": true,
+        "maximum_distance": 110.85125168440814,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 2741294,
+        "ray_allocated_bytes": 51642368,
+        "per_source_relative_ledger_max": 4.8776223060457915e-15,
+        "per_angle_relative_ledger_max": 8.280055706811836e-15
+      },
+      "maximum_absorption_decrease": 0.0,
+      "added_absorption": 0.17777070904392145,
+      "absorption_L1": 0.17777070904392145,
+      "absorption_L1_over_emitted": 6.916357483544088e-06,
+      "frozen_brightness": {
+        "candidate_mean": 0.16393446812640944,
+        "reference_mean": 0.16393978391266106,
+        "mean_abs_difference": 5.315786251622725e-06,
+        "max_abs_difference": 0.0421483352732403,
+        "rms_difference": 0.00032340692243093864,
+        "correlation": 0.9999985812636881,
+        "all_nonzero_modes_residual_power_over_reference": 2.8374851021934974e-06,
+        "shell_weighted_absolute_power_difference": 8.801148146022178e-05,
+        "shell_weighted_residual_power_over_reference": 1.7560260606241262e-06,
+        "max_shell_relative_auto_power_difference": 0.0008957297189193802,
+        "min_shell_cross_coherence": 0.9999927664212817,
+        "shells": [
+          {
+            "k_cMpc_inv": 0.03141592653589793,
+            "full_fft_modes": 6,
+            "auto_power_ratio": 1.0008957297189194,
+            "cross_coherence": 0.9999996894806322,
+            "residual_power_over_reference": 8.218099631828567e-07
+          },
+          {
+            "k_cMpc_inv": 0.044428829381583664,
+            "full_fft_modes": 12,
+            "auto_power_ratio": 1.0001288130224257,
+            "cross_coherence": 0.9999999741079875,
+            "residual_power_over_reference": 5.593529146975747e-08
+          },
+          {
+            "k_cMpc_inv": 0.05441398092702654,
+            "full_fft_modes": 8,
+            "auto_power_ratio": 0.9997349328630504,
+            "cross_coherence": 0.9999999635442999,
+            "residual_power_over_reference": 9.046921156638135e-08
+          },
+          {
+            "k_cMpc_inv": 0.07240404461691916,
+            "full_fft_modes": 54,
+            "auto_power_ratio": 0.9998650888230329,
+            "cross_coherence": 0.9999999279895889,
+            "residual_power_over_reference": 1.485616697128054e-07
+          },
+          {
+            "k_cMpc_inv": 0.09512161329060435,
+            "full_fft_modes": 66,
+            "auto_power_ratio": 0.9999585277345918,
+            "cross_coherence": 0.9999997903386544,
+            "residual_power_over_reference": 4.197439918545582e-07
+          },
+          {
+            "k_cMpc_inv": 0.11280872981718398,
+            "full_fft_modes": 104,
+            "auto_power_ratio": 1.0000837688446202,
+            "cross_coherence": 0.9999997571029332,
+            "residual_power_over_reference": 4.87568712158757e-07
+          },
+          {
+            "k_cMpc_inv": 0.14121674267162587,
+            "full_fft_modes": 264,
+            "auto_power_ratio": 1.0000354984538005,
+            "cross_coherence": 0.9999995198096909,
+            "residual_power_over_reference": 9.607126935713887e-07
+          },
+          {
+            "k_cMpc_inv": 0.17860471065701602,
+            "full_fft_modes": 530,
+            "auto_power_ratio": 1.0000311424040909,
+            "cross_coherence": 0.9999993109530706,
+            "residual_power_over_reference": 1.378357775685958e-06
+          },
+          {
+            "k_cMpc_inv": 0.22579963249204646,
+            "full_fft_modes": 1064,
+            "auto_power_ratio": 1.0000233171127184,
+            "cross_coherence": 0.9999987580593911,
+            "residual_power_over_reference": 2.4840460963588144e-06
+          },
+          {
+            "k_cMpc_inv": 0.28662866117391755,
+            "full_fft_modes": 2228,
+            "auto_power_ratio": 0.9999578801678708,
+            "cross_coherence": 0.9999979379284711,
+            "residual_power_over_reference": 4.124499731861995e-06
+          },
+          {
+            "k_cMpc_inv": 0.36160835365360094,
+            "full_fft_modes": 4264,
+            "auto_power_ratio": 0.999944710223762,
+            "cross_coherence": 0.9999964440092577,
+            "residual_power_over_reference": 7.112549133370561e-06
+          },
+          {
+            "k_cMpc_inv": 0.4544227343778465,
+            "full_fft_modes": 8473,
+            "auto_power_ratio": 0.9999668989155276,
+            "cross_coherence": 0.9999927664212817,
+            "residual_power_over_reference": 1.4467191920764492e-05
+          }
+        ]
+      }
+    },
+    {
+      "K": 192,
+      "distance_factor": 2.0,
+      "maximum_distance": 110.85125168440814,
+      "short_retained": 0.08229126155177682,
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.938210884375,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 3.637978807091713e-12,
+        "per_source_ledger_max": 6.394884621840902e-14,
+        "per_angle_ledger_max": 1.1368683772161603e-12,
+        "independent_absorption_ledger": -3.637978807091713e-12,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16788,
+        "rays_materialized": 3223296,
+        "queries": 41492307,
+        "assignments": 10835419,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 196.734375,
+        "angles": 192,
+        "n": 32,
+        "workers": 1,
+        "seconds": 3.2876692280042334,
+        "periodic": true,
+        "maximum_distance": 110.85125168440814,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 10868187,
+        "ray_allocated_bytes": 206307328,
+        "per_source_relative_ledger_max": 2.0228788205662188e-14,
+        "per_angle_relative_ledger_max": 8.49236482749932e-15
+      },
+      "maximum_absorption_decrease": 0.0,
+      "added_absorption": 0.0822912615517086,
+      "absorption_L1": 0.0822912615517086,
+      "absorption_L1_over_emitted": 3.2016285794462542e-06,
+      "frozen_brightness": {
+        "candidate_mean": 0.16393445333582185,
+        "reference_mean": 0.1639369141521371,
+        "mean_abs_difference": 2.460816315265655e-06,
+        "max_abs_difference": 0.007012676245759686,
+        "rms_difference": 6.647115009732858e-05,
+        "correlation": 0.9999999401150468,
+        "all_nonzero_modes_residual_power_over_reference": 1.197735863654981e-07,
+        "shell_weighted_absolute_power_difference": 2.2579202267124387e-05,
+        "shell_weighted_residual_power_over_reference": 7.055276127526496e-08,
+        "max_shell_relative_auto_power_difference": 0.00035051100725369544,
+        "min_shell_cross_coherence": 0.9999996279665284,
+        "shells": [
+          {
+            "k_cMpc_inv": 0.03141592653589793,
+            "full_fft_modes": 6,
+            "auto_power_ratio": 1.0003505110072537,
+            "cross_coherence": 0.9999999807708033,
+            "residual_power_over_reference": 6.917424237715443e-08
+          },
+          {
+            "k_cMpc_inv": 0.044428829381583664,
+            "full_fft_modes": 12,
+            "auto_power_ratio": 1.000026107993327,
+            "cross_coherence": 0.9999999988966758,
+            "residual_power_over_reference": 2.377081461139289e-09
+          },
+          {
+            "k_cMpc_inv": 0.05441398092702654,
+            "full_fft_modes": 8,
+            "auto_power_ratio": 0.9999790596367809,
+            "cross_coherence": 0.9999999987545978,
+            "residual_power_over_reference": 2.6004040914895704e-09
+          },
+          {
+            "k_cMpc_inv": 0.07240404461691916,
+            "full_fft_modes": 54,
+            "auto_power_ratio": 0.9999914378065402,
+            "cross_coherence": 0.9999999981834335,
+            "residual_power_over_reference": 3.6514450337307622e-09
+          },
+          {
+            "k_cMpc_inv": 0.09512161329060435,
+            "full_fft_modes": 66,
+            "auto_power_ratio": 0.9999385523940357,
+            "cross_coherence": 0.9999999950995705,
+            "residual_power_over_reference": 1.0744538821699285e-08
+          },
+          {
+            "k_cMpc_inv": 0.11280872981718398,
+            "full_fft_modes": 104,
+            "auto_power_ratio": 1.0000345477528878,
+            "cross_coherence": 0.9999999923014843,
+            "residual_power_over_reference": 1.5695679639167837e-08
+          },
+          {
+            "k_cMpc_inv": 0.14121674267162587,
+            "full_fft_modes": 264,
+            "auto_power_ratio": 0.9999849770851947,
+            "cross_coherence": 0.9999999857244005,
+            "residual_power_over_reference": 2.8607406834918798e-08
+          },
+          {
+            "k_cMpc_inv": 0.17860471065701602,
+            "full_fft_modes": 530,
+            "auto_power_ratio": 1.0000078390148526,
+            "cross_coherence": 0.9999999811678274,
+            "residual_power_over_reference": 3.7679855464271656e-08
+          },
+          {
+            "k_cMpc_inv": 0.22579963249204646,
+            "full_fft_modes": 1064,
+            "auto_power_ratio": 0.9999772930144214,
+            "cross_coherence": 0.9999999560033666,
+            "residual_power_over_reference": 8.81211714918928e-08
+          },
+          {
+            "k_cMpc_inv": 0.28662866117391755,
+            "full_fft_modes": 2228,
+            "auto_power_ratio": 0.9999804068765148,
+            "cross_coherence": 0.9999999235884119,
+            "residual_power_over_reference": 1.529176524530728e-07
+          },
+          {
+            "k_cMpc_inv": 0.36160835365360094,
+            "full_fft_modes": 4264,
+            "auto_power_ratio": 0.9999816725567873,
+            "cross_coherence": 0.9999998527350089,
+            "residual_power_over_reference": 2.946112575015464e-07
+          },
+          {
+            "k_cMpc_inv": 0.4544227343778465,
+            "full_fft_modes": 8473,
+            "auto_power_ratio": 0.9999935305858078,
+            "cross_coherence": 0.9999996279665284,
+            "residual_power_over_reference": 7.440749994761984e-07
+          }
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "K48_rotations_vs_original_K768": {
+      "xHI": {
+        "mean_abs_difference": 0.004481184763921306,
+        "max_abs_difference": 0.25247825568973103,
+        "shell_weighted_absolute_power_difference": 0.0029190708953104327,
+        "max_shell_relative_auto_power_difference": 0.011700433418069811,
+        "all_nonzero_modes_residual_power_over_reference": 0.0040859134145974545
+      },
+      "neutral_density": {
+        "mean_abs_difference": 0.004022009777145916,
+        "max_abs_difference": 0.22178367127471313,
+        "shell_weighted_absolute_power_difference": 0.002994275754573214,
+        "max_shell_relative_auto_power_difference": 0.011224034835102037,
+        "all_nonzero_modes_residual_power_over_reference": 0.004400521886182484
+      },
+      "frozen_brightness_proxy": {
+        "mean_abs_difference": 0.003941204423079631,
+        "max_abs_difference": 0.21724041306728334,
+        "shell_weighted_absolute_power_difference": 0.002996976697263395,
+        "max_shell_relative_auto_power_difference": 0.011229276036271885,
+        "all_nonzero_modes_residual_power_over_reference": 0.004405136566514913
+      }
+    },
+    "K192_rotations_vs_original_K768": {
+      "xHI": {
+        "mean_abs_difference": 0.0013809626764803213,
+        "max_abs_difference": 0.07421225990042901,
+        "shell_weighted_absolute_power_difference": 0.0005094712503978408,
+        "max_shell_relative_auto_power_difference": 0.0031439855638457637,
+        "all_nonzero_modes_residual_power_over_reference": 0.0003780078656305667
+      },
+      "neutral_density": {
+        "mean_abs_difference": 0.0012447320662073652,
+        "max_abs_difference": 0.05840843100666864,
+        "shell_weighted_absolute_power_difference": 0.0005175444407121157,
+        "max_shell_relative_auto_power_difference": 0.0027340484855598035,
+        "all_nonzero_modes_residual_power_over_reference": 0.00040972890741838836
+      },
+      "frozen_brightness_proxy": {
+        "mean_abs_difference": 0.00121972278524054,
+        "max_abs_difference": 0.05723109694630298,
+        "shell_weighted_absolute_power_difference": 0.0005175313119055026,
+        "max_shell_relative_auto_power_difference": 0.0027374334123040356,
+        "all_nonzero_modes_residual_power_over_reference": 0.00041014620741794156
+      }
+    }
+  }
+}

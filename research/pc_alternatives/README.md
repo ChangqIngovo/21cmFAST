@@ -4,7 +4,14 @@ Research snapshot, 23 October 2026. The production `global-budget` mode at
 `f35833db4470fce8742332ee003773a343c4b1c6` is unchanged. Everything here is isolated
 research, not a newly selected production ionization mode.
 
-**Latest verification:** [VALIDATION_REPORT_zh.md](VALIDATION_REPORT_zh.md).
+**Latest repairs and verification:** [ACCURACY_REPAIR_REPORT_zh.md](ACCURACY_REPAIR_REPORT_zh.md).
+Includes controlled angular/range refinement, explicit unresolved-coverage and
+resource failures, persistent rate histories and finite-c photon state,
+finite-opacity multi-beam recombination, actual 3D chord optical depths, and
+independent spatial/temporal convergence tests. These are distinct research
+components; a fully coupled finite-c Qin20 evolution is still unfinished.
+
+**Previous verification:** [VALIDATION_REPORT_zh.md](VALIDATION_REPORT_zh.md).
 An independent path/event reference found and now covers weak-absorption
 cancellation and geometric-nudge errors; the research core is repaired.
 Separate angular/grid, native emissivity, recombination, time/state, observable
@@ -52,6 +59,13 @@ initial version. Do not replace a failed test by an unrelated easier one.
 
 | Question | Evidence |
 |---|---|
+| Current repairs, measured errors, costs and remaining integration | `ACCURACY_REPAIR_REPORT_zh.md`, `accuracy_repair_regression.json` |
+| Fail-closed angular/range refinement and unresolved tiny targets | `angular_accuracy.py`, `validation_angular_accuracy.md`, `validation_accuracy_acceptance.md` |
+| Fresh emission, jumps, checkpoints and real native rate convergence | `source_history.py`, `validation_source_history.md` |
+| Finite-c arrival state, source-off photons and separated time/space/angle tests | `finite_c_packets.py`, `validation_finite_c.md` |
+| Coupled finite-opacity recombination and per-path optical depths | `coupled_opacity.py`, `ray_segments.py`, `validation_coupled_opacity.md` |
+| 3D chords + continuously varying sources + chemistry against simultaneous ODE | `validation_coupled_3d.py`, `.json` |
+| Concurrent numerical validation and Gadi batch template | `run_accuracy_suite.py`, `gadi_accuracy_validate.pbs` |
 | Existing algorithms and primary sources | `literature.md`, `sources.json` |
 | Why global/scalar constraints are insufficient | `theory.md`, `counterexamples.py` |
 | Can native Qin20 radius statistics be one additive field? | `native_source_notes.md`, `native_source_audit.py` |

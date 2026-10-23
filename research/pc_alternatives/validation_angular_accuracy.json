@@ -1,0 +1,5054 @@
+{
+  "scope": "Synthetic numerical validation of controlled angular/range convergence; fixed-rate, infinite-c, opaque voxel-front, no recombination. No 21cmFAST production integration changed.",
+  "algorithm": "Refine by factor four; two fixed quadrature rotations; two consecutive levels below the photon-count L1 tolerance; strict unresolved failure by default; separate monotone retained-photon range bound.",
+  "no_escape_sphere": {
+    "radius_cells": 8,
+    "grid": 128,
+    "photons": 2144.660584850632,
+    "low_K48_rejected": true,
+    "low_K48_continuum_atom_l1_over_Q": 1.5696084397640586,
+    "corrected_continuum_atom_l1_over_Q": 0.05680486574864784,
+    "corrected_vs_K196608_atom_l1_over_Q": 0.0023862508717121117,
+    "independent_rotation_atom_l1_over_Q": 0.0036505858963357613,
+    "old": {
+      "solver_audit": {
+        "photons": 2144.660584850632,
+        "absorbed": 2144.6605848506306,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 1.3642420526593924e-12,
+        "per_source_ledger_max": 9.094947017729282e-13,
+        "per_angle_ledger_max": 7.105427357601002e-15,
+        "independent_absorption_ledger": -2.2737367544323206e-12,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 2119,
+        "rays_materialized": 48,
+        "queries": 4508,
+        "assignments": 2254,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 0.0029296875,
+        "angles": 48,
+        "n": 128,
+        "workers": 1,
+        "seconds": 0.14788193999993382,
+        "periodic": false,
+        "maximum_distance": 221.70250336881628,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 48,
+        "heap_updates": 2255,
+        "ray_allocated_bytes": 262144,
+        "per_source_relative_ledger_max": 4.2407395752846894e-16,
+        "per_angle_relative_ledger_max": 1.5902773407317583e-16
+      },
+      "controller": null,
+      "relative_ledger_errors": {
+        "ledger_residual": 6.361109362927034e-16,
+        "per_source_ledger_max": 4.2407395752846894e-16,
+        "per_angle_ledger_max": 3.3130777931911636e-18,
+        "independent_absorption_ledger": 1.0601848938211723e-15
+      }
+    },
+    "corrected": {
+      "solver_audit": {
+        "photons": 2144.660584850632,
+        "absorbed": 2144.660584850632,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 3.374225343577564e-10,
+        "per_angle_ledger_max": 1.3877787807814457e-17,
+        "independent_absorption_ledger": 3.374225343577564e-10,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 1885,
+        "rays_materialized": 49152,
+        "queries": 1173712,
+        "assignments": 586856,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 3.0,
+        "angles": 49152,
+        "n": 128,
+        "workers": 1,
+        "seconds": 0.2072112570022,
+        "periodic": false,
+        "maximum_distance": 221.70250336881628,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 630,
+        "heap_updates": 586857,
+        "ray_allocated_bytes": 3145728,
+        "per_source_relative_ledger_max": 1.5733143824306198e-13,
+        "per_angle_relative_ledger_max": 3.1805546814635167e-16
+      },
+      "controller": {
+        "status": "empirically_converged",
+        "stop_reason": "empirical_checks_satisfied",
+        "angular_convergence_observed": true,
+        "range_bound_satisfied": true,
+        "angular_tolerance_photons": 64.33981754551895,
+        "range_tolerance_photons": 2.144660584850632,
+        "selected_angles": 49152,
+        "selected_phase": 0,
+        "selected_range": 221.70250336881628,
+        "selected_range_atom_l1_bound": 0.0,
+        "required_successes": 2,
+        "resource_checks": [
+          {
+            "angles": 48,
+            "maximum_materialized_rays": 48,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 3072,
+            "estimated_angular_storage_bytes": 265216
+          },
+          {
+            "angles": 192,
+            "maximum_materialized_rays": 192,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 12288,
+            "estimated_angular_storage_bytes": 274432
+          },
+          {
+            "angles": 768,
+            "maximum_materialized_rays": 768,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 49152,
+            "estimated_angular_storage_bytes": 311296
+          },
+          {
+            "angles": 3072,
+            "maximum_materialized_rays": 3072,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 196608,
+            "estimated_angular_storage_bytes": 458752
+          },
+          {
+            "angles": 12288,
+            "maximum_materialized_rays": 12288,
+            "conservative_ray_bytes": 786432,
+            "direction_workspace_allowance_bytes": 786432,
+            "estimated_angular_storage_bytes": 1572864
+          },
+          {
+            "angles": 49152,
+            "maximum_materialized_rays": 49152,
+            "conservative_ray_bytes": 3145728,
+            "direction_workspace_allowance_bytes": 3145728,
+            "estimated_angular_storage_bytes": 6291456
+          }
+        ],
+        "maximum_ray_bytes": 536870912,
+        "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+        "rotations": [
+          [
+            [
+              0.3823075933660849,
+              -0.6670624953149941,
+              0.6394282847972598
+            ],
+            [
+              0.9219362027428047,
+              0.2287466552956151,
+              -0.31258375799655175
+            ],
+            [
+              0.062245820155332865,
+              0.7090152290573188,
+              0.7024406471994538
+            ]
+          ],
+          [
+            [
+              0.7510050524892867,
+              -0.5246834408194613,
+              0.40087242118336686
+            ],
+            [
+              -0.024885471502913425,
+              0.5841874622735712,
+              0.8112371553562142
+            ],
+            [
+              -0.6598273444194637,
+              -0.6192191016532159,
+              0.42567074095378327
+            ]
+          ]
+        ],
+        "history": [
+          {
+            "angles": 48,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 3833.3211697012607,
+                "source_category_l1": 2.7284841053187847e-12,
+                "maximum": 3833.3211697012607
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 3898.9120315758705,
+                "source_category_l1": 1.8189894035458565e-12,
+                "maximum": 3898.9120315758705
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 3935.3211697012607,
+                "source_category_l1": 9.094947017729282e-13,
+                "maximum": 3935.3211697012607
+              }
+            ],
+            "refinement_comparisons": [],
+            "phase_maximum": 3935.3211697012607,
+            "refinement_maximum": null,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.14218128799984697
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.14679868100211024
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.1526605280014337
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 192,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 1916.2294840549362,
+                "source_category_l1": 1.3642420526593924e-12,
+                "maximum": 1916.2294840549362
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 1910.2460534900304,
+                "source_category_l1": 4.547473508864641e-12,
+                "maximum": 1910.2460534900304
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 1868.1814202744338,
+                "source_category_l1": 3.183231456205249e-12,
+                "maximum": 1868.1814202744338
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 3462.575029598383,
+                "source_category_l1": 4.092726157978177e-12,
+                "maximum": 3462.575029598383
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 3471.146497252949,
+                "source_category_l1": 0.0,
+                "maximum": 3471.146497252949
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 3496.6973581508887,
+                "source_category_l1": 2.2737367544323206e-12,
+                "maximum": 3496.6973581508887
+              }
+            ],
+            "phase_maximum": 1916.2294840549362,
+            "refinement_maximum": 3496.6973581508887,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.15102421000483446
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.14592230699781794
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.16429565400176216
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 768,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 223.38253912741516,
+                "source_category_l1": 9.094947017729282e-13,
+                "maximum": 223.38253912741516
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 215.308575705403,
+                "source_category_l1": 1.8189894035458565e-12,
+                "maximum": 215.308575705403
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 223.63269850014964,
+                "source_category_l1": 2.7284841053187847e-12,
+                "maximum": 223.63269850014964
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 1569.0166392865444,
+                "source_category_l1": 5.4569682106375694e-12,
+                "maximum": 1569.0166392865444
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 1571.297012384235,
+                "source_category_l1": 5.002220859751105e-12,
+                "maximum": 1571.297012384235
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 1549.1445583079922,
+                "source_category_l1": 9.094947017729282e-13,
+                "maximum": 1549.1445583079922
+              }
+            ],
+            "phase_maximum": 223.63269850014964,
+            "refinement_maximum": 1571.297012384235,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.10239634699973976
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.12399147899850504
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.13675684099871432
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 3072,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 75.2458497581712,
+                "source_category_l1": 5.002220859751105e-11,
+                "maximum": 75.2458497581712
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 71.20496057864263,
+                "source_category_l1": 6.275513442233205e-11,
+                "maximum": 71.20496057864263
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 78.89697800114548,
+                "source_category_l1": 1.2732925824820995e-11,
+                "maximum": 78.89697800114548
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 159.5316049619677,
+                "source_category_l1": 4.865796654485166e-11,
+                "maximum": 159.5316049619677
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 173.87679195103726,
+                "source_category_l1": 2.2737367544323206e-12,
+                "maximum": 173.87679195103726
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 166.34850561555035,
+                "source_category_l1": 1.2278178473934531e-11,
+                "maximum": 166.34850561555035
+              }
+            ],
+            "phase_maximum": 78.89697800114548,
+            "refinement_maximum": 173.87679195103726,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.18310826500237454
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.16895343199576018
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.14229349800007185
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 12288,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 26.960045606421367,
+                "source_category_l1": 5.638867150992155e-11,
+                "maximum": 26.960045606421367
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 25.95064204267939,
+                "source_category_l1": 1.291482476517558e-10,
+                "maximum": 25.95064204267939
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 28.413623943468572,
+                "source_category_l1": 7.275957614183426e-11,
+                "maximum": 28.413623943468572
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 51.9690321621313,
+                "source_category_l1": 8.913048077374697e-11,
+                "maximum": 51.9690321621313
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 59.55977481559412,
+                "source_category_l1": 1.7280399333685637e-11,
+                "maximum": 59.55977481559412
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 58.846538699097216,
+                "source_category_l1": 1.0277290130034089e-10,
+                "maximum": 58.846538699097216
+              }
+            ],
+            "phase_maximum": 28.413623943468572,
+            "refinement_maximum": 59.55977481559412,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.1178161360003287
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.11774850800429704
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.13717994699982228
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": true,
+            "consecutive_successes": 1
+          },
+          {
+            "angles": 49152,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 8.731670608630505,
+                "source_category_l1": 3.878994903061539e-10,
+                "maximum": 8.731670608630505
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 8.621688862762781,
+                "source_category_l1": 3.1013769330456853e-10,
+                "maximum": 8.621688862762781
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 10.116674348538629,
+                "source_category_l1": 7.776179700158536e-11,
+                "maximum": 10.116674348538629
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 17.73225826859562,
+                "source_category_l1": 2.992237568832934e-10,
+                "maximum": 17.73225826859562
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 22.434817686705617,
+                "source_category_l1": 3.228706191293895e-11,
+                "maximum": 22.434817686705617
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 20.7203191222231,
+                "source_category_l1": 1.1823431123048067e-10,
+                "maximum": 20.7203191222231
+              }
+            ],
+            "phase_maximum": 10.116674348538629,
+            "refinement_maximum": 22.434817686705617,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.2072112570022
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.24206378999951994
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 221.70250336881628,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.2832588189994567
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": true,
+            "consecutive_successes": 2
+          }
+        ],
+        "kernel_calls": 18,
+        "total_seconds": 7.187205936003011,
+        "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+        "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+        "spatial_or_physical_accuracy_certified": false,
+        "retained_photons_are_resumable": false,
+        "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+      },
+      "relative_ledger_errors": {
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 1.5733143824306198e-13,
+        "per_angle_ledger_max": 6.470855064826491e-21,
+        "independent_absorption_ledger": 1.5733143824306198e-13
+      }
+    },
+    "high_K196608": {
+      "solver_audit": {
+        "photons": 2144.660584850632,
+        "absorbed": 2144.660584850637,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": -5.002220859751105e-12,
+        "per_source_ledger_max": 1.4238139556255192e-09,
+        "per_angle_ledger_max": 3.469446951953614e-18,
+        "independent_absorption_ledger": 1.4288161764852703e-09,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 1887,
+        "rays_materialized": 196608,
+        "queries": 4696250,
+        "assignments": 2348125,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 12.0,
+        "angles": 196608,
+        "n": 128,
+        "workers": 1,
+        "seconds": 0.5970710850015166,
+        "periodic": false,
+        "maximum_distance": 221.70250336881628,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 630,
+        "heap_updates": 2348126,
+        "ray_allocated_bytes": 12582912,
+        "per_source_relative_ledger_max": 6.638877805108181e-13,
+        "per_angle_relative_ledger_max": 3.1805546814635167e-16
+      },
+      "controller": null,
+      "relative_ledger_errors": {
+        "ledger_residual": 2.332406766406579e-15,
+        "per_source_ledger_max": 6.638877805108181e-13,
+        "per_angle_ledger_max": 1.6177137662066228e-21,
+        "independent_absorption_ledger": 6.662201872772247e-13
+      }
+    },
+    "limitation": "The continuum sphere error is a spatial opaque-voxel-front error after angular convergence; it remains larger than the controller angular tolerance."
+  },
+  "spatial_sequence": {
+    "description": "Same physical sphere, progressively smaller cells; each grid has its own accepted angular convergence checks.",
+    "rows": [
+      {
+        "radius_cells": 4,
+        "physical_cell_width_over_R": 0.25,
+        "continuum_atom_l1_over_Q": 0.11425974596653407,
+        "solver_audit": {
+          "photons": 268.082573106329,
+          "absorbed": 268.0825731063289,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 1.1368683772161603e-13,
+          "per_source_ledger_max": 3.2457592169521376e-11,
+          "per_angle_ledger_max": 8.673617379884035e-19,
+          "independent_absorption_ledger": -3.257127900724299e-11,
+          "capacity_excess": 0.0,
+          "negative_absorption": 0.0,
+          "events": 203,
+          "rays_materialized": 49152,
+          "queries": 577662,
+          "assignments": 288831,
+          "stale_queue_entries": 0,
+          "ray_storage_megabytes": 3.0,
+          "angles": 49152,
+          "n": 24,
+          "workers": 1,
+          "seconds": 0.024754652004048694,
+          "periodic": false,
+          "maximum_distance": 41.569219381653056,
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+          "peak_heap_nodes": 162,
+          "heap_updates": 288832,
+          "ray_allocated_bytes": 3145728,
+          "per_source_relative_ledger_max": 1.2107311487437789e-13,
+          "per_angle_relative_ledger_max": 1.5902773407317583e-16
+        },
+        "controller": {
+          "status": "empirically_converged",
+          "stop_reason": "empirical_checks_satisfied",
+          "angular_convergence_observed": true,
+          "range_bound_satisfied": true,
+          "angular_tolerance_photons": 8.04247719318987,
+          "range_tolerance_photons": 0.268082573106329,
+          "selected_angles": 49152,
+          "selected_phase": 0,
+          "selected_range": 41.569219381653056,
+          "selected_range_atom_l1_bound": 0.0,
+          "required_successes": 2,
+          "resource_checks": [
+            {
+              "angles": 48,
+              "maximum_materialized_rays": 48,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 3072,
+              "estimated_angular_storage_bytes": 265216
+            },
+            {
+              "angles": 192,
+              "maximum_materialized_rays": 192,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 12288,
+              "estimated_angular_storage_bytes": 274432
+            },
+            {
+              "angles": 768,
+              "maximum_materialized_rays": 768,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 49152,
+              "estimated_angular_storage_bytes": 311296
+            },
+            {
+              "angles": 3072,
+              "maximum_materialized_rays": 3072,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 196608,
+              "estimated_angular_storage_bytes": 458752
+            },
+            {
+              "angles": 12288,
+              "maximum_materialized_rays": 12288,
+              "conservative_ray_bytes": 786432,
+              "direction_workspace_allowance_bytes": 786432,
+              "estimated_angular_storage_bytes": 1572864
+            },
+            {
+              "angles": 49152,
+              "maximum_materialized_rays": 49152,
+              "conservative_ray_bytes": 3145728,
+              "direction_workspace_allowance_bytes": 3145728,
+              "estimated_angular_storage_bytes": 6291456
+            }
+          ],
+          "maximum_ray_bytes": 536870912,
+          "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+          "rotations": [
+            [
+              [
+                0.3823075933660849,
+                -0.6670624953149941,
+                0.6394282847972598
+              ],
+              [
+                0.9219362027428047,
+                0.2287466552956151,
+                -0.31258375799655175
+              ],
+              [
+                0.062245820155332865,
+                0.7090152290573188,
+                0.7024406471994538
+              ]
+            ],
+            [
+              [
+                0.7510050524892867,
+                -0.5246834408194613,
+                0.40087242118336686
+              ],
+              [
+                -0.024885471502913425,
+                0.5841874622735712,
+                0.8112371553562142
+              ],
+              [
+                -0.6598273444194637,
+                -0.6192191016532159,
+                0.42567074095378327
+              ]
+            ]
+          ],
+          "history": [
+            {
+              "angles": 48,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 254.53371554950587,
+                  "source_category_l1": 5.684341886080802e-14,
+                  "maximum": 254.53371554950587
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 249.56542990512673,
+                  "source_category_l1": 1.1368683772161603e-13,
+                  "maximum": 249.56542990512673
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 263.8296178057211,
+                  "source_category_l1": 5.684341886080802e-14,
+                  "maximum": 263.8296178057211
+                }
+              ],
+              "refinement_comparisons": [],
+              "phase_maximum": 263.8296178057211,
+              "refinement_maximum": null,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0006637700062128715
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0006148009997559711
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0005803259991807863
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 192,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 44.49689970206826,
+                  "source_category_l1": 6.252776074688882e-13,
+                  "maximum": 44.49689970206826
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 45.607997359687296,
+                  "source_category_l1": 4.547473508864641e-13,
+                  "maximum": 45.607997359687296
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 48.91405785559757,
+                  "source_category_l1": 1.7053025658242404e-13,
+                  "maximum": 48.91405785559757
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 198.46392763484818,
+                  "source_category_l1": 5.115907697472721e-13,
+                  "maximum": 198.46392763484818
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 206.45869509515524,
+                  "source_category_l1": 1.7053025658242404e-13,
+                  "maximum": 206.45869509515524
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 190.27833040633382,
+                  "source_category_l1": 5.684341886080802e-14,
+                  "maximum": 190.27833040633382
+                }
+              ],
+              "phase_maximum": 48.91405785559757,
+              "refinement_maximum": 206.45869509515524,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0007170700046117418
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.000817963998997584
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0007461029963451438
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 768,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 15.363538683964292,
+                  "source_category_l1": 9.663381206337363e-13,
+                  "maximum": 15.363538683964292
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 14.602940920291841,
+                  "source_category_l1": 3.410605131648481e-13,
+                  "maximum": 14.602940920291841
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 16.980554895991,
+                  "source_category_l1": 6.252776074688882e-13,
+                  "maximum": 16.980554895991
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 31.191872498110726,
+                  "source_category_l1": 1.0231815394945443e-12,
+                  "maximum": 31.191872498110726
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 36.48565901320224,
+                  "source_category_l1": 5.684341886080801e-13,
+                  "maximum": 36.48565901320224
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 33.78556947162213,
+                  "source_category_l1": 2.2737367544323206e-13,
+                  "maximum": 33.78556947162213
+                }
+              ],
+              "phase_maximum": 16.980554895991,
+              "refinement_maximum": 36.48565901320224,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0008378080019610934
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0008465020000585355
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0009323679987573996
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 3072,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 5.298554741779181,
+                  "source_category_l1": 3.979039320256561e-13,
+                  "maximum": 5.298554741779181
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 4.97275901038401,
+                  "source_category_l1": 2.3874235921539366e-12,
+                  "maximum": 4.97275901038401
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 4.729878474674558,
+                  "source_category_l1": 1.9895196601282805e-12,
+                  "maximum": 4.729878474674558
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 10.524747064871562,
+                  "source_category_l1": 6.252776074688882e-13,
+                  "maximum": 10.524747064871562
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 12.346513652433892,
+                  "source_category_l1": 5.684341886080802e-14,
+                  "maximum": 12.346513652433892
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 12.942589757206619,
+                  "source_category_l1": 2.6716406864579767e-12,
+                  "maximum": 12.942589757206619
+                }
+              ],
+              "phase_maximum": 5.298554741779181,
+              "refinement_maximum": 12.942589757206619,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.001657857996178791
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0017764069998520426
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0017972560017369688
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 12288,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 1.733296845884814,
+                  "source_category_l1": 2.580691216280684e-11,
+                  "maximum": 1.733296845884814
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 1.893342294309995,
+                  "source_category_l1": 5.240963218966499e-11,
+                  "maximum": 1.893342294309995
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 1.8962836390741453,
+                  "source_category_l1": 2.660272002685815e-11,
+                  "maximum": 1.8962836390741453
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 3.2574302627698377,
+                  "source_category_l1": 4.087041816092096e-11,
+                  "maximum": 3.2574302627698377
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 3.9396701059475205,
+                  "source_category_l1": 1.4665602066088468e-11,
+                  "maximum": 3.9396701059475205
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 3.8183120299443476,
+                  "source_category_l1": 1.3926637620897964e-11,
+                  "maximum": 3.8183120299443476
+                }
+              ],
+              "phase_maximum": 1.8962836390741453,
+              "refinement_maximum": 3.9396701059475205,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.010125382999831345
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.00855416799458908
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0047912640002323315
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 1
+            },
+            {
+              "angles": 49152,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 0.5816016903492311,
+                  "source_category_l1": 8.998313205665909e-11,
+                  "maximum": 0.5816016903492311
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 0.6328697514286923,
+                  "source_category_l1": 8.003553375601768e-11,
+                  "maximum": 0.6328697514286923
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 0.6375601526623487,
+                  "source_category_l1": 9.947598300641403e-12,
+                  "maximum": 0.6375601526623487
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 1.1231584426439383,
+                  "source_category_l1": 7.338485374930315e-11,
+                  "maximum": 1.1231584426439383
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 1.4775808472242697,
+                  "source_category_l1": 4.240519047016278e-11,
+                  "maximum": 1.4775808472242697
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 1.5057204892705196,
+                  "source_category_l1": 5.906031219637953e-11,
+                  "maximum": 1.5057204892705196
+                }
+              ],
+              "phase_maximum": 0.6375601526623487,
+              "refinement_maximum": 1.5057204892705196,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.024754652004048694
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.021876917002373375
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 41.569219381653056,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.02755752299708547
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 2
+            }
+          ],
+          "kernel_calls": 18,
+          "total_seconds": 0.15651026499836007,
+          "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+          "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+          "spatial_or_physical_accuracy_certified": false,
+          "retained_photons_are_resumable": false,
+          "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+        },
+        "relative_ledger_errors": {
+          "ledger_residual": 4.2407395752846894e-16,
+          "per_source_ledger_max": 1.2107311487437789e-13,
+          "per_angle_ledger_max": 3.2354275324132457e-21,
+          "independent_absorption_ledger": 1.2149718883190634e-13
+        }
+      },
+      {
+        "radius_cells": 8,
+        "physical_cell_width_over_R": 0.125,
+        "continuum_atom_l1_over_Q": 0.056804865748647834,
+        "solver_audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 2144.6605848506324,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -4.547473508864641e-13,
+          "per_source_ledger_max": 3.374225343577564e-10,
+          "per_angle_ledger_max": 1.3877787807814457e-17,
+          "independent_absorption_ledger": 3.3787728170864284e-10,
+          "capacity_excess": 0.0,
+          "negative_absorption": 0.0,
+          "events": 1885,
+          "rays_materialized": 49152,
+          "queries": 1173712,
+          "assignments": 586856,
+          "stale_queue_entries": 0,
+          "ray_storage_megabytes": 3.0,
+          "angles": 49152,
+          "n": 40,
+          "workers": 1,
+          "seconds": 0.04654550799750723,
+          "periodic": false,
+          "maximum_distance": 69.28203230275508,
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+          "peak_heap_nodes": 630,
+          "heap_updates": 586857,
+          "ray_allocated_bytes": 3145728,
+          "per_source_relative_ledger_max": 1.5733143824306198e-13,
+          "per_angle_relative_ledger_max": 3.1805546814635167e-16
+        },
+        "controller": {
+          "status": "empirically_converged",
+          "stop_reason": "empirical_checks_satisfied",
+          "angular_convergence_observed": true,
+          "range_bound_satisfied": true,
+          "angular_tolerance_photons": 64.33981754551895,
+          "range_tolerance_photons": 2.144660584850632,
+          "selected_angles": 49152,
+          "selected_phase": 0,
+          "selected_range": 69.28203230275508,
+          "selected_range_atom_l1_bound": 0.0,
+          "required_successes": 2,
+          "resource_checks": [
+            {
+              "angles": 48,
+              "maximum_materialized_rays": 48,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 3072,
+              "estimated_angular_storage_bytes": 265216
+            },
+            {
+              "angles": 192,
+              "maximum_materialized_rays": 192,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 12288,
+              "estimated_angular_storage_bytes": 274432
+            },
+            {
+              "angles": 768,
+              "maximum_materialized_rays": 768,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 49152,
+              "estimated_angular_storage_bytes": 311296
+            },
+            {
+              "angles": 3072,
+              "maximum_materialized_rays": 3072,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 196608,
+              "estimated_angular_storage_bytes": 458752
+            },
+            {
+              "angles": 12288,
+              "maximum_materialized_rays": 12288,
+              "conservative_ray_bytes": 786432,
+              "direction_workspace_allowance_bytes": 786432,
+              "estimated_angular_storage_bytes": 1572864
+            },
+            {
+              "angles": 49152,
+              "maximum_materialized_rays": 49152,
+              "conservative_ray_bytes": 3145728,
+              "direction_workspace_allowance_bytes": 3145728,
+              "estimated_angular_storage_bytes": 6291456
+            }
+          ],
+          "maximum_ray_bytes": 536870912,
+          "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+          "rotations": [
+            [
+              [
+                0.3823075933660849,
+                -0.6670624953149941,
+                0.6394282847972598
+              ],
+              [
+                0.9219362027428047,
+                0.2287466552956151,
+                -0.31258375799655175
+              ],
+              [
+                0.062245820155332865,
+                0.7090152290573188,
+                0.7024406471994538
+              ]
+            ],
+            [
+              [
+                0.7510050524892867,
+                -0.5246834408194613,
+                0.40087242118336686
+              ],
+              [
+                -0.024885471502913425,
+                0.5841874622735712,
+                0.8112371553562142
+              ],
+              [
+                -0.6598273444194637,
+                -0.6192191016532159,
+                0.42567074095378327
+              ]
+            ]
+          ],
+          "history": [
+            {
+              "angles": 48,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 2842.2431112618706,
+                  "source_category_l1": 4.430400997896868,
+                  "maximum": 2842.2431112618706
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 2891.507909542294,
+                  "source_category_l1": 25.900804437050397,
+                  "maximum": 2891.507909542294
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 2923.2927090433454,
+                  "source_category_l1": 21.47040343915353,
+                  "maximum": 2923.2927090433454
+                }
+              ],
+              "refinement_comparisons": [],
+              "phase_maximum": 2923.2927090433454,
+              "refinement_maximum": null,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.00450636899768142
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0028548409973154776
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0031250329993781634
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 192,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 1916.2294840549362,
+                  "source_category_l1": 1.3642420526593924e-12,
+                  "maximum": 1916.2294840549362
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 1910.2460534900304,
+                  "source_category_l1": 4.547473508864641e-12,
+                  "maximum": 1910.2460534900304
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 1868.1814202744338,
+                  "source_category_l1": 3.183231456205249e-12,
+                  "maximum": 1868.1814202744338
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 2964.1436006281624,
+                  "source_category_l1": 996.8628579404408,
+                  "maximum": 2964.1436006281624
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 2970.4998677837793,
+                  "source_category_l1": 1001.293258938339,
+                  "maximum": 2970.4998677837793
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 2985.3155269621425,
+                  "source_category_l1": 1022.7636623774958,
+                  "maximum": 2985.3155269621425
+                }
+              ],
+              "phase_maximum": 1916.2294840549362,
+              "refinement_maximum": 2985.3155269621425,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.002726139995502308
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0032394640002166852
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0038558919986826368
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 768,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 223.38253912741516,
+                  "source_category_l1": 9.094947017729282e-13,
+                  "maximum": 223.38253912741516
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 215.308575705403,
+                  "source_category_l1": 1.8189894035458565e-12,
+                  "maximum": 215.308575705403
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 223.63269850014964,
+                  "source_category_l1": 2.7284841053187847e-12,
+                  "maximum": 223.63269850014964
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 1569.0166392865444,
+                  "source_category_l1": 5.4569682106375694e-12,
+                  "maximum": 1569.0166392865444
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 1571.297012384235,
+                  "source_category_l1": 5.002220859751105e-12,
+                  "maximum": 1571.297012384235
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 1549.1445583079922,
+                  "source_category_l1": 9.094947017729282e-13,
+                  "maximum": 1549.1445583079922
+                }
+              ],
+              "phase_maximum": 223.63269850014964,
+              "refinement_maximum": 1571.297012384235,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.0033707799957483076
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.003650318998552393
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.00334340900008101
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 3072,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 75.2458497581712,
+                  "source_category_l1": 5.002220859751105e-11,
+                  "maximum": 75.2458497581712
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 71.20496057864263,
+                  "source_category_l1": 6.275513442233205e-11,
+                  "maximum": 71.20496057864263
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 78.89697800114548,
+                  "source_category_l1": 1.2732925824820995e-11,
+                  "maximum": 78.89697800114548
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 159.5316049619677,
+                  "source_category_l1": 4.865796654485166e-11,
+                  "maximum": 159.5316049619677
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 173.87679195103726,
+                  "source_category_l1": 2.2737367544323206e-12,
+                  "maximum": 173.87679195103726
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 166.34850561555035,
+                  "source_category_l1": 1.2278178473934531e-11,
+                  "maximum": 166.34850561555035
+                }
+              ],
+              "phase_maximum": 78.89697800114548,
+              "refinement_maximum": 173.87679195103726,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.007949473001644947
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.008041355999012012
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.007224414999654982
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 12288,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 26.960045606421367,
+                  "source_category_l1": 5.638867150992155e-11,
+                  "maximum": 26.960045606421367
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 25.95064204267939,
+                  "source_category_l1": 1.291482476517558e-10,
+                  "maximum": 25.95064204267939
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 28.413623943468572,
+                  "source_category_l1": 7.275957614183426e-11,
+                  "maximum": 28.413623943468572
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 51.9690321621313,
+                  "source_category_l1": 8.913048077374697e-11,
+                  "maximum": 51.9690321621313
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 59.55977481559412,
+                  "source_category_l1": 1.7280399333685637e-11,
+                  "maximum": 59.55977481559412
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 58.846538699097216,
+                  "source_category_l1": 1.0277290130034089e-10,
+                  "maximum": 58.846538699097216
+                }
+              ],
+              "phase_maximum": 28.413623943468572,
+              "refinement_maximum": 59.55977481559412,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.017036209006619174
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.01835635199677199
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.015322309998737182
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 1
+            },
+            {
+              "angles": 49152,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 8.731670608630505,
+                  "source_category_l1": 3.878994903061539e-10,
+                  "maximum": 8.731670608630505
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 8.621688862762781,
+                  "source_category_l1": 3.1013769330456853e-10,
+                  "maximum": 8.621688862762781
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 10.116674348538629,
+                  "source_category_l1": 7.776179700158536e-11,
+                  "maximum": 10.116674348538629
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 17.73225826859562,
+                  "source_category_l1": 2.992237568832934e-10,
+                  "maximum": 17.73225826859562
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 22.434817686705617,
+                  "source_category_l1": 3.228706191293895e-11,
+                  "maximum": 22.434817686705617
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 20.7203191222231,
+                  "source_category_l1": 1.1823431123048067e-10,
+                  "maximum": 20.7203191222231
+                }
+              ],
+              "phase_maximum": 10.116674348538629,
+              "refinement_maximum": 22.434817686705617,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.04654550799750723
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.053953711001668125
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 69.28203230275508,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.15438302799884696
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 2
+            }
+          ],
+          "kernel_calls": 18,
+          "total_seconds": 0.49828947099740617,
+          "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+          "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+          "spatial_or_physical_accuracy_certified": false,
+          "retained_photons_are_resumable": false,
+          "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+        },
+        "relative_ledger_errors": {
+          "ledger_residual": 2.1203697876423447e-16,
+          "per_source_ledger_max": 1.5733143824306198e-13,
+          "per_angle_ledger_max": 6.470855064826491e-21,
+          "independent_absorption_ledger": 1.575434752218262e-13
+        }
+      },
+      {
+        "radius_cells": 12,
+        "physical_cell_width_over_R": 0.08333333333333333,
+        "continuum_atom_l1_over_Q": 0.03959439048478597,
+        "solver_audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 7238.229473870893,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -1.000444171950221e-11,
+          "per_source_ledger_max": 1.5797922969795763e-09,
+          "per_angle_ledger_max": 1.3877787807814457e-17,
+          "independent_absorption_ledger": 1.5897967386990786e-09,
+          "capacity_excess": 0.0,
+          "negative_absorption": 0.0,
+          "events": 6611,
+          "rays_materialized": 196608,
+          "queries": 7047682,
+          "assignments": 3523841,
+          "stale_queue_entries": 0,
+          "ray_storage_megabytes": 12.0,
+          "angles": 196608,
+          "n": 56,
+          "workers": 1,
+          "seconds": 0.652716380005586,
+          "periodic": false,
+          "maximum_distance": 96.99484522385713,
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+          "peak_heap_nodes": 1470,
+          "heap_updates": 3523842,
+          "ray_allocated_bytes": 12582912,
+          "per_source_relative_ledger_max": 2.1825673014131865e-13,
+          "per_angle_relative_ledger_max": 3.769546289141946e-16
+        },
+        "controller": {
+          "status": "empirically_converged",
+          "stop_reason": "empirical_checks_satisfied",
+          "angular_convergence_observed": true,
+          "range_bound_satisfied": true,
+          "angular_tolerance_photons": 217.1468842161265,
+          "range_tolerance_photons": 7.2382294738708834,
+          "selected_angles": 196608,
+          "selected_phase": 0,
+          "selected_range": 96.99484522385713,
+          "selected_range_atom_l1_bound": 0.0,
+          "required_successes": 2,
+          "resource_checks": [
+            {
+              "angles": 48,
+              "maximum_materialized_rays": 48,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 3072,
+              "estimated_angular_storage_bytes": 265216
+            },
+            {
+              "angles": 192,
+              "maximum_materialized_rays": 192,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 12288,
+              "estimated_angular_storage_bytes": 274432
+            },
+            {
+              "angles": 768,
+              "maximum_materialized_rays": 768,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 49152,
+              "estimated_angular_storage_bytes": 311296
+            },
+            {
+              "angles": 3072,
+              "maximum_materialized_rays": 3072,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 196608,
+              "estimated_angular_storage_bytes": 458752
+            },
+            {
+              "angles": 12288,
+              "maximum_materialized_rays": 12288,
+              "conservative_ray_bytes": 786432,
+              "direction_workspace_allowance_bytes": 786432,
+              "estimated_angular_storage_bytes": 1572864
+            },
+            {
+              "angles": 49152,
+              "maximum_materialized_rays": 49152,
+              "conservative_ray_bytes": 3145728,
+              "direction_workspace_allowance_bytes": 3145728,
+              "estimated_angular_storage_bytes": 6291456
+            },
+            {
+              "angles": 196608,
+              "maximum_materialized_rays": 196608,
+              "conservative_ray_bytes": 12582912,
+              "direction_workspace_allowance_bytes": 12582912,
+              "estimated_angular_storage_bytes": 25165824
+            }
+          ],
+          "maximum_ray_bytes": 536870912,
+          "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+          "rotations": [
+            [
+              [
+                0.3823075933660849,
+                -0.6670624953149941,
+                0.6394282847972598
+              ],
+              [
+                0.9219362027428047,
+                0.2287466552956151,
+                -0.31258375799655175
+              ],
+              [
+                0.062245820155332865,
+                0.7090152290573188,
+                0.7024406471994538
+              ]
+            ],
+            [
+              [
+                0.7510050524892867,
+                -0.5246834408194613,
+                0.40087242118336686
+              ],
+              [
+                -0.024885471502913425,
+                0.5841874622735712,
+                0.8112371553562142
+              ],
+              [
+                -0.6598273444194637,
+                -0.6192191016532159,
+                0.42567074095378327
+              ]
+            ]
+          ],
+          "history": [
+            {
+              "angles": 48,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 4298.0,
+                  "source_category_l1": 15.999999999998181,
+                  "maximum": 4298.0
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 4351.0,
+                  "source_category_l1": 41.99999999999818,
+                  "maximum": 4351.0
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 4381.0,
+                  "source_category_l1": 26.0,
+                  "maximum": 4381.0
+                }
+              ],
+              "refinement_comparisons": [],
+              "phase_maximum": 4381.0,
+              "refinement_maximum": null,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.012489264998293947
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.00887698999576969
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.008730581997951958
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 192,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 10852.692055743395,
+                  "source_category_l1": 4.665047967093557,
+                  "maximum": 10852.692055743395
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 10903.459915657697,
+                  "source_category_l1": 7.113535434868737,
+                  "maximum": 10903.459915657697
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 10741.530556505222,
+                  "source_category_l1": 11.778583401962294,
+                  "maximum": 10741.530556505222
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 8461.781129679885,
+                  "source_category_l1": 9342.857206409044,
+                  "maximum": 9342.857206409044
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 8501.761127188067,
+                  "source_category_l1": 9363.522254376136,
+                  "maximum": 9363.522254376136
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 8508.871835487087,
+                  "source_category_l1": 9377.743670974174,
+                  "maximum": 9377.743670974174
+                }
+              ],
+              "phase_maximum": 10903.459915657697,
+              "refinement_maximum": 9377.743670974174,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.009779891996004153
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.011000890997820534
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.01179391800542362
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 768,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 2512.4162067838756,
+                  "source_category_l1": 2.7284841053187847e-12,
+                  "maximum": 2512.4162067838756
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 2488.7972174066617,
+                  "source_category_l1": 2.9103830456733704e-11,
+                  "maximum": 2488.7972174066617
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 2482.9134090090433,
+                  "source_category_l1": 2.637534635141492e-11,
+                  "maximum": 2482.9134090090433
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 9329.155663729158,
+                  "source_category_l1": 369.6017413327413,
+                  "maximum": 9329.155663729158
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 9367.283361218026,
+                  "source_category_l1": 364.93669336564506,
+                  "maximum": 9367.283361218026
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 9325.1446141642,
+                  "source_category_l1": 376.7152767675809,
+                  "maximum": 9325.1446141642
+                }
+              ],
+              "phase_maximum": 2512.4162067838756,
+              "refinement_maximum": 9367.283361218026,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.010205968996160664
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.010056127001007553
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.010324782997486182
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 3072,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 373.7845096985034,
+                  "source_category_l1": 8.185452315956354e-12,
+                  "maximum": 373.7845096985034
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 400.8884890045976,
+                  "source_category_l1": 1.0277290130034089e-10,
+                  "maximum": 400.8884890045976
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 424.7684427735452,
+                  "source_category_l1": 1.1095835361629725e-10,
+                  "maximum": 424.7684427735452
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 1952.4850255008562,
+                  "source_category_l1": 8.640199666842818e-11,
+                  "maximum": 1952.4850255008562
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 1958.1647401252885,
+                  "source_category_l1": 7.548806024715304e-11,
+                  "maximum": 1958.1647401252885
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 1908.9220952510987,
+                  "source_category_l1": 1.6007106751203537e-10,
+                  "maximum": 1908.9220952510987
+                }
+              ],
+              "phase_maximum": 424.7684427735452,
+              "refinement_maximum": 1958.1647401252885,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.014148429996566847
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.013604403000499588
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.012054231003276072
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 12288,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 118.37073274846583,
+                  "source_category_l1": 2.2373569663614035e-10,
+                  "maximum": 118.37073274846583
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 130.56429276846737,
+                  "source_category_l1": 5.547917680814862e-11,
+                  "maximum": 130.56429276846737
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 135.75199165653083,
+                  "source_category_l1": 1.6825651982799172e-10,
+                  "maximum": 135.75199165653083
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 253.25509944972717,
+                  "source_category_l1": 1.646185410209e-10,
+                  "maximum": 253.25509944972717
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 298.3015385283181,
+                  "source_category_l1": 6.730260793119669e-11,
+                  "maximum": 298.3015385283181
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 331.6156060235476,
+                  "source_category_l1": 2.1191226551309228e-10,
+                  "maximum": 331.6156060235476
+                }
+              ],
+              "phase_maximum": 135.75199165653083,
+              "refinement_maximum": 331.6156060235476,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.032843482003954705
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.02858213499712292
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.02894691600522492
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 49152,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 44.12841720756276,
+                  "source_category_l1": 6.202753866091371e-10,
+                  "maximum": 44.12841720756276
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 42.93641835779365,
+                  "source_category_l1": 1.1441443348303437e-09,
+                  "maximum": 42.93641835779365
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 46.31650542107247,
+                  "source_category_l1": 1.7644197214394808e-09,
+                  "maximum": 46.31650542107247
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 81.83241854355495,
+                  "source_category_l1": 2.091837814077735e-10,
+                  "maximum": 81.83241854355495
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 96.65008833742387,
+                  "source_category_l1": 6.348273018375039e-10,
+                  "maximum": 96.65008833742387
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 106.47876636417813,
+                  "source_category_l1": 1.2978489394299686e-09,
+                  "maximum": 106.47876636417813
+                }
+              ],
+              "phase_maximum": 46.31650542107247,
+              "refinement_maximum": 106.47876636417813,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.08573636299843201
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.09944285099481931
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.09161550600401824
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 1
+            },
+            {
+              "angles": 196608,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 14.24055851327583,
+                  "source_category_l1": 2.229171514045447e-09,
+                  "maximum": 14.24055851327583
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 14.249028275632211,
+                  "source_category_l1": 6.8503140937536955e-09,
+                  "maximum": 14.249028275632211
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 15.731937949103484,
+                  "source_category_l1": 4.621142579708248e-09,
+                  "maximum": 15.731937949103484
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 28.50305743876489,
+                  "source_category_l1": 1.4642864698544145e-09,
+                  "maximum": 28.50305743876489
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 34.08546672889498,
+                  "source_category_l1": 1.446096575818956e-10,
+                  "maximum": 34.08546672889498
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 35.08097115348203,
+                  "source_category_l1": 6.530171958729625e-09,
+                  "maximum": 35.08097115348203
+                }
+              ],
+              "phase_maximum": 15.731937949103484,
+              "refinement_maximum": 35.08097115348203,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.652716380005586
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.7680372789982357
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 96.99484522385713,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.680917411998962
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 2
+            }
+          ],
+          "kernel_calls": 21,
+          "total_seconds": 3.001300545001868,
+          "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+          "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+          "spatial_or_physical_accuracy_certified": false,
+          "retained_photons_are_resumable": false,
+          "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+        },
+        "relative_ledger_errors": {
+          "ledger_residual": 1.3821669726853802e-15,
+          "per_source_ledger_max": 2.1825673014131865e-13,
+          "per_angle_ledger_max": 1.9172903895782197e-21,
+          "independent_absorption_ledger": 2.1963889711400403e-13
+        }
+      },
+      {
+        "radius_cells": 16,
+        "physical_cell_width_over_R": 0.0625,
+        "continuum_atom_l1_over_Q": 0.029722991973223797,
+        "solver_audit": {
+          "photons": 17157.284678805056,
+          "absorbed": 17157.28467880506,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -3.637978807091713e-12,
+          "per_source_ledger_max": 4.456524038687348e-09,
+          "per_angle_ledger_max": 4.163336342344337e-17,
+          "independent_absorption_ledger": 4.46016201749444e-09,
+          "capacity_excess": 0.0,
+          "negative_absorption": 0.0,
+          "events": 15977,
+          "rays_materialized": 196608,
+          "queries": 9398771,
+          "assignments": 4699384,
+          "stale_queue_entries": 0,
+          "ray_storage_megabytes": 12.0,
+          "angles": 196608,
+          "n": 72,
+          "workers": 1,
+          "seconds": 0.9553324299995438,
+          "periodic": false,
+          "maximum_distance": 124.70765814495915,
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+          "peak_heap_nodes": 2630,
+          "heap_updates": 4699385,
+          "ray_allocated_bytes": 12582912,
+          "per_source_relative_ledger_max": 2.597452989861872e-13,
+          "per_angle_relative_ledger_max": 4.770832022195276e-16
+        },
+        "controller": {
+          "status": "empirically_converged",
+          "stop_reason": "empirical_checks_satisfied",
+          "angular_convergence_observed": true,
+          "range_bound_satisfied": true,
+          "angular_tolerance_photons": 514.7185403641516,
+          "range_tolerance_photons": 17.157284678805055,
+          "selected_angles": 196608,
+          "selected_phase": 0,
+          "selected_range": 124.70765814495915,
+          "selected_range_atom_l1_bound": 0.0,
+          "required_successes": 2,
+          "resource_checks": [
+            {
+              "angles": 48,
+              "maximum_materialized_rays": 48,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 3072,
+              "estimated_angular_storage_bytes": 265216
+            },
+            {
+              "angles": 192,
+              "maximum_materialized_rays": 192,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 12288,
+              "estimated_angular_storage_bytes": 274432
+            },
+            {
+              "angles": 768,
+              "maximum_materialized_rays": 768,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 49152,
+              "estimated_angular_storage_bytes": 311296
+            },
+            {
+              "angles": 3072,
+              "maximum_materialized_rays": 3072,
+              "conservative_ray_bytes": 262144,
+              "direction_workspace_allowance_bytes": 196608,
+              "estimated_angular_storage_bytes": 458752
+            },
+            {
+              "angles": 12288,
+              "maximum_materialized_rays": 12288,
+              "conservative_ray_bytes": 786432,
+              "direction_workspace_allowance_bytes": 786432,
+              "estimated_angular_storage_bytes": 1572864
+            },
+            {
+              "angles": 49152,
+              "maximum_materialized_rays": 49152,
+              "conservative_ray_bytes": 3145728,
+              "direction_workspace_allowance_bytes": 3145728,
+              "estimated_angular_storage_bytes": 6291456
+            },
+            {
+              "angles": 196608,
+              "maximum_materialized_rays": 196608,
+              "conservative_ray_bytes": 12582912,
+              "direction_workspace_allowance_bytes": 12582912,
+              "estimated_angular_storage_bytes": 25165824
+            }
+          ],
+          "maximum_ray_bytes": 536870912,
+          "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+          "rotations": [
+            [
+              [
+                0.3823075933660849,
+                -0.6670624953149941,
+                0.6394282847972598
+              ],
+              [
+                0.9219362027428047,
+                0.2287466552956151,
+                -0.31258375799655175
+              ],
+              [
+                0.062245820155332865,
+                0.7090152290573188,
+                0.7024406471994538
+              ]
+            ],
+            [
+              [
+                0.7510050524892867,
+                -0.5246834408194613,
+                0.40087242118336686
+              ],
+              [
+                -0.024885471502913425,
+                0.5841874622735712,
+                0.8112371553562142
+              ],
+              [
+                -0.6598273444194637,
+                -0.6192191016532159,
+                0.42567074095378327
+              ]
+            ]
+          ],
+          "history": [
+            {
+              "angles": 48,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 5730.0,
+                  "source_category_l1": 7.999999999994543,
+                  "maximum": 5730.0
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 5773.0,
+                  "source_category_l1": 53.999999999990905,
+                  "maximum": 5773.0
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 5807.0,
+                  "source_category_l1": 45.99999999999636,
+                  "maximum": 5807.0
+                }
+              ],
+              "refinement_comparisons": [],
+              "phase_maximum": 5807.0,
+              "refinement_maximum": null,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.02550175900250906
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.020456154001294635
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.020666024000092875
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 192,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 20253.099263680077,
+                  "source_category_l1": 2.643554310499894,
+                  "maximum": 20253.099263680077
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 20257.32757440336,
+                  "source_category_l1": 37.81306713606409,
+                  "maximum": 20257.32757440336
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 20078.005797248108,
+                  "source_category_l1": 40.456621446563986,
+                  "maximum": 20078.005797248108
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 13943.210520417664,
+                  "source_category_l1": 17470.42104083533,
+                  "maximum": 17470.42104083533
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 13987.888743262412,
+                  "source_category_l1": 17475.77748652482,
+                  "maximum": 17475.77748652482
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 14009.117053985694,
+                  "source_category_l1": 17562.23410797138,
+                  "maximum": 17562.23410797138
+                }
+              ],
+              "phase_maximum": 20257.32757440336,
+              "refinement_maximum": 17562.23410797138,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.023234359003254212
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.024294376002217177
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.02404107299662428
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 768,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 15492.00637036114,
+                  "source_category_l1": 2.9103830456733704e-11,
+                  "maximum": 15492.00637036114
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 15520.955008490988,
+                  "source_category_l1": 6.548361852765083e-11,
+                  "maximum": 15520.955008490988
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 15670.904783673093,
+                  "source_category_l1": 9.458744898438454e-11,
+                  "maximum": 15670.904783673093
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 22420.01805714591,
+                  "source_category_l1": 10652.14831677483,
+                  "maximum": 22420.01805714591
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 22394.750981074438,
+                  "source_category_l1": 10654.79187108536,
+                  "maximum": 22394.750981074438
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 22372.890188680216,
+                  "source_category_l1": 10614.3352496387,
+                  "maximum": 22372.890188680216
+                }
+              ],
+              "phase_maximum": 15670.904783673093,
+              "refinement_maximum": 22420.01805714591,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.020755206001922488
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.024284744999022223
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.021019777996116318
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 3072,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 1070.5019296778842,
+                  "source_category_l1": 9.094947017729282e-11,
+                  "maximum": 1070.5019296778842
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 1031.1010631841548,
+                  "source_category_l1": 2.764863893389702e-10,
+                  "maximum": 1031.1010631841548
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 1068.4811265425349,
+                  "source_category_l1": 1.8553691916167736e-10,
+                  "maximum": 1068.4811265425349
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 12590.863031320754,
+                  "source_category_l1": 2.9103830456733704e-11,
+                  "maximum": 12590.863031320754
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 12538.029795878427,
+                  "source_category_l1": 9.094947017729282e-11,
+                  "maximum": 12538.029795878427
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 12508.926243608494,
+                  "source_category_l1": 1.8189894035458565e-10,
+                  "maximum": 12508.926243608494
+                }
+              ],
+              "phase_maximum": 1070.5019296778842,
+              "refinement_maximum": 12590.863031320754,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.028541383995616343
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.026701736998802517
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.032630677000270225
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 12288,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 368.0978581778094,
+                  "source_category_l1": 1.0950316209346056e-09,
+                  "maximum": 368.0978581778094
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 362.5825588649344,
+                  "source_category_l1": 1.0695657692849636e-09,
+                  "maximum": 362.5825588649344
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 393.3972078051614,
+                  "source_category_l1": 2.546585164964199e-11,
+                  "maximum": 393.3972078051614
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 772.3102177113951,
+                  "source_category_l1": 1.0295480024069548e-09,
+                  "maximum": 772.3102177113951
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 846.971846005565,
+                  "source_category_l1": 1.5643308870494366e-10,
+                  "maximum": 846.971846005565
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 788.8682136510615,
+                  "source_category_l1": 3.1650415621697903e-10,
+                  "maximum": 788.8682136510615
+                }
+              ],
+              "phase_maximum": 393.3972078051614,
+              "refinement_maximum": 846.971846005565,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.04892417199880583
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.05246939200151246
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.04588118700485211
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": false,
+              "consecutive_successes": 0
+            },
+            {
+              "angles": 49152,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 125.35863875233053,
+                  "source_category_l1": 3.001332515850663e-09,
+                  "maximum": 125.35863875233053
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 126.2267241509932,
+                  "source_category_l1": 9.38598532229662e-10,
+                  "maximum": 126.2267241509932
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 134.43312015502863,
+                  "source_category_l1": 3.939931048080325e-09,
+                  "maximum": 134.43312015502863
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 244.0259792402749,
+                  "source_category_l1": 2.9467628337442875e-10,
+                  "maximum": 244.0259792402749
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 291.5859161238863,
+                  "source_category_l1": 4.3910404201596975e-09,
+                  "maximum": 291.5859161238863
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 300.1815932777372,
+                  "source_category_l1": 4.256435204297304e-10,
+                  "maximum": 300.1815932777372
+                }
+              ],
+              "phase_maximum": 134.43312015502863,
+              "refinement_maximum": 300.1815932777372,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.14187100500566885
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.15506975899916142
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.14846718599437736
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 1
+            },
+            {
+              "angles": 196608,
+              "phase_comparisons": [
+                {
+                  "left": 0,
+                  "right": 1,
+                  "absorbed_l1": 43.00058904909318,
+                  "source_category_l1": 2.4374458007514477e-09,
+                  "maximum": 43.00058904909318
+                },
+                {
+                  "left": 0,
+                  "right": 2,
+                  "absorbed_l1": 42.487265094571214,
+                  "source_category_l1": 9.717041393741965e-09,
+                  "maximum": 42.487265094571214
+                },
+                {
+                  "left": 1,
+                  "right": 2,
+                  "absorbed_l1": 46.54379565122589,
+                  "source_category_l1": 7.279595592990518e-09,
+                  "maximum": 46.54379565122589
+                }
+              ],
+              "refinement_comparisons": [
+                {
+                  "phase": 0,
+                  "absorbed_l1": 84.34022470034016,
+                  "source_category_l1": 3.2014213502407074e-09,
+                  "maximum": 84.34022470034016
+                },
+                {
+                  "phase": 1,
+                  "absorbed_l1": 99.03650919282734,
+                  "source_category_l1": 2.2373569663614035e-09,
+                  "maximum": 99.03650919282734
+                },
+                {
+                  "phase": 2,
+                  "absorbed_l1": 100.49058470135598,
+                  "source_category_l1": 5.577021511271596e-09,
+                  "maximum": 100.49058470135598
+                }
+              ],
+              "phase_maximum": 46.54379565122589,
+              "refinement_maximum": 100.49058470135598,
+              "range_atom_l1_bounds": [
+                0.0,
+                0.0,
+                0.0
+              ],
+              "range_attempts": [
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 0.9553324299995438
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 1.230497322998417
+                  }
+                ],
+                [
+                  {
+                    "maximum_distance": 124.70765814495915,
+                    "atom_l1_bound": 0.0,
+                    "retained": 0.0,
+                    "kernel_seconds": 2.000238428998273
+                  }
+                ]
+              ],
+              "range_satisfied": true,
+              "zero_absorption_coverage_unresolved": false,
+              "level_satisfied": true,
+              "consecutive_successes": 2
+            }
+          ],
+          "kernel_calls": 21,
+          "total_seconds": 5.9476798190007685,
+          "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+          "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+          "spatial_or_physical_accuracy_certified": false,
+          "retained_photons_are_resumable": false,
+          "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+          "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+        },
+        "relative_ledger_errors": {
+          "ledger_residual": 2.1203697876423447e-16,
+          "per_source_ledger_max": 2.597452989861872e-13,
+          "per_angle_ledger_max": 2.4265706493099344e-21,
+          "independent_absorption_ledger": 2.5995733596495146e-13
+        }
+      }
+    ]
+  },
+  "multisource_heterogeneous": {
+    "grid": 24,
+    "source_cells": 2,
+    "model": "Two overlapping fronts; spatially varying capacity plus dense slab",
+    "result": {
+      "solver_audit": {
+        "photons": 1050.0,
+        "absorbed": 1050.0,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 1.184616849059239e-10,
+        "per_angle_ledger_max": 6.938893903907228e-18,
+        "independent_absorption_ledger": -6.207301339600235e-11,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 669,
+        "rays_materialized": 98304,
+        "queries": 1321390,
+        "assignments": 660695,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 6.0,
+        "angles": 49152,
+        "n": 24,
+        "workers": 1,
+        "seconds": 0.07571501399797853,
+        "periodic": false,
+        "maximum_distance": 41.569219381653056,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 422,
+        "heap_updates": 660697,
+        "ray_allocated_bytes": 6291456,
+        "per_source_relative_ledger_max": 2.632481886798309e-13,
+        "per_angle_relative_ledger_max": 3.2481953634747437e-16
+      },
+      "controller": {
+        "status": "empirically_converged",
+        "stop_reason": "empirical_checks_satisfied",
+        "angular_convergence_observed": true,
+        "range_bound_satisfied": true,
+        "angular_tolerance_photons": 42.0,
+        "range_tolerance_photons": 1.05,
+        "selected_angles": 49152,
+        "selected_phase": 0,
+        "selected_range": 41.569219381653056,
+        "selected_range_atom_l1_bound": 0.0,
+        "required_successes": 2,
+        "resource_checks": [
+          {
+            "angles": 48,
+            "maximum_materialized_rays": 96,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 3072,
+            "estimated_angular_storage_bytes": 265216
+          },
+          {
+            "angles": 192,
+            "maximum_materialized_rays": 384,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 12288,
+            "estimated_angular_storage_bytes": 274432
+          },
+          {
+            "angles": 768,
+            "maximum_materialized_rays": 1536,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 49152,
+            "estimated_angular_storage_bytes": 311296
+          },
+          {
+            "angles": 3072,
+            "maximum_materialized_rays": 6144,
+            "conservative_ray_bytes": 524288,
+            "direction_workspace_allowance_bytes": 196608,
+            "estimated_angular_storage_bytes": 720896
+          },
+          {
+            "angles": 12288,
+            "maximum_materialized_rays": 24576,
+            "conservative_ray_bytes": 1572864,
+            "direction_workspace_allowance_bytes": 786432,
+            "estimated_angular_storage_bytes": 2359296
+          },
+          {
+            "angles": 49152,
+            "maximum_materialized_rays": 98304,
+            "conservative_ray_bytes": 6291456,
+            "direction_workspace_allowance_bytes": 3145728,
+            "estimated_angular_storage_bytes": 9437184
+          }
+        ],
+        "maximum_ray_bytes": 536870912,
+        "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+        "rotations": [
+          [
+            [
+              0.3823075933660849,
+              -0.6670624953149941,
+              0.6394282847972598
+            ],
+            [
+              0.9219362027428047,
+              0.2287466552956151,
+              -0.31258375799655175
+            ],
+            [
+              0.062245820155332865,
+              0.7090152290573188,
+              0.7024406471994538
+            ]
+          ],
+          [
+            [
+              0.7510050524892867,
+              -0.5246834408194613,
+              0.40087242118336686
+            ],
+            [
+              -0.024885471502913425,
+              0.5841874622735712,
+              0.8112371553562142
+            ],
+            [
+              -0.6598273444194637,
+              -0.6192191016532159,
+              0.42567074095378327
+            ]
+          ]
+        ],
+        "history": [
+          {
+            "angles": 48,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 1173.8916537147265,
+                "source_category_l1": 0.9091054894187494,
+                "maximum": 1173.8916537147265
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 1161.018338293651,
+                "source_category_l1": 4.368505291005505,
+                "maximum": 1161.018338293651
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 1232.5681588955026,
+                "source_category_l1": 3.4593998015867555,
+                "maximum": 1232.5681588955026
+              }
+            ],
+            "refinement_comparisons": [],
+            "phase_maximum": 1232.5681588955026,
+            "refinement_maximum": null,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.000901352999790106
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0008410090013057925
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0009911140004987828
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 192,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 208.99013030628547,
+                "source_category_l1": 1.1937117960769683e-12,
+                "maximum": 208.99013030628547
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 200.330867166374,
+                "source_category_l1": 6.821210263296962e-13,
+                "maximum": 200.330867166374
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 208.2075996312466,
+                "source_category_l1": 9.663381206337363e-13,
+                "maximum": 208.2075996312466
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 960.210527181197,
+                "source_category_l1": 66.06110119047635,
+                "maximum": 960.210527181197
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 996.4173673899816,
+                "source_category_l1": 66.9702066798939,
+                "maximum": 996.4173673899816
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 950.8239513132947,
+                "source_category_l1": 70.42960648148163,
+                "maximum": 950.8239513132947
+              }
+            ],
+            "phase_maximum": 208.99013030628547,
+            "refinement_maximum": 996.4173673899816,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.00281690700649051
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0008510509942425415
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0011336209936416708
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 768,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 70.43711060359117,
+                "source_category_l1": 2.1032064978498966e-12,
+                "maximum": 70.43711060359117
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 70.55850682086131,
+                "source_category_l1": 3.353761712787673e-12,
+                "maximum": 70.55850682086131
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 74.86986148578801,
+                "source_category_l1": 2.5011104298755527e-12,
+                "maximum": 74.86986148578801
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 148.87357543193346,
+                "source_category_l1": 1.6484591469634324e-12,
+                "maximum": 148.87357543193346
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 165.69453816452182,
+                "source_category_l1": 9.663381206337363e-13,
+                "maximum": 165.69453816452182
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 148.48039230902995,
+                "source_category_l1": 2.3874235921539366e-12,
+                "maximum": 148.48039230902995
+              }
+            ],
+            "phase_maximum": 74.86986148578801,
+            "refinement_maximum": 165.69453816452182,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0016047169992816634
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.004427904001204297
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.002670947003934998
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 3072,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 22.926589403487146,
+                "source_category_l1": 1.807620719773695e-11,
+                "maximum": 22.926589403487146
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 22.412452394094423,
+                "source_category_l1": 1.517719283583574e-11,
+                "maximum": 22.412452394094423
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 23.272677101028314,
+                "source_category_l1": 1.6768808563938364e-11,
+                "maximum": 23.272677101028314
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 48.86569680714098,
+                "source_category_l1": 1.3812950783176348e-11,
+                "maximum": 48.86569680714098
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 55.464739951721405,
+                "source_category_l1": 1.750777300912887e-11,
+                "maximum": 55.464739951721405
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 57.100470412744585,
+                "source_category_l1": 2.7853275241795927e-12,
+                "maximum": 57.100470412744585
+              }
+            ],
+            "phase_maximum": 23.272677101028314,
+            "refinement_maximum": 57.100470412744585,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.003105590003542602
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.007389106998743955
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.004632964999473188
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 12288,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 8.128527638296763,
+                "source_category_l1": 1.9838353182421997e-11,
+                "maximum": 8.128527638296763
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 8.183856355960542,
+                "source_category_l1": 6.519940143334679e-11,
+                "maximum": 8.183856355960542
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 9.001949671511808,
+                "source_category_l1": 8.503775461576879e-11,
+                "maximum": 9.001949671511808
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 14.318730873722728,
+                "source_category_l1": 3.916511559509672e-11,
+                "maximum": 14.318730873722728
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 18.779592545308617,
+                "source_category_l1": 5.752553988713771e-11,
+                "maximum": 18.779592545308617
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 17.54107086654374,
+                "source_category_l1": 4.143885234952904e-11,
+                "maximum": 17.54107086654374
+              }
+            ],
+            "phase_maximum": 9.001949671511808,
+            "refinement_maximum": 18.779592545308617,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.017716684997139964
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.014520552998874336
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.014361590998305473
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": true,
+            "consecutive_successes": 1
+          },
+          {
+            "angles": 49152,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 2.6167245696599797,
+                "source_category_l1": 2.3368329493678175e-10,
+                "maximum": 2.6167245696599797
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 2.616297200744547,
+                "source_category_l1": 1.4148326954455115e-10,
+                "maximum": 2.616297200744547
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 2.802536254696634,
+                "source_category_l1": 3.1366198527393863e-10,
+                "maximum": 2.802536254696634
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 5.012988865894231,
+                "source_category_l1": 1.6075318853836507e-10,
+                "maximum": 5.012988865894231
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 6.919768447248937,
+                "source_category_l1": 2.2464519133791327e-10,
+                "maximum": 6.919768447248937
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 6.656465182583933,
+                "source_category_l1": 1.7996626411331818e-10,
+                "maximum": 6.656465182583933
+              }
+            ],
+            "phase_maximum": 2.802536254696634,
+            "refinement_maximum": 6.919768447248937,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.07571501399797853
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.07717687599506462
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 41.569219381653056,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.045070760999806225
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": true,
+            "consecutive_successes": 2
+          }
+        ],
+        "kernel_calls": 18,
+        "total_seconds": 0.32619908500055317,
+        "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+        "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+        "spatial_or_physical_accuracy_certified": false,
+        "retained_photons_are_resumable": false,
+        "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+      },
+      "relative_ledger_errors": {
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 1.128206522913561e-13,
+        "per_angle_ledger_max": 6.608470384673551e-21,
+        "independent_absorption_ledger": 5.911715561524034e-14
+      }
+    },
+    "independent_reference": {
+      "solver_audit": {
+        "photons": 1050.0,
+        "absorbed": 1050.0,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 2.1009327610954642e-10,
+        "per_angle_ledger_max": 1.734723475976807e-18,
+        "independent_absorption_ledger": 2.412434696452692e-10,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 670,
+        "rays_materialized": 393216,
+        "queries": 5287610,
+        "assignments": 2643805,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 24.0,
+        "angles": 196608,
+        "n": 24,
+        "workers": 1,
+        "seconds": 0.45818819000123767,
+        "periodic": false,
+        "maximum_distance": 41.569219381653056,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 422,
+        "heap_updates": 2643807,
+        "ray_allocated_bytes": 25165824,
+        "per_source_relative_ledger_max": 3.501554601825774e-13,
+        "per_angle_relative_ledger_max": 3.2481953634747437e-16
+      },
+      "controller": null,
+      "relative_ledger_errors": {
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 2.0008883439004421e-13,
+        "per_angle_ledger_max": 1.6521175961683877e-21,
+        "independent_absorption_ledger": 2.297556853764469e-13
+      }
+    },
+    "independent_high_K_differences": {
+      "absorbed_l1": 0.0017920991930398074,
+      "source_category_l1": 2.8892697758107845e-13,
+      "maximum": 0.0017920991930398074
+    },
+    "reference_limitation": "Same discretized front model, independent quadrature phase at K196608; not continuum RT truth"
+  },
+  "shadow_and_range": {
+    "grid": 12,
+    "photons": 5.0,
+    "shadow_absorption": 0.0,
+    "description": "Two source cells on one side of an opaque plane; target gas behind plane must remain dark. Initial numerical range .25 is extended with a bound until no photons are range-limited.",
+    "result": {
+      "solver_audit": {
+        "photons": 5.0,
+        "absorbed": 1.18359375,
+        "escaped": 3.816406250000168,
+        "retained": 0.0,
+        "ledger_residual": -1.6786572132332367e-13,
+        "per_source_ledger_max": 1.8274270985330077e-13,
+        "per_angle_ledger_max": 5.421010862427522e-20,
+        "independent_absorption_ledger": -1.4876988529977098e-14,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 0,
+        "rays_materialized": 24576,
+        "queries": 129317,
+        "assignments": 5730,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 1.5,
+        "angles": 12288,
+        "n": 12,
+        "workers": 1,
+        "seconds": 0.005965774995274842,
+        "periodic": false,
+        "maximum_distance": 16.0,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 144,
+        "heap_updates": 5730,
+        "ray_allocated_bytes": 1572864,
+        "per_source_relative_ledger_max": 9.137135492665038e-14,
+        "per_angle_relative_ledger_max": 1.3322676295501878e-16
+      },
+      "controller": {
+        "status": "empirically_converged",
+        "stop_reason": "empirical_checks_satisfied",
+        "angular_convergence_observed": true,
+        "range_bound_satisfied": true,
+        "angular_tolerance_photons": 0.5,
+        "range_tolerance_photons": 0.0,
+        "selected_angles": 12288,
+        "selected_phase": 0,
+        "selected_range": 16.0,
+        "selected_range_atom_l1_bound": 0.0,
+        "required_successes": 2,
+        "resource_checks": [
+          {
+            "angles": 48,
+            "maximum_materialized_rays": 96,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 3072,
+            "estimated_angular_storage_bytes": 265216
+          },
+          {
+            "angles": 192,
+            "maximum_materialized_rays": 384,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 12288,
+            "estimated_angular_storage_bytes": 274432
+          },
+          {
+            "angles": 768,
+            "maximum_materialized_rays": 1536,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 49152,
+            "estimated_angular_storage_bytes": 311296
+          },
+          {
+            "angles": 3072,
+            "maximum_materialized_rays": 6144,
+            "conservative_ray_bytes": 524288,
+            "direction_workspace_allowance_bytes": 196608,
+            "estimated_angular_storage_bytes": 720896
+          },
+          {
+            "angles": 12288,
+            "maximum_materialized_rays": 24576,
+            "conservative_ray_bytes": 1572864,
+            "direction_workspace_allowance_bytes": 786432,
+            "estimated_angular_storage_bytes": 2359296
+          }
+        ],
+        "maximum_ray_bytes": 536870912,
+        "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+        "rotations": [
+          [
+            [
+              0.3823075933660849,
+              -0.6670624953149941,
+              0.6394282847972598
+            ],
+            [
+              0.9219362027428047,
+              0.2287466552956151,
+              -0.31258375799655175
+            ],
+            [
+              0.062245820155332865,
+              0.7090152290573188,
+              0.7024406471994538
+            ]
+          ],
+          [
+            [
+              0.7510050524892867,
+              -0.5246834408194613,
+              0.40087242118336686
+            ],
+            [
+              -0.024885471502913425,
+              0.5841874622735712,
+              0.8112371553562142
+            ],
+            [
+              -0.6598273444194637,
+              -0.6192191016532159,
+              0.42567074095378327
+            ]
+          ]
+        ],
+        "history": [
+          {
+            "angles": 48,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 1.625,
+                "source_category_l1": 0.25,
+                "maximum": 1.625
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 1.9583333333333333,
+                "source_category_l1": 0.08333333333333343,
+                "maximum": 1.9583333333333333
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 2.1666666666666665,
+                "source_category_l1": 0.3333333333333334,
+                "maximum": 2.1666666666666665
+              }
+            ],
+            "refinement_comparisons": [],
+            "phase_maximum": 2.1666666666666665,
+            "refinement_maximum": null,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 0.25,
+                  "atom_l1_bound": 5.000000000000002,
+                  "retained": 5.000000000000002,
+                  "kernel_seconds": 0.000584228997468017
+                },
+                {
+                  "maximum_distance": 0.5,
+                  "atom_l1_bound": 5.000000000000002,
+                  "retained": 5.000000000000002,
+                  "kernel_seconds": 0.0005958980036666617
+                },
+                {
+                  "maximum_distance": 1.0,
+                  "atom_l1_bound": 5.000000000000002,
+                  "retained": 5.000000000000002,
+                  "kernel_seconds": 0.000229057994147297
+                },
+                {
+                  "maximum_distance": 2.0,
+                  "atom_l1_bound": 5.000000000000002,
+                  "retained": 5.000000000000002,
+                  "kernel_seconds": 0.00024293200112879276
+                },
+                {
+                  "maximum_distance": 4.0,
+                  "atom_l1_bound": 4.000000000000001,
+                  "retained": 4.000000000000001,
+                  "kernel_seconds": 0.0002149010033463128
+                },
+                {
+                  "maximum_distance": 8.0,
+                  "atom_l1_bound": 0.625,
+                  "retained": 0.625,
+                  "kernel_seconds": 0.00020817900076508522
+                },
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.00026961799449054524
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.00035821400524582714
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.00028233200282556936
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 192,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 1.2447916666666665,
+                "source_category_l1": 0.03125,
+                "maximum": 1.2447916666666665
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 1.0416666666666665,
+                "source_category_l1": 0.04166666666666685,
+                "maximum": 1.0416666666666665
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 1.078125,
+                "source_category_l1": 0.07291666666666685,
+                "maximum": 1.078125
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 2.0260416666666665,
+                "source_category_l1": 0.07291666666666502,
+                "maximum": 2.0260416666666665
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 1.7708333333333333,
+                "source_category_l1": 0.291666666666665,
+                "maximum": 1.7708333333333333
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 2.015625,
+                "source_category_l1": 0.11458333333333526,
+                "maximum": 2.015625
+              }
+            ],
+            "phase_maximum": 1.2447916666666665,
+            "refinement_maximum": 2.0260416666666665,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0002882999979192391
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0008775579990469851
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.00031431199749931693
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 768,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 0.35546875,
+                "source_category_l1": 0.04947916666666713,
+                "maximum": 0.35546875
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 0.3958333333333333,
+                "source_category_l1": 0.04166666666666685,
+                "maximum": 0.3958333333333333
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 0.3997395833333333,
+                "source_category_l1": 0.023437500000000278,
+                "maximum": 0.3997395833333333
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 1.0260416666666665,
+                "source_category_l1": 0.03125000000000849,
+                "maximum": 1.0260416666666665
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 1.00390625,
+                "source_category_l1": 0.04947916666667418,
+                "maximum": 1.00390625
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 0.9453124999999999,
+                "source_category_l1": 0.03124999999999295,
+                "maximum": 0.9453124999999999
+              }
+            ],
+            "phase_maximum": 0.3997395833333333,
+            "refinement_maximum": 1.0260416666666665,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0007713629966019653
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0006700480007566512
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0007936999973026104
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 3072,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 0.13704427083333334,
+                "source_category_l1": 0.011067708333333426,
+                "maximum": 0.13704427083333334
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 0.16048177083333331,
+                "source_category_l1": 0.011067708333333426,
+                "maximum": 0.16048177083333331
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 0.166015625,
+                "source_category_l1": 0.0,
+                "maximum": 0.166015625
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 0.3212890625,
+                "source_category_l1": 0.03059895833336218,
+                "maximum": 0.3212890625
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 0.2727864583333333,
+                "source_category_l1": 0.029947916666638374,
+                "maximum": 0.2727864583333333
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 0.31901041666666663,
+                "source_category_l1": 0.024739583333361903,
+                "maximum": 0.31901041666666663
+              }
+            ],
+            "phase_maximum": 0.166015625,
+            "refinement_maximum": 0.3212890625,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0014965820009820163
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0016739050042815506
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.001738680999551434
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": true,
+            "consecutive_successes": 1
+          },
+          {
+            "angles": 12288,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 0.05216471354166668,
+                "source_category_l1": 0.0034179687500002776,
+                "maximum": 0.05216471354166668
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 0.06013997395833334,
+                "source_category_l1": 0.0024414062500002776,
+                "maximum": 0.06013997395833334
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 0.05354817708333333,
+                "source_category_l1": 0.002929687500000555,
+                "maximum": 0.05354817708333333
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 0.11800130208333333,
+                "source_category_l1": 0.012369791666781593,
+                "maximum": 0.11800130208333333
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 0.105712890625,
+                "source_category_l1": 0.0014648437501147415,
+                "maximum": 0.105712890625
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 0.116943359375,
+                "source_category_l1": 0.0034179687501152967,
+                "maximum": 0.116943359375
+              }
+            ],
+            "phase_maximum": 0.06013997395833334,
+            "refinement_maximum": 0.11800130208333333,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.005965774995274842
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.005348500002583023
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 16.0,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.00736874600261217
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": false,
+            "level_satisfied": true,
+            "consecutive_successes": 2
+          }
+        ],
+        "kernel_calls": 21,
+        "total_seconds": 0.04685085799428634,
+        "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+        "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+        "spatial_or_physical_accuracy_certified": false,
+        "retained_photons_are_resumable": false,
+        "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+      },
+      "relative_ledger_errors": {
+        "ledger_residual": 3.357314426466473e-14,
+        "per_source_ledger_max": 3.654854197066015e-14,
+        "per_angle_ledger_max": 1.0842021724855045e-20,
+        "independent_absorption_ledger": 2.9753977059954196e-15
+      }
+    }
+  },
+  "blind_spot_and_resource_limits": {
+    "missed_opaque_voxel": {
+      "grid": 96,
+      "source": [
+        1,
+        48,
+        48
+      ],
+      "absorber": [
+        94,
+        48,
+        48
+      ],
+      "exact_continuum_absorbed_fraction": 9.300236259834016e-06,
+      "quadrature_absorbed_fraction": 0,
+      "controller": {
+        "status": "unresolved",
+        "stop_reason": "zero_absorption_coverage_unresolved",
+        "angular_convergence_observed": false,
+        "range_bound_satisfied": true,
+        "angular_tolerance_photons": 1e-12,
+        "range_tolerance_photons": 0.001,
+        "selected_angles": 48,
+        "selected_phase": 0,
+        "selected_range": 166.27687752661222,
+        "selected_range_atom_l1_bound": 0.0,
+        "required_successes": 2,
+        "resource_checks": [
+          {
+            "angles": 3,
+            "maximum_materialized_rays": 3,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 192,
+            "estimated_angular_storage_bytes": 262336
+          },
+          {
+            "angles": 12,
+            "maximum_materialized_rays": 12,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 768,
+            "estimated_angular_storage_bytes": 262912
+          },
+          {
+            "angles": 48,
+            "maximum_materialized_rays": 48,
+            "conservative_ray_bytes": 262144,
+            "direction_workspace_allowance_bytes": 3072,
+            "estimated_angular_storage_bytes": 265216
+          }
+        ],
+        "maximum_ray_bytes": 536870912,
+        "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+        "rotations": [
+          [
+            [
+              0.3823075933660849,
+              -0.6670624953149941,
+              0.6394282847972598
+            ],
+            [
+              0.9219362027428047,
+              0.2287466552956151,
+              -0.31258375799655175
+            ],
+            [
+              0.062245820155332865,
+              0.7090152290573188,
+              0.7024406471994538
+            ]
+          ],
+          [
+            [
+              0.7510050524892867,
+              -0.5246834408194613,
+              0.40087242118336686
+            ],
+            [
+              -0.024885471502913425,
+              0.5841874622735712,
+              0.8112371553562142
+            ],
+            [
+              -0.6598273444194637,
+              -0.6192191016532159,
+              0.42567074095378327
+            ]
+          ]
+        ],
+        "history": [
+          {
+            "angles": 3,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              }
+            ],
+            "refinement_comparisons": [],
+            "phase_maximum": 0.0,
+            "refinement_maximum": null,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.11768576799659058
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.1509315709990915
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.10003857600531774
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": true,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 12,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              }
+            ],
+            "phase_maximum": 0.0,
+            "refinement_maximum": 0.0,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.12266793699382106
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.09104884200496599
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.10070554699632339
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": true,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          },
+          {
+            "angles": 48,
+            "phase_comparisons": [
+              {
+                "left": 0,
+                "right": 1,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "left": 0,
+                "right": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              },
+              {
+                "left": 1,
+                "right": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 0.0,
+                "maximum": 0.0
+              }
+            ],
+            "refinement_comparisons": [
+              {
+                "phase": 0,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 6.661338147750939e-16,
+                "maximum": 6.661338147750939e-16
+              },
+              {
+                "phase": 1,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 6.661338147750939e-16,
+                "maximum": 6.661338147750939e-16
+              },
+              {
+                "phase": 2,
+                "absorbed_l1": 0.0,
+                "source_category_l1": 6.661338147750939e-16,
+                "maximum": 6.661338147750939e-16
+              }
+            ],
+            "phase_maximum": 0.0,
+            "refinement_maximum": 6.661338147750939e-16,
+            "range_atom_l1_bounds": [
+              0.0,
+              0.0,
+              0.0
+            ],
+            "range_attempts": [
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.0854563059983775
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.06207357499806676
+                }
+              ],
+              [
+                {
+                  "maximum_distance": 166.27687752661222,
+                  "atom_l1_bound": 0.0,
+                  "retained": 0.0,
+                  "kernel_seconds": 0.11146558600012213
+                }
+              ]
+            ],
+            "range_satisfied": true,
+            "zero_absorption_coverage_unresolved": true,
+            "level_satisfied": false,
+            "consecutive_successes": 0
+          }
+        ],
+        "kernel_calls": 9,
+        "total_seconds": 2.457571277001989,
+        "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+        "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+        "spatial_or_physical_accuracy_certified": false,
+        "retained_photons_are_resumable": false,
+        "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+      },
+      "limitation": "The zero-hit guard catches this concrete blind spot. Some absorption elsewhere can still hide an unsampled feature; empirical convergence is not a general angular certificate."
+    },
+    "resource_guard": {
+      "status": "unresolved",
+      "stop_reason": "ray_storage_limit",
+      "angular_convergence_observed": false,
+      "range_bound_satisfied": false,
+      "angular_tolerance_photons": 0.24,
+      "range_tolerance_photons": 0.008,
+      "selected_angles": null,
+      "selected_phase": 0,
+      "selected_range": null,
+      "selected_range_atom_l1_bound": null,
+      "required_successes": 2,
+      "resource_checks": [
+        {
+          "angles": 48,
+          "maximum_materialized_rays": 384,
+          "conservative_ray_bytes": 262144,
+          "direction_workspace_allowance_bytes": 3072,
+          "estimated_angular_storage_bytes": 265216
+        }
+      ],
+      "maximum_ray_bytes": 1,
+      "resource_limit_scope": "Conservative single-kernel rays plus direction workspace; grid/heap arrays and cached maps are additional",
+      "rotations": [
+        [
+          [
+            0.3823075933660849,
+            -0.6670624953149941,
+            0.6394282847972598
+          ],
+          [
+            0.9219362027428047,
+            0.2287466552956151,
+            -0.31258375799655175
+          ],
+          [
+            0.062245820155332865,
+            0.7090152290573188,
+            0.7024406471994538
+          ]
+        ],
+        [
+          [
+            0.7510050524892867,
+            -0.5246834408194613,
+            0.40087242118336686
+          ],
+          [
+            -0.024885471502913425,
+            0.5841874622735712,
+            0.8112371553562142
+          ],
+          [
+            -0.6598273444194637,
+            -0.6192191016532159,
+            0.42567074095378327
+          ]
+        ]
+      ],
+      "history": [],
+      "kernel_calls": 0,
+      "total_seconds": 0.0009552279952913523,
+      "angular_guarantee": "Empirical phase/refinement agreement only; no rigorous angular true-error bound",
+      "range_guarantee": "Atom-L1 bound under fixed-rate infinite-c static-capacity no-recombination model",
+      "spatial_or_physical_accuracy_certified": false,
+      "retained_photons_are_resumable": false,
+      "returned_map": "Unmodified phase-0 high-resolution solver map; no smoothing or phase average",
+      "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+    }
+  },
+  "wall_seconds": 23.198031479005294,
+  "source_sha256": {
+    "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+    "event_front.py": "79315f6623d091fd710bf21a58ceda543b8eae9562a67e412d074af1b9a7d96e",
+    "angular_accuracy.py": "9d13c560d03f246d153e25e5f6da5353bac94537b39beaeb47308edc3217586d",
+    "validation_angular_accuracy.py": "4d2f29f1c088d968b4c3eb09847f92aae6d262c378cf91f70cc1b7bc6e22b503"
+  }
+}

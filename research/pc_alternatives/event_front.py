@@ -69,6 +69,19 @@ def solve(source, capacity, *, angles=192, duration=1., periodic=False,
     angles=len(dirs)
     if not np.allclose(np.linalg.norm(dirs,axis=1),1,atol=1e-12,rtol=0):
         raise ValueError('Unit angular directions required')
+    # Finite array entries do not imply representable aggregate rates or beam
+    # budgets.  Reject unsupported scales before the double-precision C ABI:
+    # overflow formerly returned a successful result containing NaN ledgers;
+    # subnormal rate/K could erase an entire weak source when it left its cell.
+    positive=s[s>0].astype(np.longdouble)
+    rate_sum=np.sum(s,dtype=np.longdouble)
+    photons_ld=rate_sum*np.longdouble(duration)
+    limits=np.finfo(np.float64)
+    if rate_sum>limits.max or photons_ld>limits.max:
+        raise ValueError('Aggregate rate or emitted photons exceed float64; rescale units')
+    if positive.size and (np.any(positive/angles<limits.tiny) or
+                          np.any(positive*np.longdouble(duration)/angles<limits.tiny)):
+        raise ValueError('Per-beam rate or photons are subnormal; rescale units')
     lib=library()
     started=time.perf_counter()
     dist=clearance(c<=0)
@@ -82,7 +95,7 @@ def solve(source, capacity, *, angles=192, duration=1., periodic=False,
           ang_escape.ctypes.data,ang_left.ctypes.data,stats.ctypes.data]
     status=lib.evolve_events(*args)
     if status: raise RuntimeError(f'Event integrator status {status}')
-    total=float(s.sum()*duration)
+    total=float(photons_ld)
     audit=dict(photons=total,absorbed=float(absorbed.sum()),
         escaped=float(src_escape.sum()),retained=float(src_left.sum()),
         ledger_residual=total-float(absorbed.sum()+src_escape.sum()+src_left.sum()),
@@ -103,6 +116,21 @@ def solve(source, capacity, *, angles=192, duration=1., periodic=False,
         ('event_front_last_ray_allocated_bytes','ray_allocated_bytes')):
         if hasattr(lib,name):
             audit[label]=int(getattr(lib,name)())
+    # Fail closed on numerical loss.  These are consistency guards, not a
+    # certificate for angular, spatial, or physical accuracy.
+    arrays=(absorbed,src_abs,src_escape,src_left,ang_abs,ang_escape,ang_left)
+    if not all(np.isfinite(a).all() for a in arrays):
+        raise RuntimeError('Event integration produced non-finite photon accounting')
+    if total>0:
+        active=s>0
+        own=s[active]*duration
+        source_error=np.max(np.abs(own-src_abs[active]-src_escape[active]-src_left[active])/own)
+        angle_error=audit['per_angle_ledger_max']/(total/angles)
+        audit['per_source_relative_ledger_max']=float(source_error)
+        audit['per_angle_relative_ledger_max']=float(angle_error)
+        if (max(source_error,angle_error,abs(audit['ledger_residual'])/total,
+                abs(audit['independent_absorption_ledger'])/total)>5e-10):
+            raise RuntimeError('Event photon accounting lost precision; rescale units or refine the interval')
     return dict(absorbed=absorbed,source_absorbed=src_abs,
                 source_escaped=src_escape,source_retained=src_left,audit=audit)
 
