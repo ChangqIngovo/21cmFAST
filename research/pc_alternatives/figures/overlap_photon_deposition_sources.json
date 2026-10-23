@@ -1,0 +1,79 @@
+{
+  "sources": [
+    {
+      "path": "event_overlap_fields.npz",
+      "sha256": "0ce93bbefb654cefe385a3d18a1e9cbeaea5dce6483ebe4bd621ffa608ebd941"
+    }
+  ],
+  "metadata": {
+    "grid": 64,
+    "radius": 12,
+    "center_distance": 18,
+    "center_A": [
+      20,
+      32,
+      32
+    ],
+    "center_B": [
+      38,
+      32,
+      32
+    ],
+    "photons": 100,
+    "duration": 1,
+    "event_angles": 12288,
+    "event": "Constant isotropic rate100 at centerA forduration1; infinite-c opaque voxel front; no initial first-hit cell exhausts.",
+    "scalar": "SCRIPT-like reconstruction: independent source radial shells, equal-photon terminal shell then synchronous capacity-proportional excess relays; photon increment100.",
+    "source_positions": "Integer array coordinates denote cell centers; transport internal physical coordinates add0.5.",
+    "transparent_mask": "Union of cells whose centers lie within either radius12 sphere.",
+    "DDA": "Independent ordinary non-skipping DDA frozen-opacity first-hit photon histogram.",
+    "event_audit": {
+      "photons": 100.0,
+      "absorbed": 100.00000000000001,
+      "escaped": 0.0,
+      "retained": 0.0,
+      "ledger_residual": -1.4210854715202004e-14,
+      "per_source_ledger_max": 1.3500311979441904e-11,
+      "per_angle_ledger_max": 0.0,
+      "independent_absorption_ledger": 1.3514522834157106e-11,
+      "capacity_excess": 0.0,
+      "negative_absorption": 0.0,
+      "events": 0,
+      "rays_materialized": 12288,
+      "queries": 90402,
+      "assignments": 12288,
+      "stale_queue_entries": 0,
+      "ray_storage_megabytes": 0.75,
+      "angles": 12288,
+      "n": 64,
+      "workers": 1,
+      "periodic": false,
+      "maximum_distance": 110.85125168440814,
+      "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+      "peak_heap_nodes": 2347,
+      "heap_updates": 12288,
+      "ray_allocated_bytes": 786432
+    },
+    "scalar_audit": {
+      "photons": 100.0,
+      "absorbed": 100.0,
+      "remaining": 0.0,
+      "residual": 8.881784197001252e-16,
+      "relative_residual": 8.881784197001253e-18,
+      "capacity_violation": 0.0,
+      "iterations": 1,
+      "radial_offers": 17,
+      "maximum_radius": 31.0,
+      "initial_shell": "equal",
+      "relay_count_exhausted": false,
+      "source_labels_after_overlap": false
+    }
+  },
+  "event_reference_L1_over_Q": 6.465487867313157e-16,
+  "color_scale": {
+    "kind": "logarithmic",
+    "vmin": 2e-05,
+    "vmax": 0.02
+  },
+  "scope": "Matched initial state and total increment; radial allocation vs frozen first absorption; not equal transport models"
+}

@@ -1,0 +1,690 @@
+{
+  "scope": "Actual frozen native-derived grid, new spatial source closure, constant-rate sharp-front toy evolution; angular self-convergence only",
+  "input_file": "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/source_capacity.npz",
+  "input_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+  "source_files_sha256": {
+    "event_front.py": "c2c3817b9795e84ba645f181acfc75957d6fbd3ae493ccf150c0314abfab0902",
+    "event_front.cpp": "aca74136b8383b7202903a4570cc78473feb4ae4f487a832b758cb2db9426c19",
+    "characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26"
+  },
+  "preparation": {
+    "scope": "Numerical coarse-history fixture for frozen native-cost comparison, not converged science validation",
+    "grid": 32,
+    "dim": 96,
+    "box_mpc": 200,
+    "seed": 1234,
+    "threads": 4,
+    "nodes": [
+      35,
+      12,
+      8,
+      7.5
+    ],
+    "physical_differences_from_template": {
+      "astro_options": {},
+      "astro_params": {},
+      "matter_options": {},
+      "cosmo_params": {}
+    },
+    "source_model": "E-INTEGRAL",
+    "power_spectrum": "EH",
+    "streaming_velocity_model": "NONE",
+    "progress": [
+      {
+        "redshift": 35.0,
+        "preparation_elapsed_seconds": 4.259983910997107,
+        "mean_xHI": 0.9997947216033936
+      },
+      {
+        "redshift": 12.0,
+        "preparation_elapsed_seconds": 23.948987077998027,
+        "mean_xHI": 0.8665657043457031
+      },
+      {
+        "redshift": 8.0,
+        "preparation_elapsed_seconds": 50.96430458899704,
+        "mean_xHI": 0.3742310106754303
+      },
+      {
+        "redshift": 7.5,
+        "preparation_elapsed_seconds": 90.22111005399711,
+        "mean_xHI": 0.28667396306991577
+      }
+    ],
+    "initial_conditions_sha256": "d331153e6f6200a2b440a6d27e95321279f181fa724300bc79658334b2d57542",
+    "source_closure": "Cumulative cell conditional E-INTEGRAL source, density weighted and separately normalized to each species unconditional budget; NEW spatial closure",
+    "source_sum": 25702.93821088438,
+    "neutral_capacity_sum": 31187.144544120783
+  },
+  "photons": 25702.93821088438,
+  "neutral_capacity": 31187.144544120783,
+  "previous_recombinations_not_charged": 9630.267130970955,
+  "source_density_capacity_identity_checks_passed": true,
+  "physical_qualifications": [
+    "Native cumulative sources treated as constant rate over an arbitrary duration of one; not native emissivity/time evolution",
+    "Source closure changes native radius-conditioned source statistics",
+    "No recombinations, no chemistry, infinite propagation speed, cell-centered point sources and sharp opaque voxels",
+    "Periodic rays stop at n*sqrt(3) cell lengths and unabsorbed photons stay in the retained ledger",
+    "Shared equal-weight Fibonacci direction grid is finite angular quadrature; different K grids are not nested",
+    "Angular self-convergence is not proof of radiative-transfer physical accuracy or grid/subcell convergence",
+    "Native no-PC denominator includes source/filter/ionization/Gamma/recombination; candidate does not yet replace this complete operator"
+  ],
+  "native_no_PC_seconds_median_four_threads": 9.657077084000775,
+  "K768_guard_settings": {
+    "maximum_projected_seconds": 40.0,
+    "maximum_projected_peak_rss_MiB": 1200.0,
+    "minimum_available_GiB": 2.0
+  },
+  "runs": [
+    {
+      "photons": 25702.93821088438,
+      "absorbed": 25702.760440175334,
+      "escaped": 0.0,
+      "retained": 0.17777070904393377,
+      "ledger_residual": 0.0,
+      "per_source_ledger_max": 2.4868995751603507e-14,
+      "per_angle_ledger_max": 5.115907697472721e-12,
+      "independent_absorption_ledger": 0.0,
+      "capacity_excess": 0.0,
+      "negative_absorption": 0.0,
+      "events": 16781,
+      "rays_materialized": 805488,
+      "queries": 10355929,
+      "assignments": 2707989,
+      "stale_queue_entries": 0,
+      "ray_storage_megabytes": 49.1630859375,
+      "angles": 48,
+      "n": 32,
+      "workers": 1,
+      "seconds": 0.7652679070015438,
+      "periodic": true,
+      "maximum_distance": 55.42562584220407,
+      "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+      "peak_heap_nodes": 32768,
+      "heap_updates": 2740757,
+      "ray_allocated_bytes": 51642368,
+      "solve_wall_seconds": 0.7661921389990312,
+      "peak_rss_megabytes": 113.19921875,
+      "baseline_rss_megabytes": 60.4453125,
+      "mean_xHI": 0.19153853257282877,
+      "fully_exhausted_cells": 16781,
+      "source_nonzero_cells": 32768,
+      "candidate_one_thread_over_native_four_threads": 0.07933996304828186,
+      "reference_map_comparison": {
+        "file": "/workspace/scratch/40b418003e4a/event_native_grid32/event_K48.npz",
+        "absorbed_bitwise_equal": true,
+        "xHI_bitwise_equal": true,
+        "max_abs_absorption_difference": 0.0
+      },
+      "spectrum": [
+        {
+          "k_min": 0.03141278494324434,
+          "k_max": 0.03957828861846317,
+          "k_mean": 0.03141592653589793,
+          "full_fft_modes": 6,
+          "P_xHI": 346.7491545813586
+        },
+        {
+          "k_min": 0.03957828861846317,
+          "k_max": 0.04986635004812748,
+          "k_mean": 0.044428829381583664,
+          "full_fft_modes": 12,
+          "P_xHI": 4280.333978239348
+        },
+        {
+          "k_min": 0.04986635004812748,
+          "k_max": 0.06282871124352676,
+          "k_mean": 0.05441398092702654,
+          "full_fft_modes": 8,
+          "P_xHI": 2587.118807743869
+        },
+        {
+          "k_min": 0.06282871124352676,
+          "k_max": 0.07916053516474876,
+          "k_mean": 0.07240404461691916,
+          "full_fft_modes": 54,
+          "P_xHI": 1453.4136360335706
+        },
+        {
+          "k_min": 0.07916053516474876,
+          "k_max": 0.09973768685594434,
+          "k_mean": 0.09512161329060435,
+          "full_fft_modes": 66,
+          "P_xHI": 460.5669710488019
+        },
+        {
+          "k_min": 0.09973768685594434,
+          "k_max": 0.1256637055152732,
+          "k_mean": 0.11280872981718398,
+          "full_fft_modes": 104,
+          "P_xHI": 365.95547215533855
+        },
+        {
+          "k_min": 0.1256637055152732,
+          "k_max": 0.158328986580945,
+          "k_mean": 0.14121674267162587,
+          "full_fft_modes": 264,
+          "P_xHI": 157.39978376081953
+        },
+        {
+          "k_min": 0.158328986580945,
+          "k_max": 0.19948534772995594,
+          "k_mean": 0.17860471065701602,
+          "full_fft_modes": 530,
+          "P_xHI": 85.91116175809873
+        },
+        {
+          "k_min": 0.19948534772995594,
+          "k_max": 0.2513399777153043,
+          "k_mean": 0.22579963249204646,
+          "full_fft_modes": 1064,
+          "P_xHI": 36.51481656431158
+        },
+        {
+          "k_min": 0.2513399777153043,
+          "k_max": 0.3166738064564299,
+          "k_mean": 0.28662866117391755,
+          "full_fft_modes": 2228,
+          "P_xHI": 15.068239765641747
+        },
+        {
+          "k_min": 0.3166738064564299,
+          "k_max": 0.3989906444934731,
+          "k_mean": 0.36160835365360094,
+          "full_fft_modes": 4264,
+          "P_xHI": 5.4429748477606505
+        },
+        {
+          "k_min": 0.3989906444934731,
+          "k_max": 0.5027050900568244,
+          "k_mean": 0.4544227343778465,
+          "full_fft_modes": 8473,
+          "P_xHI": 1.6932522403118806
+        }
+      ]
+    },
+    {
+      "photons": 25702.93821088438,
+      "absorbed": 25702.855919622823,
+      "escaped": 0.0,
+      "retained": 0.0822912615517768,
+      "ledger_residual": 3.637978807091713e-12,
+      "per_source_ledger_max": 7.815970093361102e-14,
+      "per_angle_ledger_max": 9.947598300641403e-13,
+      "independent_absorption_ledger": 0.0,
+      "capacity_excess": 0.0,
+      "negative_absorption": 0.0,
+      "events": 16788,
+      "rays_materialized": 3223296,
+      "queries": 41482739,
+      "assignments": 10834450,
+      "stale_queue_entries": 0,
+      "ray_storage_megabytes": 196.734375,
+      "angles": 192,
+      "n": 32,
+      "workers": 1,
+      "seconds": 3.168912189998082,
+      "periodic": true,
+      "maximum_distance": 55.42562584220407,
+      "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+      "peak_heap_nodes": 32768,
+      "heap_updates": 10867218,
+      "ray_allocated_bytes": 206307328,
+      "solve_wall_seconds": 3.169746062998456,
+      "peak_rss_megabytes": 262.19140625,
+      "baseline_rss_megabytes": 61.94140625,
+      "mean_xHI": 0.1915375999126067,
+      "fully_exhausted_cells": 16788,
+      "source_nonzero_cells": 32768,
+      "candidate_one_thread_over_native_four_threads": 0.3282303781389389,
+      "reference_map_comparison": {
+        "file": "/workspace/scratch/40b418003e4a/event_native_grid32/event_K192.npz",
+        "absorbed_bitwise_equal": true,
+        "xHI_bitwise_equal": true,
+        "max_abs_absorption_difference": 0.0
+      },
+      "spectrum": [
+        {
+          "k_min": 0.03141278494324434,
+          "k_max": 0.03957828861846317,
+          "k_mean": 0.03141592653589793,
+          "full_fft_modes": 6,
+          "P_xHI": 350.5338165325655
+        },
+        {
+          "k_min": 0.03957828861846317,
+          "k_max": 0.04986635004812748,
+          "k_mean": 0.044428829381583664,
+          "full_fft_modes": 12,
+          "P_xHI": 4268.297799495807
+        },
+        {
+          "k_min": 0.04986635004812748,
+          "k_max": 0.06282871124352676,
+          "k_mean": 0.05441398092702654,
+          "full_fft_modes": 8,
+          "P_xHI": 2594.524953857833
+        },
+        {
+          "k_min": 0.06282871124352676,
+          "k_max": 0.07916053516474876,
+          "k_mean": 0.07240404461691916,
+          "full_fft_modes": 54,
+          "P_xHI": 1454.4947167283112
+        },
+        {
+          "k_min": 0.07916053516474876,
+          "k_max": 0.09973768685594434,
+          "k_mean": 0.09512161329060435,
+          "full_fft_modes": 66,
+          "P_xHI": 460.91278796842926
+        },
+        {
+          "k_min": 0.09973768685594434,
+          "k_max": 0.1256637055152732,
+          "k_mean": 0.11280872981718398,
+          "full_fft_modes": 104,
+          "P_xHI": 366.7817375846083
+        },
+        {
+          "k_min": 0.1256637055152732,
+          "k_max": 0.158328986580945,
+          "k_mean": 0.14121674267162587,
+          "full_fft_modes": 264,
+          "P_xHI": 157.64036281634029
+        },
+        {
+          "k_min": 0.158328986580945,
+          "k_max": 0.19948534772995594,
+          "k_mean": 0.17860471065701602,
+          "full_fft_modes": 530,
+          "P_xHI": 85.95685875971233
+        },
+        {
+          "k_min": 0.19948534772995594,
+          "k_max": 0.2513399777153043,
+          "k_mean": 0.22579963249204646,
+          "full_fft_modes": 1064,
+          "P_xHI": 36.440432160573366
+        },
+        {
+          "k_min": 0.2513399777153043,
+          "k_max": 0.3166738064564299,
+          "k_mean": 0.28662866117391755,
+          "full_fft_modes": 2228,
+          "P_xHI": 15.038588789778935
+        },
+        {
+          "k_min": 0.3166738064564299,
+          "k_max": 0.3989906444934731,
+          "k_mean": 0.36160835365360094,
+          "full_fft_modes": 4264,
+          "P_xHI": 5.428745959993043
+        },
+        {
+          "k_min": 0.3989906444934731,
+          "k_max": 0.5027050900568244,
+          "k_mean": 0.4544227343778465,
+          "full_fft_modes": 8473,
+          "P_xHI": 1.6850196655823617
+        }
+      ]
+    },
+    {
+      "photons": 25702.93821088438,
+      "absorbed": 25702.77027211267,
+      "escaped": 0.0,
+      "retained": 0.16793877170522517,
+      "ledger_residual": 3.637978807091713e-12,
+      "per_source_ledger_max": 1.6697754290362354e-13,
+      "per_angle_ledger_max": 3.339550858072471e-13,
+      "independent_absorption_ledger": 0.0,
+      "capacity_excess": 0.0,
+      "negative_absorption": 0.0,
+      "events": 16770,
+      "rays_materialized": 12879360,
+      "queries": 165639859,
+      "assignments": 43257099,
+      "stale_queue_entries": 0,
+      "ray_storage_megabytes": 786.09375,
+      "angles": 768,
+      "n": 32,
+      "workers": 1,
+      "seconds": 16.936060498999723,
+      "periodic": true,
+      "maximum_distance": 55.42562584220407,
+      "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+      "peak_heap_nodes": 32768,
+      "heap_updates": 43289867,
+      "ray_allocated_bytes": 824442880,
+      "solve_wall_seconds": 16.93686518499817,
+      "peak_rss_megabytes": 851.41796875,
+      "baseline_rss_megabytes": 62.08203125,
+      "mean_xHI": 0.1915415678426966,
+      "fully_exhausted_cells": 16770,
+      "source_nonzero_cells": 32768,
+      "candidate_one_thread_over_native_four_threads": 1.7538293458440006,
+      "spectrum": [
+        {
+          "k_min": 0.03141278494324434,
+          "k_max": 0.03957828861846317,
+          "k_mean": 0.03141592653589793,
+          "full_fft_modes": 6,
+          "P_xHI": 349.3842868273984
+        },
+        {
+          "k_min": 0.03957828861846317,
+          "k_max": 0.04986635004812748,
+          "k_mean": 0.044428829381583664,
+          "full_fft_modes": 12,
+          "P_xHI": 4267.791544338931
+        },
+        {
+          "k_min": 0.04986635004812748,
+          "k_max": 0.06282871124352676,
+          "k_mean": 0.05441398092702654,
+          "full_fft_modes": 8,
+          "P_xHI": 2593.6521448403446
+        },
+        {
+          "k_min": 0.06282871124352676,
+          "k_max": 0.07916053516474876,
+          "k_mean": 0.07240404461691916,
+          "full_fft_modes": 54,
+          "P_xHI": 1453.5329007177586
+        },
+        {
+          "k_min": 0.07916053516474876,
+          "k_max": 0.09973768685594434,
+          "k_mean": 0.09512161329060435,
+          "full_fft_modes": 66,
+          "P_xHI": 461.9757261760767
+        },
+        {
+          "k_min": 0.09973768685594434,
+          "k_max": 0.1256637055152732,
+          "k_mean": 0.11280872981718398,
+          "full_fft_modes": 104,
+          "P_xHI": 366.9846964983402
+        },
+        {
+          "k_min": 0.1256637055152732,
+          "k_max": 0.158328986580945,
+          "k_mean": 0.14121674267162587,
+          "full_fft_modes": 264,
+          "P_xHI": 157.96391831189027
+        },
+        {
+          "k_min": 0.158328986580945,
+          "k_max": 0.19948534772995594,
+          "k_mean": 0.17860471065701602,
+          "full_fft_modes": 530,
+          "P_xHI": 85.9708478095017
+        },
+        {
+          "k_min": 0.19948534772995594,
+          "k_max": 0.2513399777153043,
+          "k_mean": 0.22579963249204646,
+          "full_fft_modes": 1064,
+          "P_xHI": 36.43932123727257
+        },
+        {
+          "k_min": 0.2513399777153043,
+          "k_max": 0.3166738064564299,
+          "k_mean": 0.28662866117391755,
+          "full_fft_modes": 2228,
+          "P_xHI": 15.036897997686829
+        },
+        {
+          "k_min": 0.3166738064564299,
+          "k_max": 0.3989906444934731,
+          "k_mean": 0.36160835365360094,
+          "full_fft_modes": 4264,
+          "P_xHI": 5.422666480431094
+        },
+        {
+          "k_min": 0.3989906444934731,
+          "k_max": 0.5027050900568244,
+          "k_mean": 0.4544227343778465,
+          "full_fft_modes": 8473,
+          "P_xHI": 1.682218021051922
+        }
+      ]
+    }
+  ],
+  "convergence": [
+    {
+      "lower_K": 48,
+      "reference_K": 192,
+      "absorbed_L1_over_photons": 0.0052194036473112585,
+      "absorbed_L1_over_capacity": 0.0043015803917128975,
+      "xHI_mean_abs_difference": 0.0045450846081537466,
+      "xHI_max_abs_difference": 0.22724962245645675,
+      "xHI_rms_difference": 0.014522230404241715,
+      "xHI_rms_difference_over_reference_std": 0.062709925831612,
+      "xHI_correlation": 0.9980339995793515,
+      "power_shells": [
+        {
+          "k_mean": 0.03141592653589793,
+          "full_fft_modes": 6,
+          "ratio_P_lower_over_reference": 0.9892031473920426
+        },
+        {
+          "k_mean": 0.044428829381583664,
+          "full_fft_modes": 12,
+          "ratio_P_lower_over_reference": 1.0028199013538752
+        },
+        {
+          "k_mean": 0.05441398092702654,
+          "full_fft_modes": 8,
+          "ratio_P_lower_over_reference": 0.9971454712343577
+        },
+        {
+          "k_mean": 0.07240404461691916,
+          "full_fft_modes": 54,
+          "ratio_P_lower_over_reference": 0.9992567310954746
+        },
+        {
+          "k_mean": 0.09512161329060435,
+          "full_fft_modes": 66,
+          "ratio_P_lower_over_reference": 0.9992497128987208
+        },
+        {
+          "k_mean": 0.11280872981718398,
+          "full_fft_modes": 104,
+          "ratio_P_lower_over_reference": 0.99774725580747
+        },
+        {
+          "k_mean": 0.14121674267162587,
+          "full_fft_modes": 264,
+          "ratio_P_lower_over_reference": 0.9984738740052188
+        },
+        {
+          "k_mean": 0.17860471065701602,
+          "full_fft_modes": 530,
+          "ratio_P_lower_over_reference": 0.9994683728294289
+        },
+        {
+          "k_mean": 0.22579963249204646,
+          "full_fft_modes": 1064,
+          "ratio_P_lower_over_reference": 1.002041260197202
+        },
+        {
+          "k_mean": 0.28662866117391755,
+          "full_fft_modes": 2228,
+          "ratio_P_lower_over_reference": 1.0019716594606913
+        },
+        {
+          "k_mean": 0.36160835365360094,
+          "full_fft_modes": 4264,
+          "ratio_P_lower_over_reference": 1.0026210266371767
+        },
+        {
+          "k_mean": 0.4544227343778465,
+          "full_fft_modes": 8473,
+          "ratio_P_lower_over_reference": 1.0048857440050551
+        }
+      ],
+      "mode_weighted_P_absolute_difference_over_reference": 0.0018104618786079828
+    },
+    {
+      "lower_K": 192,
+      "reference_K": 768,
+      "absorbed_L1_over_photons": 0.0014869874168694096,
+      "absorbed_L1_over_capacity": 0.0012255032082878522,
+      "xHI_mean_abs_difference": 0.0012896755682511017,
+      "xHI_max_abs_difference": 0.05830971567018506,
+      "xHI_rms_difference": 0.004137751755741357,
+      "xHI_rms_difference_over_reference_std": 0.01786678705845241,
+      "xHI_correlation": 0.9998403825746758,
+      "power_shells": [
+        {
+          "k_mean": 0.03141592653589793,
+          "full_fft_modes": 6,
+          "ratio_P_lower_over_reference": 1.0032901585689655
+        },
+        {
+          "k_mean": 0.044428829381583664,
+          "full_fft_modes": 12,
+          "ratio_P_lower_over_reference": 1.0001186222784353
+        },
+        {
+          "k_mean": 0.05441398092702654,
+          "full_fft_modes": 8,
+          "ratio_P_lower_over_reference": 1.0003365173773302
+        },
+        {
+          "k_mean": 0.07240404461691916,
+          "full_fft_modes": 54,
+          "ratio_P_lower_over_reference": 1.0006617091433414
+        },
+        {
+          "k_mean": 0.09512161329060435,
+          "full_fft_modes": 66,
+          "ratio_P_lower_over_reference": 0.9976991470602888
+        },
+        {
+          "k_mean": 0.11280872981718398,
+          "full_fft_modes": 104,
+          "ratio_P_lower_over_reference": 0.9994469553753372
+        },
+        {
+          "k_mean": 0.14121674267162587,
+          "full_fft_modes": 264,
+          "ratio_P_lower_over_reference": 0.9979517126505362
+        },
+        {
+          "k_mean": 0.17860471065701602,
+          "full_fft_modes": 530,
+          "ratio_P_lower_over_reference": 0.999837281472199
+        },
+        {
+          "k_mean": 0.22579963249204646,
+          "full_fft_modes": 1064,
+          "ratio_P_lower_over_reference": 1.000030486937272
+        },
+        {
+          "k_mean": 0.28662866117391755,
+          "full_fft_modes": 2228,
+          "ratio_P_lower_over_reference": 1.0001124428783361
+        },
+        {
+          "k_mean": 0.36160835365360094,
+          "full_fft_modes": 4264,
+          "ratio_P_lower_over_reference": 1.0011211236361095
+        },
+        {
+          "k_mean": 0.4544227343778465,
+          "full_fft_modes": 8473,
+          "ratio_P_lower_over_reference": 1.001665446746723
+        }
+      ],
+      "mode_weighted_P_absolute_difference_over_reference": 0.0007428379835221136
+    },
+    {
+      "lower_K": 48,
+      "reference_K": 768,
+      "absorbed_L1_over_photons": 0.005009790277184013,
+      "absorbed_L1_over_capacity": 0.0041288271762675455,
+      "xHI_mean_abs_difference": 0.004359880651473296,
+      "xHI_max_abs_difference": 0.21938973067338907,
+      "xHI_rms_difference": 0.014029030505072697,
+      "xHI_rms_difference_over_reference_std": 0.060577268881070796,
+      "xHI_correlation": 0.9981653534246251,
+      "power_shells": [
+        {
+          "k_mean": 0.03141592653589793,
+          "full_fft_modes": 6,
+          "ratio_P_lower_over_reference": 0.9924577826038823
+        },
+        {
+          "k_mean": 0.044428829381583664,
+          "full_fft_modes": 12,
+          "ratio_P_lower_over_reference": 1.002938858135434
+        },
+        {
+          "k_mean": 0.05441398092702654,
+          "full_fft_modes": 8,
+          "ratio_P_lower_over_reference": 0.9974810280131542
+        },
+        {
+          "k_mean": 0.07240404461691916,
+          "full_fft_modes": 54,
+          "ratio_P_lower_over_reference": 0.999917948410986
+        },
+        {
+          "k_mean": 0.09512161329060435,
+          "full_fft_modes": 66,
+          "ratio_P_lower_over_reference": 0.9969505862592922
+        },
+        {
+          "k_mean": 0.11280872981718398,
+          "full_fft_modes": 104,
+          "ratio_P_lower_over_reference": 0.9971954570508738
+        },
+        {
+          "k_mean": 0.14121674267162587,
+          "full_fft_modes": 264,
+          "ratio_P_lower_over_reference": 0.9964287126003237
+        },
+        {
+          "k_mean": 0.17860471065701602,
+          "full_fft_modes": 530,
+          "ratio_P_lower_over_reference": 0.9993057408072183
+        },
+        {
+          "k_mean": 0.22579963249204646,
+          "full_fft_modes": 1064,
+          "ratio_P_lower_over_reference": 1.0020718093662455
+        },
+        {
+          "k_mean": 0.28662866117391755,
+          "full_fft_modes": 2228,
+          "ratio_P_lower_over_reference": 1.0020843240380921
+        },
+        {
+          "k_mean": 0.36160835365360094,
+          "full_fft_modes": 4264,
+          "ratio_P_lower_over_reference": 1.0037450887682
+        },
+        {
+          "k_mean": 0.4544227343778465,
+          "full_fft_modes": 8473,
+          "ratio_P_lower_over_reference": 1.0065593276982365
+        }
+      ],
+      "mode_weighted_P_absolute_difference_over_reference": 0.0022382258046335685
+    }
+  ],
+  "skipped": [],
+  "K768_projection": {
+    "seconds": 13.946882677193209,
+    "peak_rss_megabytes": 943.04140625,
+    "method": "4.4x measured192 cost and RSS increment; heuristic guard, not complexity proof"
+  },
+  "K768_memory_check": {
+    "host_available_bytes": 9513889792,
+    "cgroup_headroom_bytes": 5058940928,
+    "effective_available_bytes": 5058940928
+  }
+}

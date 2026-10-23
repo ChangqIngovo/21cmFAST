@@ -1,0 +1,120 @@
+{
+  "scope": "Static vacuum face-flux evaluator for an already certified common-visible cavity; no front evolution",
+  "single_source_convex_cube": {
+    "source_total": 1.0,
+    "divergence_total": 0.9999999999999997,
+    "max_cell_divergence_error": 8.326672684688674e-17,
+    "l1_cell_divergence_error": 6.399774373638811e-14,
+    "fft_calls_cached": 4,
+    "kernel_fft_calls_setup": 3,
+    "seconds_cached": 0.002417699000943685,
+    "net_outward_flux": 0.9999999999999999,
+    "negative_outward_flux": 0.0,
+    "minimum_boundary_face_flux": 0.000609873388397499,
+    "boundary_face_count": 600,
+    "common_visibility": {
+      "certified": true,
+      "source_count": 1,
+      "source_containment": true,
+      "source_box_centre": [
+        7.0,
+        7.0,
+        7.0
+      ],
+      "source_box_half_size": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "minimum_plane_margin": 4.5
+    }
+  },
+  "multiple_source_convex_cube": {
+    "source_total": 526.7337985754784,
+    "divergence_total": 526.7337985754785,
+    "max_cell_divergence_error": 2.220446049250313e-15,
+    "l1_cell_divergence_error": 1.524065379107653e-12,
+    "fft_calls_cached": 4,
+    "kernel_fft_calls_setup": 3,
+    "seconds_cached": 0.002197682999394601,
+    "net_outward_flux": 526.7337985754785,
+    "negative_outward_flux": 0.0,
+    "minimum_boundary_face_flux": 0.3950538177637704,
+    "boundary_face_count": 600,
+    "common_visibility": {
+      "certified": true,
+      "source_count": 512,
+      "source_containment": true,
+      "source_box_centre": [
+        7.5,
+        7.5,
+        7.5
+      ],
+      "source_box_half_size": [
+        3.5,
+        3.5,
+        3.5
+      ],
+      "minimum_plane_margin": 1.5
+    }
+  },
+  "outside_source_contamination": {
+    "own_source": {
+      "net_outward_flux": 1.0,
+      "negative_outward_flux": 0.0,
+      "minimum_boundary_face_flux": 0.0008470349545853587,
+      "boundary_face_count": 320
+    },
+    "global_all_sources": {
+      "net_outward_flux": 0.9999999999999999,
+      "negative_outward_flux": 0.0,
+      "minimum_boundary_face_flux": 5.8400757833618684e-05,
+      "boundary_face_count": 320
+    },
+    "max_face_difference": 0.1666666666666667,
+    "meaning": "An outside source has zero net flux through this closed cavity but changes incoming/outgoing face flux; labels cannot repair it."
+  },
+  "multipole": {
+    "source_count": 64,
+    "directions_tested": 2048,
+    "centroid_residual": [
+      -1.3228149211729784e-17,
+      7.003137817974592e-18,
+      1.4322389495788313e-17
+    ],
+    "results": [
+      {
+        "a_over_distance": 0.05,
+        "max_absolute_error": 4.3793484027347e-06,
+        "uniform_absolute_bound": 3.527731014018582e-05,
+        "max_error_over_bound": 0.12414065543353335,
+        "max_error_over_monopole_magnitude": 0.00030856686070283287,
+        "uniform_bound_over_monopole_magnitude": 0.0024856229381521504
+      },
+      {
+        "a_over_distance": 0.1,
+        "max_absolute_error": 7.064394237137082e-05,
+        "uniform_absolute_bound": 0.000700712442429379,
+        "max_error_over_bound": 0.10081730834755463,
+        "max_error_over_monopole_magnitude": 0.0012443848673694047,
+        "uniform_bound_over_monopole_magnitude": 0.012342968561306445
+      },
+      {
+        "a_over_distance": 0.2,
+        "max_absolute_error": 0.0011604491230959258,
+        "uniform_absolute_bound": 0.017958493495231077,
+        "max_error_over_bound": 0.06461840039110664,
+        "max_error_over_monopole_magnitude": 0.005110294243423622,
+        "uniform_bound_over_monopole_magnitude": 0.07908419602610507
+      },
+      {
+        "a_over_distance": 0.4,
+        "max_absolute_error": 0.020778568472711693,
+        "uniform_absolute_bound": 0.9081233253884753,
+        "max_error_over_bound": 0.022880778294977807,
+        "max_error_over_monopole_magnitude": 0.022875754899403855,
+        "uniform_bound_over_monopole_magnitude": 0.9997804534658222
+      }
+    ]
+  }
+}

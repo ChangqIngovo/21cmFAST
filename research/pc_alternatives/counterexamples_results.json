@@ -1,0 +1,267 @@
+{
+  "independent_barriers": {
+    "source_x": [
+      0.0,
+      10.0
+    ],
+    "source_budget": [
+      1.25,
+      1.75
+    ],
+    "target_x": [
+      -1.0,
+      1.0,
+      10.0
+    ],
+    "target_capacity": [
+      1.0,
+      1.0,
+      1.0
+    ],
+    "radius": 1.0,
+    "all_independent_barriers_strictly_pass": true,
+    "global_budget_equals_capacity": true,
+    "reachable": [
+      [
+        true,
+        true,
+        false
+      ],
+      [
+        false,
+        false,
+        true
+      ]
+    ],
+    "barrier_supply": [
+      1.25,
+      1.25,
+      1.75
+    ],
+    "max_allocatable": 2.25,
+    "unavoidable_unfilled_capacity": 0.75,
+    "unavoidable_unused_budget": 0.75,
+    "violated_subset_conditions": [
+      {
+        "targets": [
+          0,
+          1
+        ],
+        "demand_minus_accessible_budget": 0.75
+      }
+    ]
+  },
+  "beam_precedence": {
+    "model": "one collimated beam; opaque sharp fronts; foreground then background",
+    "capacity": [
+      1.0,
+      1.0
+    ],
+    "budget": 1.0,
+    "capacity_proportional_allocation": [
+      0.5,
+      0.5
+    ],
+    "physical_allocation": [
+      1.0,
+      0.0
+    ],
+    "source_and_target_constraints_pass": true,
+    "background_absorption_before_foreground_exhaustion": 0.5
+  },
+  "angular_budget": {
+    "model": "isotropic source; two equal-angle cones; first absorber at equal radius",
+    "capacity": [
+      1.0,
+      100.0
+    ],
+    "budget": 2.0,
+    "per_cone_emission": [
+      1.0,
+      1.0
+    ],
+    "capacity_proportional_allocation": [
+      0.019801980198019802,
+      1.9801980198019802
+    ],
+    "physical_allocation": [
+      1.0,
+      1.0
+    ],
+    "source_and_target_constraints_pass": true,
+    "largest_cone_quota_excess": 0.9801980198019802
+  },
+  "angular_moment_loss": {
+    "opposed_x_beams": {
+      "number_density_E": 2.0,
+      "number_flux_F_over_c": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "plus_x_face_incident_flux_over_c": 1.0,
+      "second_moment_P": [
+        [
+          2.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    "opposed_y_beams": {
+      "number_density_E": 2.0,
+      "number_flux_F_over_c": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "plus_x_face_incident_flux_over_c": 0.0,
+      "second_moment_P": [
+        [
+          0.0,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          2.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.0
+        ]
+      ]
+    },
+    "consequence": "E,F alone cannot distinguish these angular boundary responses"
+  },
+  "radial_statistics_loss": {
+    "source": [
+      4,
+      4,
+      4
+    ],
+    "target": [
+      6,
+      4,
+      4
+    ],
+    "opaque_cloud_positions": [
+      [
+        5,
+        4,
+        4
+      ],
+      [
+        4,
+        5,
+        4
+      ]
+    ],
+    "source_centered_radial_cumulative_capacity": [
+      [
+        0.0,
+        100.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0
+      ],
+      [
+        0.0,
+        100.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0,
+        101.0
+      ]
+    ],
+    "same_radial_statistics": true,
+    "target_central_ray_blocked": [
+      true,
+      false
+    ],
+    "scope": "one-center radial aggregates; not full all-position FFT information"
+  },
+  "nonpositive_sharp_k": {
+    "grid": 32,
+    "cutoff_in_fundamental_modes": 4,
+    "kernel_sum": 0.9999999999999998,
+    "kernel_min": -0.0007467334784033797,
+    "kernel_negative_mass": 3.0994045592167914,
+    "negative_voxels": 16613,
+    "consequence": "a sharp-k density filter is not a nonnegative photon transfer kernel"
+  },
+  "budget_does_not_fix_power": {
+    "absorbed_photons_each": 2.0,
+    "capacity_per_cell": 1.0,
+    "adjacent_ionization": [
+      1.0,
+      1.0,
+      0.0,
+      0.0
+    ],
+    "alternating_ionization": [
+      1.0,
+      0.0,
+      1.0,
+      0.0
+    ],
+    "unnormalized_power_k1": [
+      2.0000000000000004,
+      0.0
+    ],
+    "consequence": "global photon closure alone predicts neither sign nor scale of power changes"
+  },
+  "two_spheres": {
+    "R": 1.0,
+    "d": 1.5,
+    "fraction_A_surface_inside_B": 0.125,
+    "fraction_all_rays_intersecting_B": 0.12732200375003505,
+    "equal_area_direction_samples": 1000000,
+    "sampled_surface_fraction": 0.125,
+    "sampled_apparent_fraction": 0.127322,
+    "overlap_volume_over_one_sphere": 0.0859375,
+    "overlap_volume_over_sum_of_two_spheres": 0.04296875,
+    "scope": "geometry of fixed spheres; not automatically a dynamical photon allocation"
+  },
+  "certified_nearly_spherical_front": {
+    "density_in_four_equal_angle_sectors": [
+      0.9,
+      1.0,
+      1.1,
+      1.0
+    ],
+    "trial_spherical_radius": 1.0,
+    "exact_directional_radii": [
+      1.0357441686512863,
+      1.0,
+      0.9687293061514642,
+      1.0
+    ],
+    "photons": 4.1887902047863905,
+    "uniform_relative_directional_demand_bound": 0.10000000000000009,
+    "actual_relative_atom_morphology_l1": 0.05000000000000004,
+    "proved_relative_atom_morphology_l1_upper_bound": 0.10000000000000009,
+    "scope": "single isolated source; known per-direction demand; no recombination"
+  },
+  "scope": "Finite mathematical witnesses, not simulations of Qin20",
+  "all_assertions_passed": true
+}

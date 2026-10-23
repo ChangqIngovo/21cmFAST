@@ -1,0 +1,52 @@
+{
+  "scope": "Toy incremental counts; no native 21cmFAST evolution",
+  "physical_model": "elliptic diffusion obstacle, not free-streaming UV",
+  "isolated": {
+    "converged": true,
+    "saturated": false,
+    "iterations": 140,
+    "photons": 523.5987755982989,
+    "absorbed": 523.5987755982986,
+    "remaining": 0.0,
+    "ledger_residual": 2.6501023597802487e-13,
+    "kkt_residual": 1.5734258340671659e-10,
+    "negative_absorption": 0.0,
+    "capacity_excess": 1.5734258340671659e-10,
+    "seconds": 0.08972603200163576,
+    "fraction_outside_R_plus_half": 0.0
+  },
+  "plane": {
+    "converged": true,
+    "saturated": false,
+    "iterations": 160,
+    "photons": 1000.0,
+    "absorbed": 1000.0000000000002,
+    "remaining": 0.0,
+    "ledger_residual": -2.5771051959111446e-13,
+    "kkt_residual": 2.1653079329553293e-10,
+    "negative_absorption": 0.0,
+    "capacity_excess": 9.128697797677887e-12,
+    "seconds": 0.11341362399980426,
+    "wall_fraction": 0.42913831395831836,
+    "isotropic_straight_ray_upper_bound": 0.5,
+    "periodic_edge_absorption": 0.0
+  },
+  "source_increase_monotonicity_violation": 2.265410081747632e-10,
+  "translation_error": 0.0,
+  "preliminary_timings": true,
+  "overlap_cone": {
+    "converged": true,
+    "saturated": false,
+    "iterations": 260,
+    "photons": 1.0,
+    "absorbed": 1.0,
+    "remaining": 0.0,
+    "ledger_residual": -9.258324223373679e-17,
+    "kkt_residual": 5.57329182804267e-12,
+    "negative_absorption": 5.57329182804267e-12,
+    "capacity_excess": 3.4380684063584077e-12,
+    "seconds": 0.6314283200008504,
+    "cone_fraction": 0.0278546545547593,
+    "expected_ballistic_cone_fraction": 0.125
+  }
+}

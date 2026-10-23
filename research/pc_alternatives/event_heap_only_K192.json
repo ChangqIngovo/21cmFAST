@@ -1,0 +1,72 @@
+{
+  "angles": 192,
+  "baseline_peak_rss_mib": 61.1484375,
+  "peak_rss_mib": 354.0859375,
+  "cpp_sha256": "2dac65e60b46de783e97391341611985d5651a4fa07c3877c2392108719dc7e1",
+  "runs": [
+    {
+      "seconds": 3.8395305890007876,
+      "map_bitwise_equal_original": true,
+      "map_max_difference": 0.0,
+      "peak_heap_nodes": 32768,
+      "heap_updates": 10867218,
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.855919622823,
+        "escaped": 0.0,
+        "retained": 0.0822912615517768,
+        "ledger_residual": 3.637978807091713e-12,
+        "per_source_ledger_max": 7.815970093361102e-14,
+        "per_angle_ledger_max": 9.947598300641403e-13,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16788,
+        "rays_materialized": 3223296,
+        "queries": 41482739,
+        "assignments": 10834450,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 196.734375,
+        "angles": 192,
+        "n": 32,
+        "workers": 1,
+        "seconds": 3.835154521999357,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+      }
+    },
+    {
+      "seconds": 4.040588993000711,
+      "map_bitwise_equal_original": true,
+      "map_max_difference": 0.0,
+      "peak_heap_nodes": 32768,
+      "heap_updates": 10867218,
+      "audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25702.855919622823,
+        "escaped": 0.0,
+        "retained": 0.0822912615517768,
+        "ledger_residual": 3.637978807091713e-12,
+        "per_source_ledger_max": 7.815970093361102e-14,
+        "per_angle_ledger_max": 9.947598300641403e-13,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16788,
+        "rays_materialized": 3223296,
+        "queries": 41482739,
+        "assignments": 10834450,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 196.734375,
+        "angles": 192,
+        "n": 32,
+        "workers": 1,
+        "seconds": 4.036533813999995,
+        "periodic": true,
+        "maximum_distance": 55.42562584220407,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations"
+      }
+    }
+  ]
+}

@@ -1,0 +1,143 @@
+{
+  "scope": "Same frozen native Qin20 single-ionization-step; copies and fixture I/O excluded; warmup separate",
+  "preparation": {
+    "scope": "Numerical coarse-history fixture for frozen native-cost comparison, not converged science validation",
+    "grid": 32,
+    "dim": 96,
+    "box_mpc": 200,
+    "seed": 1234,
+    "threads": 4,
+    "nodes": [
+      35,
+      12,
+      8,
+      7.5
+    ],
+    "physical_differences_from_template": {
+      "astro_options": {},
+      "astro_params": {},
+      "matter_options": {},
+      "cosmo_params": {}
+    },
+    "source_model": "E-INTEGRAL",
+    "power_spectrum": "EH",
+    "streaming_velocity_model": "NONE",
+    "progress": [
+      {
+        "redshift": 35.0,
+        "preparation_elapsed_seconds": 4.259983910997107,
+        "mean_xHI": 0.9997947216033936
+      },
+      {
+        "redshift": 12.0,
+        "preparation_elapsed_seconds": 23.948987077998027,
+        "mean_xHI": 0.8665657043457031
+      },
+      {
+        "redshift": 8.0,
+        "preparation_elapsed_seconds": 50.96430458899704,
+        "mean_xHI": 0.3742310106754303
+      },
+      {
+        "redshift": 7.5,
+        "preparation_elapsed_seconds": 90.22111005399711,
+        "mean_xHI": 0.28667396306991577
+      }
+    ],
+    "initial_conditions_sha256": "d331153e6f6200a2b440a6d27e95321279f181fa724300bc79658334b2d57542",
+    "source_closure": "Cumulative cell conditional E-INTEGRAL source, density weighted and separately normalized to each species unconditional budget; NEW spatial closure",
+    "source_sum": 25702.93821088438,
+    "neutral_capacity_sum": 31187.144544120783
+  },
+  "threads": 4,
+  "warmup": [
+    {
+      "mode": "no-photoncons",
+      "iteration": 0,
+      "elapsed_seconds": 12.16640726300102,
+      "mean_xHI": 0.28667396306991577,
+      "pc_evaluations": 0,
+      "source_acg": 0.5008622492674578,
+      "source_mcg": 0.283529175625254
+    },
+    {
+      "mode": "global-budget",
+      "iteration": 0,
+      "elapsed_seconds": 10.8380674,
+      "mean_xHI": 0.494981050491333,
+      "pc_evaluations": 22,
+      "source_acg": 0.5008622492674578,
+      "source_mcg": 0.283529175625254
+    }
+  ],
+  "records": [
+    {
+      "mode": "no-photoncons",
+      "iteration": 0,
+      "elapsed_seconds": 9.606083940001554,
+      "mean_xHI": 0.28667396306991577,
+      "pc_evaluations": 0,
+      "source_acg": 0.5008622492674578,
+      "source_mcg": 0.283529175625254
+    },
+    {
+      "mode": "global-budget",
+      "iteration": 0,
+      "elapsed_seconds": 9.583988247999514,
+      "mean_xHI": 0.494981050491333,
+      "pc_evaluations": 22,
+      "source_acg": 0.5008622492674578,
+      "source_mcg": 0.283529175625254
+    },
+    {
+      "mode": "global-budget",
+      "iteration": 1,
+      "elapsed_seconds": 7.394171743999323,
+      "mean_xHI": 0.494981050491333,
+      "pc_evaluations": 22,
+      "source_acg": 0.5008622492674578,
+      "source_mcg": 0.283529175625254
+    },
+    {
+      "mode": "no-photoncons",
+      "iteration": 1,
+      "elapsed_seconds": 9.708070227999997,
+      "mean_xHI": 0.28667396306991577,
+      "pc_evaluations": 0,
+      "source_acg": 0.5008622492674578,
+      "source_mcg": 0.283529175625254
+    }
+  ],
+  "history_note": "Both modes receive identical no-PC prior source/ionization history; this is an operator-cost comparison, not separately evolved science histories",
+  "summary": {
+    "no-photoncons": {
+      "median_seconds": 9.657077084000775,
+      "minimum_seconds": 9.606083940001554,
+      "maximum_seconds": 9.708070227999997,
+      "samples": 2
+    },
+    "global-budget": {
+      "median_seconds": 8.489079995999418,
+      "minimum_seconds": 7.394171743999323,
+      "maximum_seconds": 9.583988247999514,
+      "samples": 2
+    },
+    "pc_over_es_median": 0.879052732225114
+  },
+  "included": [
+    "native ionization wrapper and native setup",
+    "conditional ACG/MCG source integrals and history at all ES radii",
+    "native FFT filtering and ES thresholding",
+    "UV background and native recombination update",
+    "global-budget cached threshold solve when selected"
+  ],
+  "excluded": [
+    "initial-condition generation",
+    "density and velocity perturbation",
+    "spin-temperature and X-ray evolution",
+    "brightness-temperature calculation",
+    "fixture loading and independent input copies",
+    "source-packet closure extraction and alternative transport"
+  ],
+  "interpretation": "Frozen operator timing, not total coeval cost. Small sample counts and host noise do not establish a PC speedup."
+}

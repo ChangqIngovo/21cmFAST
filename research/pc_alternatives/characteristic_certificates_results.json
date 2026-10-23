@@ -1,0 +1,54 @@
+{
+  "scope": "Geometry certificates, not a photoionization solver.\n\nFixed Cartesian, non-periodic, piecewise-constant opacity; no emission/scattering\nalong an already emitted characteristic. All opacities remain frozen. A packet\nhas an exact subcell position and direction. Unit cell width is used.",
+  "zero_opacity_skips": [
+    {
+      "direction": [
+        1,
+        0.37,
+        0.21
+      ],
+      "max_absorption_error": 1.1102230246251565e-15,
+      "fine_segments": 51,
+      "accelerated_segments": 8,
+      "zero_block_jumps": 5
+    },
+    {
+      "direction": [
+        -1,
+        -0.6,
+        -0.4
+      ],
+      "max_absorption_error": 0.0,
+      "fine_segments": 55,
+      "accelerated_segments": 10,
+      "zero_block_jumps": 8
+    },
+    {
+      "direction": [
+        1,
+        1,
+        1
+      ],
+      "max_absorption_error": 0.0,
+      "fine_segments": 31,
+      "accelerated_segments": 6,
+      "zero_block_jumps": 4
+    }
+  ],
+  "translation_cache": {
+    "max_segment_length_error": 2.3314683517128287e-15,
+    "directions": 3
+  },
+  "merge_counterexample": {
+    "separate_absorbed": 0.5,
+    "merged_absorbed": 1.0,
+    "absolute_error": 0.5,
+    "lesson": "Same cell and direction do not certify identical characteristics"
+  },
+  "bounded_skip": {
+    "absorption_plus_residual_L1_error": 0.0005052070674609675,
+    "proved_frozen_opacity_L1_bound": 0.0006410727954386315,
+    "skipped_optical_depth_upper_bound": 0.00032058778049077287,
+    "note": "Not a bound for nonlinear evolving chemistry"
+  }
+}

@@ -1,0 +1,401 @@
+{
+  "scope": "Research-only positive-kernel matching; explicit new additive source closure; no radiative-transfer guarantee",
+  "probes": {
+    "isolated_source": {
+      "geometric": {
+        "source": 515.0,
+        "absorbed": 515.0000000000045,
+        "remaining": 0.0,
+        "ledger_residual": -4.547473508864641e-12,
+        "max_source_overdraw": 0.0,
+        "max_capacity_overdraw": 0.0,
+        "fft_calls": 52,
+        "rounds": 8,
+        "seconds": 0.03907842499756953,
+        "ideal_sphere_count": 515.0,
+        "counts_outside_ideal_sphere": 222.0583153347776,
+        "L1_difference_from_ideal_sphere": 444.11663066955066
+      },
+      "unit_steps": {
+        "source": 515.0,
+        "absorbed": 515.0000000000051,
+        "remaining": 5.684341886080801e-13,
+        "ledger_residual": -5.6843418860808015e-12,
+        "max_source_overdraw": 0.0,
+        "max_capacity_overdraw": 2.220446049250313e-16,
+        "fft_calls": 65,
+        "rounds": 10,
+        "seconds": 0.043050731997936964,
+        "ideal_sphere_count": 515.0,
+        "counts_outside_ideal_sphere": 5.1087646487708225e-12,
+        "L1_difference_from_ideal_sphere": 5.111873273239773e-12
+      },
+      "native_like_spacing_1p1": {
+        "source": 515.0,
+        "absorbed": 515.0000000000293,
+        "remaining": 2.2026824808563106e-12,
+        "ledger_residual": -3.149125404888764e-11,
+        "max_source_overdraw": 0.0,
+        "max_capacity_overdraw": 2.220446049250313e-16,
+        "fft_calls": 204,
+        "rounds": 31,
+        "seconds": 0.17921666099937283,
+        "ideal_sphere_count": 515.0,
+        "counts_outside_ideal_sphere": 2.9227235290519414e-11,
+        "L1_difference_from_ideal_sphere": 2.9241557167537085e-11
+      }
+    },
+    "opaque_screen": {
+      "foreground_absorbed": 0.49999999999999994,
+      "downstream_absorbed": 0.49999999999999994,
+      "foreground_capacity": 100.0,
+      "ledger_residual": 1.1102230246251565e-16,
+      "interpretation": "Fails opaque-screen order: a target behind an unsaturated screen receives photons."
+    },
+    "equal_angle_density_bias": {
+      "dense_direction": 0.99009900990099,
+      "dilute_direction": 0.0099009900990099,
+      "ratio": 100.0,
+      "interpretation": "Equal-distance equal-solid-angle targets receive 100:1, not an isotropic source angular quota; thin shells do not fix this."
+    },
+    "unreachable": {
+      "source": 2.0,
+      "absorbed": 0.0,
+      "remaining": 2.0,
+      "ledger_residual": 0.0,
+      "max_source_overdraw": 0.0,
+      "max_capacity_overdraw": 0.0,
+      "fft_calls": 21,
+      "rounds": 3,
+      "seconds": 0.031399797000631224
+    },
+    "overlapping_sources": {
+      "equal": {
+        "source": 1030.0,
+        "absorbed": 1030.0000000000084,
+        "remaining": 0.0,
+        "ledger_residual": -8.412825991399586e-12,
+        "max_source_overdraw": 0.0,
+        "max_capacity_overdraw": 2.220446049250313e-16,
+        "fft_calls": 78,
+        "rounds": 12,
+        "seconds": 0.07538231600119616
+      },
+      "unequal": {
+        "source": 643.75,
+        "absorbed": 643.7500000000058,
+        "remaining": 0.0,
+        "ledger_residual": -5.7980287238024175e-12,
+        "max_source_overdraw": 0.0,
+        "max_capacity_overdraw": 0.0,
+        "fft_calls": 78,
+        "rounds": 12,
+        "seconds": 0.09844345200326643
+      }
+    },
+    "extreme_dynamic_range": {
+      "source": 0.5,
+      "absorbed": 0.0,
+      "remaining": 0.5,
+      "ledger_residual": 0.0,
+      "max_source_overdraw": 0.0,
+      "max_capacity_overdraw": 0.0,
+      "fft_calls": 7,
+      "rounds": 1,
+      "seconds": 0.011322423000819981
+    },
+    "sharp_k_real_kernel": {
+      "minimum": -0.0007467334784033798,
+      "negative_weight_sum": 3.0994045592167914,
+      "total_weight": 0.9999999999999998
+    }
+  },
+  "monotonicity": {
+    "source_increase": {
+      "seed": 20261024,
+      "trial": 25,
+      "added_at": [
+        0,
+        1,
+        0
+      ],
+      "added": 15.100178195437763,
+      "rounds_per_scale_refinement": {
+        "1": {
+          "maximum_target_decrease": 0.0,
+          "target": [
+            0,
+            0,
+            1
+          ],
+          "before": 5.235708566492899,
+          "after": 5.235708566492899,
+          "ledger_before": -2.2737367544323206e-13,
+          "ledger_after": -1.1368683772161603e-13
+        },
+        "2": {
+          "maximum_target_decrease": 2.432557483385855e-05,
+          "target": [
+            1,
+            1,
+            4
+          ],
+          "before": 3.971432836510706e-05,
+          "after": 1.5388753531248506e-05,
+          "ledger_before": -2.8421709430404007e-13,
+          "ledger_after": 0.0
+        },
+        "4": {
+          "maximum_target_decrease": 3.0460711183086736e-17,
+          "target": [
+            1,
+            1,
+            4
+          ],
+          "before": 7.052957686747566e-17,
+          "after": 4.006886568438892e-17,
+          "ledger_before": -2.8421709430404007e-13,
+          "ledger_after": -5.684341886080802e-14
+        },
+        "16": {
+          "maximum_target_decrease": 3.0460711183086736e-17,
+          "target": [
+            1,
+            1,
+            4
+          ],
+          "before": 7.052957686747566e-17,
+          "after": 4.006886568438892e-17,
+          "ledger_before": -2.8421709430404007e-13,
+          "ledger_after": -5.684341886080802e-14
+        }
+      }
+    },
+    "uniform_capacity_increase": {
+      "seed": 20261025,
+      "trial": 21,
+      "capacity_scale": 1.0768624593392961,
+      "maximum_ionized_fraction_increase": 0.0004378080679161864,
+      "target": [
+        1,
+        3,
+        1
+      ],
+      "before": 3.572782009661805e-05,
+      "after": 0.00047353588801280443
+    }
+  },
+  "benchmark_status": "Preliminary contention-affected timings. Candidate internal timer excluded input validation/copies/local absorption in these stored runs; baseline timer included all work. Final adapter includes all work; root rerun is authoritative.",
+  "benchmark": [
+    {
+      "grid": 32,
+      "threads": 4,
+      "source_active_fraction": 0.02020263671875,
+      "photons_over_capacity": 0.3,
+      "radii": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "median_time_ratio_to_twofield_ES_filter": 2.624049709647884,
+      "runs": [
+        {
+          "baseline": {
+            "seconds": 0.009832941999775358,
+            "fft_calls": 17,
+            "fully_selected": 4757
+          },
+          "allocation": {
+            "source": 11146.479821611578,
+            "absorbed": 11146.4798216116,
+            "remaining": 5.397605346934028e-79,
+            "ledger_residual": -2.1827872842550278e-11,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 4.440892098500626e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 0.06317048699929728
+          }
+        },
+        {
+          "baseline": {
+            "seconds": 0.06273033499746816,
+            "fft_calls": 17,
+            "fully_selected": 4757
+          },
+          "allocation": {
+            "source": 11146.479821611578,
+            "absorbed": 11146.4798216116,
+            "remaining": 5.397605346934028e-79,
+            "ledger_residual": -2.1827872842550278e-11,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 4.440892098500626e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 0.10083647099963855
+          }
+        },
+        {
+          "baseline": {
+            "seconds": 0.015200882000499405,
+            "fft_calls": 17,
+            "fully_selected": 4757
+          },
+          "allocation": {
+            "source": 11146.479821611578,
+            "absorbed": 11146.4798216116,
+            "remaining": 5.397605346934028e-79,
+            "ledger_residual": -2.1827872842550278e-11,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 4.440892098500626e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 0.039887869999802206
+          }
+        }
+      ]
+    },
+    {
+      "grid": 64,
+      "threads": 4,
+      "source_active_fraction": 0.0205078125,
+      "photons_over_capacity": 0.3,
+      "radii": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "median_time_ratio_to_twofield_ES_filter": 5.25485594295225,
+      "runs": [
+        {
+          "baseline": {
+            "seconds": 0.08142033399781212,
+            "fft_calls": 17,
+            "fully_selected": 39930
+          },
+          "allocation": {
+            "source": 89058.46841523329,
+            "absorbed": 89058.46841523383,
+            "remaining": 3.503246161219876e-46,
+            "ledger_residual": -5.384208634495735e-10,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 8.881784197001252e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 0.3503590770014853
+          }
+        },
+        {
+          "baseline": {
+            "seconds": 0.06797531499978504,
+            "fft_calls": 17,
+            "fully_selected": 39930
+          },
+          "allocation": {
+            "source": 89058.46841523329,
+            "absorbed": 89058.46841523383,
+            "remaining": 3.503246161219876e-46,
+            "ledger_residual": -5.384208634495735e-10,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 8.881784197001252e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 0.3572004880006716
+          }
+        },
+        {
+          "baseline": {
+            "seconds": 0.12963622299866984,
+            "fft_calls": 17,
+            "fully_selected": 39930
+          },
+          "allocation": {
+            "source": 89058.46841523329,
+            "absorbed": 89058.46841523383,
+            "remaining": 3.503246161219876e-46,
+            "ledger_residual": -5.384208634495735e-10,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 8.881784197001252e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 0.7416079419999733
+          }
+        }
+      ]
+    },
+    {
+      "grid": 128,
+      "threads": 4,
+      "source_active_fraction": 0.020206928253173828,
+      "photons_over_capacity": 0.3,
+      "radii": [
+        1,
+        2,
+        4,
+        8,
+        16
+      ],
+      "median_time_ratio_to_twofield_ES_filter": 3.4993525537855743,
+      "runs": [
+        {
+          "baseline": {
+            "seconds": 1.130477693001012,
+            "fft_calls": 17,
+            "fully_selected": 314827
+          },
+          "allocation": {
+            "source": 712939.929849908,
+            "absorbed": 712939.929849912,
+            "remaining": 2.2248093446807665e-47,
+            "ledger_residual": -3.958120942115784e-09,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 8.881784197001252e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 3.955940002000716
+          }
+        },
+        {
+          "baseline": {
+            "seconds": 0.6286898850012221,
+            "fft_calls": 17,
+            "fully_selected": 314827
+          },
+          "allocation": {
+            "source": 712939.929849908,
+            "absorbed": 712939.929849912,
+            "remaining": 2.2248093446807665e-47,
+            "ledger_residual": -3.958120942115784e-09,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 8.881784197001252e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 3.39286207600162
+          }
+        },
+        {
+          "baseline": {
+            "seconds": 0.8401244360029523,
+            "fft_calls": 17,
+            "fully_selected": 314827
+          },
+          "allocation": {
+            "source": 712939.929849908,
+            "absorbed": 712939.929849912,
+            "remaining": 2.2248093446807665e-47,
+            "ledger_residual": -3.958120942115784e-09,
+            "max_source_overdraw": 0.0,
+            "max_capacity_overdraw": 8.881784197001252e-16,
+            "fft_calls": 52,
+            "rounds": 8,
+            "seconds": 2.8352456250031537
+          }
+        }
+      ]
+    }
+  ]
+}

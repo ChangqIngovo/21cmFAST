@@ -1,0 +1,327 @@
+{
+  "delayed_shared_cell": {
+    "cells": [
+      "P",
+      "C",
+      "X",
+      "Y"
+    ],
+    "beam_paths": [
+      [
+        "P",
+        "C",
+        "X"
+      ],
+      [
+        "C",
+        "Y"
+      ]
+    ],
+    "rates": [
+      1,
+      1
+    ],
+    "duration": 2,
+    "capacities": [
+      1,
+      2,
+      100,
+      100
+    ],
+    "event_result": [
+      1.0,
+      2.0,
+      0.5,
+      0.5
+    ],
+    "one_batch_result": [
+      1.0,
+      2.0,
+      1.0,
+      0.0
+    ],
+    "two_batch_result": [
+      1.0,
+      2.0,
+      0.5,
+      0.5
+    ],
+    "one_batch_atom_l1_error": 1.0,
+    "exact_absorption_by_beam_and_cell": [
+      [
+        1.0,
+        0.5,
+        0.5,
+        0.0
+      ],
+      [
+        0.0,
+        1.5,
+        0.0,
+        0.5
+      ]
+    ],
+    "event_count": 2
+  },
+  "event_semigroup_and_ties": {
+    "partition_durations": [
+      0.37,
+      0.23,
+      0.41,
+      0.99
+    ],
+    "split_max_absorption_difference": 0.0,
+    "permutation_max_absorption_difference": 0.0,
+    "simultaneous_event_result": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "simultaneous_event_count": 2
+  },
+  "six_axis_spatial_fixture": {
+    "cell_coordinates": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        2,
+        0,
+        0
+      ],
+      [
+        -1,
+        0,
+        0
+      ],
+      [
+        0,
+        1,
+        0
+      ],
+      [
+        0,
+        -1,
+        0
+      ],
+      [
+        0,
+        0,
+        1
+      ],
+      [
+        0,
+        0,
+        -1
+      ],
+      [
+        1,
+        1,
+        0
+      ],
+      [
+        1,
+        -1,
+        0
+      ],
+      [
+        1,
+        0,
+        1
+      ],
+      [
+        1,
+        0,
+        -1
+      ]
+    ],
+    "capacity": [
+      6,
+      12,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100,
+      100
+    ],
+    "source_positions": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        0
+      ]
+    ],
+    "total_rate_per_source": 6,
+    "directions": "+x,-x,+y,-y,+z,-z with equal 1/6 weights",
+    "duration": 2,
+    "source_A_cell_opening_time": 1,
+    "source_B_cell_opening_time": 1.8571428571428572,
+    "event_result": [
+      6.0,
+      12.000000000000002,
+      0.2857142857142856,
+      1.1428571428571428,
+      0.9999999999999999,
+      0.9999999999999999,
+      0.9999999999999999,
+      0.9999999999999999,
+      0.1428571428571428,
+      0.1428571428571428,
+      0.1428571428571428,
+      0.1428571428571428
+    ],
+    "batch_result": [
+      6.0,
+      12.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "batch_atom_l1_error": 1.4285714285714306,
+    "scope": "six-axis angular discretization; ordered paths are straight voxel rays"
+  },
+  "batch_refinement": {
+    "event_result": [
+      0.91,
+      1.07,
+      1.01,
+      1.01
+    ],
+    "batch_refinement": [
+      {
+        "steps": 1,
+        "field": [
+          0.91,
+          1.07,
+          1.0899999999999999,
+          0.9299999999999999
+        ],
+        "atom_l1_error": 0.15999999999999992
+      },
+      {
+        "steps": 2,
+        "field": [
+          0.91,
+          1.07,
+          1.02,
+          1.0
+        ],
+        "atom_l1_error": 0.020000000000000018
+      },
+      {
+        "steps": 3,
+        "field": [
+          0.91,
+          1.07,
+          1.0899999999999999,
+          0.9299999999999998
+        ],
+        "atom_l1_error": 0.16000000000000003
+      },
+      {
+        "steps": 4,
+        "field": [
+          0.91,
+          1.07,
+          1.02,
+          1.0
+        ],
+        "atom_l1_error": 0.020000000000000018
+      },
+      {
+        "steps": 7,
+        "field": [
+          0.91,
+          1.07,
+          1.0899999999999999,
+          0.9299999999999998
+        ],
+        "atom_l1_error": 0.16000000000000003
+      },
+      {
+        "steps": 16,
+        "field": [
+          0.91,
+          1.07,
+          1.02,
+          1.0
+        ],
+        "atom_l1_error": 0.020000000000000018
+      },
+      {
+        "steps": 64,
+        "field": [
+          0.91,
+          1.0700000000000003,
+          1.0099999999999998,
+          1.0099999999999998
+        ],
+        "atom_l1_error": 6.661338147750939e-16
+      },
+      {
+        "steps": 256,
+        "field": [
+          0.91,
+          1.0700000000000003,
+          1.0099999999999998,
+          1.0099999999999998
+        ],
+        "atom_l1_error": 6.661338147750939e-16
+      }
+    ]
+  },
+  "weak_source_compression": {
+    "angular_weights": [
+      0.1,
+      0.2,
+      0.7
+    ],
+    "source_cell_capacity": 0.4,
+    "source_cell_opening_time": 0.4,
+    "implicit_per_angle_local_absorption": [
+      0.04000000000000001,
+      0.08000000000000002,
+      0.27999999999999997
+    ],
+    "subsequent_downstream_absorption": [
+      0.06,
+      0.12,
+      0.42
+    ],
+    "scope": "opaque source cell; rays share that first absorber before activation"
+  },
+  "random_graph_comparisons": {
+    "seed": 70123,
+    "fixtures": 100,
+    "maximum_temporal_split_absorption_error": 6.522560269672795e-16,
+    "minimum_brightness_change": -4.440892098500626e-16,
+    "scope": "prescribed ordered paths; these do not all represent straight 3D rays"
+  },
+  "all_assertions_passed": true,
+  "scope": "Temporal model audit; independent of spatial DDA and heap implementation"
+}

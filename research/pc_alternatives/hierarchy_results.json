@@ -1,0 +1,792 @@
+{
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "cpu_count": 9,
+    "fft_workers": 4
+  },
+  "semantics": "Inputs are nonnegative photon increments and current residual atom capacities.",
+  "basic_and_geometry": {
+    "script_like": {
+      "zero": {
+        "photons": 0.0,
+        "absorbed": 0.0,
+        "remaining": 0.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "iterations": 0,
+        "radial_offers": 0,
+        "maximum_radius": 15.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "weak": {
+        "photons": 0.4,
+        "absorbed": 0.4,
+        "remaining": 0.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "iterations": 0,
+        "radial_offers": 0,
+        "maximum_radius": 15.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "saturation": {
+        "photons": 1000000.0,
+        "absorbed": 14147.0,
+        "remaining": 985853.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "iterations": 0,
+        "radial_offers": 1,
+        "maximum_radius": 15.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "isolated": {
+        "photons": 257.0,
+        "absorbed": 257.0,
+        "remaining": 0.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "iterations": 0,
+        "radial_offers": 1,
+        "maximum_radius": 15.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false,
+        "shell_rms": 0.0,
+        "shell_l1_per_photon": 0.0,
+        "centroid_cells": [
+          0.0,
+          0.0,
+          0.0
+        ],
+        "occupied_max_radius": 4.0
+      },
+      "two_equal": {
+        "photons": 514.0,
+        "absorbed": 514.0,
+        "remaining": 0.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "iterations": 2,
+        "radial_offers": 33,
+        "maximum_radius": 15.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "two_unequal": {
+        "photons": 430.0,
+        "absorbed": 430.0,
+        "remaining": 0.0,
+        "residual": 2.220446049250313e-16,
+        "relative_residual": 5.163828021512356e-19,
+        "capacity_violation": 0.0,
+        "iterations": 2,
+        "radial_offers": 15,
+        "maximum_radius": 15.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "nonuniform": {
+        "photons": 430.0,
+        "absorbed": 430.0,
+        "remaining": 4.718447854656915e-16,
+        "residual": -1.637578961322106e-14,
+        "relative_residual": -3.8083231658653625e-17,
+        "capacity_violation": 0.0,
+        "iterations": 2,
+        "radial_offers": 46,
+        "maximum_radius": 15.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "translation": {
+        "l1": 0.0,
+        "linf": 0.0,
+        "l1_per_photon": 0.0
+      },
+      "rotation_90deg": {
+        "l1": 5.861522205108383e-15,
+        "linf": 3.3306690738754696e-16,
+        "l1_per_photon": 1.3631446988624148e-17
+      },
+      "source_permutation": {
+        "l1": 0.0,
+        "linf": 0.0,
+        "l1_per_photon": 0.0
+      },
+      "time_partition": {
+        "l1": 1.186285270189582,
+        "linf": 0.21357942619130277,
+        "l1_per_photon": 0.002758802953929261
+      }
+    },
+    "dyadic": {
+      "zero": {
+        "photons": 0.0,
+        "absorbed": 0.0,
+        "remaining": 0.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "levels": 6,
+        "max_width": 32,
+        "shift": [
+          0,
+          0,
+          0
+        ]
+      },
+      "weak": {
+        "photons": 0.4,
+        "absorbed": 0.4,
+        "remaining": 0.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "levels": 6,
+        "max_width": 32,
+        "shift": [
+          0,
+          0,
+          0
+        ]
+      },
+      "saturation": {
+        "photons": 1000000.0,
+        "absorbed": 32768.0,
+        "remaining": 967232.0,
+        "residual": 0.0,
+        "relative_residual": 0.0,
+        "capacity_violation": 0.0,
+        "levels": 6,
+        "max_width": 32,
+        "shift": [
+          0,
+          0,
+          0
+        ]
+      },
+      "isolated": {
+        "photons": 257.0,
+        "absorbed": 257.0,
+        "remaining": 0.0,
+        "residual": -1.0658141036401503e-14,
+        "relative_residual": -4.147136590039495e-17,
+        "capacity_violation": 0.0,
+        "levels": 6,
+        "max_width": 32,
+        "shift": [
+          0,
+          0,
+          0
+        ],
+        "shell_rms": 0.060819817569509396,
+        "shell_l1_per_photon": 1.6803807696286386,
+        "centroid_cells": [
+          3.2165091717620906,
+          3.2165091717620906,
+          3.2165091717620906
+        ],
+        "occupied_max_radius": 12.12435565298214
+      },
+      "two_equal": {
+        "photons": 514.0,
+        "absorbed": 514.0,
+        "remaining": 0.0,
+        "residual": -2.1316282072803006e-14,
+        "relative_residual": -4.147136590039495e-17,
+        "capacity_violation": 0.0,
+        "levels": 6,
+        "max_width": 32,
+        "shift": [
+          0,
+          0,
+          0
+        ]
+      },
+      "two_unequal": {
+        "photons": 430.0,
+        "absorbed": 430.0,
+        "remaining": 0.0,
+        "residual": -1.509903313490213e-14,
+        "relative_residual": -3.511403054628402e-17,
+        "capacity_violation": 0.0,
+        "levels": 6,
+        "max_width": 32,
+        "shift": [
+          0,
+          0,
+          0
+        ]
+      },
+      "nonuniform": {
+        "photons": 430.0,
+        "absorbed": 430.0,
+        "remaining": 0.0,
+        "residual": 1.9456658506555868e-14,
+        "relative_residual": 4.524804303850202e-17,
+        "capacity_violation": 0.0,
+        "levels": 6,
+        "max_width": 32,
+        "shift": [
+          0,
+          0,
+          0
+        ]
+      },
+      "translation": {
+        "l1": 693.2695349185033,
+        "linf": 3.019671836498722,
+        "l1_per_photon": 1.6122547323686123
+      },
+      "rotation_90deg": {
+        "l1": 7.071209937037359e-14,
+        "linf": 4.440892098500626e-16,
+        "l1_per_photon": 1.6444674272179905e-16
+      },
+      "source_permutation": {
+        "definition": "Array input contains no source-order loop"
+      },
+      "time_partition": {
+        "l1": 3.215960484026503e-14,
+        "linf": 4.440892098500626e-16,
+        "l1_per_photon": 7.478977869829078e-17
+      }
+    }
+  },
+  "physical_counterexamples": {
+    "opaque_plane": {
+      "grid": 32,
+      "source": [
+        8,
+        16,
+        16
+      ],
+      "plane_x": 10,
+      "plane_capacity_per_cell": 1000000.0,
+      "photons": 1000,
+      "isotropic_photon_fraction_upper_bound": 0.5,
+      "note": "No photon path wraps around the periodic box in the physical half-space bound.",
+      "script_like": {
+        "audit": {
+          "photons": 1000.0,
+          "absorbed": 999.9999999999999,
+          "remaining": 1.1390888232654106e-13,
+          "residual": -2.5979218776228663e-14,
+          "relative_residual": -2.5979218776228665e-17,
+          "capacity_violation": 0.0,
+          "iterations": 3,
+          "radial_offers": 70,
+          "maximum_radius": 12.0,
+          "initial_shell": "equal",
+          "relay_count_exhausted": false,
+          "source_labels_after_overlap": false
+        },
+        "absorbed_fraction_plane": 0.7411925222291422,
+        "absorbed_fraction_behind": 0.0,
+        "directional_bound_pass": false
+      },
+      "capacity_shell": {
+        "audit": {
+          "photons": 1000.0,
+          "absorbed": 1000.0,
+          "remaining": 0.0,
+          "residual": -1.6930901125533637e-14,
+          "relative_residual": -1.6930901125533637e-17,
+          "capacity_violation": 0.0,
+          "iterations": 0,
+          "radial_offers": 1,
+          "maximum_radius": 12.0,
+          "initial_shell": "capacity",
+          "relay_count_exhausted": false,
+          "source_labels_after_overlap": false
+        },
+        "absorbed_fraction_plane": 0.9729951350243249,
+        "absorbed_fraction_behind": 0.0,
+        "directional_bound_pass": false
+      },
+      "dyadic": {
+        "audit": {
+          "photons": 1000.0,
+          "absorbed": 999.9999999999999,
+          "remaining": 0.0,
+          "residual": 6.417089082333405e-14,
+          "relative_residual": 6.417089082333404e-17,
+          "capacity_violation": 0.0,
+          "levels": 6,
+          "max_width": 32,
+          "shift": [
+            0,
+            0,
+            0
+          ]
+        },
+        "absorbed_fraction_plane": 0.9919975200061999,
+        "absorbed_fraction_behind": 9.919975200062e-07,
+        "directional_bound_pass": false
+      }
+    },
+    "overlap_cone": {
+      "grid": 64,
+      "radius": 12,
+      "center_distance": 18,
+      "photons": 100,
+      "expected_continuum_fraction": 0.125,
+      "infinitesimal_continuum_centroid_x_cells": 1.3090277777776833,
+      "definition": "Photons added at A after both spheres already ionized; cone cos(theta)>=d/(2R).",
+      "note": "Finite-grid angular discretization cannot explain a completely empty positive-solid-angle cone.",
+      "script_like": {
+        "audit": {
+          "photons": 100.0,
+          "absorbed": 100.0,
+          "remaining": 0.0,
+          "residual": 8.881784197001252e-16,
+          "relative_residual": 8.881784197001253e-18,
+          "capacity_violation": 0.0,
+          "iterations": 1,
+          "radial_offers": 17,
+          "maximum_radius": 31.0,
+          "initial_shell": "equal",
+          "relay_count_exhausted": false,
+          "source_labels_after_overlap": false
+        },
+        "absorbed_cone_fraction": 0.0,
+        "centroid_cells": [
+          -1.3099999999999994,
+          1.2656542480726783e-16,
+          0.0
+        ]
+      },
+      "dyadic": {
+        "audit": {
+          "photons": 100.0,
+          "absorbed": 100.0,
+          "remaining": 0.0,
+          "residual": 1.3877787807814457e-15,
+          "relative_residual": 1.3877787807814457e-17,
+          "capacity_violation": 0.0,
+          "levels": 7,
+          "max_width": 64,
+          "shift": [
+            0,
+            0,
+            0
+          ]
+        },
+        "absorbed_cone_fraction": 0.0,
+        "centroid_cells": [
+          4.042190669371197,
+          9.526166328600404,
+          9.526166328600404
+        ]
+      }
+    }
+  },
+  "monotonicity": {
+    "script_like": {
+      "trials": 120,
+      "seed": 293041,
+      "worst_pointwise_photon_decrease": 0.9411798425686363,
+      "photon_monotonicity_pass": false,
+      "fixture": {
+        "trial": 114,
+        "source_sites_flat": [
+          233,
+          241,
+          395,
+          249
+        ],
+        "source_photons": [
+          37.47204803033617,
+          34.87852933588399,
+          15.319203997007623,
+          42.453590480871206
+        ],
+        "changed_site_flat": 233,
+        "changed_multiplier": 1.7,
+        "cell": [
+          0,
+          5,
+          1
+        ],
+        "before": 0.957027448268798,
+        "after": 0.01584760570016175,
+        "total_decreased": 2.559734183218932,
+        "pointwise_pass": false
+      },
+      "worst_total_absorption_drop_with_increased_capacity": 2.842170943040401e-14
+    },
+    "dyadic": {
+      "trials": 120,
+      "seed": 293041,
+      "worst_pointwise_photon_decrease": 0.0,
+      "photon_monotonicity_pass": true,
+      "fixture": null,
+      "worst_total_absorption_drop_with_increased_capacity": 2.842170943040401e-14
+    }
+  },
+  "support_relay": {
+    "grid": 16,
+    "source_positions": [
+      [
+        7,
+        8,
+        8
+      ],
+      [
+        9,
+        8,
+        8
+      ]
+    ],
+    "per_hop_radius": 2.5,
+    "audit": {
+      "photons": 64.0,
+      "absorbed": 64.0,
+      "remaining": 0.0,
+      "residual": -5.273559366969494e-16,
+      "relative_residual": -8.239936510889834e-18,
+      "capacity_violation": 0.0,
+      "iterations": 2,
+      "radial_offers": 17,
+      "maximum_radius": 2.5,
+      "initial_shell": "equal",
+      "relay_count_exhausted": false,
+      "source_labels_after_overlap": false
+    },
+    "absorbed_beyond_every_original_source_radius": 0.5,
+    "maximum_original_source_distance": 3.1622776601683795,
+    "source_radius_bound_pass": false
+  },
+  "uniform_monotonicity_fixture": {
+    "grid": 16,
+    "uniform_capacity": 1,
+    "source_positions": [
+      [
+        6,
+        8,
+        8
+      ],
+      [
+        9,
+        8,
+        8
+      ]
+    ],
+    "photons_before": [
+      160,
+      160
+    ],
+    "photons_after": [
+      240,
+      160
+    ],
+    "per_hop_radius": 7,
+    "target": [
+      7,
+      4,
+      7
+    ],
+    "target_before": 1.0,
+    "target_after": 0.050449346405228766,
+    "total_decreased_cells": 13.809426981036761,
+    "max_decrease": 0.9495506535947712,
+    "monotonicity_pass": false,
+    "time_partition": {
+      "l1": 72.96649850671439,
+      "linf": 1.0,
+      "l1_per_photon": 0.22802030783348246
+    },
+    "audits": {
+      "base": {
+        "photons": 320.0,
+        "absorbed": 320.0,
+        "remaining": 9.992007221626409e-16,
+        "residual": -1.1102230246251565e-16,
+        "relative_residual": -3.4694469519536144e-19,
+        "capacity_violation": 0.0,
+        "iterations": 3,
+        "radial_offers": 110,
+        "maximum_radius": 7.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "more": {
+        "photons": 400.0,
+        "absorbed": 400.0,
+        "remaining": 2.220446049250313e-15,
+        "residual": -1.4432899320127035e-15,
+        "relative_residual": -3.608224830031759e-18,
+        "capacity_violation": 0.0,
+        "iterations": 3,
+        "radial_offers": 138,
+        "maximum_radius": 7.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "first_half": {
+        "photons": 160.0,
+        "absorbed": 160.0,
+        "remaining": 0.0,
+        "residual": 2.220446049250313e-15,
+        "relative_residual": 1.3877787807814457e-17,
+        "capacity_violation": 0.0,
+        "iterations": 2,
+        "radial_offers": 36,
+        "maximum_radius": 7.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      },
+      "second_half": {
+        "photons": 160.0,
+        "absorbed": 160.0,
+        "remaining": 0.0,
+        "residual": -1.7763568394002505e-15,
+        "relative_residual": -1.1102230246251566e-17,
+        "capacity_violation": 0.0,
+        "iterations": 1,
+        "radial_offers": 26,
+        "maximum_radius": 7.0,
+        "initial_shell": "equal",
+        "relay_count_exhausted": false,
+        "source_labels_after_overlap": false
+      }
+    },
+    "scope": "SCRIPT-like Python reconstruction; not a run of public SCRIPT Fortran; fixed gas, no recombination or feedback."
+  },
+  "benchmark": {
+    "scope": "Warm geometry toy routines; shared-host contention possible; not full 21cmFAST or optimized SCRIPT.",
+    "source_pattern": "8 fixed-seed sparse sources,100 photons each,uniform capacity1",
+    "rows": [
+      {
+        "grid": 32,
+        "cells": 32768,
+        "active_sources": 8,
+        "photons": 800,
+        "fft_workers": 4,
+        "python_radial_workers": 1,
+        "dyadic_workers": 1,
+        "per_hop_radius": 8.0,
+        "geometry_and_kernel_setup_s": 0.01482212900009472,
+        "script_like": {
+          "median_s": 0.0036985410006309394,
+          "min_s": 0.003661954000563128,
+          "all_s": [
+            0.0036985410006309394,
+            0.003661954000563128,
+            0.004569897999317618
+          ],
+          "audit": {
+            "photons": 800.0,
+            "absorbed": 800.0,
+            "remaining": 2.274291865944633e-13,
+            "residual": -2.2842838731662596e-13,
+            "relative_residual": -2.8553548414578244e-16,
+            "capacity_violation": 0.0,
+            "iterations": 1,
+            "radial_offers": 12,
+            "maximum_radius": 8.0,
+            "initial_shell": "equal",
+            "relay_count_exhausted": false,
+            "source_labels_after_overlap": false
+          }
+        },
+        "dyadic": {
+          "median_s": 0.00510456100164447,
+          "min_s": 0.00508540399823687,
+          "all_s": [
+            0.00508540399823687,
+            0.007667170000786427,
+            0.00510456100164447
+          ],
+          "audit": {
+            "photons": 800.0,
+            "absorbed": 800.0,
+            "remaining": 0.0,
+            "residual": -2.1316282072803006e-14,
+            "relative_residual": -2.6645352591003756e-17,
+            "capacity_violation": 0.0,
+            "levels": 6,
+            "max_width": 32,
+            "shift": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "fft_filter": {
+          "median_s": 0.003927451998606557,
+          "min_s": 0.0027153629998792894,
+          "all_s": [
+            0.003927451998606557,
+            0.0027153629998792894,
+            0.004642276999220485
+          ]
+        },
+        "ratio_script_to_fft": 0.9417151379426574,
+        "ratio_dyadic_to_fft": 1.2997131482333957,
+        "fft_count": 10
+      },
+      {
+        "grid": 64,
+        "cells": 262144,
+        "active_sources": 8,
+        "photons": 800,
+        "fft_workers": 4,
+        "python_radial_workers": 1,
+        "dyadic_workers": 1,
+        "per_hop_radius": 16.0,
+        "geometry_and_kernel_setup_s": 0.05344672600040212,
+        "script_like": {
+          "median_s": 0.029352343997743446,
+          "min_s": 0.028645566999330185,
+          "all_s": [
+            0.036743420001585037,
+            0.029352343997743446,
+            0.028645566999330185
+          ],
+          "audit": {
+            "photons": 800.0,
+            "absorbed": 800.0,
+            "remaining": 2.2737367544323206e-13,
+            "residual": -2.282618538629322e-13,
+            "relative_residual": -2.853273173286652e-16,
+            "capacity_violation": 0.0,
+            "iterations": 0,
+            "radial_offers": 8,
+            "maximum_radius": 16.0,
+            "initial_shell": "equal",
+            "relay_count_exhausted": false,
+            "source_labels_after_overlap": false
+          }
+        },
+        "dyadic": {
+          "median_s": 0.05705555999884382,
+          "min_s": 0.0550063129994669,
+          "all_s": [
+            0.0550063129994669,
+            0.06511541500003659,
+            0.05705555999884382
+          ],
+          "audit": {
+            "photons": 800.0,
+            "absorbed": 800.0,
+            "remaining": 0.0,
+            "residual": -2.1316282072803006e-14,
+            "relative_residual": -2.6645352591003756e-17,
+            "capacity_violation": 0.0,
+            "levels": 7,
+            "max_width": 64,
+            "shift": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "fft_filter": {
+          "median_s": 0.0680444810022891,
+          "min_s": 0.050164432999736164,
+          "all_s": [
+            0.050164432999736164,
+            0.0680444810022891,
+            0.0840460039980826
+          ]
+        },
+        "ratio_script_to_fft": 0.4313699445625281,
+        "ratio_dyadic_to_fft": 0.838503860392798,
+        "fft_count": 12
+      },
+      {
+        "grid": 128,
+        "cells": 2097152,
+        "active_sources": 8,
+        "photons": 800,
+        "fft_workers": 4,
+        "python_radial_workers": 1,
+        "dyadic_workers": 1,
+        "per_hop_radius": 32.0,
+        "geometry_and_kernel_setup_s": 0.3645360900009109,
+        "script_like": {
+          "median_s": 0.23597334899750422,
+          "min_s": 0.21807316999911563,
+          "all_s": [
+            0.25510882299931836,
+            0.23597334899750422,
+            0.21807316999911563
+          ],
+          "audit": {
+            "photons": 800.0,
+            "absorbed": 800.0,
+            "remaining": 2.2737367544323206e-13,
+            "residual": -2.282618538629322e-13,
+            "relative_residual": -2.853273173286652e-16,
+            "capacity_violation": 0.0,
+            "iterations": 0,
+            "radial_offers": 8,
+            "maximum_radius": 32.0,
+            "initial_shell": "equal",
+            "relay_count_exhausted": false,
+            "source_labels_after_overlap": false
+          }
+        },
+        "dyadic": {
+          "median_s": 0.5493721040002129,
+          "min_s": 0.5364002970018191,
+          "all_s": [
+            0.5364002970018191,
+            0.5493721040002129,
+            0.6649585380000644
+          ],
+          "audit": {
+            "photons": 800.0,
+            "absorbed": 800.0,
+            "remaining": 0.0,
+            "residual": -2.1316282072803006e-14,
+            "relative_residual": -2.6645352591003756e-17,
+            "capacity_violation": 0.0,
+            "levels": 8,
+            "max_width": 128,
+            "shift": [
+              0,
+              0,
+              0
+            ]
+          }
+        },
+        "fft_filter": {
+          "median_s": 0.35112357399702887,
+          "min_s": 0.29661789500096347,
+          "all_s": [
+            0.29661789500096347,
+            0.36786062299870537,
+            0.35112357399702887
+          ]
+        },
+        "ratio_script_to_fft": 0.6720521391124282,
+        "ratio_dyadic_to_fft": 1.564611848035192,
+        "fft_count": 14
+      }
+    ]
+  }
+}

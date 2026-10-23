@@ -1,0 +1,21 @@
+{
+  "sources": [
+    {
+      "path": "event_geometry_results.json",
+      "sha256": "df6bd0a120daa371551d4342138a12114f686230e7af41d4021a4936ef812d3b"
+    },
+    {
+      "path": "angular_resolution_results.json",
+      "sha256": "cfda1ab22bfdfa6fd0ea0c5279e3a620ae8d0a389e7300dbe0916f819ce4f4ac"
+    },
+    {
+      "path": "angular_high_order_active_results.json",
+      "sha256": "a30b1ec8dc42499d78405f2f854b8c0eedae1669701ffa2e1bca9dc40221ffe2"
+    },
+    {
+      "path": "angular_results.json",
+      "sha256": "a1f1aae5db8a8989e6630dda8ad2e736d3b4fc57dd7ea88e6b4dd4cca6899125"
+    }
+  ],
+  "scope": "Geometric error diagnostics; not matched-cost or cosmological validation"
+}

@@ -1,0 +1,1534 @@
+{
+  "scope": "Saved small-grid Qin20 global-budget history, not science-resolution or RT validation",
+  "fixture_directory": "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/frozen_native_step",
+  "files_sha256": {
+    "previous_ionized.h5": "d4e8dbb9fbc8a385c6405a0023ea77dcc1b0996a55b087a3082e27c5bec9e91a",
+    "previous_density.h5": "05756a5893bc66238d333eab0e1566ea8d60e543431a057d0c1e9d9cfb5d6922"
+  },
+  "metadata": {
+    "redshift": 8.0,
+    "seed": 1234,
+    "saved_version": "4.3.2.dev0+g72d8a2d23.d20261023",
+    "node_redshifts": [
+      35.0,
+      12.0,
+      8.0,
+      7.5
+    ],
+    "simulation_options": {
+      "BOX_LEN": 200.0,
+      "CORR_LX": 0.2,
+      "CORR_SFR": 0.2,
+      "CORR_STAR": 0.5,
+      "DELTA_R_FACTOR": 1.1,
+      "DENSITY_SMOOTH_RADIUS": 0.2,
+      "DEXM_OPTIMIZE_MINMASS": 100000000000.0,
+      "DEXM_R_OVERLAP": 2.0,
+      "DIM": 96,
+      "HALOMASS_CORRECTION": 0.89,
+      "HII_DIM": 32,
+      "INITIAL_REDSHIFT": 300.0,
+      "MIN_LOGPROB": -12.0,
+      "MIN_XE_FOR_NION_IN_TAUX": 0.001,
+      "NON_CUBIC_FACTOR": 1.0,
+      "N_COND_INTERP": 200,
+      "N_PROB_INTERP": 400,
+      "N_THREADS": 4,
+      "PARKINSON_G0": 1.0,
+      "PARKINSON_y1": 0.0,
+      "PARKINSON_y2": 0.0,
+      "SAMPLER_BUFFER_FACTOR": 2.0,
+      "SAMPLER_MIN_MASS": 100000000.0,
+      "ZPRIME_STEP_FACTOR": 1.02,
+      "Z_HEAT_MAX": 35.0
+    },
+    "astro_options": {
+      "CELL_RECOMB": false,
+      "HALO_SCALING_RELATIONS_MEDIAN": false,
+      "HEAT_FILTER": "spherical-tophat",
+      "HII_FILTER": "sharp-k",
+      "INTEGRATION_METHOD_ACGS": "GAUSS-LEGENDRE",
+      "INTEGRATION_METHOD_MCGS": "GAUSS-LEGENDRE",
+      "IONISE_ENTIRE_SPHERE": false,
+      "LYA_MULTIPLE_SCATTERING": false,
+      "M_MIN_in_Mass": true,
+      "PHOTON_CONS_TYPE": "no-photoncons",
+      "RECOMB_MODEL": "inhomogeneous",
+      "USE_ADIABATIC_FLUCTUATIONS": true,
+      "USE_CMB_HEATING": false,
+      "USE_EXP_FILTER": false,
+      "USE_LYA_HEATING": false,
+      "USE_MCGS": true,
+      "USE_METALLICITY": false,
+      "USE_REIONIZATION_PHOTOHEATING_FEEDBACK": true,
+      "USE_TS_FLUCT": true,
+      "USE_UPPER_STELLAR_TURNOVER": false,
+      "USE_X_RAY_HEATING": true
+    },
+    "matter_options": {
+      "DEXM_OPTIMIZE": false,
+      "FILTER": "spherical-tophat",
+      "HALO_FILTER": "spherical-tophat",
+      "HMF": "ST",
+      "KEEP_3D_VELOCITIES": false,
+      "MINIMIZE_MEMORY": false,
+      "PERTURB_ALGORITHM": "2LPT",
+      "PERTURB_ON_HIGH_RES": false,
+      "POWER_SPECTRUM": "EH",
+      "SAMPLE_METHOD": "MASS-LIMITED",
+      "SMOOTH_EVOLVED_DENSITY_FIELD": false,
+      "SOURCE_MODEL": "E-INTEGRAL",
+      "USE_FFTW_WISDOM": false,
+      "USE_INTERPOLATION_TABLES": "hmf-interpolation",
+      "V_CB_MODEL": "NONE"
+    }
+  },
+  "photon_source_convention": "effective photons per mean H atom; one mean-density cell has unit capacity",
+  "conditional_mean_correction": "species-specific volume mean; source floors omitted here because this is a stored-source additivity audit",
+  "native_unconditional": {
+    "acg": 0.3566029870956554,
+    "mcg": 0.25477183911656587
+  },
+  "global_budget": 20033.530305322067,
+  "local_count_interpretation": "S0=(1+delta_cell)*(q_ACG,cell+q_MCG,cell); proposed closure, not a native packet field",
+  "rho_minimum": 0.609822541475296,
+  "rho_mean": 0.9999999994146052,
+  "raw_local_packet_sum": 21710.961028721274,
+  "local_packet_renormalization_factor_to_budget": 0.9227380712820521,
+  "normalized_local_packet_sum": 20033.530305322063,
+  "normalized_local_packet_minimum": 0.09454550769195319,
+  "per_species_local_packet_normalizations": {
+    "acg": {
+      "global_budget": 11685.166681150436,
+      "raw_density_weighted_local_sum": 13102.92251261706,
+      "renormalization_factor_to_species_budget": 0.8917985029598214
+    },
+    "mcg": {
+      "global_budget": 8348.36362417163,
+      "raw_density_weighted_local_sum": 8608.038516104214,
+      "renormalization_factor_to_species_budget": 0.9698334421428558
+    }
+  },
+  "species_normalized_packet_sum": 20033.53030532207,
+  "stored_cumulative_recombination_sum": 9630.267130970955,
+  "summary": {
+    "max_volume_grid_rms_error_over_native_std": 0.3798449573260286,
+    "max_count_grid_rms_error_over_native_std": 1.131738347483793,
+    "max_budget_normalized_packet_rms_error_over_native_std": 0.5908333280067704,
+    "max_species_budget_normalized_packet_rms_error_over_native_std": 0.5621554191514392,
+    "max_q_forbidden_fluctuation_power_fraction": 0.042340790662634596,
+    "max_count_forbidden_fluctuation_power_fraction": 0.05708000176129161,
+    "max_sharp_k_kernel_negative_mass": 14.097764476951138
+  },
+  "scales": [
+    {
+      "index": 0,
+      "radius_cMpc": 3.8771905687499997,
+      "is_unfiltered_cell_step": true,
+      "retained_full_fft_modes_including_dc": 32768,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.39921755280413906,
+      "density_min": 0.609822541475296,
+      "native_density_weighted_source_sum": 21710.961028721274,
+      "native_density_weighted_source_sum_over_budget": 1.083731159602638,
+      "raw_mean_acg": 0.2815393951728993,
+      "raw_mean_mcg": 0.25171714612747564,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 3.30112512264275e-16,
+        "rms_error_over_native_std": 5.05545105415411e-16,
+        "correlation": 0.9999999999999997,
+        "max_abs_error_over_native_mean": 2.9055119105994055e-15
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 4.543088633779924e-16,
+        "rms_error_over_native_std": 6.957434622887457e-16,
+        "correlation": 1.0,
+        "max_abs_error_over_native_mean": 3.087106405011868e-15
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.09227504395990958,
+        "rms_error_over_native_std": 0.14131302235699164,
+        "correlation": 1.0,
+        "max_abs_error_over_native_mean": 1.340545620904401
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.09972792061608526,
+        "rms_error_over_native_std": 0.15272660159078352,
+        "correlation": 0.9999798727565715,
+        "max_abs_error_over_native_mean": 1.8261470617970006
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.0,
+        "rms_over_mean": 0.0,
+        "rms_over_float32_relative_epsilon": 0.0
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.0,
+        "rms_over_mean": 0.0,
+        "rms_over_float32_relative_epsilon": 0.0
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 2.020660030208379e-16,
+      "sharp_k_realspace_kernel_minimum": 0.0,
+      "sharp_k_realspace_kernel_negative_mass": -0.0,
+      "filtered_packet_grid_minimum": 0.09454550769195294,
+      "sharp_k_cutoff_minimum_distance_from_mode": null
+    },
+    {
+      "index": 1,
+      "radius_cMpc": 4.264909625625,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 23202,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.3959303209527288,
+      "density_min": 0.6010924577385979,
+      "native_density_weighted_source_sum": 21698.255947303416,
+      "native_density_weighted_source_sum_over_budget": 1.0830969687623704,
+      "raw_mean_acg": 0.2940388174205282,
+      "raw_mean_mcg": 0.2520130657644586,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.0705313872375887,
+        "rms_error_over_native_std": 0.10891086722311429,
+        "correlation": 0.9940670880009488,
+        "max_abs_error_over_native_mean": 1.893110857327781
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.11354692848022344,
+        "rms_error_over_native_std": 0.17533320888252035,
+        "correlation": 0.9848808009152247,
+        "max_abs_error_over_native_mean": 2.434750982408984
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.14020869825052032,
+        "rms_error_over_native_std": 0.21650291475551828,
+        "correlation": 0.9848808009152249,
+        "max_abs_error_over_native_mean": 2.9541719421888275
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.14309826028555245,
+        "rms_error_over_native_std": 0.22096482482784163,
+        "correlation": 0.9850166893390323,
+        "max_abs_error_over_native_mean": 3.341456174278745
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.011061042504861104,
+        "rms_over_mean": 0.06810974278704104,
+        "rms_over_float32_relative_epsilon": 571345.9375
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.01601135918366263,
+        "rms_over_mean": 0.1162643977745792,
+        "rms_over_float32_relative_epsilon": 975296.4375
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.034290852145185034,
+      "sharp_k_realspace_kernel_minimum": -0.04987083899874546,
+      "sharp_k_realspace_kernel_negative_mass": 13.11593559725979,
+      "filtered_packet_grid_minimum": -0.2534206823823336,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0004937426301308001
+    },
+    {
+      "index": 2,
+      "radius_cMpc": 4.6914005881875,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 18478,
+      "native_q_mean": 0.6113748262122212,
+      "native_q_std": 0.39028553648310843,
+      "density_min": 0.5934565908723131,
+      "native_density_weighted_source_sum": 21677.5362588806,
+      "native_density_weighted_source_sum_over_budget": 1.0820627182779556,
+      "raw_mean_acg": 0.30581887578932765,
+      "raw_mean_mcg": 0.2522714803717463,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.09233879057899465,
+        "rms_error_over_native_std": 0.14464694887642307,
+        "correlation": 0.9895881016326703,
+        "max_abs_error_over_native_mean": 2.1541487145802494
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.14813470642123425,
+        "rms_error_over_native_std": 0.23205018359218696,
+        "correlation": 0.9741446620620738,
+        "max_abs_error_over_native_mean": 2.424453060780818
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.1644552088584146,
+        "rms_error_over_native_std": 0.2576159384268121,
+        "correlation": 0.9741446620620735,
+        "max_abs_error_over_native_mean": 3.128501208984526
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.16527047636003298,
+        "rms_error_over_native_std": 0.2588930393709306,
+        "correlation": 0.9743883348848451,
+        "max_abs_error_over_native_mean": 3.4670706601596657
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.018768803119280596,
+        "rms_over_mean": 0.08745672174934985,
+        "rms_over_float32_relative_epsilon": 733640.125
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.02665743091752115,
+        "rms_over_mean": 0.14734366674875596,
+        "rms_over_float32_relative_epsilon": 1236008.125
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.05716734637261293,
+      "sharp_k_realspace_kernel_minimum": -0.04498420732380348,
+      "sharp_k_realspace_kernel_negative_mass": 14.097764476951138,
+      "filtered_packet_grid_minimum": -0.3600079314085308,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.00028915848438859637
+    },
+    {
+      "index": 3,
+      "radius_cMpc": 5.160540647006251,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 13949,
+      "native_q_mean": 0.6113748262122212,
+      "native_q_std": 0.38103694263151383,
+      "density_min": 0.6072338221353267,
+      "native_density_weighted_source_sum": 21642.55860234226,
+      "native_density_weighted_source_sum_over_budget": 1.0803167625724328,
+      "raw_mean_acg": 0.3165037821684109,
+      "raw_mean_mcg": 0.2524989557891786,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.10965130223324088,
+        "rms_error_over_native_std": 0.17593581709902942,
+        "correlation": 0.9848011048244142,
+        "max_abs_error_over_native_mean": 2.6627369869090516
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.17513601082457336,
+        "rms_error_over_native_std": 0.2810062127884595,
+        "correlation": 0.963487906182454,
+        "max_abs_error_over_native_mean": 2.8484794336992847
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.18370938445083204,
+        "rms_error_over_native_std": 0.29476221443650774,
+        "correlation": 0.963487906182454,
+        "max_abs_error_over_native_mean": 3.7164208598126103
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.18269120706745107,
+        "rms_error_over_native_std": 0.2931285460144415,
+        "correlation": 0.9638470074454614,
+        "max_abs_error_over_native_mean": 4.009627346947201
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.02567542589937261,
+        "rms_over_mean": 0.099866161993156,
+        "rms_over_float32_relative_epsilon": 837738.0625
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.03598188827049556,
+        "rms_over_mean": 0.16620437945872468,
+        "rms_over_float32_relative_epsilon": 1394223.375
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.09100366558516748,
+      "sharp_k_realspace_kernel_minimum": -0.036804963563211515,
+      "sharp_k_realspace_kernel_negative_mass": 13.261460892351645,
+      "filtered_packet_grid_minimum": -0.4063614332761738,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.000995523496580053
+    },
+    {
+      "index": 4,
+      "radius_cMpc": 5.676594711706876,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 10395,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.3712172380593497,
+      "density_min": 0.6024308302759454,
+      "native_density_weighted_source_sum": 21600.23139792934,
+      "native_density_weighted_source_sum_over_budget": 1.0782039445235005,
+      "raw_mean_acg": 0.3262345958694368,
+      "raw_mean_mcg": 0.2526953345102356,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.12117868515925721,
+        "rms_error_over_native_std": 0.1995747772036967,
+        "correlation": 0.9806991723646891,
+        "max_abs_error_over_native_mean": 2.4495268534445107
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.19191868643191984,
+        "rms_error_over_native_std": 0.3160797547484407,
+        "correlation": 0.955394969093272,
+        "max_abs_error_over_native_mean": 2.7210826306988385
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.19560766318865905,
+        "rms_error_over_native_std": 0.32215530106558604,
+        "correlation": 0.9553949690932723,
+        "max_abs_error_over_native_mean": 3.3761545568294404
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.19341980540634368,
+        "rms_error_over_native_std": 0.3185520169658691,
+        "correlation": 0.9558180775281514,
+        "max_abs_error_over_native_mean": 3.5842871525939026
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.03125855851783748,
+        "rms_over_mean": 0.10735074337596849,
+        "rms_over_float32_relative_epsilon": 900523.1875
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.043376080723454516,
+        "rms_over_mean": 0.17686884582807275,
+        "rms_over_float32_relative_epsilon": 1483683.5
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.1177203152128941,
+      "sharp_k_realspace_kernel_minimum": -0.026686998852169214,
+      "sharp_k_realspace_kernel_negative_mass": 11.831757934174702,
+      "filtered_packet_grid_minimum": -0.5487072293579817,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0004434466068481413
+    },
+    {
+      "index": 5,
+      "radius_cMpc": 6.244254182877564,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 7809,
+      "native_q_mean": 0.6113748262122214,
+      "native_q_std": 0.3604348227918121,
+      "density_min": 0.5866766865565437,
+      "native_density_weighted_source_sum": 21548.29167979886,
+      "native_density_weighted_source_sum_over_budget": 1.0756113052163543,
+      "raw_mean_acg": 0.3348449509830971,
+      "raw_mean_mcg": 0.2528659602571679,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.12930475742390735,
+        "rms_error_over_native_std": 0.21932862364998615,
+        "correlation": 0.9770147961376789,
+        "max_abs_error_over_native_mean": 2.5710245425747513
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.20418037225313293,
+        "rms_error_over_native_std": 0.3463337383311277,
+        "correlation": 0.9483656993772351,
+        "max_abs_error_over_native_mean": 2.9162902017144448
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20395938323295412,
+        "rms_error_over_native_std": 0.3459588935179652,
+        "correlation": 0.9483656993772351,
+        "max_abs_error_over_native_mean": 3.3090157937253486
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20086238628289615,
+        "rms_error_over_native_std": 0.34070572192523285,
+        "correlation": 0.9488341015685182,
+        "max_abs_error_over_native_mean": 3.4495936819334676
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.036181089293390374,
+        "rms_over_mean": 0.11213985998672855,
+        "rms_over_float32_relative_epsilon": 940697.3125
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04996531681465032,
+        "rms_over_mean": 0.18348292432621802,
+        "rms_over_float32_relative_epsilon": 1539166.375
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.14005437167368337,
+      "sharp_k_realspace_kernel_minimum": -0.020304843778310253,
+      "sharp_k_realspace_kernel_negative_mass": 10.641304518087148,
+      "filtered_packet_grid_minimum": -0.44393453243062947,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.00022593525595548947
+    },
+    {
+      "index": 6,
+      "radius_cMpc": 6.868679601165321,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 5887,
+      "native_q_mean": 0.6113748262122214,
+      "native_q_std": 0.348545287615239,
+      "density_min": 0.5890639883844612,
+      "native_density_weighted_source_sum": 21486.67745338699,
+      "native_density_weighted_source_sum_over_budget": 1.072535750110847,
+      "raw_mean_acg": 0.3422352677365552,
+      "raw_mean_mcg": 0.2530103761839655,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.13308946691999596,
+        "rms_error_over_native_std": 0.2334490024685452,
+        "correlation": 0.9744122976310563,
+        "max_abs_error_over_native_mean": 2.4201283999298684
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.21175415056563132,
+        "rms_error_over_native_std": 0.37143281404708667,
+        "correlation": 0.9429820290792849,
+        "max_abs_error_over_native_mean": 3.063822481549267
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20820315331613143,
+        "rms_error_over_native_std": 0.3652040959911145,
+        "correlation": 0.9429820290792855,
+        "max_abs_error_over_native_mean": 3.1742848094855374
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20434946414244257,
+        "rms_error_over_native_std": 0.35844443338038134,
+        "correlation": 0.9434924429895939,
+        "max_abs_error_over_native_mean": 3.3325266620861953
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.038665444862100086,
+        "rms_over_mean": 0.11210195038394166,
+        "rms_over_float32_relative_epsilon": 940379.3125
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.05290706162245632,
+        "rms_over_mean": 0.18172603571455226,
+        "rms_over_float32_relative_epsilon": 1524428.5
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.16265543717993766,
+      "sharp_k_realspace_kernel_minimum": -0.01430171278510373,
+      "sharp_k_realspace_kernel_negative_mass": 9.757586837405519,
+      "filtered_packet_grid_minimum": -0.3328991067172722,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0017382916737649357
+    },
+    {
+      "index": 7,
+      "radius_cMpc": 7.555547561281854,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 4385,
+      "native_q_mean": 0.6113748262122214,
+      "native_q_std": 0.33436884434499703,
+      "density_min": 0.5930726369196955,
+      "native_density_weighted_source_sum": 21411.264214186467,
+      "native_density_weighted_source_sum_over_budget": 1.068771399142686,
+      "raw_mean_acg": 0.34816909552159814,
+      "raw_mean_mcg": 0.25312999010543535,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.13742244047167207,
+        "rms_error_over_native_std": 0.25126928564654394,
+        "correlation": 0.9708736209233022,
+        "max_abs_error_over_native_mean": 2.9337353456189112
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.220234459996364,
+        "rms_error_over_native_std": 0.40268645534239383,
+        "correlation": 0.9358635295659328,
+        "max_abs_error_over_native_mean": 3.2516965459063374
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.21333237634869956,
+        "rms_error_over_native_std": 0.3900663794532682,
+        "correlation": 0.9358635295659321,
+        "max_abs_error_over_native_mean": 3.679767773990013
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.2087519799946513,
+        "rms_error_over_native_std": 0.3816913795921867,
+        "correlation": 0.9364430524082095,
+        "max_abs_error_over_native_mean": 3.796468540781698
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04099915813295614,
+        "rms_over_mean": 0.11074030654145657,
+        "rms_over_float32_relative_epsilon": 928957.0
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.05562309638901876,
+        "rms_over_mean": 0.17780411765815898,
+        "rms_over_float32_relative_epsilon": 1491529.125
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.1933799215667423,
+      "sharp_k_realspace_kernel_minimum": -0.011500624648762071,
+      "sharp_k_realspace_kernel_negative_mass": 8.685390129031566,
+      "filtered_packet_grid_minimum": -0.31433439270071256,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0011020653208111408
+    },
+    {
+      "index": 8,
+      "radius_cMpc": 8.311102317410041,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 3287,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.31988436009139554,
+      "density_min": 0.5688958992666168,
+      "native_density_weighted_source_sum": 21328.705388198578,
+      "native_density_weighted_source_sum_over_budget": 1.0646503668168978,
+      "raw_mean_acg": 0.35293568994632096,
+      "raw_mean_mcg": 0.2532376349977312,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.13663709584299943,
+        "rms_error_over_native_std": 0.2611458737816655,
+        "correlation": 0.9691908461167603,
+        "max_abs_error_over_native_mean": 2.8540530792647636
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.22291228128149024,
+        "rms_error_over_native_std": 0.42603820077387616,
+        "correlation": 0.9317087651697589,
+        "max_abs_error_over_native_mean": 3.082183893444053
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.21326158660435632,
+        "rms_error_over_native_std": 0.40759343598645675,
+        "correlation": 0.9317087651697591,
+        "max_abs_error_over_native_mean": 3.5703212332712124
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20818059400346212,
+        "rms_error_over_native_std": 0.3978824549073264,
+        "correlation": 0.9322930375827557,
+        "max_abs_error_over_native_mean": 3.712348382421907
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.042340790662634596,
+        "rms_over_mean": 0.10766261803823525,
+        "rms_over_float32_relative_epsilon": 903139.4375
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.05708000176129161,
+        "rms_over_mean": 0.17160526211558388,
+        "rms_over_float32_relative_epsilon": 1439529.375
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.21078587612130842,
+      "sharp_k_realspace_kernel_minimum": -0.00837320891735786,
+      "sharp_k_realspace_kernel_negative_mass": 7.859426838814282,
+      "filtered_packet_grid_minimum": -0.4153450657164225,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0013908031238600849
+    },
+    {
+      "index": 9,
+      "radius_cMpc": 9.142212549151044,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 2517,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.30487781989522916,
+      "density_min": 0.611373788105579,
+      "native_density_weighted_source_sum": 21244.322787031786,
+      "native_density_weighted_source_sum_over_budget": 1.0604382983556355,
+      "raw_mean_acg": 0.35682888857513717,
+      "raw_mean_mcg": 0.2533260724374031,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.13547345209734687,
+        "rms_error_over_native_std": 0.2716663949540437,
+        "correlation": 0.9675659096264331,
+        "max_abs_error_over_native_mean": 1.4824506714513193
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.2235543610019527,
+        "rms_error_over_native_std": 0.448296004784872,
+        "correlation": 0.9283630474587313,
+        "max_abs_error_over_native_mean": 2.323349642615536
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.21136273215914603,
+        "rms_error_over_native_std": 0.4238479981454377,
+        "correlation": 0.9283630474587307,
+        "max_abs_error_over_native_mean": 2.0394774627625423
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20579160402771007,
+        "rms_error_over_native_std": 0.4126761539806731,
+        "correlation": 0.9290103348208625,
+        "max_abs_error_over_native_mean": 1.9730857181577974
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04177101133791914,
+        "rms_over_mean": 0.10191914530727451,
+        "rms_over_float32_relative_epsilon": 854959.75
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.05597228354604579,
+        "rms_over_mean": 0.16114946814098705,
+        "rms_over_float32_relative_epsilon": 1351819.75
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.23664113982475526,
+      "sharp_k_realspace_kernel_minimum": -0.007135109401663738,
+      "sharp_k_realspace_kernel_negative_mass": 7.2171974673041,
+      "filtered_packet_grid_minimum": -0.4568620717718508,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.006206669002525422
+    },
+    {
+      "index": 10,
+      "radius_cMpc": 10.05643380406615,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 1863,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.28797963448561714,
+      "density_min": 0.6395022506512931,
+      "native_density_weighted_source_sum": 21143.427870641513,
+      "native_density_weighted_source_sum_over_budget": 1.0554019959739493,
+      "raw_mean_acg": 0.3590252954877542,
+      "raw_mean_mcg": 0.2534044103040287,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.13247458178330476,
+        "rms_error_over_native_std": 0.2812408056561711,
+        "correlation": 0.9660602966834203,
+        "max_abs_error_over_native_mean": 1.7185386572596788
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.2212847712753296,
+        "rms_error_over_native_std": 0.4697830067862754,
+        "correlation": 0.9254539801678592,
+        "max_abs_error_over_native_mean": 2.126303438258183
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20684607955509157,
+        "rms_error_over_native_std": 0.43912996197302057,
+        "correlation": 0.9254539801678586,
+        "max_abs_error_over_native_mean": 2.187386018438925
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20099903682688272,
+        "rms_error_over_native_std": 0.42671681082016477,
+        "correlation": 0.9261292166833661,
+        "max_abs_error_over_native_mean": 2.267206920068081
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04193615515784127,
+        "rms_over_mean": 0.09646028238853363,
+        "rms_over_float32_relative_epsilon": 809167.4375
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.05614384391606794,
+        "rms_over_mean": 0.15186913870386076,
+        "rms_over_float32_relative_epsilon": 1273970.625
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.25720817737775054,
+      "sharp_k_realspace_kernel_minimum": -0.004906483881402282,
+      "sharp_k_realspace_kernel_negative_mass": 6.478699190915201,
+      "filtered_packet_grid_minimum": -0.3248849344362475,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0036117770919457115
+    },
+    {
+      "index": 11,
+      "radius_cMpc": 11.062077184472766,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 1365,
+      "native_q_mean": 0.6113748262122214,
+      "native_q_std": 0.2693800059611199,
+      "density_min": 0.6613802380346482,
+      "native_density_weighted_source_sum": 21036.408702712666,
+      "native_density_weighted_source_sum_over_budget": 1.0500599935261623,
+      "raw_mean_acg": 0.3601702478581501,
+      "raw_mean_mcg": 0.2534772211456584,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.13012263684206526,
+        "rms_error_over_native_std": 0.29532148906803346,
+        "correlation": 0.9635202559805731,
+        "max_abs_error_over_native_mean": 1.596499205438421
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.2188741369695076,
+        "rms_error_over_native_std": 0.49674858746345224,
+        "correlation": 0.9214344679698016,
+        "max_abs_error_over_native_mean": 1.7860596642735427
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.20223912639295183,
+        "rms_error_over_native_std": 0.4589943871693587,
+        "correlation": 0.9214344679698022,
+        "max_abs_error_over_native_mean": 2.0616501346546157
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.19617572032188285,
+        "rms_error_over_native_std": 0.4452331066328627,
+        "correlation": 0.9221624355044095,
+        "max_abs_error_over_native_mean": 2.154379461663634
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04129185262774509,
+        "rms_over_mean": 0.08953441289271817,
+        "rms_over_float32_relative_epsilon": 751069.0625
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.05530181734802822,
+        "rms_over_mean": 0.14033947400355284,
+        "rms_over_float32_relative_epsilon": 1177252.875
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.28708212129694605,
+      "sharp_k_realspace_kernel_minimum": -0.003769673409421624,
+      "sharp_k_realspace_kernel_negative_mass": 5.782571807938572,
+      "filtered_packet_grid_minimum": -0.31304852580839915,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0042437362014114965
+    },
+    {
+      "index": 12,
+      "radius_cMpc": 12.168284902920044,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 1045,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.2536111726806015,
+      "density_min": 0.6711069344783536,
+      "native_density_weighted_source_sum": 20941.950321317712,
+      "native_density_weighted_source_sum_over_budget": 1.0453449792498288,
+      "raw_mean_acg": 0.3612569315921519,
+      "raw_mean_mcg": 0.2535291816307108,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.12250773739257748,
+        "rms_error_over_native_std": 0.2953266840194237,
+        "correlation": 0.9642719273889094,
+        "max_abs_error_over_native_mean": 1.150151870979064
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.20897084501837446,
+        "rms_error_over_native_std": 0.5037613789098729,
+        "correlation": 0.9229924037054018,
+        "max_abs_error_over_native_mean": 1.5364557711207067
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.19100874891796255,
+        "rms_error_over_native_std": 0.46046055242922423,
+        "correlation": 0.9229924037054015,
+        "max_abs_error_over_native_mean": 1.5210869138959509
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.18499804757162125,
+        "rms_error_over_native_std": 0.4459706880743088,
+        "correlation": 0.9237255291827904,
+        "max_abs_error_over_native_mean": 1.5710477275009214
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.0388691149177018,
+        "rms_over_mean": 0.08178302223569761,
+        "rms_over_float32_relative_epsilon": 686045.6875
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.05200345514192838,
+        "rms_over_mean": 0.12770714857669188,
+        "rms_over_float32_relative_epsilon": 1071285.125
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.29709488082744934,
+      "sharp_k_realspace_kernel_minimum": -0.0031917173346204973,
+      "sharp_k_realspace_kernel_negative_mass": 5.250646734967184,
+      "filtered_packet_grid_minimum": -0.21546746984112897,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0001033596574887552
+    },
+    {
+      "index": 13,
+      "radius_cMpc": 13.38511339321205,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 799,
+      "native_q_mean": 0.6113748262122212,
+      "native_q_std": 0.23417375799150358,
+      "density_min": 0.6699577846709904,
+      "native_density_weighted_source_sum": 20835.882472158337,
+      "native_density_weighted_source_sum_over_budget": 1.0400504631289633,
+      "raw_mean_acg": 0.36111980874147775,
+      "raw_mean_mcg": 0.253593555671614,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.11498904187391702,
+        "rms_error_over_native_std": 0.3002104338886963,
+        "correlation": 0.9656254722651293,
+        "max_abs_error_over_native_mean": 0.8605275543654403
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.2012811573823282,
+        "rms_error_over_native_std": 0.5254996702870546,
+        "correlation": 0.9252572867237604,
+        "max_abs_error_over_native_mean": 1.2977491990488725
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.18073100426985675,
+        "rms_error_over_native_std": 0.47184785893324943,
+        "correlation": 0.9252572867237602,
+        "max_abs_error_over_native_mean": 1.1606919129289963
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.17444343297820333,
+        "rms_error_over_native_std": 0.45543242947308327,
+        "correlation": 0.9260122509036951,
+        "max_abs_error_over_native_mean": 1.2307079377011743
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.03450144193421256,
+        "rms_over_mean": 0.07114580475335248,
+        "rms_over_float32_relative_epsilon": 596814.25
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04619289801675572,
+        "rms_over_mean": 0.11058501083501138,
+        "rms_over_float32_relative_epsilon": 927654.25
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.3219045434214171,
+      "sharp_k_realspace_kernel_minimum": -0.002200807339062847,
+      "sharp_k_realspace_kernel_negative_mass": 4.6776927821250425,
+      "filtered_packet_grid_minimum": -0.2682726971780356,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0009786523260139068
+    },
+    {
+      "index": 14,
+      "radius_cMpc": 14.723624732533256,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 619,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.22104570821685512,
+      "density_min": 0.6527233388650406,
+      "native_density_weighted_source_sum": 20755.924983977304,
+      "native_density_weighted_source_sum_over_budget": 1.0360592799993582,
+      "raw_mean_acg": 0.36173624264324644,
+      "raw_mean_mcg": 0.25363014924187155,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.1119189359195119,
+        "rms_error_over_native_std": 0.3095487379041129,
+        "correlation": 0.9628064900722068,
+        "max_abs_error_over_native_mean": 1.362766188779865
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.19560505669047862,
+        "rms_error_over_native_std": 0.5410103118720233,
+        "correlation": 0.9211402054481984,
+        "max_abs_error_over_native_mean": 1.513416555177888
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.17438581226304528,
+        "rms_error_over_native_std": 0.48232149145190584,
+        "correlation": 0.9211402054481979,
+        "max_abs_error_over_native_mean": 1.7311355057472948
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.1683851938295444,
+        "rms_error_over_native_std": 0.46572480164715113,
+        "correlation": 0.921961658862115,
+        "max_abs_error_over_native_mean": 1.769102630946953
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.03364021006052784,
+        "rms_over_mean": 0.06631379528703782,
+        "rms_over_float32_relative_epsilon": 556280.375
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04502742248082331,
+        "rms_over_mean": 0.1029561523799885,
+        "rms_over_float32_relative_epsilon": 863658.75
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.3402276972794136,
+      "sharp_k_realspace_kernel_minimum": -0.0017212795783296628,
+      "sharp_k_realspace_kernel_negative_mass": 4.376064564864629,
+      "filtered_packet_grid_minimum": -0.32882066672822213,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0059863096630589085
+    },
+    {
+      "index": 15,
+      "radius_cMpc": 16.195987205786583,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 461,
+      "native_q_mean": 0.6113748262122212,
+      "native_q_std": 0.20610829912701537,
+      "density_min": 0.7115991034307765,
+      "native_density_weighted_source_sum": 20667.344262575396,
+      "native_density_weighted_source_sum_over_budget": 1.031637656847977,
+      "raw_mean_acg": 0.361293840872122,
+      "raw_mean_mcg": 0.25365620157845115,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.10592130788357663,
+        "rms_error_over_native_std": 0.3141922061060996,
+        "correlation": 0.962126021315369,
+        "max_abs_error_over_native_mean": 1.2990477759569936
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.18740849765429138,
+        "rms_error_over_native_std": 0.5559059881110233,
+        "correlation": 0.9203418979019464,
+        "max_abs_error_over_native_mean": 1.4360699087172362
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.16485372292745976,
+        "rms_error_over_native_std": 0.4890022218033179,
+        "correlation": 0.920341897901947,
+        "max_abs_error_over_native_mean": 1.6462569283388493
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.1590537330200782,
+        "rms_error_over_native_std": 0.47179783053582797,
+        "correlation": 0.9211763229760348,
+        "max_abs_error_over_native_mean": 1.6817804449293767
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.03281007461662967,
+        "rms_over_mean": 0.06106488394092853,
+        "rms_over_float32_relative_epsilon": 512249.34375
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.04401568072242442,
+        "rms_over_mean": 0.09486062566008771,
+        "rms_over_float32_relative_epsilon": 795748.625
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.3516576110287088,
+      "sharp_k_realspace_kernel_minimum": -0.0014528159046750552,
+      "sharp_k_realspace_kernel_negative_mass": 3.8217006285066812,
+      "filtered_packet_grid_minimum": -0.15343767546562403,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.013006007273961062
+    },
+    {
+      "index": 16,
+      "radius_cMpc": 17.81558592636524,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 341,
+      "native_q_mean": 0.6113748262122212,
+      "native_q_std": 0.18469420167713943,
+      "density_min": 0.7443697664020195,
+      "native_density_weighted_source_sum": 20567.936667614245,
+      "native_density_weighted_source_sum_over_budget": 1.0266755960705642,
+      "raw_mean_acg": 0.3598718588302745,
+      "raw_mean_mcg": 0.2537053019850646,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.09726316608786936,
+        "rms_error_over_native_std": 0.32196057441895176,
+        "correlation": 0.9636274948560969,
+        "max_abs_error_over_native_mean": 0.570539375429646
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.17761508469037682,
+        "rms_error_over_native_std": 0.5879415301032093,
+        "correlation": 0.9223474129444686,
+        "max_abs_error_over_native_mean": 0.9572527407790208
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.15260406892673123,
+        "rms_error_over_native_std": 0.5051500549132082,
+        "correlation": 0.9223474129444683,
+        "max_abs_error_over_native_mean": 0.7721557505883238
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.1467207785351034,
+        "rms_error_over_native_std": 0.48567518451621994,
+        "correlation": 0.9233354423584,
+        "max_abs_error_over_native_mean": 0.7436710979312432
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.022878160748543264,
+        "rms_over_mean": 0.04569369331950513,
+        "rms_over_float32_relative_epsilon": 383306.46875
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.03053149364659275,
+        "rms_over_mean": 0.07022962212899446,
+        "rms_over_float32_relative_epsilon": 589128.75
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.3896283916735587,
+      "sharp_k_realspace_kernel_minimum": -0.0012093327941274878,
+      "sharp_k_realspace_kernel_negative_mass": 3.4462943160664308,
+      "filtered_packet_grid_minimum": -0.08509669001750708,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.008956992667559449
+    },
+    {
+      "index": 17,
+      "radius_cMpc": 19.597144519001766,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 251,
+      "native_q_mean": 0.6113748262122214,
+      "native_q_std": 0.1696934131589292,
+      "density_min": 0.7473901235045266,
+      "native_density_weighted_source_sum": 20490.809073291173,
+      "native_density_weighted_source_sum_over_budget": 1.0228256708128785,
+      "raw_mean_acg": 0.3591204927877243,
+      "raw_mean_mcg": 0.253738575967418,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.08880923594168118,
+        "rms_error_over_native_std": 0.3199636932226351,
+        "correlation": 0.963669622846897,
+        "max_abs_error_over_native_mean": 0.5624443666867256
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.16548831904463046,
+        "rms_error_over_native_std": 0.5962246289507189,
+        "correlation": 0.9227183721928238,
+        "max_abs_error_over_native_mean": 0.982372577657255
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.1394261571093589,
+        "rms_error_over_native_std": 0.5023273501626,
+        "correlation": 0.9227183721928236,
+        "max_abs_error_over_native_mean": 0.813937459019338
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.1340558267229867,
+        "rms_error_over_native_std": 0.4829790163318961,
+        "correlation": 0.9237053062894197,
+        "max_abs_error_over_native_mean": 0.7838976032246663
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.021222840366948426,
+        "rms_over_mean": 0.04043516190084744,
+        "rms_over_float32_relative_epsilon": 339194.6875
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.028382677041014284,
+        "rms_over_mean": 0.062154862689523076,
+        "rms_over_float32_relative_epsilon": 521392.78125
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.3911460450939194,
+      "sharp_k_realspace_kernel_minimum": -0.0008893709170900567,
+      "sharp_k_realspace_kernel_negative_mass": 2.958410031486924,
+      "filtered_packet_grid_minimum": -0.059409349225039376,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.01847067923331802
+    },
+    {
+      "index": 18,
+      "radius_cMpc": 21.556858970901946,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 179,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.15111086222028589,
+      "density_min": 0.7833823811737225,
+      "native_density_weighted_source_sum": 20404.198105980366,
+      "native_density_weighted_source_sum_over_budget": 1.0185023705262686,
+      "raw_mean_acg": 0.35740910627373523,
+      "raw_mean_mcg": 0.25376893792827104,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.07918857586428789,
+        "rms_error_over_native_std": 0.32038664259916444,
+        "correlation": 0.9664858822127342,
+        "max_abs_error_over_native_mean": 0.3942323536797042
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.15310631375774938,
+        "rms_error_over_native_std": 0.619448162695162,
+        "correlation": 0.9283018604488564,
+        "max_abs_error_over_native_mean": 0.7139590062403492
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.12445806098540425,
+        "rms_error_over_native_std": 0.5035410710233297,
+        "correlation": 0.9283018604488561,
+        "max_abs_error_over_native_mean": 0.5649459115225904
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.11928680917665024,
+        "rms_error_over_native_std": 0.4826188611343559,
+        "correlation": 0.9293041946196798,
+        "max_abs_error_over_native_mean": 0.5423884957147284
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.018890022384055447,
+        "rms_over_mean": 0.03397068994714515,
+        "rms_over_float32_relative_epsilon": 284966.78125
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.02522185187440574,
+        "rms_over_mean": 0.05205313853272832,
+        "rms_over_float32_relative_epsilon": 436653.375
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.40307302439441484,
+      "sharp_k_realspace_kernel_minimum": -0.0007260227919645467,
+      "sharp_k_realspace_kernel_negative_mass": 2.5366777420637994,
+      "filtered_packet_grid_minimum": -0.006780720497675863,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.009840770546400757
+    },
+    {
+      "index": 19,
+      "radius_cMpc": 23.712544867992143,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 147,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.1418058198317452,
+      "density_min": 0.7706581027329494,
+      "native_density_weighted_source_sum": 20365.351053712242,
+      "native_density_weighted_source_sum_over_budget": 1.0165632688464312,
+      "raw_mean_acg": 0.35806125016665646,
+      "raw_mean_mcg": 0.25380081967023216,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.07511616164282074,
+        "rms_error_over_native_std": 0.3238522249975237,
+        "correlation": 0.9667394085746045,
+        "max_abs_error_over_native_mean": 0.33567455920538714
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.1486632670247923,
+        "rms_error_over_native_std": 0.6409396959113851,
+        "correlation": 0.9283268602019945,
+        "max_abs_error_over_native_mean": 0.6346665335849362
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.11892627091374723,
+        "rms_error_over_native_std": 0.5127330337938849,
+        "correlation": 0.9283268602019945,
+        "max_abs_error_over_native_mean": 0.6210937905068705
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.11392903720311942,
+        "rms_error_over_native_std": 0.49118819949158365,
+        "correlation": 0.9293276615423474,
+        "max_abs_error_over_native_mean": 0.5971162495868851
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.01828321572807534,
+        "rms_over_mean": 0.03136265310638354,
+        "rms_over_float32_relative_epsilon": 263089.0
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.02437911270018593,
+        "rms_over_mean": 0.04792186048430929,
+        "rms_over_float32_relative_epsilon": 401997.6875
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.4114241689085576,
+      "sharp_k_realspace_kernel_minimum": -0.0004906162501007664,
+      "sharp_k_realspace_kernel_negative_mass": 2.5677635681195827,
+      "filtered_packet_grid_minimum": -0.05885594667161431,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.02181024365608608
+    },
+    {
+      "index": 20,
+      "radius_cMpc": 26.08379935479136,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 93,
+      "native_q_mean": 0.6113748262122212,
+      "native_q_std": 0.1248048613077231,
+      "density_min": 0.7863164617067597,
+      "native_density_weighted_source_sum": 20292.146069555027,
+      "native_density_weighted_source_sum_over_budget": 1.012909145831589,
+      "raw_mean_acg": 0.35632120699801817,
+      "raw_mean_mcg": 0.2538200572525966,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.0628671357533183,
+        "rms_error_over_native_std": 0.30796383885141704,
+        "correlation": 0.9699561209955351,
+        "max_abs_error_over_native_mean": 0.23907548406797888
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.13130815531232762,
+        "rms_error_over_native_std": 0.6432321609362975,
+        "correlation": 0.9356121423784913,
+        "max_abs_error_over_native_mean": 0.4740456893212335
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.0986732915006318,
+        "rms_error_over_native_std": 0.4833655180645878,
+        "correlation": 0.9356121423784914,
+        "max_abs_error_over_native_mean": 0.41158302435813315
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.09437130554718044,
+        "rms_error_over_native_std": 0.4622916120716649,
+        "correlation": 0.9365496715960979,
+        "max_abs_error_over_native_mean": 0.3937234690122712
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.01458462236709877,
+        "rms_over_mean": 0.024653100374214656,
+        "rms_over_float32_relative_epsilon": 206805.1875
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.01943444666663926,
+        "rms_over_mean": 0.03766413082315092,
+        "rms_over_float32_relative_epsilon": 315949.625
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.39794872911460294,
+      "sharp_k_realspace_kernel_minimum": -0.000335693359375,
+      "sharp_k_realspace_kernel_negative_mass": 2.0251919981681024,
+      "filtered_packet_grid_minimum": 0.05374268819556782,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.016688355544660194
+    },
+    {
+      "index": 21,
+      "radius_cMpc": 28.6921792902705,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 81,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.12122648576896354,
+      "density_min": 0.794390612067956,
+      "native_density_weighted_source_sum": 20279.655144428016,
+      "native_density_weighted_source_sum_over_budget": 1.0122856448840953,
+      "raw_mean_acg": 0.35780916871772206,
+      "raw_mean_mcg": 0.2538427946988122,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.06057259510589646,
+        "rms_error_over_native_std": 0.3054824164140852,
+        "correlation": 0.9713519872720568,
+        "max_abs_error_over_native_mean": 0.19864036921854544
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.12879361595790648,
+        "rms_error_over_native_std": 0.649537715079653,
+        "correlation": 0.9384149125375968,
+        "max_abs_error_over_native_mean": 0.40523569963134953
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.09538032187709213,
+        "rms_error_over_native_std": 0.4810262983520576,
+        "correlation": 0.9384149125375965,
+        "max_abs_error_over_native_mean": 0.3719213491016877
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.09112733996787589,
+        "rms_error_over_native_std": 0.4595774700771355,
+        "correlation": 0.9393106333275257,
+        "max_abs_error_over_native_mean": 0.3551436098776606
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.015069873255279134,
+        "rms_over_mean": 0.024341355718293916,
+        "rms_over_float32_relative_epsilon": 204190.078125
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.02008075197272803,
+        "rms_over_mean": 0.03714450609367911,
+        "rms_over_float32_relative_epsilon": 311590.71875
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.3958898487918846,
+      "sharp_k_realspace_kernel_minimum": -0.000281440782757413,
+      "sharp_k_realspace_kernel_negative_mass": 1.8742273514614327,
+      "filtered_packet_grid_minimum": 0.08041741366041966,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.05439727148657569
+    },
+    {
+      "index": 22,
+      "radius_cMpc": 31.56139721929755,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 57,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.10466545472837173,
+      "density_min": 0.8108030191810538,
+      "native_density_weighted_source_sum": 20219.76849472857,
+      "native_density_weighted_source_sum_over_budget": 1.0092963240411517,
+      "raw_mean_acg": 0.3562390141560172,
+      "raw_mean_mcg": 0.25386745590867577,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.05188939454629851,
+        "rms_error_over_native_std": 0.3030978048615044,
+        "correlation": 0.9725653341207613,
+        "max_abs_error_over_native_mean": 0.1687616138414725
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.11773481481339168,
+        "rms_error_over_native_std": 0.6877159434549679,
+        "correlation": 0.9417159872086907,
+        "max_abs_error_over_native_mean": 0.35536183115739367
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.0808200482469761,
+        "rms_error_over_native_std": 0.47208836076517213,
+        "correlation": 0.9417159872086912,
+        "max_abs_error_over_native_mean": 0.2688810915692805
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.07707876634559467,
+        "rms_error_over_native_std": 0.4502346786863614,
+        "correlation": 0.9426609631291353,
+        "max_abs_error_over_native_mean": 0.25587299208584513
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.012609246276778122,
+        "rms_over_mean": 0.01922385029872008,
+        "rms_over_float32_relative_epsilon": 161261.328125
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.01674413073319467,
+        "rms_over_mean": 0.02923771060881531,
+        "rms_over_float32_relative_epsilon": 245263.703125
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.4000788343251466,
+      "sharp_k_realspace_kernel_minimum": -0.000579833984375,
+      "sharp_k_realspace_kernel_negative_mass": 1.6858808468322608,
+      "filtered_packet_grid_minimum": 0.14925185756456422,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.004448305067209279
+    },
+    {
+      "index": 23,
+      "radius_cMpc": 34.71753694122731,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 33,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.07640691889246984,
+      "density_min": 0.8882930213312278,
+      "native_density_weighted_source_sum": 20134.026313823724,
+      "native_density_weighted_source_sum_over_budget": 1.0050163903700466,
+      "raw_mean_acg": 0.35290659800330104,
+      "raw_mean_mcg": 0.25388923787159,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.04114029009441115,
+        "rms_error_over_native_std": 0.32918665052033413,
+        "correlation": 0.9704132336184811,
+        "max_abs_error_over_native_mean": 0.14168698873308602
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.1070870801105812,
+        "rms_error_over_native_std": 0.8568640895508367,
+        "correlation": 0.9386945639822449,
+        "max_abs_error_over_native_mean": 0.26754206806898273
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.06409406131467349,
+        "rms_error_over_native_std": 0.5128527123655005,
+        "correlation": 0.9386945639822448,
+        "max_abs_error_over_native_mean": 0.24396333841009726
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.06102043053956765,
+        "rms_error_over_native_std": 0.48825886002582625,
+        "correlation": 0.9397108363455174,
+        "max_abs_error_over_native_mean": 0.23173086889099032
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.006106228296877041,
+        "rms_over_mean": 0.009765886070692198,
+        "rms_over_float32_relative_epsilon": 81922.1875
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.008107004498425333,
+        "rms_over_mean": 0.014857667800685403,
+        "rms_over_float32_relative_epsilon": 124635.1640625
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.44966527156572444,
+      "sharp_k_realspace_kernel_minimum": -0.00016246455331824443,
+      "sharp_k_realspace_kernel_negative_mass": 1.3249245329638075,
+      "filtered_packet_grid_minimum": 0.2559878345789634,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.008624823310759089
+    },
+    {
+      "index": 24,
+      "radius_cMpc": 38.18929063535004,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 33,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.07640985656682185,
+      "density_min": 0.8882930213312278,
+      "native_density_weighted_source_sum": 20134.02968918663,
+      "native_density_weighted_source_sum_over_budget": 1.0050165588557234,
+      "raw_mean_acg": 0.3543091566862131,
+      "raw_mean_mcg": 0.25390179024861936,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.04113979087056773,
+        "rms_error_over_native_std": 0.3291700001020775,
+        "correlation": 0.9704092216271212,
+        "max_abs_error_over_native_mean": 0.14169939921163932
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.10708641337490148,
+        "rms_error_over_native_std": 0.8568258115955995,
+        "correlation": 0.9386886598380986,
+        "max_abs_error_over_native_mean": 0.2675395731296035
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.06409375731377047,
+        "rms_error_over_native_std": 0.5128305627000677,
+        "correlation": 0.9386886598380989,
+        "max_abs_error_over_native_mean": 0.24397574888865056
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.06102033869958934,
+        "rms_error_over_native_std": 0.48823935345628156,
+        "correlation": 0.9397049137160226,
+        "max_abs_error_over_native_mean": 0.23174327936954361
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.006113010092685949,
+        "rms_over_mean": 0.009771683421954957,
+        "rms_over_float32_relative_epsilon": 81970.8203125
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.008113073343748825,
+        "rms_over_mean": 0.014863695990955396,
+        "rms_over_float32_relative_epsilon": 124685.71875
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.449636740941926,
+      "sharp_k_realspace_kernel_minimum": -0.00016246455331824443,
+      "sharp_k_realspace_kernel_negative_mass": 1.3249245329638075,
+      "filtered_packet_grid_minimum": 0.2559878345789634,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.0076443857647083835
+    },
+    {
+      "index": 25,
+      "radius_cMpc": 42.00821969888505,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 27,
+      "native_q_mean": 0.6113748262122213,
+      "native_q_std": 0.06848786856092258,
+      "density_min": 0.9024013548098933,
+      "native_density_weighted_source_sum": 20114.689140959115,
+      "native_density_weighted_source_sum_over_budget": 1.0040511499670872,
+      "raw_mean_acg": 0.3543903105614845,
+      "raw_mean_mcg": 0.25391630459989756,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.039040442349760965,
+        "rms_error_over_native_std": 0.3485046937269124,
+        "correlation": 0.9681737533532682,
+        "max_abs_error_over_native_mean": 0.12919596813011439
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.10553955213442429,
+        "rms_error_over_native_std": 0.9421263458841992,
+        "correlation": 0.9343423613691709,
+        "max_abs_error_over_native_mean": 0.265050531544562
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.06114476227725599,
+        "rms_error_over_native_std": 0.5458246722599042,
+        "correlation": 0.9343423613691713,
+        "max_abs_error_over_native_mean": 0.22028982555928983
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.05821036761770602,
+        "rms_error_over_native_std": 0.5196300327899287,
+        "correlation": 0.9354420089280872,
+        "max_abs_error_over_native_mean": 0.20915383803141688
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.005361364601067612,
+        "rms_over_mean": 0.008202453356903725,
+        "rms_over_float32_relative_epsilon": 68807.1640625
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.007098470633608657,
+        "rms_over_mean": 0.012462606048944072,
+        "rms_over_float32_relative_epsilon": 104543.9140625
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.4786611574878162,
+      "sharp_k_realspace_kernel_minimum": -0.000274658203125,
+      "sharp_k_realspace_kernel_negative_mass": 0.9843086641779376,
+      "filtered_packet_grid_minimum": 0.3012574722535336,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.05465431133253951
+    },
+    {
+      "index": 26,
+      "radius_cMpc": 46.20904166877356,
+      "is_unfiltered_cell_step": false,
+      "retained_full_fft_modes_including_dc": 19,
+      "native_q_mean": 0.6113748262122214,
+      "native_q_std": 0.05436677251935222,
+      "density_min": 0.929622340408272,
+      "native_density_weighted_source_sum": 20084.97128703904,
+      "native_density_weighted_source_sum_over_budget": 1.0025677442234586,
+      "raw_mean_acg": 0.3536864898051135,
+      "raw_mean_mcg": 0.2539331914540526,
+      "volume_grid_prediction": {
+        "rms_error_over_native_mean": 0.03377787815620471,
+        "rms_error_over_native_std": 0.3798449573260286,
+        "correlation": 0.9659134000560078,
+        "max_abs_error_over_native_mean": 0.09392921371217111
+      },
+      "density_weighted_grid_prediction": {
+        "rms_error_over_native_mean": 0.10064032513455329,
+        "rms_error_over_native_std": 1.131738347483793,
+        "correlation": 0.9316705768524457,
+        "max_abs_error_over_native_mean": 0.24241875007244545
+      },
+      "budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.05254011085082814,
+        "rms_error_over_native_std": 0.5908333280067704,
+        "correlation": 0.9316705768524467,
+        "max_abs_error_over_native_mean": 0.15236789426667563
+      },
+      "species_budget_normalized_packet_prediction": {
+        "rms_error_over_native_mean": 0.049989915323923495,
+        "rms_error_over_native_std": 0.5621554191514392,
+        "correlation": 0.9328159973142403,
+        "max_abs_error_over_native_mean": 0.1441647742372612
+      },
+      "q_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.0027834173625204354,
+        "rms_over_mean": 0.0046915372133381405,
+        "rms_over_float32_relative_epsilon": 39355.46484375
+      },
+      "density_weighted_source_forbidden_modes": {
+        "fraction_of_fluctuation_power": 0.003676716043866148,
+        "rms_over_mean": 0.007124957626282874,
+        "rms_over_float32_relative_epsilon": 59768.4765625
+      },
+      "shared_lowk_source_coefficient_relative_l2_error": 0.5247442684117076,
+      "sharp_k_realspace_kernel_minimum": -0.000152587890625,
+      "sharp_k_realspace_kernel_negative_mass": 0.9773503408269262,
+      "filtered_packet_grid_minimum": 0.37888665788201137,
+      "sharp_k_cutoff_minimum_distance_from_mode": 0.039880257534206764
+    }
+  ],
+  "sanity_control_exact_convolution_forbidden_modes": {
+    "fraction_of_fluctuation_power": 2.4039698926673785e-31,
+    "rms_over_mean": 7.372636607702368e-17,
+    "rms_over_float32_relative_epsilon": 6.184615597426557e-10
+  }
+}

@@ -1,0 +1,373 @@
+{
+  "scope": "Toy photon-counting discrete-ordinate transport; no Qin20 simulation and no production changes",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "machine": "x86_64"
+  },
+  "invariants": {
+    "nonuniform": {
+      "emitted": 226.13986758286683,
+      "absorbed": 217.9375622516856,
+      "pending": 8.202305331181206,
+      "escaped": 0.0,
+      "ledger_residual": 4.37479913406591e-14,
+      "maximum_angle_residual": 7.918007884926611e-15,
+      "seconds": 0.04442418499820633,
+      "steps": 24,
+      "dt": 0.5043672743979268,
+      "elapsed_time": 12.104814585550244,
+      "angles": 24,
+      "threads": 4,
+      "direction_cell_updates": 995328,
+      "working_array_bytes": 691200
+    },
+    "weak_partial_ionization": 0.3000000000000001,
+    "transparent": {
+      "emitted": 226.13986758286683,
+      "absorbed": 0.0,
+      "pending": 226.1398675828668,
+      "escaped": 0.0,
+      "ledger_residual": 3.941291737419306e-14,
+      "maximum_angle_residual": 7.246807320893112e-15,
+      "seconds": 0.01314259499849868,
+      "steps": 12,
+      "dt": 0.5043672743979268,
+      "elapsed_time": 6.052407292775122,
+      "angles": 24,
+      "threads": 4,
+      "direction_cell_updates": 497664,
+      "working_array_bytes": 691200
+    },
+    "translation_max_cell_error": 0.0,
+    "threads_1_vs_4_max_cell_error": 0.0,
+    "source_order": "source contributions summed before transport; order-free to summation precision",
+    "all_assertions_passed": true
+  },
+  "beams_and_screens": {
+    "axis_aligned_infinite_wall": {
+      "emitted": 1.0,
+      "absorbed": 1.0000000000000004,
+      "pending": 7.561172586920902e-21,
+      "escaped": 0.0,
+      "ledger_residual": -4.440967710226495e-16,
+      "maximum_angle_residual": 4.440967710226495e-16,
+      "seconds": 0.09063822899770457,
+      "steps": 40,
+      "dt": 0.9,
+      "elapsed_time": 36.0,
+      "angles": 1,
+      "threads": 4,
+      "direction_cell_updates": 1310720,
+      "working_array_bytes": 1048576,
+      "photons_beyond_wall": 0.0
+    },
+    "isotropic_half_space_screen": [
+      {
+        "directions": 12,
+        "wall_absorbed_fraction": 0.4495081444947031,
+        "hemisphere_upper_bound": 0.5,
+        "pending_fraction": 2.0798070493122338e-13,
+        "boundary": "vacuum escape; finite plane spans open box"
+      },
+      {
+        "directions": 24,
+        "wall_absorbed_fraction": 0.44203133708983955,
+        "hemisphere_upper_bound": 0.5,
+        "pending_fraction": 5.012848645204351e-13,
+        "boundary": "vacuum escape; finite plane spans open box"
+      },
+      {
+        "directions": 48,
+        "wall_absorbed_fraction": 0.43790531357170415,
+        "hemisphere_upper_bound": 0.5,
+        "pending_fraction": 9.251860948842968e-13,
+        "boundary": "vacuum escape; finite plane spans open box"
+      },
+      {
+        "directions": 96,
+        "wall_absorbed_fraction": 0.44511913886668997,
+        "hemisphere_upper_bound": 0.5,
+        "pending_fraction": 5.434753195350289e-13,
+        "boundary": "vacuum escape; finite plane spans open box"
+      }
+    ],
+    "diagonal_beam": {
+      "transverse_variance_cells_squared": 9.6,
+      "stencil_prediction": 9.6,
+      "exact_transport_value": 0.0,
+      "rms_transverse_width_cells": 3.0983866769659336,
+      "elapsed_light_distance_cells": 13.576450198781714
+    },
+    "finite_oblique_screen": {
+      "fraction_leaking_past_screen": 0.23787128170936392,
+      "exact_collimated_transport_leak": 0.0,
+      "conclusion": "Fails accurate shadows at this resolution because spatial diffusion bypasses screen edges"
+    }
+  },
+  "sphere_morphology": {
+    "single_sphere": [
+      {
+        "emitted": 904.7786842338603,
+        "absorbed": 841.1228161729551,
+        "pending": 3.3904981442223037e-05,
+        "escaped": 63.65583415592343,
+        "ledger_residual": 2.591364622883674e-13,
+        "maximum_angle_residual": 1.1875049554799233e-13,
+        "seconds": 0.21583836500212783,
+        "steps": 72,
+        "dt": 0.49357883540010666,
+        "elapsed_time": 35.53767614880768,
+        "angles": 12,
+        "threads": 4,
+        "direction_cell_updates": 28311552,
+        "working_array_bytes": 6815744,
+        "radius_cells": 6.0,
+        "radial_ranking_L1_over_photons": 0.6630201397627474,
+        "ionization_outside_R_plus_2_fraction": 0.11253544124301487,
+        "moment_largest_to_smallest_axis_ratio": 1.527346941501324,
+        "partially_ionized_cells": 660
+      },
+      {
+        "emitted": 904.7786842338603,
+        "absorbed": 879.0177338531195,
+        "pending": 1.2504314041386223e-05,
+        "escaped": 25.76093787642678,
+        "ledger_residual": 2.1968538099770285e-14,
+        "maximum_angle_residual": 6.366896740876032e-14,
+        "seconds": 0.5007310539986065,
+        "steps": 72,
+        "dt": 0.5043672743979268,
+        "elapsed_time": 36.31444375665073,
+        "angles": 24,
+        "threads": 4,
+        "direction_cell_updates": 56623104,
+        "working_array_bytes": 13107200,
+        "radius_cells": 6.0,
+        "radial_ranking_L1_over_photons": 0.4876739240884813,
+        "ionization_outside_R_plus_2_fraction": 0.07731378039556418,
+        "moment_largest_to_smallest_axis_ratio": 1.2328491296851594,
+        "partially_ionized_cells": 575
+      },
+      {
+        "emitted": 904.7786842338603,
+        "absorbed": 894.79224423452,
+        "pending": 1.2594565190611243e-05,
+        "escaped": 9.986427404775137,
+        "ledger_residual": -5.24762525100364e-14,
+        "maximum_angle_residual": 3.87889397539281e-14,
+        "seconds": 1.0444254399990314,
+        "steps": 72,
+        "dt": 0.4958168468568033,
+        "elapsed_time": 35.69881297368983,
+        "angles": 48,
+        "threads": 4,
+        "direction_cell_updates": 113246208,
+        "working_array_bytes": 25690112,
+        "radius_cells": 6.0,
+        "radial_ranking_L1_over_photons": 0.498034618637119,
+        "ionization_outside_R_plus_2_fraction": 0.055346942688819456,
+        "moment_largest_to_smallest_axis_ratio": 1.1428841773988643,
+        "partially_ionized_cells": 591
+      },
+      {
+        "emitted": 904.7786842338603,
+        "absorbed": 904.0772068749031,
+        "pending": 3.61221936872257e-06,
+        "escaped": 0.7014737467377898,
+        "ledger_residual": -1.2314476695307608e-14,
+        "maximum_angle_residual": 1.571978650829888e-14,
+        "seconds": 2.8072903329994006,
+        "steps": 72,
+        "dt": 0.4992180139981978,
+        "elapsed_time": 35.94369700787024,
+        "angles": 96,
+        "threads": 4,
+        "direction_cell_updates": 226492416,
+        "working_array_bytes": 50855936,
+        "radius_cells": 6.0,
+        "radial_ranking_L1_over_photons": 0.49864234660745155,
+        "ionization_outside_R_plus_2_fraction": 0.047882500551398935,
+        "moment_largest_to_smallest_axis_ratio": 1.113467137209758,
+        "partially_ionized_cells": 591
+      }
+    ],
+    "two_sources_separation_1p5_R": {
+      "emitted": 536.165146212658,
+      "absorbed": 535.0966280434044,
+      "pending": 1.068518169253532,
+      "escaped": 0.0,
+      "ledger_residual": 1.3016172341340226e-14,
+      "maximum_angle_residual": 2.27631373442817e-14,
+      "seconds": 0.9756018559965014,
+      "steps": 72,
+      "dt": 0.4958168468568033,
+      "elapsed_time": 35.69881297368983,
+      "angles": 48,
+      "threads": 4,
+      "direction_cell_updates": 113246208,
+      "working_array_bytes": 25690112,
+      "inversion_max_cell_error": 3.3306690738754696e-16
+    },
+    "reference_caveat": "Radial ranking is an exact-count discrete shape diagnostic, not a voxel-integrated analytic sphere"
+  },
+  "one_eighth_cone": [
+    {
+      "directions": 12,
+      "exact": 0.125,
+      "mean": 0.12741666666666665,
+      "max_absolute_error": 0.125,
+      "rms_absolute_error": 0.05013869652163775
+    },
+    {
+      "directions": 24,
+      "exact": 0.125,
+      "mean": 0.127125,
+      "max_absolute_error": 0.08333333333333334,
+      "rms_absolute_error": 0.029785110001102524
+    },
+    {
+      "directions": 48,
+      "exact": 0.125,
+      "mean": 0.12514583333333332,
+      "max_absolute_error": 0.04166666666666667,
+      "rms_absolute_error": 0.01768994142946148
+    },
+    {
+      "directions": 96,
+      "exact": 0.125,
+      "mean": 0.12459375,
+      "max_absolute_error": 0.03125,
+      "rms_absolute_error": 0.010029254084925757
+    },
+    {
+      "directions": 192,
+      "exact": 0.125,
+      "mean": 0.12491666666666666,
+      "max_absolute_error": 0.020833333333333343,
+      "rms_absolute_error": 0.0059657587763651465
+    },
+    {
+      "directions": 384,
+      "exact": 0.125,
+      "mean": 0.12501302083333335,
+      "max_absolute_error": 0.010416666666666671,
+      "rms_absolute_error": 0.0034459728281921883
+    }
+  ],
+  "performance": [
+    {
+      "grid": 32,
+      "directions": 24,
+      "transport_steps": 32,
+      "transport_seconds_median": 0.3005570910008828,
+      "transport_seconds_samples": [
+        0.2710334529983811,
+        0.3300807290033845
+      ],
+      "scalar_filter_reference": {
+        "seconds_median": 0.009065426998859039,
+        "seconds_samples": [
+          0.009065426998859039,
+          0.008066874001087854,
+          0.009460336001211544
+        ],
+        "forward_FFTs": 1,
+        "inverse_FFTs": 12,
+        "threads": 4,
+        "checksum": 6.467444149383944,
+        "kernel_construction_timed": false,
+        "source_integrals_and_thermal_history_included": false
+      },
+      "ratio_to_scalar_filter_kernel_only": 33.154212265865745,
+      "transport_working_bytes": 13107200,
+      "absorbed_fraction": 0.9815840159325823,
+      "whole_21cmFAST_overhead": "Not measured"
+    },
+    {
+      "grid": 32,
+      "directions": 48,
+      "transport_steps": 32,
+      "transport_seconds_median": 0.5126511704984296,
+      "transport_seconds_samples": [
+        0.6170691639999859,
+        0.4082331769968732
+      ],
+      "scalar_filter_reference": {
+        "seconds_median": 0.009065426998859039,
+        "seconds_samples": [
+          0.009065426998859039,
+          0.008066874001087854,
+          0.009460336001211544
+        ],
+        "forward_FFTs": 1,
+        "inverse_FFTs": 12,
+        "threads": 4,
+        "checksum": 6.467444149383944,
+        "kernel_construction_timed": false,
+        "source_integrals_and_thermal_history_included": false
+      },
+      "ratio_to_scalar_filter_kernel_only": 56.55014050225666,
+      "transport_working_bytes": 25690112,
+      "absorbed_fraction": 0.9931761529006538,
+      "whole_21cmFAST_overhead": "Not measured"
+    },
+    {
+      "grid": 64,
+      "directions": 24,
+      "transport_steps": 64,
+      "transport_seconds_median": 3.2477429670016136,
+      "transport_seconds_samples": [
+        2.793302820002282,
+        3.7021831140009454
+      ],
+      "scalar_filter_reference": {
+        "seconds_median": 0.0399964340031147,
+        "seconds_samples": [
+          0.04368234499997925,
+          0.03197171599822468,
+          0.0399964340031147
+        ],
+        "forward_FFTs": 1,
+        "inverse_FFTs": 12,
+        "threads": 4,
+        "checksum": 6.1076637784233805,
+        "kernel_construction_timed": false,
+        "source_integrals_and_thermal_history_included": false
+      },
+      "ratio_to_scalar_filter_kernel_only": 81.20081322121611,
+      "transport_working_bytes": 104857600,
+      "absorbed_fraction": 0.9551597349222646,
+      "whole_21cmFAST_overhead": "Not measured"
+    },
+    {
+      "grid": 64,
+      "directions": 48,
+      "transport_steps": 64,
+      "transport_seconds_median": 6.105013315998804,
+      "transport_seconds_samples": [
+        5.589754594999249,
+        6.620272036998358
+      ],
+      "scalar_filter_reference": {
+        "seconds_median": 0.0399964340031147,
+        "seconds_samples": [
+          0.04368234499997925,
+          0.03197171599822468,
+          0.0399964340031147
+        ],
+        "forward_FFTs": 1,
+        "inverse_FFTs": 12,
+        "threads": 4,
+        "checksum": 6.1076637784233805,
+        "kernel_construction_timed": false,
+        "source_integrals_and_thermal_history_included": false
+      },
+      "ratio_to_scalar_filter_kernel_only": 152.6389406496434,
+      "transport_working_bytes": 205520896,
+      "absorbed_fraction": 0.9800463969340857,
+      "whole_21cmFAST_overhead": "Not measured"
+    }
+  ]
+}
