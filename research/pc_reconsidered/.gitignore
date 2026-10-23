@@ -1,0 +1,4 @@
+__pycache__/
+comparison_fields/
+native_cache/
+*.npz

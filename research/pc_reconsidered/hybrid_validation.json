@@ -1,0 +1,603 @@
+{
+  "scope": "Static opaque-cell sharp fronts, infinite c, no recombinations; not a native evolving reionization run",
+  "error_definition": "sum(abs(new_ionized_atoms - reference)) / emitted_photons",
+  "spatial": [
+    {
+      "radius_cells": 4,
+      "grid": 16,
+      "oracle_volume_relative_error": 8.352342655282285e-07,
+      "oracle_32_64_error": 6.236349636168152e-05,
+      "adaptive_vs_continuum_error": 0.11417053611230936,
+      "reference65536_vs_continuum_error": 0.11432913016663515,
+      "adaptive_vs_reference_error": 0.020685392134862667,
+      "adaptive_angles": 1536,
+      "adaptive_seconds": 0.003980481007602066,
+      "reference_seconds": 0.03716709899890702
+    },
+    {
+      "radius_cells": 8,
+      "grid": 32,
+      "oracle_volume_relative_error": 9.439140664646573e-07,
+      "oracle_32_64_error": 3.292640290550673e-05,
+      "adaptive_vs_continuum_error": 0.05824628511679097,
+      "reference65536_vs_continuum_error": 0.0566543647902852,
+      "adaptive_vs_reference_error": 0.014260829559361107,
+      "adaptive_angles": 6144,
+      "adaptive_seconds": 0.012507609993917868,
+      "reference_seconds": 0.06911422300618142
+    },
+    {
+      "radius_cells": 12,
+      "grid": 48,
+      "oracle_volume_relative_error": 3.791186633517185e-07,
+      "oracle_32_64_error": 2.259544304824443e-05,
+      "adaptive_vs_continuum_error": 0.0404280648147606,
+      "reference65536_vs_continuum_error": 0.039500069089303945,
+      "adaptive_vs_reference_error": 0.010810513383892113,
+      "adaptive_angles": 12288,
+      "adaptive_seconds": 0.039326944985077716,
+      "reference_seconds": 0.11923690998810343
+    }
+  ],
+  "temporal": [
+    {
+      "case": "sphere_R6",
+      "results": {
+        "fixed3072": [
+          {
+            "steps": 1,
+            "seconds": 0.005447869989438914,
+            "mean_angles_per_step": [
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              3072
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 0.0,
+            "error_vs_one_step": 0.0,
+            "error_vs_fixed12288": 0.018219118923387925
+          },
+          {
+            "steps": 2,
+            "seconds": 0.009658720009610988,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              3072,
+              3072
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.1368683772161603e-13,
+            "error_vs_one_step": 2.6681013061370503e-17,
+            "error_vs_fixed12288": 0.018219118923387925
+          },
+          {
+            "steps": 4,
+            "seconds": 0.020138111009146087,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              3072,
+              3072,
+              3072,
+              3072
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.4210854715202004e-13,
+            "error_vs_one_step": 3.1562674054535347e-17,
+            "error_vs_fixed12288": 0.018219118923387925
+          },
+          {
+            "steps": 8,
+            "seconds": 0.045145091993617825,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              3072,
+              3072,
+              3072,
+              3072,
+              3072,
+              3072,
+              3072,
+              3072
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.1368683772161603e-13,
+            "error_vs_one_step": 3.163529142804062e-17,
+            "error_vs_fixed12288": 0.018219118923387925
+          }
+        ],
+        "adaptive": [
+          {
+            "steps": 1,
+            "seconds": 0.004581869987305254,
+            "mean_angles_per_step": [
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              3072
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 0.0,
+            "error_vs_one_step": 0.0,
+            "error_vs_fixed12288": 0.018219118923387925
+          },
+          {
+            "steps": 2,
+            "seconds": 0.014093475983827375,
+            "mean_angles_per_step": [
+              1536.0,
+              12288.0
+            ],
+            "rays_materialized_per_step": [
+              1536,
+              12288
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 2.8421709430404007e-13,
+            "error_vs_one_step": 0.020544155241217506,
+            "error_vs_fixed12288": 0.006803512682757198
+          },
+          {
+            "steps": 4,
+            "seconds": 0.023825244017643854,
+            "mean_angles_per_step": [
+              768.0,
+              6144.0,
+              12288.0,
+              12288.0
+            ],
+            "rays_materialized_per_step": [
+              768,
+              6144,
+              12288,
+              12288
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.4210854715202004e-13,
+            "error_vs_one_step": 0.019088503277494548,
+            "error_vs_fixed12288": 0.005339155229736907
+          },
+          {
+            "steps": 8,
+            "seconds": 0.05447863902372774,
+            "mean_angles_per_step": [
+              768.0,
+              6144.0,
+              6144.0,
+              6144.0,
+              6144.0,
+              12288.0,
+              12288.0,
+              12288.0
+            ],
+            "rays_materialized_per_step": [
+              768,
+              6144,
+              6144,
+              6144,
+              6144,
+              12288,
+              12288,
+              12288
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 7.105427357601002e-14,
+            "error_vs_one_step": 0.018658430281032132,
+            "error_vs_fixed12288": 0.004931072244509277
+          }
+        ]
+      }
+    },
+    {
+      "case": "overlap_R4",
+      "results": {
+        "fixed3072": [
+          {
+            "steps": 1,
+            "seconds": 0.005403331000707112,
+            "mean_angles_per_step": [
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              6144
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 2.2737367544323206e-13,
+            "error_vs_one_step": 0.0,
+            "error_vs_fixed12288": 0.01230309819648163
+          },
+          {
+            "steps": 2,
+            "seconds": 0.011263161999522708,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              6144,
+              6144
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.1368683772161603e-13,
+            "error_vs_one_step": 2.6414030374621738e-17,
+            "error_vs_fixed12288": 0.012303098196481628
+          },
+          {
+            "steps": 4,
+            "seconds": 0.021115561001352035,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              6144,
+              6144,
+              6144,
+              6144
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 8.526512829121202e-14,
+            "error_vs_one_step": 3.1577772716353276e-17,
+            "error_vs_fixed12288": 0.012303098196481631
+          },
+          {
+            "steps": 8,
+            "seconds": 0.054364638970582746,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              6144,
+              6144,
+              6144,
+              6144,
+              6144,
+              6144,
+              6144,
+              6144
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 5.684341886080802e-14,
+            "error_vs_one_step": 3.18151722115441e-17,
+            "error_vs_fixed12288": 0.012303098196481631
+          }
+        ],
+        "adaptive": [
+          {
+            "steps": 1,
+            "seconds": 0.0043002469901693985,
+            "mean_angles_per_step": [
+              1536.0
+            ],
+            "rays_materialized_per_step": [
+              3072
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.1368683772161603e-13,
+            "error_vs_one_step": 0.0,
+            "error_vs_fixed12288": 0.020018853700919506
+          },
+          {
+            "steps": 2,
+            "seconds": 0.014527731997077353,
+            "mean_angles_per_step": [
+              768.0,
+              12288.0
+            ],
+            "rays_materialized_per_step": [
+              1536,
+              24576
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.7053025658242404e-13,
+            "error_vs_one_step": 0.021407855080308756,
+            "error_vs_fixed12288": 0.008312633307127356
+          },
+          {
+            "steps": 4,
+            "seconds": 0.032849278999492526,
+            "mean_angles_per_step": [
+              384.0,
+              3072.0,
+              12288.0,
+              12288.0
+            ],
+            "rays_materialized_per_step": [
+              768,
+              6144,
+              24576,
+              24576
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.1368683772161603e-13,
+            "error_vs_one_step": 0.020562207649330706,
+            "error_vs_fixed12288": 0.004662355471575988
+          },
+          {
+            "steps": 8,
+            "seconds": 0.06893692597805057,
+            "mean_angles_per_step": [
+              384.0,
+              1536.0,
+              3072.0,
+              12288.0,
+              12288.0,
+              12288.0,
+              12288.0,
+              12288.0
+            ],
+            "rays_materialized_per_step": [
+              768,
+              3072,
+              6144,
+              24576,
+              24576,
+              24576,
+              24576,
+              24576
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 5.684341886080802e-14,
+            "error_vs_one_step": 0.019737849864775184,
+            "error_vs_fixed12288": 0.00253549846361366
+          }
+        ]
+      }
+    },
+    {
+      "case": "compact_125_sources",
+      "results": {
+        "fixed3072": [
+          {
+            "steps": 1,
+            "seconds": 0.3793611990113277,
+            "mean_angles_per_step": [
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              384000
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 1.5916157281026244e-12,
+            "error_vs_one_step": 0.0,
+            "error_vs_fixed12288": 0.0016832775457415593
+          },
+          {
+            "steps": 2,
+            "seconds": 0.5581250419927528,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              384000,
+              384000
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 4.888534022029489e-12,
+            "error_vs_one_step": 2.5157653738006047e-17,
+            "error_vs_fixed12288": 0.0016832775457415558
+          },
+          {
+            "steps": 4,
+            "seconds": 0.7345832290448016,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              384000,
+              384000,
+              384000,
+              384000
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 2.6716406864579767e-12,
+            "error_vs_one_step": 2.999822612537173e-17,
+            "error_vs_fixed12288": 0.0016832775457415582
+          },
+          {
+            "steps": 8,
+            "seconds": 1.232463143984205,
+            "mean_angles_per_step": [
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0,
+              3072.0
+            ],
+            "rays_materialized_per_step": [
+              384000,
+              384000,
+              384000,
+              384000,
+              384000,
+              384000,
+              384000,
+              384000
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 2.2453150450019166e-12,
+            "error_vs_one_step": 3.141931159689193e-17,
+            "error_vs_fixed12288": 0.0016832775457415558
+          }
+        ],
+        "adaptive": [
+          {
+            "steps": 1,
+            "seconds": 0.011056538991397247,
+            "mean_angles_per_step": [
+              96.0
+            ],
+            "rays_materialized_per_step": [
+              12000
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 0.0,
+            "error_vs_one_step": 0.0,
+            "error_vs_fixed12288": 0.016777963130639468
+          },
+          {
+            "steps": 2,
+            "seconds": 0.9556862839963287,
+            "mean_angles_per_step": [
+              96.0,
+              9486.336
+            ],
+            "rays_materialized_per_step": [
+              12000,
+              1185792
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 5.9117155615240335e-12,
+            "error_vs_one_step": 0.014574836040285448,
+            "error_vs_fixed12288": 0.004370931938383825
+          },
+          {
+            "steps": 4,
+            "seconds": 2.124514662034926,
+            "mean_angles_per_step": [
+              48.0,
+              5971.968,
+              8306.688,
+              11943.936
+            ],
+            "rays_materialized_per_step": [
+              6000,
+              746496,
+              1038336,
+              1492992
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 7.787548383930698e-12,
+            "error_vs_one_step": 0.01726667934530288,
+            "error_vs_fixed12288": 0.0026487767250875523
+          },
+          {
+            "steps": 8,
+            "seconds": 4.2947870289644925,
+            "mean_angles_per_step": [
+              24.0,
+              3846.144,
+              5971.968,
+              7716.864,
+              7716.864,
+              11943.936,
+              11943.936,
+              11943.936
+            ],
+            "rays_materialized_per_step": [
+              3000,
+              480768,
+              746496,
+              964608,
+              964608,
+              1492992,
+              1492992,
+              1492992
+            ],
+            "retained": 0.0,
+            "maximum_absolute_ledger_residual": 4.348521542851813e-12,
+            "error_vs_one_step": 0.01677388528039402,
+            "error_vs_fixed12288": 0.0005432146357820886
+          }
+        ]
+      }
+    }
+  ],
+  "native_frozen_fixture": {
+    "path": "/workspace/scratch/40b418003e4a/native32_reconsidered/source_capacity.npz",
+    "scope": "Frozen fields with constant rates; deliberately excludes cosmological source/sink evolution",
+    "photons_over_capacity": 0.8241517005355254,
+    "first_half_audit": {
+      "model": "source-adaptive quadrature of shared sharp-front events",
+      "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+      "photons": 12851.46910544219,
+      "absorbed": 12851.46910544219,
+      "escaped": 0.0,
+      "retained": 0.0,
+      "ledger_residual": 0.0,
+      "per_source_relative_ledger_max": 4.416385698833923e-15,
+      "per_angle_ledger_max": 1.7017776077210556e-12,
+      "capacity_excess": 0.0,
+      "angles_min": 24,
+      "angles_max": 192,
+      "angles_mean": 25.064208984375,
+      "angles_sum": 821304,
+      "sources_at_angle_limit": 0,
+      "events": 1685,
+      "rays_materialized": 71424,
+      "queries": 309856,
+      "ray_allocated_bytes": 4718592,
+      "transport_seconds": 0.024388203004491515,
+      "seconds": 0.028202579997014254,
+      "periodic": true,
+      "maximum_distance": 55.42562584220407,
+      "angular_accuracy_certified": false
+    },
+    "second_half_predicted_packets_upper_bound": 29800416,
+    "second_half_already_transparent_packets": 11489088,
+    "second_half_self_clearing_packets": 22092552,
+    "second_half_ran": false,
+    "packet_execution_limit": 2000000,
+    "fixed768_time_partition_error": 3.373914676289733e-17,
+    "fixed768_one_step": {
+      "steps": 1,
+      "seconds": 14.71596143800707,
+      "mean_angles_per_step": [
+        768.0
+      ],
+      "rays_materialized_per_step": [
+        12879360
+      ],
+      "retained": 0.1679387717052252,
+      "maximum_absolute_ledger_residual": 3.637978807091713e-12
+    },
+    "fixed768_two_steps": {
+      "steps": 2,
+      "seconds": 19.132305582010304,
+      "mean_angles_per_step": [
+        768.0,
+        768.0
+      ],
+      "rays_materialized_per_step": [
+        1286400,
+        12879360
+      ],
+      "retained": 0.1679387717052251,
+      "maximum_absolute_ledger_residual": 1.8189894035458565e-12
+    },
+    "second_half_skip_reason": "Predictor exceeds explicit packet allocation limit; no evolutionary speedup inferred"
+  }
+}

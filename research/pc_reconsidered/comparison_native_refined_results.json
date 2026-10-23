@@ -1,0 +1,2419 @@
+{
+  "scope": "Frozen source/capacity experiments, including optional supplied native field; no thermal, feedback or recombination evolution",
+  "reference": "independently audited event-front model, with explicit angular refinement; not full RT",
+  "software": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "cpu_count": 9
+  },
+  "timing": "one worker; event compilation excluded; candidate repetitions sequential; end-to-end 21cmFAST overhead is not measured",
+  "cases": [
+    {
+      "name": "native-dose-0.2",
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "metadata": {
+        "fixture": "/workspace/scratch/40b418003e4a/native32_reconsidered/source_capacity.npz",
+        "fixture_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+        "source_model": "supplied frozen native source field; no evolution rerun",
+        "source_dose_multiplier": 0.24267376973200688,
+        "photons_per_total_atom": 0.2,
+        "fixture_preparation": {
+          "scope": "Numerical coarse-history fixture for frozen native-cost comparison, not converged science validation",
+          "grid": 32,
+          "dim": 96,
+          "box_mpc": 200.0,
+          "seed": 1234,
+          "threads": 4,
+          "nodes": [
+            35,
+            12,
+            8,
+            7.5
+          ],
+          "physical_differences_from_template": {
+            "astro_options": {},
+            "astro_params": {},
+            "matter_options": {},
+            "cosmo_params": {}
+          },
+          "source_model": "E-INTEGRAL",
+          "power_spectrum": "EH",
+          "streaming_velocity_model": "NONE",
+          "progress": [
+            {
+              "redshift": 35.0,
+              "preparation_elapsed_seconds": 2.8650324899936095,
+              "mean_xHI": 0.9997947216033936
+            },
+            {
+              "redshift": 12.0,
+              "preparation_elapsed_seconds": 10.927014807995874,
+              "mean_xHI": 0.8665657043457031
+            },
+            {
+              "redshift": 8.0,
+              "preparation_elapsed_seconds": 24.056166248003137,
+              "mean_xHI": 0.3742310106754303
+            },
+            {
+              "redshift": 7.5,
+              "preparation_elapsed_seconds": 36.73869962200115,
+              "mean_xHI": 0.28667396306991577
+            }
+          ],
+          "initial_conditions_sha256": "d331153e6f6200a2b440a6d27e95321279f181fa724300bc79658334b2d57542",
+          "source_closure": "Cumulative cell conditional E-INTEGRAL source, density weighted and separately normalized to each species unconditional budget; NEW spatial closure",
+          "source_sum": 25702.93821088438,
+          "neutral_capacity_sum": 31187.144544120783
+        },
+        "dose_warning": "Artificial source-amplitude rescaling at fixed density; not a cosmological redshift."
+      },
+      "input_hashes": {
+        "source": "f6c340cbda85772cfdddbdd17a7ebfc788a190f337b8049ee5c8d530a11e6795",
+        "capacity": "cf70d32108ab078a5ff54c81883df82190102bc3e8233597c90d07a8ff8ff56e",
+        "initial": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+      },
+      "initial_ionized_atoms": 0.0,
+      "maximum_distance_cells": 16.0,
+      "reference_base_angles": 768,
+      "reference_angles": 3072,
+      "reference_seconds": 0.0693481390044326,
+      "reference_low_seconds": 0.018388967990176752,
+      "reference_audit": {
+        "photons": 6237.428908824157,
+        "absorbed": 6237.428908824157,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 3.703704010149522e-13,
+        "per_angle_ledger_max": 2.220446049250313e-15,
+        "independent_absorption_ledger": 0.0,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 147,
+        "rays_materialized": 451584,
+        "queries": 1259708,
+        "assignments": 564849,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 27.5625,
+        "angles": 3072,
+        "n": 32,
+        "workers": 1,
+        "seconds": 0.06757466499402653,
+        "periodic": true,
+        "maximum_distance": 16.0,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 597617,
+        "ray_allocated_bytes": 29097984,
+        "per_source_relative_ledger_max": 3.1142705084575237e-13,
+        "per_angle_relative_ledger_max": 1.093593267836195e-15
+      },
+      "reference_ledger": {
+        "emitted": 6237.428908824156,
+        "absorbed": 6237.428908824157,
+        "unabsorbed": 0.0,
+        "unabsorbed_fraction": 0.0,
+        "residual": -9.094947017729282e-13,
+        "relative_residual": -1.4581243571149268e-16,
+        "maximum_capacity_excess": 0.0,
+        "maximum_negative_absorption": 0.0,
+        "passed": true
+      },
+      "reference_angular_change": {
+        "L1_absorption_over_emitted": 9.776012894110657e-05,
+        "maximum_absorption_difference": 0.013766034201324384,
+        "volume_mean_absolute_ionized_fraction_difference": 1.5173564396409329e-05,
+        "maximum_ionized_fraction_difference": 0.012538328271599692,
+        "absorption_field_correlation": 0.9999989747456546,
+        "neutral_count_power": {
+          "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+          "weighted_absolute_power_difference": 0.00011414160506795207,
+          "weighted_residual_power": 1.801379320442737e-06,
+          "shells": [
+            {
+              "k_cell_inv": 0.43801716297679893,
+              "full_fft_modes": 62,
+              "auto_power_ratio": 1.0000269121789953,
+              "cross_coherence": 0.9999998589811919,
+              "residual_power_over_reference": 2.822224756061982e-07
+            },
+            {
+              "k_cell_inv": 0.6153907111144734,
+              "full_fft_modes": 98,
+              "auto_power_ratio": 0.999962467865153,
+              "cross_coherence": 0.999999728200887,
+              "residual_power_over_reference": 5.439401963897167e-07
+            },
+            {
+              "k_cell_inv": 0.7972929788514209,
+              "full_fft_modes": 210,
+              "auto_power_ratio": 0.9998907250788974,
+              "cross_coherence": 0.9999994991432093,
+              "residual_power_over_reference": 1.0046442638671447e-06
+            },
+            {
+              "k_cell_inv": 1.0009081069993901,
+              "full_fft_modes": 350,
+              "auto_power_ratio": 1.0000041066271987,
+              "cross_coherence": 0.9999992006630497,
+              "residual_power_over_reference": 1.5986813997238297e-06
+            },
+            {
+              "k_cell_inv": 1.2020377935892332,
+              "full_fft_modes": 450,
+              "auto_power_ratio": 1.000154810881083,
+              "cross_coherence": 0.9999989316050129,
+              "residual_power_over_reference": 2.1429465056551447e-06
+            },
+            {
+              "k_cell_inv": 1.3885335451198162,
+              "full_fft_modes": 602,
+              "auto_power_ratio": 1.000251044119464,
+              "cross_coherence": 0.9999987622510842,
+              "residual_power_over_reference": 2.4915623516895313e-06
+            },
+            {
+              "k_cell_inv": 1.5216816711324315,
+              "full_fft_modes": 318,
+              "auto_power_ratio": 0.9998990185240051,
+              "cross_coherence": 0.9999981585102934,
+              "residual_power_over_reference": 3.6853428950894183e-06
+            }
+          ]
+        }
+      },
+      "reference_low_remainder": 0.0,
+      "models": [
+        {
+          "method": "es-control",
+          "seconds": 0.024410821992205456,
+          "seconds_samples": [
+            0.024410821992205456
+          ],
+          "seconds_over_ref": 0.35200399524268655,
+          "ledger": {
+            "emitted": 6237.428908824156,
+            "absorbed": 6168.649565323576,
+            "unabsorbed": 0.0,
+            "unabsorbed_fraction": 0.0,
+            "residual": 68.77934350057967,
+            "relative_residual": 0.011026874134513472,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": false
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.011026874134513618,
+            "maximum_absorption_difference": 0.7382812221819735,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0016548450499993548,
+            "maximum_ionized_fraction_difference": 0.602146531667818,
+            "absorption_field_correlation": 0.9909837769644786,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.2897551283092128,
+              "weighted_residual_power": 0.05777200400758532,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.7246512938952199,
+                  "cross_coherence": 0.9726243746433832,
+                  "residual_power_over_reference": 0.06873003861690698
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.6843907297025157,
+                  "cross_coherence": 0.9770522045213204,
+                  "residual_power_over_reference": 0.06780096878367162
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.6747362837328421,
+                  "cross_coherence": 0.9730977114597709,
+                  "residual_power_over_reference": 0.07608596255884495
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.6792182853281603,
+                  "cross_coherence": 0.9783583593536821,
+                  "residual_power_over_reference": 0.0665960625921008
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.7205774423186827,
+                  "cross_coherence": 0.9830503027944687,
+                  "residual_power_over_reference": 0.05161690389728554
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.7354703645567668,
+                  "cross_coherence": 0.9859548035890998,
+                  "residual_power_over_reference": 0.04436918776246689
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.7691510065574937,
+                  "cross_coherence": 0.9886301401256534,
+                  "residual_power_over_reference": 0.03506893326239286
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-control",
+            "photons": 6237.428908824156,
+            "absorbed": 6168.649565323576,
+            "photon_residual": 68.77934350057986,
+            "fft_calls": 38,
+            "max_radius": 16.0,
+            "seconds": 0.024365377001231536
+          }
+        },
+        {
+          "method": "es-global",
+          "seconds": 0.0307490749983117,
+          "seconds_samples": [
+            0.0307490749983117
+          ],
+          "seconds_over_ref": 0.4434015885609602,
+          "ledger": {
+            "emitted": 6237.428908824156,
+            "absorbed": 6237.428908811488,
+            "unabsorbed": 1.266748350658986e-08,
+            "unabsorbed_fraction": 2.030882225955159e-12,
+            "residual": -4.1300296516055823e-14,
+            "relative_residual": -6.621365488851963e-18,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.02090719959527973,
+            "maximum_absorption_difference": 0.7327040038195374,
+            "volume_mean_absolute_ionized_fraction_difference": 0.003529966008853476,
+            "maximum_ionized_fraction_difference": 0.5975977193827519,
+            "absorption_field_correlation": 0.9910661583999071,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.2857420748658006,
+              "weighted_residual_power": 0.05482750913789744,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.7115846822398983,
+                  "cross_coherence": 0.9781878216434825,
+                  "residual_power_over_reference": 0.06127463903602716
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.6859417970946524,
+                  "cross_coherence": 0.9800757635380434,
+                  "residual_power_over_reference": 0.06251287552540763
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.6785912744243446,
+                  "cross_coherence": 0.9761141576855992,
+                  "residual_power_over_reference": 0.0704109548077991
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.6817438153728802,
+                  "cross_coherence": 0.979736264565654,
+                  "residual_power_over_reference": 0.06385086501890076
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.7271836354699437,
+                  "cross_coherence": 0.9833149991752606,
+                  "residual_power_over_reference": 0.050138667124059205
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.7434498261161462,
+                  "cross_coherence": 0.9860736386923348,
+                  "residual_power_over_reference": 0.042994696897541484
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.7774259299390092,
+                  "cross_coherence": 0.9880053981104747,
+                  "residual_power_over_reference": 0.0351424288749553
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-global",
+            "photons": 6237.428908824157,
+            "absorbed": 6237.428908811488,
+            "unabsorbed": 1.266748350658986e-08,
+            "ledger_residual": 0.0,
+            "relative_residual": 0.0,
+            "max_capacity_excess": 0.0,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.03067690899479203,
+            "fft_calls": 38,
+            "evaluations": 38,
+            "amplitude_low": 1.011433386025601,
+            "amplitude_high": 1.011433386040153,
+            "boundary_weight": 0.0,
+            "threshold_mantissa_bits": 40,
+            "max_radius": 16.0,
+            "source_attribution": false,
+            "limitation": "global count only; ES rank does not certify source-target budgets"
+          }
+        },
+        {
+          "method": "es-front",
+          "seconds": 0.02519381299498491,
+          "seconds_samples": [
+            0.02519381299498491
+          ],
+          "seconds_over_ref": 0.3632947236460746,
+          "ledger": {
+            "emitted": 6237.428908824156,
+            "absorbed": 6237.428908824156,
+            "unabsorbed": 6.661338147750939e-15,
+            "unabsorbed_fraction": 1.0679621756212844e-18,
+            "residual": -6.661338147750939e-15,
+            "relative_residual": -1.0679621756212844e-18,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.008962272410754956,
+            "maximum_absorption_difference": 0.77201424772781,
+            "volume_mean_absolute_ionized_fraction_difference": 0.001387322107791873,
+            "maximum_ionized_fraction_difference": 0.7775611389110246,
+            "absorption_field_correlation": 0.9923571887808795,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.06883849323208452,
+              "weighted_residual_power": 0.016721499242391427,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0920687062272347,
+                  "cross_coherence": 0.9959293545904022,
+                  "residual_power_over_reference": 0.010534701660417539
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.072540830384729,
+                  "cross_coherence": 0.9943895678331863,
+                  "residual_power_over_reference": 0.012890611975952836
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0778174863891237,
+                  "cross_coherence": 0.9934419001331846,
+                  "residual_power_over_reference": 0.01507467890002729
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.0787350414607006,
+                  "cross_coherence": 0.9924580275012159,
+                  "residual_power_over_reference": 0.017158148562532942
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 1.0599422806287018,
+                  "cross_coherence": 0.9917042189430421,
+                  "residual_power_over_reference": 0.017953908817946715
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 1.058809370660678,
+                  "cross_coherence": 0.9913118118553998,
+                  "residual_power_over_reference": 0.01872013297191289
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.0545845924603023,
+                  "cross_coherence": 0.9906380440897945,
+                  "residual_power_over_reference": 0.019953349315252982
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-front",
+            "photons": 6237.428908824157,
+            "absorbed": 6237.428908824157,
+            "unabsorbed": 6.661338147750939e-15,
+            "ledger_residual": 0.0,
+            "relative_residual": 0.0,
+            "max_capacity_excess": 0.0,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.025123070998233743,
+            "fft_calls": 38,
+            "evaluations": 1,
+            "max_radius": 16.0,
+            "source_attribution": false,
+            "local_absorption_preserved": true,
+            "limitation": "residual photons pooled globally; finite ES support is not an edge allocation"
+          }
+        },
+        {
+          "method": "radial-shell",
+          "seconds": 0.10383311299665365,
+          "seconds_samples": [
+            0.10383311299665365
+          ],
+          "seconds_over_ref": 1.4972732431942672,
+          "ledger": {
+            "emitted": 6237.428908824156,
+            "absorbed": 6237.428908824157,
+            "unabsorbed": 7.461479351045242e-16,
+            "unabsorbed_fraction": 1.196242788513294e-19,
+            "residual": -9.102408497080328e-13,
+            "relative_residual": -1.4593205999034403e-16,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.003670773143907736,
+            "maximum_absorption_difference": 0.3994950455487498,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0005648659489576216,
+            "maximum_ionized_fraction_difference": 0.35355208010707107,
+            "absorption_field_correlation": 0.9986666475692935,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.008406776670319483,
+              "weighted_residual_power": 0.0017971513153642229,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9990560718689449,
+                  "cross_coherence": 0.9999159856484758,
+                  "residual_power_over_reference": 0.0001681722360870222
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.002952143108965,
+                  "cross_coherence": 0.9998144517200789,
+                  "residual_power_over_reference": 0.0003738194983532283
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0084120100232028,
+                  "cross_coherence": 0.9996161243296656,
+                  "residual_power_over_reference": 0.0007885902049448393
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.014007564839707,
+                  "cross_coherence": 0.9993549346485067,
+                  "residual_power_over_reference": 0.0013478474654738304
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 1.0049733920644544,
+                  "cross_coherence": 0.9989693554644437,
+                  "residual_power_over_reference": 0.002072576841025743
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 1.0093376956400182,
+                  "cross_coherence": 0.9985308751679889,
+                  "residual_power_over_reference": 0.002973632986882449
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.0136677451610476,
+                  "cross_coherence": 0.9981157926048546,
+                  "residual_power_over_reference": 0.00384046561786047
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "radial-shell",
+            "photons": 6237.428908824157,
+            "absorbed": 6237.428908824157,
+            "unabsorbed": 7.461479351045242e-16,
+            "ledger_residual": 1.474298114145789e-15,
+            "relative_residual": 2.3636311302243203e-19,
+            "max_capacity_excess": 0.0,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.10375230900535826,
+            "fft_calls": 0,
+            "iterations": 2,
+            "radial_offers": 117,
+            "accepted_edges": 660,
+            "max_radius": 16.0,
+            "max_iterations_reached": false,
+            "source_attribution": true,
+            "original_source_positions": true,
+            "maximum_absorption_certified": false,
+            "limitation": "spherical capacity search has no angular budget or foreground opacity"
+          }
+        },
+        {
+          "method": "voronoi",
+          "seconds": 0.06366790899483021,
+          "seconds_samples": [
+            0.06366790899483021
+          ],
+          "seconds_over_ref": 0.9180910967309546,
+          "ledger": {
+            "emitted": 6237.428908824156,
+            "absorbed": 6237.428908824156,
+            "unabsorbed": 1.0685896612017132e-15,
+            "unabsorbed_fraction": 1.713189323392477e-19,
+            "residual": -1.0685896612017132e-15,
+            "relative_residual": -1.713189323392477e-19,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.006320795962232971,
+            "maximum_absorption_difference": 0.823364441991175,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0009908233604219096,
+            "maximum_ionized_fraction_difference": 0.8176904238160712,
+            "absorption_field_correlation": 0.995274324464333,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.019879260225189287,
+              "weighted_residual_power": 0.007003691754562391,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9896552398008207,
+                  "cross_coherence": 0.9996807996760583,
+                  "residual_power_over_reference": 0.0006619828093529652
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.993390669418771,
+                  "cross_coherence": 0.9992854171831962,
+                  "residual_power_over_reference": 0.0014353919419093947
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9971335207431128,
+                  "cross_coherence": 0.9984800659943848,
+                  "residual_power_over_reference": 0.0030375651504806803
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9887822864157089,
+                  "cross_coherence": 0.9974455272283248,
+                  "residual_power_over_reference": 0.00511184635563976
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.9715642650148857,
+                  "cross_coherence": 0.9958346333397328,
+                  "residual_power_over_reference": 0.008416507834338912
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9599386582415699,
+                  "cross_coherence": 0.9941140770985336,
+                  "residual_power_over_reference": 0.011943109400441443
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.9785183368147734,
+                  "cross_coherence": 0.9931054340362162,
+                  "residual_power_over_reference": 0.013756842604340045
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "voronoi",
+            "photons": 6237.428908824157,
+            "absorbed": 6237.428908824157,
+            "unabsorbed": 1.0685896612017132e-15,
+            "ledger_residual": -1.5126788710517758e-15,
+            "relative_residual": -2.4251641071399996e-19,
+            "max_capacity_excess": 0.0,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.06348608499683905,
+            "fft_calls": 0,
+            "iterations": 1,
+            "tree_queries": 1,
+            "allocation_edges": 34348,
+            "tied_target_queries": 1597,
+            "max_radius": 16.0,
+            "source_attribution": true,
+            "maximum_absorption_certified": false,
+            "max_iterations_reached": false,
+            "nearest_source_ties": "equal capacity split across every tied source",
+            "limitation": "nearest-source domains replace angular flux competition; no foreground opacity"
+          }
+        },
+        {
+          "method": "adaptive-event",
+          "seconds": 0.008070726005826145,
+          "seconds_samples": [
+            0.008521196999936365,
+            0.0079706679971423,
+            0.008070726005826145
+          ],
+          "seconds_over_ref": 0.11637984986605453,
+          "ledger": {
+            "emitted": 6237.428908824156,
+            "absorbed": 6237.428908824157,
+            "unabsorbed": 0.0,
+            "unabsorbed_fraction": 0.0,
+            "residual": -9.094947017729282e-13,
+            "relative_residual": -1.4581243571149268e-16,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.0006037288335702592,
+            "maximum_absorption_difference": 0.05989375829189458,
+            "volume_mean_absolute_ionized_fraction_difference": 9.253297255886896e-05,
+            "maximum_ionized_fraction_difference": 0.05234117902404798,
+            "absorption_field_correlation": 0.9999619109291165,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.00029032242311689913,
+              "weighted_residual_power": 3.895084630349435e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0004879135466538,
+                  "cross_coherence": 0.9999970547888889,
+                  "residual_power_over_reference": 5.951359448412013e-06
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9993022068085157,
+                  "cross_coherence": 0.9999953029641335,
+                  "residual_power_over_reference": 9.512564925127497e-06
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9998817743846361,
+                  "cross_coherence": 0.9999893743789828,
+                  "residual_power_over_reference": 2.1253480307479832e-05
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9999125988823905,
+                  "cross_coherence": 0.9999842451207483,
+                  "residual_power_over_reference": 3.1510291301144605e-05
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.9997178187128827,
+                  "cross_coherence": 0.999978127635247,
+                  "residual_power_over_reference": 4.375846647767967e-05
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9995999115528,
+                  "cross_coherence": 0.999969966476245,
+                  "residual_power_over_reference": 6.009505594098742e-05
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.0001684852038288,
+                  "cross_coherence": 0.99995949067951,
+                  "residual_power_over_reference": 8.103256213177943e-05
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 6237.428908824157,
+            "absorbed": 6237.428908824157,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 4.6140947645225245e-15,
+            "per_angle_ledger_max": 3.1441516057384433e-13,
+            "capacity_excess": 0.0,
+            "angles_min": 24,
+            "angles_max": 96,
+            "angles_mean": 24.180908203125,
+            "angles_sum": 792360,
+            "sources_at_angle_limit": 0,
+            "events": 147,
+            "rays_materialized": 7272,
+            "queries": 21187,
+            "ray_allocated_bytes": 524288,
+            "transport_seconds": 0.004885846006800421,
+            "seconds": 0.007986034004716203,
+            "periodic": true,
+            "maximum_distance": 16.0,
+            "angular_accuracy_certified": false
+          }
+        }
+      ],
+      "field_file": "research/pc_reconsidered/comparison_fields/comparison_native-dose-0.2.npz"
+    },
+    {
+      "name": "native-dose-0.6",
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "metadata": {
+        "fixture": "/workspace/scratch/40b418003e4a/native32_reconsidered/source_capacity.npz",
+        "fixture_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+        "source_model": "supplied frozen native source field; no evolution rerun",
+        "source_dose_multiplier": 0.7280213091960207,
+        "photons_per_total_atom": 0.6,
+        "fixture_preparation": {
+          "scope": "Numerical coarse-history fixture for frozen native-cost comparison, not converged science validation",
+          "grid": 32,
+          "dim": 96,
+          "box_mpc": 200.0,
+          "seed": 1234,
+          "threads": 4,
+          "nodes": [
+            35,
+            12,
+            8,
+            7.5
+          ],
+          "physical_differences_from_template": {
+            "astro_options": {},
+            "astro_params": {},
+            "matter_options": {},
+            "cosmo_params": {}
+          },
+          "source_model": "E-INTEGRAL",
+          "power_spectrum": "EH",
+          "streaming_velocity_model": "NONE",
+          "progress": [
+            {
+              "redshift": 35.0,
+              "preparation_elapsed_seconds": 2.8650324899936095,
+              "mean_xHI": 0.9997947216033936
+            },
+            {
+              "redshift": 12.0,
+              "preparation_elapsed_seconds": 10.927014807995874,
+              "mean_xHI": 0.8665657043457031
+            },
+            {
+              "redshift": 8.0,
+              "preparation_elapsed_seconds": 24.056166248003137,
+              "mean_xHI": 0.3742310106754303
+            },
+            {
+              "redshift": 7.5,
+              "preparation_elapsed_seconds": 36.73869962200115,
+              "mean_xHI": 0.28667396306991577
+            }
+          ],
+          "initial_conditions_sha256": "d331153e6f6200a2b440a6d27e95321279f181fa724300bc79658334b2d57542",
+          "source_closure": "Cumulative cell conditional E-INTEGRAL source, density weighted and separately normalized to each species unconditional budget; NEW spatial closure",
+          "source_sum": 25702.93821088438,
+          "neutral_capacity_sum": 31187.144544120783
+        },
+        "dose_warning": "Artificial source-amplitude rescaling at fixed density; not a cosmological redshift."
+      },
+      "input_hashes": {
+        "source": "aaf79cffd7d29c40c780f278b2b3aab35101b4e3d599a7ecfb893252b0d90ced",
+        "capacity": "cf70d32108ab078a5ff54c81883df82190102bc3e8233597c90d07a8ff8ff56e",
+        "initial": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+      },
+      "initial_ionized_atoms": 0.0,
+      "maximum_distance_cells": 16.0,
+      "reference_base_angles": 768,
+      "reference_angles": 3072,
+      "reference_seconds": 9.269667564003612,
+      "reference_low_seconds": 2.1628685080067953,
+      "reference_audit": {
+        "photons": 18712.28672647247,
+        "absorbed": 18712.110607351024,
+        "escaped": 0.0,
+        "retained": 0.176119121447856,
+        "ledger_residual": 0.0,
+        "per_source_ledger_max": 9.094947017729282e-13,
+        "per_angle_ledger_max": 2.516139491312748e-14,
+        "independent_absorption_ledger": 7.275957614183426e-12,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 5871,
+        "rays_materialized": 18035712,
+        "queries": 110849603,
+        "assignments": 38301192,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 1100.8125,
+        "angles": 3072,
+        "n": 32,
+        "workers": 1,
+        "seconds": 9.267799245004426,
+        "periodic": true,
+        "maximum_distance": 16.0,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 38333960,
+        "ray_allocated_bytes": 1154482176,
+        "per_source_relative_ledger_max": 3.2762636356255026e-13,
+        "per_angle_relative_ledger_max": 4.130751431025072e-15
+      },
+      "reference_ledger": {
+        "emitted": 18712.28672647247,
+        "absorbed": 18712.110607351024,
+        "unabsorbed": 0.176119121447856,
+        "unabsorbed_fraction": 9.411950769154174e-06,
+        "residual": -1.4653556146271285e-12,
+        "relative_residual": -7.830980980823014e-17,
+        "maximum_capacity_excess": 0.0,
+        "maximum_negative_absorption": 0.0,
+        "passed": true
+      },
+      "reference_angular_change": {
+        "L1_absorption_over_emitted": 0.0005370143596710891,
+        "maximum_absorption_difference": 0.018453428888807966,
+        "volume_mean_absolute_ionized_fraction_difference": 0.0003232242474386837,
+        "maximum_ionized_fraction_difference": 0.022636638148560467,
+        "absorption_field_correlation": 0.9999949489171497,
+        "neutral_count_power": {
+          "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+          "weighted_absolute_power_difference": 0.00021267306126718864,
+          "weighted_residual_power": 5.9610271054139795e-06,
+          "shells": [
+            {
+              "k_cell_inv": 0.43801716297679893,
+              "full_fft_modes": 62,
+              "auto_power_ratio": 0.9998257801131357,
+              "cross_coherence": 0.9999994758134194,
+              "residual_power_over_reference": 1.0558706364850406e-06
+            },
+            {
+              "k_cell_inv": 0.6153907111144734,
+              "full_fft_modes": 98,
+              "auto_power_ratio": 1.0000469789136368,
+              "cross_coherence": 0.9999988126821034,
+              "residual_power_over_reference": 2.375243313378635e-06
+            },
+            {
+              "k_cell_inv": 0.7972929788514209,
+              "full_fft_modes": 210,
+              "auto_power_ratio": 1.0001741445094234,
+              "cross_coherence": 0.9999978266019098,
+              "residual_power_over_reference": 4.354755566742062e-06
+            },
+            {
+              "k_cell_inv": 1.0009081069993901,
+              "full_fft_modes": 350,
+              "auto_power_ratio": 1.000198888817469,
+              "cross_coherence": 0.9999961474377499,
+              "residual_power_over_reference": 7.715778900688022e-06
+            },
+            {
+              "k_cell_inv": 1.2020377935892332,
+              "full_fft_modes": 450,
+              "auto_power_ratio": 0.9993993669795062,
+              "cross_coherence": 0.9999935811097889,
+              "residual_power_over_reference": 1.2924141547918574e-05
+            },
+            {
+              "k_cell_inv": 1.3885335451198162,
+              "full_fft_modes": 602,
+              "auto_power_ratio": 1.0002778290193306,
+              "cross_coherence": 0.9999916361274382,
+              "residual_power_over_reference": 1.674936324962701e-05
+            },
+            {
+              "k_cell_inv": 1.5216816711324315,
+              "full_fft_modes": 318,
+              "auto_power_ratio": 1.0002768346141189,
+              "cross_coherence": 0.9999907955205116,
+              "residual_power_over_reference": 1.843066361831514e-05
+            }
+          ]
+        }
+      },
+      "reference_low_remainder": 0.1686839591127031,
+      "models": [
+        {
+          "method": "es-control",
+          "seconds": 0.028865579995908774,
+          "seconds_samples": [
+            0.028865579995908774
+          ],
+          "seconds_over_ref": 0.0031139822217574327,
+          "ledger": {
+            "emitted": 18712.28672647247,
+            "absorbed": 17249.713708839845,
+            "unabsorbed": 0.0,
+            "unabsorbed_fraction": 0.0,
+            "residual": 1462.5730176326251,
+            "relative_residual": 0.07816110553519402,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": false
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.07820277441448185,
+            "maximum_absorption_difference": 0.5621690522882231,
+            "volume_mean_absolute_ionized_fraction_difference": 0.045136752815867806,
+            "maximum_ionized_fraction_difference": 0.7951718772004152,
+            "absorption_field_correlation": 0.9509626958475548,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.32617715307766587,
+              "weighted_residual_power": 0.11727222305620652,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.5050360257625854,
+                  "cross_coherence": 0.991158576219048,
+                  "residual_power_over_reference": 0.0962847634553926
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.5786515380108969,
+                  "cross_coherence": 0.9853176184850484,
+                  "residual_power_over_reference": 0.07960608976209838
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.7000016192569559,
+                  "cross_coherence": 0.9723051519207596,
+                  "residual_power_over_reference": 0.07302202906543988
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.7644010879530423,
+                  "cross_coherence": 0.9406638182259998,
+                  "residual_power_over_reference": 0.11955569206246466
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.8460417248184339,
+                  "cross_coherence": 0.9067829165463365,
+                  "residual_power_over_reference": 0.1779143238090113
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.8795821052885017,
+                  "cross_coherence": 0.8773674326581419,
+                  "residual_power_over_reference": 0.23388578562198042
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.9574686761504366,
+                  "cross_coherence": 0.8702137800875512,
+                  "residual_power_over_reference": 0.2544545935315875
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-control",
+            "photons": 18712.28672647247,
+            "absorbed": 17249.713708839845,
+            "photon_residual": 1462.5730176326265,
+            "fft_calls": 38,
+            "max_radius": 16.0,
+            "seconds": 0.028821124986279756
+          }
+        },
+        {
+          "method": "es-global",
+          "seconds": 0.030863451000186615,
+          "seconds_samples": [
+            0.030863451000186615
+          ],
+          "seconds_over_ref": 0.0033295100160912945,
+          "ledger": {
+            "emitted": 18712.28672647247,
+            "absorbed": 18712.28672633406,
+            "unabsorbed": 1.384092431777617e-07,
+            "unabsorbed_fraction": 7.396703844963677e-12,
+            "residual": 1.298516849601583e-12,
+            "relative_residual": 6.939380892259189e-17,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.08895887049145075,
+            "maximum_absorption_difference": 0.561783511212271,
+            "volume_mean_absolute_ionized_fraction_difference": 0.05372507768965169,
+            "maximum_ionized_fraction_difference": 0.7752606547473461,
+            "absorption_field_correlation": 0.964887837282943,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.2501693873766653,
+              "weighted_residual_power": 0.08286353116040217,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.6239111232529926,
+                  "cross_coherence": 0.988043224368055,
+                  "residual_power_over_reference": 0.06303907243721255
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.6846355512207473,
+                  "cross_coherence": 0.9800196798170867,
+                  "residual_power_over_reference": 0.06284593265451308
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.7750704874655341,
+                  "cross_coherence": 0.9725239524664041,
+                  "residual_power_over_reference": 0.06268750835293668
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.8171144104287842,
+                  "cross_coherence": 0.9559446566317727,
+                  "residual_power_over_reference": 0.08887390157710645
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.8770357575323576,
+                  "cross_coherence": 0.9357498690769757,
+                  "residual_power_over_reference": 0.12437274803184083
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.8786394589890759,
+                  "cross_coherence": 0.9278616971395222,
+                  "residual_power_over_reference": 0.13916284506425172
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.966140086141075,
+                  "cross_coherence": 0.912057605421907,
+                  "residual_power_over_reference": 0.17317300605931077
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-global",
+            "photons": 18712.28672647247,
+            "absorbed": 18712.28672633406,
+            "unabsorbed": 1.384092431777617e-07,
+            "ledger_residual": 0.0,
+            "relative_residual": 0.0,
+            "max_capacity_excess": 0.0,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.03079761000117287,
+            "fft_calls": 38,
+            "evaluations": 38,
+            "amplitude_low": 1.0972094172466313,
+            "amplitude_high": 1.0972094172611833,
+            "boundary_weight": 0.0,
+            "threshold_mantissa_bits": 40,
+            "max_radius": 16.0,
+            "source_attribution": false,
+            "limitation": "global count only; ES rank does not certify source-target budgets"
+          }
+        },
+        {
+          "method": "es-front",
+          "seconds": 0.029145819004043005,
+          "seconds_samples": [
+            0.029145819004043005
+          ],
+          "seconds_over_ref": 0.003144214051129876,
+          "ledger": {
+            "emitted": 18712.28672647247,
+            "absorbed": 18712.28672647247,
+            "unabsorbed": 2.540190280342358e-13,
+            "unabsorbed_fraction": 1.3574985876786102e-17,
+            "residual": -2.540190280342358e-13,
+            "relative_residual": -1.3574985876786102e-17,
+            "maximum_capacity_excess": 1.1102230246251565e-16,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.05213998441757746,
+            "maximum_absorption_difference": 0.561783511212271,
+            "volume_mean_absolute_ionized_fraction_difference": 0.03160885760081576,
+            "maximum_ionized_fraction_difference": 0.8130954684503202,
+            "absorption_field_correlation": 0.9642887788551515,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.14334263673507977,
+              "weighted_residual_power": 0.08882347608012998,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.2482009985497176,
+                  "cross_coherence": 0.9928056380609864,
+                  "residual_power_over_reference": 0.02981817813507159
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.0527507331062702,
+                  "cross_coherence": 0.9716303616949387,
+                  "residual_power_over_reference": 0.05889445930361655
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.8919599695997514,
+                  "cross_coherence": 0.9630420626722648,
+                  "residual_power_over_reference": 0.07289615904516125
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.8429675057950374,
+                  "cross_coherence": 0.9379607221388403,
+                  "residual_power_over_reference": 0.12062283740484663
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.9335301881593417,
+                  "cross_coherence": 0.9143486573257225,
+                  "residual_power_over_reference": 0.1666544371240009
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.8948101234468492,
+                  "cross_coherence": 0.9010138600204537,
+                  "residual_power_over_reference": 0.1901927449642226
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.8540452771674728,
+                  "cross_coherence": 0.8989689711497313,
+                  "residual_power_over_reference": 0.19248865664931508
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-front",
+            "photons": 18712.28672647247,
+            "absorbed": 18712.28672647247,
+            "unabsorbed": 2.540190280342358e-13,
+            "ledger_residual": 0.0,
+            "relative_residual": 0.0,
+            "max_capacity_excess": 1.1102230246251565e-16,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.02907654301088769,
+            "fft_calls": 38,
+            "evaluations": 1,
+            "max_radius": 16.0,
+            "source_attribution": false,
+            "local_absorption_preserved": true,
+            "limitation": "residual photons pooled globally; finite ES support is not an edge allocation"
+          }
+        },
+        {
+          "method": "radial-shell",
+          "seconds": 5.056452556993463,
+          "seconds_samples": [
+            5.056452556993463
+          ],
+          "seconds_over_ref": 0.5454836996128002,
+          "ledger": {
+            "emitted": 18712.28672647247,
+            "absorbed": 18712.286726472463,
+            "unabsorbed": 5.579913170221921e-12,
+            "unabsorbed_fraction": 2.981951512279875e-16,
+            "residual": 1.6960444439615046e-12,
+            "relative_residual": 9.06380106693263e-17,
+            "maximum_capacity_excess": 2.220446049250313e-16,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.02716323691354403,
+            "maximum_absorption_difference": 0.561783511212271,
+            "volume_mean_absolute_ionized_fraction_difference": 0.016351801395940196,
+            "maximum_ionized_fraction_difference": 0.7202300954127671,
+            "absorption_field_correlation": 0.9887382581188265,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.020216427616833395,
+              "weighted_residual_power": 0.014131995180158301,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0237452200333892,
+                  "cross_coherence": 0.9994334070121349,
+                  "residual_power_over_reference": 0.0012858706690447106
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.0321309169574608,
+                  "cross_coherence": 0.9962227421727835,
+                  "residual_power_over_reference": 0.007928956778478156
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0164465611345448,
+                  "cross_coherence": 0.9948122971395609,
+                  "residual_power_over_reference": 0.010527449560704907
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9767080481233469,
+                  "cross_coherence": 0.9914025341106895,
+                  "residual_power_over_reference": 0.017130731832649734
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 1.0005558381594182,
+                  "cross_coherence": 0.9844868545409723,
+                  "residual_power_over_reference": 0.03103498973594323
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9895351496406031,
+                  "cross_coherence": 0.978978215337887,
+                  "residual_power_over_reference": 0.041850523393879825
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.0247197652032256,
+                  "cross_coherence": 0.9797850355523734,
+                  "residual_power_over_reference": 0.04107749468233465
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "radial-shell",
+            "photons": 18712.28672647247,
+            "absorbed": 18712.286726472463,
+            "unabsorbed": 5.579913170221921e-12,
+            "ledger_residual": -1.4587192380936556e-14,
+            "relative_residual": -7.795515638556297e-19,
+            "max_capacity_excess": 2.220446049250313e-16,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 5.056380922993412,
+            "fft_calls": 0,
+            "iterations": 7,
+            "radial_offers": 6681,
+            "accepted_edges": 29989,
+            "max_radius": 16.0,
+            "max_iterations_reached": false,
+            "source_attribution": true,
+            "original_source_positions": true,
+            "maximum_absorption_certified": false,
+            "limitation": "spherical capacity search has no angular budget or foreground opacity"
+          }
+        },
+        {
+          "method": "voronoi",
+          "seconds": 0.3052027000085218,
+          "seconds_samples": [
+            0.3052027000085218
+          ],
+          "seconds_over_ref": 0.03292488084402278,
+          "ledger": {
+            "emitted": 18712.28672647247,
+            "absorbed": 18712.28672647247,
+            "unabsorbed": 2.4301307494090096e-14,
+            "unabsorbed_fraction": 1.2986818687269675e-18,
+            "residual": -2.4301307494090096e-14,
+            "relative_residual": -1.2986818687269675e-18,
+            "maximum_capacity_excess": 2.220446049250313e-16,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.04283267812015411,
+            "maximum_absorption_difference": 0.561783511212271,
+            "volume_mean_absolute_ionized_fraction_difference": 0.026107042178159543,
+            "maximum_ionized_fraction_difference": 0.8108849399992116,
+            "absorption_field_correlation": 0.9749194485655743,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.04268305206440842,
+              "weighted_residual_power": 0.04191554777867802,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9713629456937917,
+                  "cross_coherence": 0.9975624947316618,
+                  "residual_power_over_reference": 0.005012709967285492
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9658943178418204,
+                  "cross_coherence": 0.987764634534967,
+                  "residual_power_over_reference": 0.024345682047885644
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9563349045936325,
+                  "cross_coherence": 0.9829573659153701,
+                  "residual_power_over_reference": 0.033820153856556796
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9080152476960504,
+                  "cross_coherence": 0.9728375837220916,
+                  "residual_power_over_reference": 0.053984609110323566
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.969486384948898,
+                  "cross_coherence": 0.9563820180769163,
+                  "residual_power_over_reference": 0.08613110136421884
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9689862822704596,
+                  "cross_coherence": 0.9431306517325498,
+                  "residual_power_over_reference": 0.11220534078444967
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.0282369671411675,
+                  "cross_coherence": 0.9386809589193841,
+                  "residual_power_over_reference": 0.12455405869297743
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "voronoi",
+            "photons": 18712.28672647247,
+            "absorbed": 18712.28672647247,
+            "unabsorbed": 2.4301307494090096e-14,
+            "ledger_residual": -1.5419523297088844e-14,
+            "relative_residual": -8.240320128952856e-19,
+            "max_capacity_excess": 2.220446049250313e-16,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.305054302996723,
+            "fft_calls": 0,
+            "iterations": 4,
+            "tree_queries": 4,
+            "allocation_edges": 129849,
+            "tied_target_queries": 13198,
+            "max_radius": 16.0,
+            "source_attribution": true,
+            "maximum_absorption_certified": false,
+            "max_iterations_reached": false,
+            "nearest_source_ties": "equal capacity split across every tied source",
+            "limitation": "nearest-source domains replace angular flux competition; no foreground opacity"
+          }
+        },
+        {
+          "method": "adaptive-event",
+          "seconds": 0.11731629499990959,
+          "seconds_samples": [
+            0.10900438400858548,
+            0.12446445599198341,
+            0.11731629499990959
+          ],
+          "seconds_over_ref": 0.01265593336437193,
+          "ledger": {
+            "emitted": 18712.28672647247,
+            "absorbed": 18712.109887314804,
+            "unabsorbed": 0.17683915766535083,
+            "unabsorbed_fraction": 9.450430097096289e-06,
+            "residual": 7.5797701448721e-13,
+            "relative_residual": 4.050691535283563e-17,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.003474621660598232,
+            "maximum_absorption_difference": 0.09634773394212082,
+            "volume_mean_absolute_ionized_fraction_difference": 0.002073227999456379,
+            "maximum_ionized_fraction_difference": 0.10515582515530661,
+            "absorption_field_correlation": 0.9998132167710482,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0008041251925839241,
+              "weighted_residual_power": 0.00011436691562039345,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0002389323578258,
+                  "cross_coherence": 0.9999939490013737,
+                  "residual_power_over_reference": 1.2117713408737292e-05
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9986762170281042,
+                  "cross_coherence": 0.9999801388743327,
+                  "residual_power_over_reference": 4.013434136241188e-05
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9988838715863521,
+                  "cross_coherence": 0.9999685519633755,
+                  "residual_power_over_reference": 6.31725729836535e-05
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9997453777579436,
+                  "cross_coherence": 0.9999343894350048,
+                  "residual_power_over_reference": 0.0001312206332033458
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 1.0007280740170446,
+                  "cross_coherence": 0.9998795373101224,
+                  "residual_power_over_reference": 0.00024114554427389856
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9985001243710836,
+                  "cross_coherence": 0.9998081019924305,
+                  "residual_power_over_reference": 0.0003840709128799071
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.0025077393822595,
+                  "cross_coherence": 0.9997425905179381,
+                  "residual_power_over_reference": 0.0005170342967964582
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 18712.28672647247,
+            "absorbed": 18712.109887314804,
+            "escaped": 0.0,
+            "retained": 0.17683915766535083,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 4.6258356114535285e-15,
+            "per_angle_ledger_max": 2.318367720022252e-12,
+            "capacity_excess": 0.0,
+            "angles_min": 24,
+            "angles_max": 192,
+            "angles_mean": 26.619873046875,
+            "angles_sum": 872280,
+            "sources_at_angle_limit": 0,
+            "events": 5845,
+            "rays_materialized": 223968,
+            "queries": 1462578,
+            "ray_allocated_bytes": 14417920,
+            "transport_seconds": 0.1144087889988441,
+            "seconds": 0.11722074101271573,
+            "periodic": true,
+            "maximum_distance": 16.0,
+            "angular_accuracy_certified": false
+          }
+        }
+      ],
+      "field_file": "research/pc_reconsidered/comparison_fields/comparison_native-dose-0.6.npz"
+    },
+    {
+      "name": "native-frozen",
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "metadata": {
+        "fixture": "/workspace/scratch/40b418003e4a/native32_reconsidered/source_capacity.npz",
+        "fixture_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+        "source_model": "supplied frozen native source field; no evolution rerun",
+        "source_dose_multiplier": 1.0,
+        "photons_per_total_atom": 0.8241517005355254,
+        "fixture_preparation": {
+          "scope": "Numerical coarse-history fixture for frozen native-cost comparison, not converged science validation",
+          "grid": 32,
+          "dim": 96,
+          "box_mpc": 200.0,
+          "seed": 1234,
+          "threads": 4,
+          "nodes": [
+            35,
+            12,
+            8,
+            7.5
+          ],
+          "physical_differences_from_template": {
+            "astro_options": {},
+            "astro_params": {},
+            "matter_options": {},
+            "cosmo_params": {}
+          },
+          "source_model": "E-INTEGRAL",
+          "power_spectrum": "EH",
+          "streaming_velocity_model": "NONE",
+          "progress": [
+            {
+              "redshift": 35.0,
+              "preparation_elapsed_seconds": 2.8650324899936095,
+              "mean_xHI": 0.9997947216033936
+            },
+            {
+              "redshift": 12.0,
+              "preparation_elapsed_seconds": 10.927014807995874,
+              "mean_xHI": 0.8665657043457031
+            },
+            {
+              "redshift": 8.0,
+              "preparation_elapsed_seconds": 24.056166248003137,
+              "mean_xHI": 0.3742310106754303
+            },
+            {
+              "redshift": 7.5,
+              "preparation_elapsed_seconds": 36.73869962200115,
+              "mean_xHI": 0.28667396306991577
+            }
+          ],
+          "initial_conditions_sha256": "d331153e6f6200a2b440a6d27e95321279f181fa724300bc79658334b2d57542",
+          "source_closure": "Cumulative cell conditional E-INTEGRAL source, density weighted and separately normalized to each species unconditional budget; NEW spatial closure",
+          "source_sum": 25702.93821088438,
+          "neutral_capacity_sum": 31187.144544120783
+        }
+      },
+      "input_hashes": {
+        "source": "f150937cd701e71a805ff4dc4ef042e0888dd797c47880e7249ee54018d8941a",
+        "capacity": "cf70d32108ab078a5ff54c81883df82190102bc3e8233597c90d07a8ff8ff56e",
+        "initial": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+      },
+      "initial_ionized_atoms": 0.0,
+      "maximum_distance_cells": 16.0,
+      "reference_base_angles": 768,
+      "reference_angles": 3072,
+      "reference_seconds": 46.022461296990514,
+      "reference_low_seconds": 11.822943325998494,
+      "reference_audit": {
+        "photons": 25702.93821088438,
+        "absorbed": 25632.04212939628,
+        "escaped": 0.0,
+        "retained": 70.89608148810439,
+        "ledger_residual": -3.637978807091713e-12,
+        "per_source_ledger_max": 5.737667285732329e-13,
+        "per_angle_ledger_max": 7.686559722053232e-14,
+        "independent_absorption_ledger": 2.1827872842550278e-11,
+        "capacity_excess": 0.0,
+        "negative_absorption": 0.0,
+        "events": 16598,
+        "rays_materialized": 50989056,
+        "queries": 612681563,
+        "assignments": 164078548,
+        "stale_queue_entries": 0,
+        "ray_storage_megabytes": 3112.125,
+        "angles": 3072,
+        "n": 32,
+        "workers": 1,
+        "seconds": 46.019872425007634,
+        "periodic": true,
+        "maximum_distance": 16.0,
+        "model": "constant rates, infinite-c sharp opaque voxel front, no recombinations",
+        "peak_heap_nodes": 32768,
+        "heap_updates": 164111316,
+        "ray_allocated_bytes": 3263430656,
+        "per_source_relative_ledger_max": 3.079903214332531e-13,
+        "per_angle_relative_ledger_max": 9.186930798498408e-15
+      },
+      "reference_ledger": {
+        "emitted": 25702.93821088438,
+        "absorbed": 25632.04212939628,
+        "unabsorbed": 70.89608148810439,
+        "unabsorbed_fraction": 0.0027582870451006315,
+        "residual": -5.087485988042317e-12,
+        "relative_residual": -1.9793402397426799e-16,
+        "maximum_capacity_excess": 0.0,
+        "maximum_negative_absorption": 0.0,
+        "passed": true
+      },
+      "reference_angular_change": {
+        "L1_absorption_over_emitted": 0.000546305395380644,
+        "maximum_absorption_difference": 0.02055622602858931,
+        "volume_mean_absolute_ionized_fraction_difference": 0.000497756710100154,
+        "maximum_ionized_fraction_difference": 0.028902619449751154,
+        "absorption_field_correlation": 0.9999910188145297,
+        "neutral_count_power": {
+          "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+          "weighted_absolute_power_difference": 0.00019825465597890656,
+          "weighted_residual_power": 1.1795698891623954e-05,
+          "shells": [
+            {
+              "k_cell_inv": 0.43801716297679893,
+              "full_fft_modes": 62,
+              "auto_power_ratio": 0.9999336865936453,
+              "cross_coherence": 0.9999988702688214,
+              "residual_power_over_reference": 2.2604868431778215e-06
+            },
+            {
+              "k_cell_inv": 0.6153907111144734,
+              "full_fft_modes": 98,
+              "auto_power_ratio": 1.0000615986127472,
+              "cross_coherence": 0.9999973541756357,
+              "residual_power_over_reference": 5.292760272602238e-06
+            },
+            {
+              "k_cell_inv": 0.7972929788514209,
+              "full_fft_modes": 210,
+              "auto_power_ratio": 1.0008567637185648,
+              "cross_coherence": 0.9999953655968564,
+              "residual_power_over_reference": 9.456208472042042e-06
+            },
+            {
+              "k_cell_inv": 1.0009081069993901,
+              "full_fft_modes": 350,
+              "auto_power_ratio": 0.9998972140659184,
+              "cross_coherence": 0.9999919249049533,
+              "residual_power_over_reference": 1.6152001438745042e-05
+            },
+            {
+              "k_cell_inv": 1.2020377935892332,
+              "full_fft_modes": 450,
+              "auto_power_ratio": 1.0000566385536973,
+              "cross_coherence": 0.9999866454140665,
+              "residual_power_over_reference": 2.6710730199253144e-05
+            },
+            {
+              "k_cell_inv": 1.3885335451198162,
+              "full_fft_modes": 602,
+              "auto_power_ratio": 1.0000326549804663,
+              "cross_coherence": 0.9999814201540402,
+              "residual_power_over_reference": 3.716056522130455e-05
+            },
+            {
+              "k_cell_inv": 1.5216816711324315,
+              "full_fft_modes": 318,
+              "auto_power_ratio": 0.9999222886535887,
+              "cross_coherence": 0.9999758776863445,
+              "residual_power_over_reference": 4.824426251939125e-05
+            }
+          ]
+        }
+      },
+      "reference_low_remainder": 70.98807296232141,
+      "models": [
+        {
+          "method": "es-control",
+          "seconds": 0.02539079199777916,
+          "seconds_samples": [
+            0.02539079199777916
+          ],
+          "seconds_over_ref": 0.0005517043478819658,
+          "ledger": {
+            "emitted": 25702.93821088438,
+            "absorbed": 22839.837931974143,
+            "unabsorbed": 0.0,
+            "unabsorbed_fraction": 0.0,
+            "residual": 2863.100278910235,
+            "relative_residual": 0.11139194497607292,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": false
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.10923693577440405,
+            "maximum_absorption_difference": 0.48540973629071554,
+            "volume_mean_absolute_ionized_fraction_difference": 0.09585333399567433,
+            "maximum_ionized_fraction_difference": 0.7892781572020416,
+            "absorption_field_correlation": 0.9073802832408724,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.058927431284935154,
+              "weighted_residual_power": 0.29844448811569146,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9444971763425588,
+                  "cross_coherence": 0.9749663406480071,
+                  "residual_power_over_reference": 0.049450330944766405
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.8977768925182618,
+                  "cross_coherence": 0.8462637767097372,
+                  "residual_power_over_reference": 0.2940885988036551
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9952266190813872,
+                  "cross_coherence": 0.818199617609063,
+                  "residual_power_over_reference": 0.3627376341659291
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9693110017885579,
+                  "cross_coherence": 0.8165778032942715,
+                  "residual_power_over_reference": 0.3614106242318708
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 1.0491704710639889,
+                  "cross_coherence": 0.7108064457280715,
+                  "residual_power_over_reference": 0.5930262784245691
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 1.1255126275822749,
+                  "cross_coherence": 0.6775256776142501,
+                  "residual_power_over_reference": 0.6879362067886651
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.2017011729273013,
+                  "cross_coherence": 0.625721553168093,
+                  "residual_power_over_reference": 0.8298425644144172
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-control",
+            "photons": 25702.93821088438,
+            "absorbed": 22839.837931974143,
+            "photon_residual": 2863.1002789102345,
+            "fft_calls": 38,
+            "max_radius": 16.0,
+            "seconds": 0.02533965300244745
+          }
+        },
+        {
+          "method": "es-global",
+          "seconds": 0.038502964001963846,
+          "seconds_samples": [
+            0.038502964001963846
+          ],
+          "seconds_over_ref": 0.0008366124478544919,
+          "ledger": {
+            "emitted": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 0.0,
+            "unabsorbed_fraction": 0.0,
+            "residual": 0.0,
+            "relative_residual": 0.0,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.07579421949816095,
+            "maximum_absorption_difference": 0.48472079588626904,
+            "volume_mean_absolute_ionized_fraction_difference": 0.06904708010822859,
+            "maximum_ionized_fraction_difference": 0.7514016821847245,
+            "absorption_field_correlation": 0.9277057903461169,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.2484977313889488,
+              "weighted_residual_power": 0.23514345394605993,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.8376505068450006,
+                  "cross_coherence": 0.9594991257254853,
+                  "residual_power_over_reference": 0.08132096295943071
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.5968297216763756,
+                  "cross_coherence": 0.8889449303586102,
+                  "residual_power_over_reference": 0.22332526024115484
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.680901764396098,
+                  "cross_coherence": 0.8490223176725992,
+                  "residual_power_over_reference": 0.2797301459740943
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.7023177986605147,
+                  "cross_coherence": 0.8253895026491762,
+                  "residual_power_over_reference": 0.31889230601589114
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.7822964597656377,
+                  "cross_coherence": 0.7990442016723917,
+                  "residual_power_over_reference": 0.3688268270100058
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.8240827652432833,
+                  "cross_coherence": 0.7390506745984019,
+                  "residual_power_over_reference": 0.48227707539548775
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.9274746350237596,
+                  "cross_coherence": 0.7484251044499944,
+                  "residual_power_over_reference": 0.48592578867921343
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-global",
+            "photons": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 0.0,
+            "ledger_residual": -1.6751044995544362e-12,
+            "relative_residual": -6.517171250270067e-17,
+            "max_capacity_excess": 0.0,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.03841996699338779,
+            "fft_calls": 38,
+            "evaluations": 54,
+            "amplitude_low": 1.1185901828030183,
+            "amplitude_high": 1.1185901828030185,
+            "boundary_weight": 0.17617717710693545,
+            "threshold_mantissa_bits": 40,
+            "max_radius": 16.0,
+            "source_attribution": false,
+            "limitation": "global count only; ES rank does not certify source-target budgets"
+          }
+        },
+        {
+          "method": "es-front",
+          "seconds": 0.027349454001523554,
+          "seconds_samples": [
+            0.027349454001523554
+          ],
+          "seconds_over_ref": 0.0005942631756487996,
+          "ledger": {
+            "emitted": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 1.6342482922482304e-13,
+            "unabsorbed_fraction": 6.358215853922017e-18,
+            "residual": -1.6342482922482304e-13,
+            "relative_residual": -6.358215853922017e-18,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.07952541914097201,
+            "maximum_absorption_difference": 0.48472079588626904,
+            "volume_mean_absolute_ionized_fraction_difference": 0.07251147954501144,
+            "maximum_ionized_fraction_difference": 0.7538978763256375,
+            "absorption_field_correlation": 0.8984897442048947,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.21582948361870558,
+              "weighted_residual_power": 0.34708673971901827,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.7706502950364232,
+                  "cross_coherence": 0.9222137235887203,
+                  "residual_power_over_reference": 0.1514884887405198
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.8022541138587063,
+                  "cross_coherence": 0.7706471329709851,
+                  "residual_power_over_reference": 0.42173781288797135
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.7614282616697995,
+                  "cross_coherence": 0.7709726533242259,
+                  "residual_power_over_reference": 0.41592899445238013
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.7639100748804615,
+                  "cross_coherence": 0.7722496585471685,
+                  "residual_power_over_reference": 0.41398756416409366
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.8062391008581286,
+                  "cross_coherence": 0.7401164449608388,
+                  "residual_power_over_reference": 0.47712587974680165
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.8367053367629588,
+                  "cross_coherence": 0.681644334790855,
+                  "residual_power_over_reference": 0.5896833958828969
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.8963384126087108,
+                  "cross_coherence": 0.6782302243269347,
+                  "residual_power_over_reference": 0.6121074410940532
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "es-front",
+            "photons": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 1.6342482922482304e-13,
+            "ledger_residual": 0.0,
+            "relative_residual": 0.0,
+            "max_capacity_excess": 0.0,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.02728248600033112,
+            "fft_calls": 38,
+            "evaluations": 1,
+            "max_radius": 16.0,
+            "source_attribution": false,
+            "local_absorption_preserved": true,
+            "limitation": "residual photons pooled globally; finite ES support is not an edge allocation"
+          }
+        },
+        {
+          "method": "radial-shell",
+          "seconds": 24.87250905999099,
+          "seconds_samples": [
+            24.87250905999099
+          ],
+          "seconds_over_ref": 0.5404428263730746,
+          "ledger": {
+            "emitted": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 4.5401008064432956e-15,
+            "unabsorbed_fraction": 1.7663742445292528e-19,
+            "residual": -4.5401008064432956e-15,
+            "relative_residual": -1.7663742445292528e-19,
+            "maximum_capacity_excess": 2.220446049250313e-16,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.035162676251111684,
+            "maximum_absorption_difference": 0.48472079588626904,
+            "volume_mean_absolute_ionized_fraction_difference": 0.03240197623293223,
+            "maximum_ionized_fraction_difference": 0.7475808167956658,
+            "absorption_field_correlation": 0.9694130254397136,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.05331080333517659,
+              "weighted_residual_power": 0.07015874366587577,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0415758633354006,
+                  "cross_coherence": 0.9914580224901923,
+                  "residual_power_over_reference": 0.017858860278800206
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9226674507395459,
+                  "cross_coherence": 0.9753830540883498,
+                  "residual_power_over_reference": 0.048847745171154006
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9458491051236475,
+                  "cross_coherence": 0.9556082103866754,
+                  "residual_power_over_reference": 0.08709989587974497
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9334161742912106,
+                  "cross_coherence": 0.9557339246452079,
+                  "residual_power_over_reference": 0.08668084050323932
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.974841495640915,
+                  "cross_coherence": 0.9380364468126888,
+                  "residual_power_over_reference": 0.12251852573192742
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9297737462863358,
+                  "cross_coherence": 0.8993250728020186,
+                  "residual_power_over_reference": 0.19542936898647403
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.9593683973051587,
+                  "cross_coherence": 0.9101687336362079,
+                  "residual_power_over_reference": 0.17639603120451355
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "radial-shell",
+            "photons": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 4.5401008064432956e-15,
+            "ledger_residual": 7.889697117574558e-16,
+            "relative_residual": 3.069570121844483e-20,
+            "max_capacity_excess": 2.220446049250313e-16,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 24.87180583200825,
+            "fft_calls": 0,
+            "iterations": 12,
+            "radial_offers": 26835,
+            "accepted_edges": 102377,
+            "max_radius": 16.0,
+            "max_iterations_reached": false,
+            "source_attribution": true,
+            "original_source_positions": true,
+            "maximum_absorption_certified": false,
+            "limitation": "spherical capacity search has no angular budget or foreground opacity"
+          }
+        },
+        {
+          "method": "voronoi",
+          "seconds": 0.5572931159986183,
+          "seconds_samples": [
+            0.5572931159986183
+          ],
+          "seconds_over_ref": 0.012109154971141465,
+          "ledger": {
+            "emitted": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 5.572205565886057e-14,
+            "unabsorbed_fraction": 2.1679255189301296e-18,
+            "residual": -5.572205565886057e-14,
+            "relative_residual": -2.1679255189301296e-18,
+            "maximum_capacity_excess": 2.220446049250313e-16,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.050656518128376474,
+            "maximum_absorption_difference": 0.4845335645798908,
+            "volume_mean_absolute_ionized_fraction_difference": 0.046323792269766906,
+            "maximum_ionized_fraction_difference": 0.7532401345827414,
+            "absorption_field_correlation": 0.9486844622526903,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.08691086055411304,
+              "weighted_residual_power": 0.11898759614224792,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9465808217238431,
+                  "cross_coherence": 0.9849989826483554,
+                  "residual_power_over_reference": 0.02992281296270735
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.8592218539653222,
+                  "cross_coherence": 0.9542261878128168,
+                  "residual_power_over_reference": 0.09019679813514252
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.8595526312836633,
+                  "cross_coherence": 0.9370520051661497,
+                  "residual_power_over_reference": 0.12203217216194755
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9384080569220824,
+                  "cross_coherence": 0.9211262761619972,
+                  "residual_power_over_reference": 0.15379103589252335
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.9153679859019662,
+                  "cross_coherence": 0.8890573118299624,
+                  "residual_power_over_reference": 0.21415921401366955
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9194678939512492,
+                  "cross_coherence": 0.8288691349328209,
+                  "residual_power_over_reference": 0.32988109258693826
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 0.9557742519936653,
+                  "cross_coherence": 0.8118131005300051,
+                  "residual_power_over_reference": 0.36845708058472965
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "method": "voronoi",
+            "photons": 25702.93821088438,
+            "absorbed": 25702.93821088438,
+            "unabsorbed": 5.572205565886057e-14,
+            "ledger_residual": -4.861662830125957e-14,
+            "relative_residual": -1.8914813513683026e-18,
+            "max_capacity_excess": 2.220446049250313e-16,
+            "periodic": true,
+            "counts_are_increments": true,
+            "seconds": 0.5571841980126919,
+            "fft_calls": 0,
+            "iterations": 7,
+            "tree_queries": 7,
+            "allocation_edges": 171605,
+            "tied_target_queries": 22018,
+            "max_radius": 16.0,
+            "source_attribution": true,
+            "maximum_absorption_certified": false,
+            "max_iterations_reached": false,
+            "nearest_source_ties": "equal capacity split across every tied source",
+            "limitation": "nearest-source domains replace angular flux competition; no foreground opacity"
+          }
+        },
+        {
+          "method": "adaptive-event",
+          "seconds": 0.5794764970050892,
+          "seconds_samples": [
+            0.5770001549972221,
+            0.5794764970050892,
+            0.6395264580060029
+          ],
+          "seconds_over_ref": 0.012591167023111433,
+          "ledger": {
+            "emitted": 25702.93821088438,
+            "absorbed": 25630.836862532567,
+            "unabsorbed": 72.10134835181097,
+            "unabsorbed_fraction": 0.002805179227380251,
+            "residual": -8.526512829121202e-14,
+            "relative_residual": -3.3173300107419217e-18,
+            "maximum_capacity_excess": 0.0,
+            "maximum_negative_absorption": 0.0,
+            "passed": true
+          },
+          "vs_event_reference": {
+            "L1_absorption_over_emitted": 0.0038837274465241406,
+            "maximum_absorption_difference": 0.13779691942812067,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0035386514697863213,
+            "maximum_ionized_fraction_difference": 0.17877772020360388,
+            "absorption_field_correlation": 0.9995604019522495,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0016816253824439333,
+              "weighted_residual_power": 0.0004007524242900104,
+              "shells": [
+                {
+                  "k_cell_inv": 0.43801716297679893,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0004651753004543,
+                  "cross_coherence": 0.9999858964673372,
+                  "residual_power_over_reference": 2.826770961500596e-05
+                },
+                {
+                  "k_cell_inv": 0.6153907111144734,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.996403342139393,
+                  "cross_coherence": 0.9999378274787686,
+                  "residual_power_over_reference": 0.00012736104356801052
+                },
+                {
+                  "k_cell_inv": 0.7972929788514209,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9970294481611817,
+                  "cross_coherence": 0.9998850917839376,
+                  "residual_power_over_reference": 0.00023168416467975514
+                },
+                {
+                  "k_cell_inv": 1.0009081069993901,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.00110498774084,
+                  "cross_coherence": 0.9997381690432962,
+                  "residual_power_over_reference": 0.0005242562344702633
+                },
+                {
+                  "k_cell_inv": 1.2020377935892332,
+                  "full_fft_modes": 450,
+                  "auto_power_ratio": 0.9972868042788361,
+                  "cross_coherence": 0.9994712410276547,
+                  "residual_power_over_reference": 0.0010579252023031878
+                },
+                {
+                  "k_cell_inv": 1.3885335451198162,
+                  "full_fft_modes": 602,
+                  "auto_power_ratio": 0.9998470787738426,
+                  "cross_coherence": 0.9992724923181844,
+                  "residual_power_over_reference": 0.0014549099546834054
+                },
+                {
+                  "k_cell_inv": 1.5216816711324315,
+                  "full_fft_modes": 318,
+                  "auto_power_ratio": 1.0023349801051662,
+                  "cross_coherence": 0.9988702227437091,
+                  "residual_power_over_reference": 0.0022635524258840835
+                }
+              ]
+            }
+          },
+          "diagnostics": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 25702.93821088438,
+            "absorbed": 25630.836862532567,
+            "escaped": 0.0,
+            "retained": 72.10134835181097,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 4.677401293215405e-15,
+            "per_angle_ledger_max": 8.911205107153819e-13,
+            "capacity_excess": 0.0,
+            "angles_min": 24,
+            "angles_max": 384,
+            "angles_mean": 29.19873046875,
+            "angles_sum": 956784,
+            "sources_at_angle_limit": 0,
+            "events": 16623,
+            "rays_materialized": 569280,
+            "queries": 7288889,
+            "ray_allocated_bytes": 36438016,
+            "transport_seconds": 0.6358993890025886,
+            "seconds": 0.6393937539978651,
+            "periodic": true,
+            "maximum_distance": 16.0,
+            "angular_accuracy_certified": false
+          }
+        }
+      ],
+      "field_file": "research/pc_reconsidered/comparison_fields/comparison_native-frozen.npz"
+    }
+  ],
+  "source_hashes": {
+    "research/pc_reconsidered/compare_models.py": "64d040d85f5d7eee8239641bc9ae6a6c459b80189d36fe50c20fd98f6371b3ff",
+    "research/pc_alternatives/event_front.py": "79315f6623d091fd710bf21a58ceda543b8eae9562a67e412d074af1b9a7d96e",
+    "research/pc_alternatives/event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+    "research/pc_reconsidered/fast_candidates.py": "7ae0cad669b23c560b7125803e2b5e964cc7b5de2eb282b5f9bead04fbf50d2b",
+    "research/pc_reconsidered/hybrid.py": "cc5a0a9ee85a1aa163849201a5714d329927afeb55c615ef36a81e7ee435a32d",
+    "research/pc_reconsidered/hybrid.cpp": "ca6d17c7faea84f42f8890430be14ff5cbde35d9b22df6a119cd9ca174a225b3"
+  },
+  "adaptive_refresh": {
+    "reason": "Rerun only adaptive candidates after reviewed transparent-cavity predictor changes; references and scalar candidates are unchanged.",
+    "repeats": 3,
+    "source_hashes": {
+      "research/pc_reconsidered/hybrid.py": "cc5a0a9ee85a1aa163849201a5714d329927afeb55c615ef36a81e7ee435a32d",
+      "research/pc_reconsidered/hybrid.cpp": "ca6d17c7faea84f42f8890430be14ff5cbde35d9b22df6a119cd9ca174a225b3"
+    }
+  }
+}

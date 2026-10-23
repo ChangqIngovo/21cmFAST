@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+#PBS -N pc_candidates
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=4
+#PBS -l mem=32GB
+#PBS -l walltime=04:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+
+# Research comparisons, not a complete Qin20 PC simulation.
+# Submit from an isolated checkout with an installed native build:
+# qsub -v PC_REV="$(git rev-parse HEAD)",PC_PYTHON=/absolute/venv/bin/python \
+#   research/pc_reconsidered/gadi_compare.pbs
+set -euo pipefail
+: "${PBS_JOBID:?Submit using qsub}"
+: "${PBS_O_WORKDIR:?Missing PBS working directory}"
+: "${PC_REV:?Pin the commit at submission with PC_REV}"
+: "${PC_PYTHON:?Supply an installed 21cmFAST Python interpreter}"
+test -x "$PC_PYTHON"
+
+module --force purge
+module load gcc/12.2.0 fftw3/3.3.10-nci1 gsl/2.7.1 python3/3.11.7
+export CC=gcc CXX=g++
+export OMP_NUM_THREADS="$PBS_NCPUS" OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1
+export NUMEXPR_NUM_THREADS=1 PYTHONUNBUFFERED=1 PYTHONDONTWRITEBYTECODE=1
+
+cd "$PBS_O_WORKDIR"
+pc_commit=$(git rev-parse --verify "${PC_REV}^{commit}")
+# The installed extension is supplied by the user. Its build provenance must be
+# retained; these source checks cannot prove how a prebuilt binary was compiled.
+git diff --exit-code "$pc_commit" -- src/py21cmfast
+out="/scratch/qp00/${USER}/pc_candidates/${PBS_JOBID}"
+mkdir -p "$(dirname "$out")"
+mkdir "$out"
+exec > "$out/run.log" 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$out/FAILED"; fi' EXIT
+printf 'Job: %s\nCommit: %s\nResults: %s\n' "$PBS_JOBID" "$pc_commit" "$out"
+printf '%s\n' "$pc_commit" > "$out/commit.txt"
+mkdir "$out/source" "$out/results"
+git archive "$pc_commit" | tar -x -C "$out/source"
+
+export PC_CHECKOUT="$PBS_O_WORKDIR"
+export PC_ARCHIVE="$out/source"
+"$PC_PYTHON" - <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import numpy
+import py21cmfast
+
+package = Path(py21cmfast.__file__).resolve().parent
+expected = (Path(os.environ['PC_CHECKOUT']) / 'src/py21cmfast').resolve()
+if package != expected:
+    raise RuntimeError(f'Installed native package is {package}; expected isolated checkout {expected}')
+extensions = list(package.glob('*.so'))
+if not extensions:
+    raise RuntimeError('No native extension found; build this checkout first')
+frozen_package = Path(os.environ['PC_ARCHIVE']) / 'src/py21cmfast'
+for extension in extensions:
+    shutil.copy2(extension, frozen_package / extension.name)
+generated_version = package / '_version.py'
+if generated_version.exists():
+    shutil.copy2(generated_version, frozen_package / generated_version.name)
+print(json.dumps({
+    'python': platform.python_version(), 'numpy': numpy.__version__,
+    'py21cmfast': py21cmfast.__version__, 'package': str(package),
+    'binary_sha256': {p.name: hashlib.sha256(p.read_bytes()).hexdigest() for p in extensions},
+    'threads_native': int(os.environ['PBS_NCPUS']), 'threads_transport': 1,
+    'scope': 'Spatial experiments and restricted no-recombination native coeval; not full Qin20',
+}, indent=2), flush=True)
+PY
+
+cd "$out/source"
+export PYTHONPATH="$out/source/src${PYTHONPATH:+:$PYTHONPATH}"
+"$PC_PYTHON" - <<'PY'
+import os
+from pathlib import Path
+import py21cmfast
+actual = Path(py21cmfast.__file__).resolve().parent
+expected = Path(os.environ['PC_ARCHIVE']) / 'src/py21cmfast'
+if actual != expected.resolve():
+    raise RuntimeError('Native execution must import the frozen source/binary snapshot')
+print('Frozen native package:', actual, flush=True)
+PY
+"$PC_PYTHON" -m pytest research/pc_reconsidered -q \
+    --confcutdir=research/pc_reconsidered
+"$PC_PYTHON" research/pc_reconsidered/compare_models.py \
+    --methods es-control es-global es-front radial-shell voronoi adaptive-event \
+    --reference-angles 16384 --dense-reference-angles 768 --refinement 4 \
+    --output "$out/results/geometry.json"
+"$PC_PYTHON" research/pc_alternatives/native_benchmark.py prepare \
+    --grid 32 --box-mpc 200 --threads "$PBS_NCPUS" \
+    --directory "$out/native_fixture"
+"$PC_PYTHON" research/pc_reconsidered/compare_models.py \
+    --fixture "$out/native_fixture/source_capacity.npz" \
+    --fixture-dose-fractions 0.2 0.6 \
+    --cases native-dose-0.2 native-dose-0.6 native-frozen \
+    --methods es-control es-global es-front radial-shell voronoi adaptive-event \
+    --dense-reference-angles 768 --refinement 4 \
+    --output "$out/results/native_frozen.json"
+"$PC_PYTHON" research/pc_reconsidered/native_driver.py \
+    --output "$out/results/native_integration" \
+    --dimension 32 --box-len 200 --redshift 8 --threads "$PBS_NCPUS"
+touch "$out/COMPLETED"
+printf 'Finished: %s\nResults: %s\n' "$(date)" "$out/results"

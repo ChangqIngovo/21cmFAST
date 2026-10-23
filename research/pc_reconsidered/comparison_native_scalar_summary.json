@@ -1,0 +1,43 @@
+{
+  "scope": "Frozen native source/density/Xray experiment; cap=rho*(1-xray); current-step recombinations and thermal/feedback evolution omitted. Not a new end-to-end Qin20 history.",
+  "fixture_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+  "native_original_mean_xHI": 0.28667396306991577,
+  "definition": "xHI=(capacity-absorbed)/density, with density in the same hydrogen-count units",
+  "models": [
+    {
+      "method": "reference",
+      "volume_mean_xHI": 0.1939624038228637,
+      "mass_mean_xHI": 0.16952827194535292
+    },
+    {
+      "method": "es_control",
+      "volume_mean_xHI": 0.28459461693891075,
+      "mass_mean_xHI": 0.25473958168697736
+    },
+    {
+      "method": "es_global",
+      "volume_mean_xHI": 0.18996166129993203,
+      "mass_mean_xHI": 0.16736469523963513
+    },
+    {
+      "method": "es_front",
+      "volume_mean_xHI": 0.1879960092726417,
+      "mass_mean_xHI": 0.16736469523963518
+    },
+    {
+      "method": "radial_shell",
+      "volume_mean_xHI": 0.18972818201406572,
+      "mass_mean_xHI": 0.16736469523963518
+    },
+    {
+      "method": "voronoi",
+      "volume_mean_xHI": 0.1893839252006219,
+      "mass_mean_xHI": 0.16736469523963515
+    },
+    {
+      "method": "adaptive_event",
+      "volume_mean_xHI": 0.19399788606413348,
+      "mass_mean_xHI": 0.16956505377103026
+    }
+  ]
+}
