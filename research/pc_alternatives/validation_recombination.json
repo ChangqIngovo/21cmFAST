@@ -1,0 +1,818 @@
+{
+  "scope": "Independent fixed-density pure-H toy audit; not a Qin20 cosmological run",
+  "probe_files_sha256": {
+    "validation_recombination.py": "5240483f26ec15b632537fa4be4e906678c3f4faa365e086a77a686989fb49e9",
+    "test_validation_recombination.py": "2e1d02c4303974cbe531daad827f208eabdad6d1eefff54decbe5c76f9722c98",
+    "event_front_audit.py": "d98e8bae3dda930980c1d82ed76eb4a204c0876b74fd9617c4ece35ea97dbaaf"
+  },
+  "native_code": {
+    "files_sha256": {
+      "src/py21cmfast/templates/Qin20.toml": "30c65a2dcc33c5ea2f8f7c8df9683b04c918a5fcd1fd46cfaef4b5908c48f7f0",
+      "src/py21cmfast/src/IonisationBox.c": "c8abb46cdd8eea73cc73562656e8bfdef0119be3057acf7fed2b4a149e55d8c1",
+      "src/py21cmfast/src/recombinations.c": "7e0d627e6249dffa8dbe6e8c747c7e3ca84ce0b3e2be2e582571a170fdc62cf6",
+      "src/py21cmfast/src/thermochem.c": "7e01bdd55d6c028d0cc60eef45807db36745ee36268f76e5808ed340ad6fc97a"
+    },
+    "Qin20": {
+      "RECOMB_MODEL": "inhomogeneous",
+      "CELL_RECOMB": false,
+      "USE_REIONIZATION_PHOTOHEATING_FEEDBACK": true,
+      "USE_TS_FLUCT": true
+    },
+    "native_ES_Gamma": "First barrier crossing: R * gamma_prefactor * filtered emissivity",
+    "native_sink": "MHR density PDF; equilibrium HI with self-shielding; case-B T=1e4 K",
+    "native_Gamma_zero_table_rate": 0,
+    "coupling": "Previous Gamma and z_reion enter source photoheating threshold M_turn",
+    "native_order": "previous cumulative recombinations enter ES; current Gamma/x enter next cumulative recombinations"
+  },
+  "stromgren": {
+    "model": "N is fully ionized volume times n_H; alpha*n_H=1/t_rec",
+    "Q": 1.0,
+    "t_rec": 1.0,
+    "duration": 2.0,
+    "exact_N": 0.8646647167633873,
+    "rows": [
+      {
+        "steps": 4,
+        "dt_over_trec": 0.5,
+        "N_ionized": 0.9375,
+        "relative_volume_error": 0.08423529007781161,
+        "relative_radius_error": 0.02732497499766451,
+        "atom_ledger_error": 0.0
+      },
+      {
+        "steps": 8,
+        "dt_over_trec": 0.25,
+        "N_ionized": 0.8998870849609375,
+        "relative_volume_error": 0.04073529023989164,
+        "relative_radius_error": 0.01339811879577324,
+        "atom_ledger_error": 0.0,
+        "observed_volume_order": 1.0481455844734908
+      },
+      {
+        "steps": 16,
+        "dt_over_trec": 0.125,
+        "N_ionized": 0.8819329129787512,
+        "relative_volume_error": 0.019970973581531437,
+        "relative_radius_error": 0.0066131608904484995,
+        "atom_ledger_error": 0.0,
+        "observed_volume_order": 1.0283745218312665
+      },
+      {
+        "steps": 32,
+        "dt_over_trec": 0.0625,
+        "N_ionized": 0.8732112136229997,
+        "relative_volume_error": 0.009884174401846302,
+        "relative_radius_error": 0.0032839288073678308,
+        "atom_ledger_error": 0.0,
+        "observed_volume_order": 1.0147122939175914
+      },
+      {
+        "steps": 64,
+        "dt_over_trec": 0.03125,
+        "N_ionized": 0.868915967521525,
+        "relative_volume_error": 0.004916646505539246,
+        "relative_radius_error": 0.0016362035463406421,
+        "atom_ledger_error": 0.0,
+        "observed_volume_order": 1.0074458338424204
+      },
+      {
+        "steps": 128,
+        "dt_over_trec": 0.015625,
+        "N_ionized": 0.8667848371203514,
+        "relative_volume_error": 0.0024519565975815727,
+        "relative_radius_error": 0.0008166517642094195,
+        "atom_ledger_error": 4.440892098500626e-16,
+        "observed_volume_order": 1.0037411908461564
+      }
+    ],
+    "exact_frozen_coefficient_update_error": 1.1102230246251565e-16,
+    "counterexample_to_large_explicit_steps": {
+      "source_off_N0": 1.0,
+      "dt_over_trec": 2.0,
+      "explicit_N1": -1.0,
+      "interpretation": "No positivity guarantee for explicit R_old*dt debit"
+    }
+  },
+  "source_off": {
+    "equation": "dx/dt=-alpha*n_H*x^2; fixed parcel, pure hydrogen, constant T",
+    "duration": 2.0,
+    "exact_x": 0.3333333333333333,
+    "rows": [
+      {
+        "steps": 4,
+        "x": 0.258270263671875,
+        "absolute_error": 0.07506306966145831,
+        "exact_recombination_substep_error": 5.551115123125783e-17,
+        "atom_ledger_error": 0.0
+      },
+      {
+        "steps": 8,
+        "x": 0.3003571852751838,
+        "absolute_error": 0.032976148058149524,
+        "exact_recombination_substep_error": 1.1102230246251565e-16,
+        "atom_ledger_error": 0.0
+      },
+      {
+        "steps": 16,
+        "x": 0.3175185526220372,
+        "absolute_error": 0.015814780711296106,
+        "exact_recombination_substep_error": 1.1102230246251565e-16,
+        "atom_ledger_error": 0.0
+      },
+      {
+        "steps": 32,
+        "x": 0.32557044980057637,
+        "absolute_error": 0.007762883532756948,
+        "exact_recombination_substep_error": 1.1102230246251565e-16,
+        "atom_ledger_error": 0.0
+      },
+      {
+        "steps": 64,
+        "x": 0.3294858998008209,
+        "absolute_error": 0.0038474335325124343,
+        "exact_recombination_substep_error": 1.1102230246251565e-16,
+        "atom_ledger_error": 1.1102230246251565e-16
+      },
+      {
+        "steps": 128,
+        "x": 0.33141788933328364,
+        "absolute_error": 0.0019154440000496709,
+        "exact_recombination_substep_error": 3.3306690738754696e-16,
+        "atom_ledger_error": 0.0
+      }
+    ],
+    "Gamma_zero_equilibrium_table_adapter_x": 1.0,
+    "Gamma_zero_adapter_absolute_error": 0.6666666666666667,
+    "scope": "The Gamma=0 result describes reusing the native equilibrium sink table as a nonequilibrium recombination RHS; it is not a claim that the full native ES simulation follows this toy evolution."
+  },
+  "finite_opacity": {
+    "single_preionized_cell": [
+      {
+        "tau_neutral": 1.0,
+        "reference": {
+          "x": [
+            0.5918932719076945
+          ],
+          "absorbed": [
+            0.5389570433789052
+          ],
+          "recombinations": [
+            0.9470637714712105
+          ],
+          "escaped_by_beam": [
+            1.4610429566210934
+          ],
+          "emitted": 2.0,
+          "method": "Radau",
+          "nfev": 3197,
+          "photon_ledger_error": 1.3322676295501878e-15,
+          "atom_ledger_max_error": 2.220446049250313e-16,
+          "trajectory_x_min": 0.5918932719076945,
+          "trajectory_x_max": 1.0
+        },
+        "debt_event_rows": [
+          {
+            "steps": 4,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.4081067280923055,
+            "escape_error_vs_finite_opacity": 1.4610429566210934
+          },
+          {
+            "steps": 16,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.4081067280923055,
+            "escape_error_vs_finite_opacity": 1.4610429566210934
+          },
+          {
+            "steps": 64,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.4081067280923055,
+            "escape_error_vs_finite_opacity": 1.4610429566210934
+          },
+          {
+            "steps": 256,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.4081067280923055,
+            "escape_error_vs_finite_opacity": 1.4610429566210934
+          }
+        ]
+      },
+      {
+        "tau_neutral": 10.0,
+        "reference": {
+          "x": [
+            0.8632804339325038
+          ],
+          "absorbed": [
+            1.3987462845437726
+          ],
+          "recombinations": [
+            1.5354658506112664
+          ],
+          "escaped_by_beam": [
+            0.6012537154562275
+          ],
+          "emitted": 2.0,
+          "method": "Radau",
+          "nfev": 4214,
+          "photon_ledger_error": 1.1102230246251565e-16,
+          "atom_ledger_max_error": 2.4424906541753444e-15,
+          "trajectory_x_min": 0.8632804339325038,
+          "trajectory_x_max": 1.0
+        },
+        "debt_event_rows": [
+          {
+            "steps": 4,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.13671956606749625,
+            "escape_error_vs_finite_opacity": 0.6012537154562275
+          },
+          {
+            "steps": 16,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.13671956606749625,
+            "escape_error_vs_finite_opacity": 0.6012537154562275
+          },
+          {
+            "steps": 64,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.13671956606749625,
+            "escape_error_vs_finite_opacity": 0.6012537154562275
+          },
+          {
+            "steps": 256,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.13671956606749625,
+            "escape_error_vs_finite_opacity": 0.6012537154562275
+          }
+        ]
+      },
+      {
+        "tau_neutral": 1000.0,
+        "reference": {
+          "x": [
+            0.9953252314376845
+          ],
+          "absorbed": [
+            1.9769745839466664
+          ],
+          "recombinations": [
+            1.98164935250898
+          ],
+          "escaped_by_beam": [
+            0.0230254160533337
+          ],
+          "emitted": 2.0,
+          "method": "Radau",
+          "nfev": 4987,
+          "photon_ledger_error": 6.245004513516506e-17,
+          "atom_ledger_max_error": 1.9984014443252818e-15,
+          "trajectory_x_min": 0.9953252314376845,
+          "trajectory_x_max": 1.0
+        },
+        "debt_event_rows": [
+          {
+            "steps": 4,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.004674768562315523,
+            "escape_error_vs_finite_opacity": 0.0230254160533337
+          },
+          {
+            "steps": 16,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.004674768562315523,
+            "escape_error_vs_finite_opacity": 0.0230254160533337
+          },
+          {
+            "steps": 64,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.004674768562315523,
+            "escape_error_vs_finite_opacity": 0.0230254160533337
+          },
+          {
+            "steps": 256,
+            "x": [
+              1.0
+            ],
+            "absorbed": [
+              2.0
+            ],
+            "recombinations": [
+              2.0
+            ],
+            "escaped_by_beam": [
+              0.0
+            ],
+            "emitted": 2.0,
+            "photon_ledger_error": 0.0,
+            "atom_ledger_max_error": 0.0,
+            "absolute_x_error_vs_finite_opacity": 0.004674768562315523,
+            "escape_error_vs_finite_opacity": 0.0230254160533337
+          }
+        ]
+      }
+    ],
+    "two_beams_shared_screen": {
+      "atoms": [
+        1,
+        3,
+        3
+      ],
+      "initial_x": [
+        1,
+        0,
+        0
+      ],
+      "alpha_n": [
+        1,
+        0.4,
+        0.4
+      ],
+      "tau_neutral": [
+        1,
+        4,
+        4
+      ],
+      "paths": [
+        [
+          0,
+          1
+        ],
+        [
+          0,
+          2
+        ]
+      ],
+      "rates": [
+        1,
+        2
+      ],
+      "duration": 1.5,
+      "reference": {
+        "x": [
+          0.7765005694156326,
+          0.3666945084322722,
+          0.6434889254579808
+        ],
+        "absorbed": [
+          0.7681638805976265,
+          1.1901525899258982,
+          2.238415493958467
+        ],
+        "recombinations": [
+          0.9916633111819938,
+          0.09006906462908099,
+          0.3079487175845275
+        ],
+        "escaped_by_beam": [
+          0.05379278320822593,
+          0.24947525230978077
+        ],
+        "emitted": 4.5,
+        "method": "Radau",
+        "nfev": 3259,
+        "photon_ledger_error": 1.4988010832439613e-15,
+        "atom_ledger_max_error": 2.942091015256665e-15,
+        "trajectory_x_min": 0.0,
+        "trajectory_x_max": 1.0
+      },
+      "debt_event_rows": [
+        {
+          "steps": 8,
+          "x": [
+            1.0,
+            0.3160298148781953,
+            0.6008390877464131
+          ],
+          "absorbed": [
+            1.5,
+            1.0,
+            2.0
+          ],
+          "recombinations": [
+            1.5,
+            0.051910555365414134,
+            0.19748273676076067
+          ],
+          "escaped_by_beam": [
+            0.0,
+            0.0
+          ],
+          "emitted": 4.5,
+          "photon_ledger_error": 0.0,
+          "atom_ledger_max_error": 1.3183898417423734e-16,
+          "x_max_error_vs_finite_opacity": 0.2234994305843674,
+          "absorption_L1_error_per_emitted_photon": 0.25786760073038634
+        },
+        {
+          "steps": 16,
+          "x": [
+            1.0,
+            0.3144059041481022,
+            0.5954133662119838
+          ],
+          "absorbed": [
+            1.5,
+            1.0,
+            2.0
+          ],
+          "recombinations": [
+            1.5,
+            0.05678228755569325,
+            0.21375990136404843
+          ],
+          "escaped_by_beam": [
+            0.0,
+            0.0
+          ],
+          "emitted": 4.5,
+          "photon_ledger_error": 0.0,
+          "atom_ledger_max_error": 1.1796119636642288e-16,
+          "x_max_error_vs_finite_opacity": 0.2234994305843674,
+          "absorption_L1_error_per_emitted_photon": 0.25786760073038634
+        },
+        {
+          "steps": 32,
+          "x": [
+            1.0,
+            0.31358390840408273,
+            0.5927116673822613
+          ],
+          "absorbed": [
+            1.5,
+            1.0,
+            2.0
+          ],
+          "recombinations": [
+            1.5,
+            0.05924827478775181,
+            0.22186499785321634
+          ],
+          "escaped_by_beam": [
+            0.0,
+            0.0
+          ],
+          "emitted": 4.5,
+          "photon_ledger_error": 0.0,
+          "atom_ledger_max_error": 2.220446049250313e-16,
+          "x_max_error_vs_finite_opacity": 0.2234994305843674,
+          "absorption_L1_error_per_emitted_photon": 0.25786760073038634
+        },
+        {
+          "steps": 64,
+          "x": [
+            1.0,
+            0.3131705799407072,
+            0.5913639820537769
+          ],
+          "absorbed": [
+            1.5,
+            1.0,
+            2.0
+          ],
+          "recombinations": [
+            1.5,
+            0.06048826017787831,
+            0.22590805383866952
+          ],
+          "escaped_by_beam": [
+            0.0,
+            0.0
+          ],
+          "emitted": 4.5,
+          "photon_ledger_error": 0.0,
+          "atom_ledger_max_error": 4.440892098500626e-16,
+          "x_max_error_vs_finite_opacity": 0.2234994305843674,
+          "absorption_L1_error_per_emitted_photon": 0.25786760073038634
+        },
+        {
+          "steps": 128,
+          "x": [
+            1.0,
+            0.31296335445478474,
+            0.5906909707738017
+          ],
+          "absorbed": [
+            1.5,
+            1.0,
+            2.0
+          ],
+          "recombinations": [
+            1.5,
+            0.06110993663564601,
+            0.22792708767859401
+          ],
+          "escaped_by_beam": [
+            0.0,
+            0.0
+          ],
+          "emitted": 4.5,
+          "photon_ledger_error": 0.0,
+          "atom_ledger_max_error": 8.049116928532385e-16,
+          "x_max_error_vs_finite_opacity": 0.2234994305843674,
+          "absorption_L1_error_per_emitted_photon": 0.25786760073038634
+        },
+        {
+          "steps": 256,
+          "x": [
+            1.0,
+            0.3128596040100293,
+            0.5903546776727265
+          ],
+          "absorbed": [
+            1.5,
+            1.0,
+            2.0
+          ],
+          "recombinations": [
+            1.5,
+            0.061421187969912104,
+            0.22893596698182161
+          ],
+          "escaped_by_beam": [
+            0.0,
+            0.0
+          ],
+          "emitted": 4.5,
+          "photon_ledger_error": 0.0,
+          "atom_ledger_max_error": 1.3322676295501878e-15,
+          "x_max_error_vs_finite_opacity": 0.2234994305843674,
+          "absorption_L1_error_per_emitted_photon": 0.25786760073038634
+        }
+      ],
+      "meaning": "Two beams overlap in cell0 then illuminate different target cells"
+    }
+  },
+  "bounded_local_chemistry": {
+    "reference": {
+      "x": [
+        0.5918932719076945
+      ],
+      "absorbed": [
+        0.5389570433789052
+      ],
+      "recombinations": [
+        0.9470637714712105
+      ],
+      "escaped_by_beam": [
+        1.4610429566210934
+      ],
+      "emitted": 2.0,
+      "method": "Radau",
+      "nfev": 3197,
+      "photon_ledger_error": 1.3322676295501878e-15,
+      "atom_ledger_max_error": 2.220446049250313e-16,
+      "trajectory_x_min": 0.5918932719076945,
+      "trajectory_x_max": 1.0
+    },
+    "rows": [
+      {
+        "steps": 4,
+        "x": 0.5818620612832087,
+        "absolute_x_error": 0.010031210624485754,
+        "absorption_error": 0.009375542712491192,
+        "photon_ledger_error": 0.0,
+        "atom_ledger_error": 0.0
+      },
+      {
+        "steps": 8,
+        "x": 0.5893306831029366,
+        "absolute_x_error": 0.0025625888047579037,
+        "absorption_error": 0.0023082419313719127,
+        "photon_ledger_error": 0.0,
+        "atom_ledger_error": 0.0,
+        "observed_order": 1.968821823030321
+      },
+      {
+        "steps": 16,
+        "x": 0.5912490960378524,
+        "absolute_x_error": 0.0006441758698421118,
+        "absorption_error": 0.0005728491620795584,
+        "photon_ledger_error": 2.220446049250313e-16,
+        "atom_ledger_error": 0.0,
+        "observed_order": 1.992075476101541
+      },
+      {
+        "steps": 32,
+        "x": 0.5917320057206488,
+        "absolute_x_error": 0.0001612661870457055,
+        "absorption_error": 0.00014289814734680384,
+        "photon_ledger_error": 4.440892098500626e-16,
+        "atom_ledger_error": 0.0,
+        "observed_order": 1.9980106419866674
+      },
+      {
+        "steps": 64,
+        "x": 0.5918529414458814,
+        "absolute_x_error": 4.03304618130651e-05,
+        "absorption_error": 3.5703954264554305e-05,
+        "photon_ledger_error": 0.0,
+        "atom_ledger_error": 0.0,
+        "observed_order": 1.9995021470344165
+      },
+      {
+        "steps": 128,
+        "x": 0.5918831884221659,
+        "absolute_x_error": 1.0083485528555869e-05,
+        "absorption_error": 8.924686557332251e-06,
+        "photon_ledger_error": 0.0,
+        "atom_ledger_error": 0.0,
+        "observed_order": 1.999875508576754
+      }
+    ],
+    "Radau_DOP853_max_difference": 6.616929226765933e-14,
+    "scope": "Prescribed incoming flux, one homogeneous cell; no source/UVB iteration"
+  },
+  "reopened_screen": {
+    "source_off_duration_over_initial_trec": 1.0,
+    "screen_x_after_off": 0.5,
+    "restart_photons": 0.2,
+    "stale_cursor_absorption_increment": [
+      0.0,
+      0.20000000000000004
+    ],
+    "rebuilt_absorption_increment": [
+      0.2,
+      0.0
+    ],
+    "wrong_downstream_photons": 0.20000000000000004,
+    "scope": "Fresh solve rebuilds paths. Future stateful reuse must invalidate opacity caches."
+  },
+  "chemistry_cost": {
+    "scope": "NumPy independent chemistry cells with prescribed flux; no ray/UVB solve",
+    "rows": [
+      {
+        "grid": 32,
+        "cells": 32768,
+        "median_seconds": 0.0035024980024900287,
+        "minimum_seconds": 0.002441612996335607,
+        "repeats": 7
+      },
+      {
+        "grid": 64,
+        "cells": 262144,
+        "median_seconds": 0.03902182899764739,
+        "minimum_seconds": 0.022611983004026115,
+        "repeats": 7
+      }
+    ]
+  },
+  "references": [
+    "https://arxiv.org/abs/astro-ph/0508416",
+    "https://arxiv.org/abs/1402.2298"
+  ]
+}

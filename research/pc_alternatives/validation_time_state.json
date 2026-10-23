@@ -1,0 +1,609 @@
+{
+  "scope": "Independent exact time/state counterexamples; no production changes or new Qin20 evolution",
+  "provenance": {
+    "event_front_py_sha256": "1fea8965df8f480d06857a01b15b08e8ad03741420552daa7eda5dac6e374688",
+    "event_front_cpp_sha256": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8"
+  },
+  "counterexamples": {
+    "source_restart_stalls": {
+      "meaning": "Hypothetical adapter re-emits retained at original source",
+      "restart_steps": [
+        {
+          "photons": 1.0,
+          "absorbed": 0.0,
+          "escaped": 0.0,
+          "retained": 1.0,
+          "ledger_residual": 0.0
+        },
+        {
+          "photons": 1.0,
+          "absorbed": 0.0,
+          "escaped": 0.0,
+          "retained": 1.0,
+          "ledger_residual": 0.0
+        },
+        {
+          "photons": 1.0,
+          "absorbed": 0.0,
+          "escaped": 0.0,
+          "retained": 1.0,
+          "ledger_residual": 0.0
+        }
+      ],
+      "total_external_emission": 1,
+      "naive_sum_solver_photons": 3.0,
+      "correct_global_ledger": "initial_emission = total_absorption + current_reservoir; reinjected carry is not new emission",
+      "finite_c_flash_reference": [
+        {
+          "x": 3.5,
+          "photons": 1,
+          "travelled": 2.0,
+          "time": 1.0,
+          "absorbed": 0.0,
+          "exhausted_horizon": false
+        },
+        {
+          "x": 5.5,
+          "photons": 1,
+          "travelled": 4.0,
+          "time": 2.0,
+          "absorbed": 0.0,
+          "exhausted_horizon": false
+        },
+        {
+          "x": 6,
+          "photons": 0,
+          "travelled": 4.5,
+          "time": 3.0,
+          "absorbed": 1.0,
+          "exhausted_horizon": false
+        }
+      ],
+      "finite_c_same_t0_to_t1_emission_absorbed_at_t3": 0.75,
+      "flash_reference_scope": "Independent delta-flash state oracle; event_front itself accepts a constant rate, not a delta flash",
+      "exact_flash_arrival_time": 2.25
+    },
+    "re_isotropizing_carry_changes_direction": {
+      "first_absorbed_near_y": 0.5,
+      "first_retained_x_only": 0.5,
+      "restart_spurious_extra_y_absorption": 0.25,
+      "correct_extra_y_absorption": 0,
+      "wrong_fraction_of_carried_count": 0.5,
+      "restart_audit": {
+        "photons": 0.5,
+        "absorbed": 0.25,
+        "escaped": 0.0,
+        "retained": 0.25,
+        "ledger_residual": 0.0
+      }
+    },
+    "constant_source_finite_c": [
+      {
+        "duration": 1.0,
+        "distance": 4.5,
+        "speed": 2,
+        "event_absorbed": 1.0,
+        "finite_c_exact_absorbed": 0.0,
+        "finite_c_exact_in_flight": 1.0,
+        "audit": {
+          "photons": 1.0,
+          "absorbed": 1.0,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 0.0
+        }
+      },
+      {
+        "duration": 3.0,
+        "distance": 4.5,
+        "speed": 2,
+        "event_absorbed": 3.0,
+        "finite_c_exact_absorbed": 0.75,
+        "finite_c_exact_in_flight": 2.25,
+        "audit": {
+          "photons": 3.0,
+          "absorbed": 3.0,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 0.0
+        }
+      },
+      {
+        "duration": 10.0,
+        "distance": 4.5,
+        "speed": 2,
+        "event_absorbed": 10.0,
+        "finite_c_exact_absorbed": 7.75,
+        "finite_c_exact_in_flight": 2.25,
+        "audit": {
+          "photons": 10.0,
+          "absorbed": 10.0,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 0.0
+        }
+      }
+    ],
+    "distance_cutoff_is_not_causal_transport": {
+      "duration": 1,
+      "speed": 1,
+      "maximum_distance_equals_c_dt": 1,
+      "target_entry_distance": 0.5,
+      "event_absorbed": 1.0,
+      "finite_c_exact_absorbed": 0.5,
+      "finite_c_exact_in_flight": 0.5
+    },
+    "source_off_arrivals": {
+      "physical_emission_interval": [
+        0,
+        1
+      ],
+      "physical_target_arrival_interval": [
+        2.25,
+        3.25
+      ],
+      "exact_absorption_increment_t2_to_t3": 0.75,
+      "zero_source_restart_absorption_increment": 0.0
+    },
+    "range_budget_must_persist": {
+      "absolute_maximum_distance": 3,
+      "target_distance": 4.5,
+      "correct": {
+        "x": 4.5,
+        "photons": 1,
+        "travelled": 3.0,
+        "time": 3.0,
+        "absorbed": 0.0,
+        "exhausted_horizon": true
+      },
+      "wrong_reset_distance_every_step": {
+        "x": 6,
+        "photons": 0,
+        "travelled": 0.5,
+        "time": 3.0,
+        "absorbed": 1.0,
+        "exhausted_horizon": false
+      }
+    },
+    "infinite_c_no_retained_restart_is_valid": {
+      "split_vs_whole_l1": 0.0,
+      "total_absorption": 1.0,
+      "scope": "Fixed source geometry/rates, unchanged directions, monotone capacity, no finite-c state"
+    },
+    "cumulative_source_is_not_increment": {
+      "previous_cumulative": 3,
+      "next_cumulative": 5,
+      "wrong_absorbed_total": 8.0,
+      "correct_increment_absorbed_total": 5.0,
+      "scope": "Scalar bookkeeping illustration; spatial native source localization requires separate validation"
+    },
+    "uniform_relativistic_front_reference": [
+      {
+        "time": 0.1,
+        "radius_finite_c": 0.09902885240545733,
+        "radius_infinite_c": 0.4641588833612779,
+        "radius_infinite_over_finite": 4.687107565993553,
+        "volume_infinite_over_finite": 102.9709598849287
+      },
+      {
+        "time": 1.0,
+        "radius_finite_c": 0.6823278038280194,
+        "radius_infinite_c": 1.0,
+        "radius_infinite_over_finite": 1.465571231876768,
+        "volume_infinite_over_finite": 3.1478990357047865
+      },
+      {
+        "time": 10.0,
+        "radius_finite_c": 2.0,
+        "radius_infinite_c": 2.154434690031884,
+        "radius_infinite_over_finite": 1.077217345015942,
+        "volume_infinite_over_finite": 1.25
+      },
+      {
+        "time": 100.0,
+        "radius_finite_c": 4.569780162932652,
+        "radius_infinite_c": 4.641588833612778,
+        "radius_infinite_over_finite": 1.0157138129450067,
+        "volume_infinite_over_finite": 1.0478860907030803
+      }
+    ]
+  },
+  "native_time_scales": {
+    "inputs_path": "/workspace/scratch/40b418003e4a/qin20_validation/native_paired_z8/es_inputs.toml",
+    "inputs_sha256": "5fadcc78e990ff5ed93e081786151f0cb91ada52aeadc626c089b16f612d4b53",
+    "node_count": 88,
+    "saved_grid": 8,
+    "saved_box_cMpc": 200.0,
+    "node_redshifts": [
+      35.402256033675854,
+      34.68848630752535,
+      33.98871206620133,
+      33.30265888843268,
+      32.63005773375753,
+      31.97064483701719,
+      31.32416160491882,
+      30.690354514626293,
+      30.068975014339507,
+      29.45977942582305,
+      28.86252884884613,
+      28.27698906749621,
+      27.702930458329618,
+      27.140127900323158,
+      26.588360686591336,
+      26.047412437834645,
+      25.517071017484948,
+      24.99712844851466,
+      24.48738083187712,
+      23.987628266546196,
+      23.497674771123723,
+      23.017328206984047,
+      22.546400202925536,
+      22.084706081299547,
+      21.632064785587794,
+      21.1882988093998,
+      20.75323412686255,
+      20.326700124375055,
+      19.908529533701035,
+      19.498558366373565,
+      19.096625849385852,
+      18.702574362142993,
+      18.316249374649995,
+      17.93749938691176,
+      17.566175869521338,
+      17.202133205413077,
+      16.84522863275792,
+      16.495322188978353,
+      16.152276655861133,
+      15.815957505746212,
+      15.486232848770797,
+      15.162973381147843,
+      14.846052334458669,
+      14.535345425939873,
+      14.230730809744976,
+      13.932089029161743,
+      13.639302969766415,
+      13.352257813496488,
+      13.070840993624008,
+      12.794942150611774,
+      12.524453088835074,
+      12.259267734152035,
+      11.999282092305918,
+      11.744394208143058,
+      11.49450412563045,
+      11.249513848657305,
+      11.009327302605202,
+      10.773850296671768,
+      10.542990486933107,
+      10.316657340130499,
+      10.094762098167156,
+      9.877217743301134,
+      9.663938964020721,
+      9.454842121588943,
+      9.249845217244063,
+      9.0488678600432,
+      8.85183123533647,
+      8.658658073859284,
+      8.469272621430672,
+      8.283600609245758,
+      8.101569224750744,
+      7.923107083088965,
+      7.748144199106829,
+      7.576611959908657,
+      7.4084430979496645,
+      7.243571664656535,
+      7.081933004565231,
+      6.923463729965913,
+      6.768101696045014,
+      6.6157859765147204,
+      6.466456839720315,
+      6.320055725215996,
+      6.176525220799997,
+      6.0358090399999975,
+      5.897851999999998,
+      5.762599999999999,
+      5.629999999999999,
+      5.5
+    ],
+    "cosmology": {
+      "hlittle": 0.6766,
+      "OMm": 0.30964144154550644,
+      "OMb": 0.04897468161869667,
+      "OMr": 8.6e-05,
+      "OMn": 0.0
+    },
+    "clock": "Main dt/horizon: integrate native hubble(z), including OMr; also report native dtdz/drdz (omits OMr) and endpoint |dtdz(z_late)|*dz used for recombinations",
+    "constants": {
+      "native_H0_per_h_s_inv": 3.2407e-18,
+      "native_seconds_per_year": 31556925.9747,
+      "native_km_per_Mpc": 3.08567758e+19
+    },
+    "OMl_from_native_property": 0.6903585584544936,
+    "nominal_ZPRIME_STEP_FACTOR": 1.02,
+    "minimum_dt_Myr": 2.36498414320048,
+    "maximum_dt_Myr": 30.43168530490271,
+    "minimum_interval_light_horizon_cMpc": 26.134069088907108,
+    "maximum_interval_light_horizon_cMpc": 61.247766639127285,
+    "selected_default_runner_grid64_intervals": [
+      {
+        "z_early": 20.326700124375055,
+        "z_late": 19.908529533701035,
+        "grid": 64,
+        "box_cMpc": 200.0,
+        "dt_Myr": 5.2842997358446935,
+        "true_light_horizon_cMpc": 34.21067480648624,
+        "native_dtdz_integrated_Myr": 5.299768944438954,
+        "native_drdz_horizon_cMpc": 34.31082607955891,
+        "native_recombination_endpoint_dt_Myr": 5.432462610973933,
+        "scales": {
+          "cell": {
+            "distance_cMpc": 3.125,
+            "light_crossing_at_z_late_Myr": 0.4874854772440814,
+            "distance_over_interval_light_horizon": 0.09134575736014157
+          },
+          "R_BUBBLE_MAX": {
+            "distance_cMpc": 50.0,
+            "light_crossing_at_z_late_Myr": 7.799767635905303,
+            "distance_over_interval_light_horizon": 1.461532117762265
+          },
+          "box": {
+            "distance_cMpc": 200.0,
+            "light_crossing_at_z_late_Myr": 31.19907054362121,
+            "distance_over_interval_light_horizon": 5.84612847104906
+          },
+          "event_default_diagonal": {
+            "distance_cMpc": 346.41016151377545,
+            "light_crossing_at_z_late_Myr": 54.0383753304775,
+            "distance_over_interval_light_horizon": 10.12579153943193
+          }
+        }
+      },
+      {
+        "z_early": 15.162973381147843,
+        "z_late": 14.846052334458669,
+        "grid": 64,
+        "box_cMpc": 200.0,
+        "dt_Myr": 8.013668042647,
+        "true_light_horizon_cMpc": 39.31906276819861,
+        "native_dtdz_integrated_Myr": 8.03144796815163,
+        "native_drdz_horizon_cMpc": 39.406302826142095,
+        "native_recombination_endpoint_dt_Myr": 8.232498691724507,
+        "scales": {
+          "cell": {
+            "distance_cMpc": 3.125,
+            "light_crossing_at_z_late_Myr": 0.6432267345251338,
+            "distance_over_interval_light_horizon": 0.07947798802893924
+          },
+          "R_BUBBLE_MAX": {
+            "distance_cMpc": 50.0,
+            "light_crossing_at_z_late_Myr": 10.29162775240214,
+            "distance_over_interval_light_horizon": 1.2716478084630278
+          },
+          "box": {
+            "distance_cMpc": 200.0,
+            "light_crossing_at_z_late_Myr": 41.16651100960856,
+            "distance_over_interval_light_horizon": 5.086591233852111
+          },
+          "event_default_diagonal": {
+            "distance_cMpc": 346.41016151377545,
+            "light_crossing_at_z_late_Myr": 71.30248863898558,
+            "distance_over_interval_light_horizon": 8.810234454366322
+          }
+        }
+      },
+      {
+        "z_early": 10.316657340130499,
+        "z_late": 10.094762098167156,
+        "grid": 64,
+        "box_cMpc": 200.0,
+        "dt_Myr": 13.680406431814916,
+        "true_light_horizon_cMpc": 46.99674164514972,
+        "native_dtdz_integrated_Myr": 13.701643153128272,
+        "native_drdz_horizon_cMpc": 47.06969923268883,
+        "native_recombination_endpoint_dt_Myr": 14.044417769223646,
+        "scales": {
+          "cell": {
+            "distance_cMpc": 3.125,
+            "light_crossing_at_z_late_Myr": 0.9186861699262603,
+            "distance_over_interval_light_horizon": 0.06649397150967198
+          },
+          "R_BUBBLE_MAX": {
+            "distance_cMpc": 50.0,
+            "light_crossing_at_z_late_Myr": 14.698978718820165,
+            "distance_over_interval_light_horizon": 1.0639035441547517
+          },
+          "box": {
+            "distance_cMpc": 200.0,
+            "light_crossing_at_z_late_Myr": 58.79591487528066,
+            "distance_over_interval_light_horizon": 4.255614176619007
+          },
+          "event_default_diagonal": {
+            "distance_cMpc": 346.41016151377545,
+            "light_crossing_at_z_late_Myr": 101.8375118414808,
+            "distance_over_interval_light_horizon": 7.370939971314513
+          }
+        }
+      },
+      {
+        "z_early": 8.101569224750744,
+        "z_late": 7.923107083088965,
+        "grid": 64,
+        "box_cMpc": 200.0,
+        "dt_Myr": 18.959094671720703,
+        "true_light_horizon_cMpc": 52.3822911000818,
+        "native_dtdz_integrated_Myr": 18.982734108084117,
+        "native_drdz_horizon_cMpc": 52.447606911184444,
+        "native_recombination_endpoint_dt_Myr": 19.457203484346923,
+        "scales": {
+          "cell": {
+            "distance_cMpc": 3.125,
+            "light_crossing_at_z_late_Myr": 1.1422707811637949,
+            "distance_over_interval_light_horizon": 0.059657566218884225
+          },
+          "R_BUBBLE_MAX": {
+            "distance_cMpc": 50.0,
+            "light_crossing_at_z_late_Myr": 18.276332498620718,
+            "distance_over_interval_light_horizon": 0.9545210595021476
+          },
+          "box": {
+            "distance_cMpc": 200.0,
+            "light_crossing_at_z_late_Myr": 73.10532999448287,
+            "distance_over_interval_light_horizon": 3.8180842380085904
+          },
+          "event_default_diagonal": {
+            "distance_cMpc": 346.41016151377545,
+            "light_crossing_at_z_late_Myr": 126.6221458545333,
+            "distance_over_interval_light_horizon": 6.613115887808781
+          }
+        }
+      },
+      {
+        "z_early": 6.176525220799997,
+        "z_late": 6.0358090399999975,
+        "grid": 64,
+        "box_cMpc": 200.0,
+        "dt_Myr": 27.042788818454515,
+        "true_light_horizon_cMpc": 58.91371107412755,
+        "native_dtdz_integrated_Myr": 27.06929561357398,
+        "native_drdz_horizon_cMpc": 58.97145902429775,
+        "native_recombination_endpoint_dt_Myr": 27.744587018682743,
+        "scales": {
+          "cell": {
+            "distance_cMpc": 3.125,
+            "light_crossing_at_z_late_Myr": 1.4486755453795297,
+            "distance_over_interval_light_horizon": 0.05304367935790027
+          },
+          "R_BUBBLE_MAX": {
+            "distance_cMpc": 50.0,
+            "light_crossing_at_z_late_Myr": 23.178808726072475,
+            "distance_over_interval_light_horizon": 0.8486988697264043
+          },
+          "box": {
+            "distance_cMpc": 200.0,
+            "light_crossing_at_z_late_Myr": 92.7152349042899,
+            "distance_over_interval_light_horizon": 3.394795478905617
+          },
+          "event_default_diagonal": {
+            "distance_cMpc": 346.41016151377545,
+            "light_crossing_at_z_late_Myr": 160.5874974899135,
+            "distance_over_interval_light_horizon": 5.879958250769648
+          }
+        }
+      }
+    ],
+    "grid64_scope": "Scale calculation at tools/gadi_qin20_compare.py default grid=64, same saved physical parameters and node sequence; not a grid64 run result",
+    "frozen_cost_fixture": {
+      "source": "/workspace/scratch/40b418003e4a/21cmFAST_photon_conserving/research/pc_alternatives/native_benchmark.json",
+      "sha256": "d1385dd43e9331ded418c1e1f0b0321854c3049333ea4a953ac0af83479fc564",
+      "scope": "Numerical coarse-history fixture for frozen native-cost comparison, not converged science validation",
+      "grid": 32,
+      "nodes": [
+        35,
+        12,
+        8,
+        7.5
+      ],
+      "intervals": [
+        {
+          "z_early": 35.0,
+          "z_late": 12.0,
+          "grid": 32,
+          "box_cMpc": 200.0,
+          "dt_Myr": 288.38486688678927,
+          "true_light_horizon_cMpc": 1757.1377039974884,
+          "native_dtdz_integrated_Myr": 289.17928029434864,
+          "native_drdz_horizon_cMpc": 1762.4052564122474,
+          "native_recombination_endpoint_dt_Myr": 979.8377093292033,
+          "scales": {
+            "cell": {
+              "distance_cMpc": 6.25,
+              "light_crossing_at_z_late_Myr": 1.5680929997243418,
+              "distance_over_interval_light_horizon": 0.003556921000432265
+            },
+            "R_BUBBLE_MAX": {
+              "distance_cMpc": 50.0,
+              "light_crossing_at_z_late_Myr": 12.544743997794734,
+              "distance_over_interval_light_horizon": 0.02845536800345812
+            },
+            "box": {
+              "distance_cMpc": 200.0,
+              "light_crossing_at_z_late_Myr": 50.17897599117894,
+              "distance_over_interval_light_horizon": 0.11382147201383248
+            },
+            "event_default_diagonal": {
+              "distance_cMpc": 346.41016151377545,
+              "light_crossing_at_z_late_Myr": 86.91253588850078,
+              "distance_over_interval_light_horizon": 0.19714457252023693
+            }
+          }
+        },
+        {
+          "z_early": 12.0,
+          "z_late": 8.0,
+          "grid": 32,
+          "box_cMpc": 200.0,
+          "dt_Myr": 271.21601391633266,
+          "true_light_horizon_cMpc": 889.404023538832,
+          "native_dtdz_integrated_Myr": 271.61780608259016,
+          "native_drdz_horizon_cMpc": 890.7365875082352,
+          "native_recombination_endpoint_dt_Myr": 426.86993067119175,
+          "scales": {
+            "cell": {
+              "distance_cMpc": 6.25,
+              "light_crossing_at_z_late_Myr": 2.265023221824049,
+              "distance_over_interval_light_horizon": 0.007027177564513368
+            },
+            "R_BUBBLE_MAX": {
+              "distance_cMpc": 50.0,
+              "light_crossing_at_z_late_Myr": 18.120185774592393,
+              "distance_over_interval_light_horizon": 0.056217420516106946
+            },
+            "box": {
+              "distance_cMpc": 200.0,
+              "light_crossing_at_z_late_Myr": 72.48074309836957,
+              "distance_over_interval_light_horizon": 0.22486968206442778
+            },
+            "event_default_diagonal": {
+              "distance_cMpc": 346.41016151377545,
+              "light_crossing_at_z_late_Myr": 125.54032961672335,
+              "distance_over_interval_light_horizon": 0.38948571441744884
+            }
+          }
+        },
+        {
+          "z_early": 8.0,
+          "z_late": 7.5,
+          "grid": 32,
+          "box_cMpc": 200.0,
+          "dt_Myr": 57.24307476585769,
+          "true_light_horizon_cMpc": 153.46195755348194,
+          "native_dtdz_integrated_Myr": 57.3123113377358,
+          "native_drdz_horizon_cMpc": 153.64762367913147,
+          "native_recombination_endpoint_dt_Myr": 61.5376240614133,
+          "scales": {
+            "cell": {
+              "distance_cMpc": 6.25,
+              "light_crossing_at_z_late_Myr": 2.3982598819313465,
+              "distance_over_interval_light_horizon": 0.04072670582102966
+            },
+            "R_BUBBLE_MAX": {
+              "distance_cMpc": 50.0,
+              "light_crossing_at_z_late_Myr": 19.186079055450772,
+              "distance_over_interval_light_horizon": 0.3258136465682373
+            },
+            "box": {
+              "distance_cMpc": 200.0,
+              "light_crossing_at_z_late_Myr": 76.74431622180309,
+              "distance_over_interval_light_horizon": 1.3032545862729492
+            },
+            "event_default_diagonal": {
+              "distance_cMpc": 346.41016151377545,
+              "light_crossing_at_z_late_Myr": 132.9250548882953,
+              "distance_over_interval_light_horizon": 2.257303158621905
+            }
+          }
+        }
+      ]
+    },
+    "conclusion": "A search distance or one solver call is not a physical time step. Ratios alone neither validate nor rule out infinite-c for Qin20: need source/opacity evolution and finite-c convergence on matched histories."
+  }
+}

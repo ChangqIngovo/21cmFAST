@@ -1,0 +1,1182 @@
+{
+  "scope": "Independent toy angular/spatial accuracy validation; core code read-only; no native-model cost claims.",
+  "kernel_sha256": {
+    "event_front.cpp": "d97be4a8bd20132d8ed6da7314e1bef1d148c0346435d91d49fb2a36aa628fd8",
+    "event_front.py": "1fea8965df8f480d06857a01b15b08e8ad03741420552daa7eda5dac6e374688",
+    "characteristics.c": "7a6cd61926283d1ece05f91f9819ab5c239d77469b732ca377f172d3469cc977",
+    "characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26",
+    "angular_tests.py": "8658900a4bcd117458a3090c7477989deeb454d6e68753550c9427e00930fdae"
+  },
+  "angular": {
+    "variable": "angle count only",
+    "fixed_radius_cells": [
+      8,
+      12
+    ],
+    "rows": [
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 48,
+        "voxel_sphere_l1_per_photon": 1.337202700370599,
+        "reference": {
+          "volume_relative_error": 5.845492450085032e-07,
+          "quadrature24_48_l1_per_photon": 6.63165201149421e-05
+        },
+        "quadrupole_anisotropy": 0.0052777049545695435,
+        "centroid_over_radius": [
+          -0.00819436139070178,
+          -0.024221484971073116,
+          -0.02733977547645599
+        ],
+        "centroid_norm_over_radius": 0.037433824489469004,
+        "rms_radius_equivalent_over_true": 2.3902532604357165,
+        "absorbed_outside_R_plus_1_fraction": 0.5172049897852082,
+        "absorbed_outside_R_plus_2_fraction": 0.4845657924714406,
+        "escaped_fraction": 0.23240573939346004,
+        "audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 1646.2291558804095,
+          "escaped": 498.4314289702216,
+          "retained": 0.0,
+          "ledger_residual": 9.094947017729282e-13,
+          "per_source_ledger_max": 8.526512829121202e-13,
+          "per_angle_ledger_max": 2.3092638912203256e-14,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 1.569608439764059,
+        "l1_vs_same_grid_K49152_per_photon": 1.3378621593067126
+      },
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 192,
+        "voxel_sphere_l1_per_photon": 0.7228515197874971,
+        "reference": {
+          "volume_relative_error": 5.845492450085032e-07,
+          "quadrature24_48_l1_per_photon": 6.63165201149421e-05
+        },
+        "quadrupole_anisotropy": 0.0033161795477344327,
+        "centroid_over_radius": [
+          0.002064830265188711,
+          0.000819140316208407,
+          0.001666090422585134
+        ],
+        "centroid_norm_over_radius": 0.002776755692873826,
+        "rms_radius_equivalent_over_true": 1.1791068690543112,
+        "absorbed_outside_R_plus_1_fraction": 0.22225455543765227,
+        "absorbed_outside_R_plus_2_fraction": 0.1013564091256027,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 2144.6605848506324,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -4.547473508864641e-13,
+          "per_source_ledger_max": 3.183231456205249e-12,
+          "per_angle_ledger_max": 1.7763568394002505e-15,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.7228515197874971,
+        "l1_vs_same_grid_K49152_per_photon": 0.7283677937475898
+      },
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 768,
+        "voxel_sphere_l1_per_photon": 0.08302020114859789,
+        "reference": {
+          "volume_relative_error": 5.845492450085032e-07,
+          "quadrature24_48_l1_per_photon": 6.63165201149421e-05
+        },
+        "quadrupole_anisotropy": 0.0018814557575697933,
+        "centroid_over_radius": [
+          -0.0004249450602319875,
+          -0.0001839834175819498,
+          -0.0003218802026538971
+        ],
+        "centroid_norm_over_radius": 0.0005639459788146516,
+        "rms_radius_equivalent_over_true": 1.00522282753025,
+        "absorbed_outside_R_plus_1_fraction": 0.0013466301258061848,
+        "absorbed_outside_R_plus_2_fraction": 3.4112413728259464e-05,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 2144.660584850632,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 0.0,
+          "per_source_ledger_max": 2.2737367544323206e-12,
+          "per_angle_ledger_max": 8.881784197001252e-16,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.08302020114859789,
+        "l1_vs_same_grid_K49152_per_photon": 0.07257747260332023
+      },
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 3072,
+        "voxel_sphere_l1_per_photon": 0.05955254119051533,
+        "reference": {
+          "volume_relative_error": 5.845492450085032e-07,
+          "quadrature24_48_l1_per_photon": 6.63165201149421e-05
+        },
+        "quadrupole_anisotropy": 0.0008148464250562991,
+        "centroid_over_radius": [
+          0.0002778848003514075,
+          -5.059567314255328e-05,
+          -0.00018516139536505372
+        ],
+        "centroid_norm_over_radius": 0.00033773455070605884,
+        "rms_radius_equivalent_over_true": 1.0035808455772088,
+        "absorbed_outside_R_plus_1_fraction": 0.00011838306501474155,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 2144.660584850632,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 0.0,
+          "per_source_ledger_max": 5.093170329928398e-11,
+          "per_angle_ledger_max": 2.220446049250313e-16,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.05955254119051533,
+        "l1_vs_same_grid_K49152_per_photon": 0.022663392174873585
+      },
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 12288,
+        "voxel_sphere_l1_per_photon": 0.05668576849647202,
+        "reference": {
+          "volume_relative_error": 5.845492450085032e-07,
+          "quadrature24_48_l1_per_photon": 6.63165201149421e-05
+        },
+        "quadrupole_anisotropy": 0.0001885185297590222,
+        "centroid_over_radius": [
+          -2.935783859730322e-05,
+          -9.043322125840459e-05,
+          -7.964587441569907e-05
+        ],
+        "centroid_norm_over_radius": 0.0001240303007563804,
+        "rms_radius_equivalent_over_true": 1.0034376438603803,
+        "absorbed_outside_R_plus_1_fraction": 0.0,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 2144.660584850631,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 9.094947017729282e-13,
+          "per_source_ledger_max": 3.8198777474462986e-11,
+          "per_angle_ledger_max": 5.551115123125783e-17,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.05668576849647202,
+        "l1_vs_same_grid_K49152_per_photon": 0.008268095377819707
+      },
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 49152,
+        "voxel_sphere_l1_per_photon": 0.056804865748647834,
+        "reference": {
+          "volume_relative_error": 5.845492450085032e-07,
+          "quadrature24_48_l1_per_photon": 6.63165201149421e-05
+        },
+        "quadrupole_anisotropy": 9.87332337968714e-05,
+        "centroid_over_radius": [
+          4.067416830800885e-06,
+          8.652568822683069e-06,
+          -1.8797416690473064e-05
+        ],
+        "centroid_norm_over_radius": 2.108918445891222e-05,
+        "rms_radius_equivalent_over_true": 1.0034071294490574,
+        "absorbed_outside_R_plus_1_fraction": 0.0,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 2144.6605848506324,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -4.547473508864641e-13,
+          "per_source_ledger_max": 3.374225343577564e-10,
+          "per_angle_ledger_max": 1.3877787807814457e-17,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.056804865748647834,
+        "l1_vs_same_grid_K49152_per_photon": 0.0
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 48,
+        "voxel_sphere_l1_per_photon": 1.1212207610094953,
+        "reference": {
+          "volume_relative_error": 1.7041455351307633e-06,
+          "quadrature24_48_l1_per_photon": 3.109046105925808e-05
+        },
+        "quadrupole_anisotropy": 0.015660883346475314,
+        "centroid_over_radius": [
+          -0.025888609012034703,
+          -0.003743352924713126,
+          -0.0069619367478309544
+        ],
+        "centroid_norm_over_radius": 0.027068456383358138,
+        "rms_radius_equivalent_over_true": 2.250800184580665,
+        "absorbed_outside_R_plus_1_fraction": 0.21524600810518485,
+        "absorbed_outside_R_plus_2_fraction": 0.20516066882939635,
+        "escaped_fraction": 0.6709139978776959,
+        "audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 2382.0,
+          "escaped": 4856.229473870886,
+          "retained": 0.0,
+          "ledger_residual": -2.7284841053187847e-12,
+          "per_source_ledger_max": 2.7284841053187847e-12,
+          "per_angle_ledger_max": 2.842170943040401e-14,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 1.7921347588871912,
+        "l1_vs_same_grid_K49152_per_photon": 1.1215921475978525
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 192,
+        "voxel_sphere_l1_per_photon": 1.277279688873573,
+        "reference": {
+          "volume_relative_error": 1.7041455351307633e-06,
+          "quadrature24_48_l1_per_photon": 3.109046105925808e-05
+        },
+        "quadrupole_anisotropy": 0.0027503743641750216,
+        "centroid_over_radius": [
+          -0.0020458489140950686,
+          -0.002720894399797754,
+          -0.003287352161926852
+        ],
+        "centroid_norm_over_radius": 0.00473238294632629,
+        "rms_radius_equivalent_over_true": 1.8383479143239851,
+        "absorbed_outside_R_plus_1_fraction": 0.5858378238092541,
+        "absorbed_outside_R_plus_2_fraction": 0.5456346220386451,
+        "escaped_fraction": 0.02553122574152613,
+        "audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 7053.428603204521,
+          "escaped": 184.80087066636543,
+          "retained": 0.0,
+          "ledger_residual": -2.7284841053187847e-12,
+          "per_source_ledger_max": 5.002220859751105e-12,
+          "per_angle_ledger_max": 1.4210854715202004e-14,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 1.302810914615099,
+        "l1_vs_same_grid_K49152_per_photon": 1.2787853984269073
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 768,
+        "voxel_sphere_l1_per_photon": 0.2641125022549521,
+        "reference": {
+          "volume_relative_error": 1.7041455351307633e-06,
+          "quadrature24_48_l1_per_photon": 3.109046105925808e-05
+        },
+        "quadrupole_anisotropy": 0.0016003200765820815,
+        "centroid_over_radius": [
+          4.081613078198235e-05,
+          0.0002476435703846211,
+          -9.860532268952206e-05
+        ],
+        "centroid_norm_over_radius": 0.0002696596079274007,
+        "rms_radius_equivalent_over_true": 1.030122786496772,
+        "absorbed_outside_R_plus_1_fraction": 0.029446207074834946,
+        "absorbed_outside_R_plus_2_fraction": 0.005372866875246582,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 7238.229473870884,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -9.094947017729282e-13,
+          "per_source_ledger_max": 1.546140993013978e-11,
+          "per_angle_ledger_max": 1.7763568394002505e-15,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.2641125022549521,
+        "l1_vs_same_grid_K49152_per_photon": 0.2682936571602891
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 3072,
+        "voxel_sphere_l1_per_photon": 0.048648534332485754,
+        "reference": {
+          "volume_relative_error": 1.7041455351307633e-06,
+          "quadrature24_48_l1_per_photon": 3.109046105925808e-05
+        },
+        "quadrupole_anisotropy": 0.00024883427405039796,
+        "centroid_over_radius": [
+          5.15513745650293e-05,
+          3.405135093117249e-05,
+          1.3260935135889729e-05
+        ],
+        "centroid_norm_over_radius": 6.318932758354123e-05,
+        "rms_radius_equivalent_over_true": 1.0019413476449037,
+        "absorbed_outside_R_plus_1_fraction": 0.0005057784477458936,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 7238.229473870882,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 9.094947017729282e-13,
+          "per_source_ledger_max": 7.09405867382884e-11,
+          "per_angle_ledger_max": 8.881784197001252e-16,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.048648534332485754,
+        "l1_vs_same_grid_K49152_per_photon": 0.03355616033062839
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 12288,
+        "voxel_sphere_l1_per_photon": 0.040425652688992515,
+        "reference": {
+          "volume_relative_error": 1.7041455351307633e-06,
+          "quadrature24_48_l1_per_photon": 3.109046105925808e-05
+        },
+        "quadrupole_anisotropy": 0.00020583416408352827,
+        "centroid_over_radius": [
+          2.597232579849616e-05,
+          2.5846027848806238e-05,
+          -1.9902286117560393e-05
+        ],
+        "centroid_norm_over_radius": 4.16974802074386e-05,
+        "rms_radius_equivalent_over_true": 1.001491161793304,
+        "absorbed_outside_R_plus_1_fraction": 3.3940652621663576e-05,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 7238.229473870882,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 9.094947017729282e-13,
+          "per_source_ledger_max": 9.367795428261161e-11,
+          "per_angle_ledger_max": 2.220446049250313e-16,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.040425652688992515,
+        "l1_vs_same_grid_K49152_per_photon": 0.011305584996850391
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 49152,
+        "voxel_sphere_l1_per_photon": 0.039688146421768704,
+        "reference": {
+          "volume_relative_error": 1.7041455351307633e-06,
+          "quadrature24_48_l1_per_photon": 3.109046105925808e-05
+        },
+        "quadrupole_anisotropy": 5.268978991160735e-05,
+        "centroid_over_radius": [
+          -1.10615593896013e-05,
+          9.802804695407893e-06,
+          -1.1094336928143945e-05
+        ],
+        "centroid_norm_over_radius": 1.8480730177705808e-05,
+        "rms_radius_equivalent_over_true": 1.0014401818218641,
+        "absorbed_outside_R_plus_1_fraction": 0.0,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 7238.229473870887,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -3.637978807091713e-12,
+          "per_source_ledger_max": 1.1550582712516189e-10,
+          "per_angle_ledger_max": 5.551115123125783e-17,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.039688146421768704,
+        "l1_vs_same_grid_K49152_per_photon": 0.0
+      }
+    ],
+    "interpretation": "The remaining K49152 error is chiefly the finite opaque-voxel front error; this is checked by separate spatial refinement, not assumed zero."
+  },
+  "spatial": {
+    "variable": "radius in cells only",
+    "fixed_angles": 49152,
+    "rows": [
+      {
+        "radius_cells": 4,
+        "grid": 24,
+        "angles": 49152,
+        "voxel_sphere_l1_per_photon": 0.11425974596653407,
+        "reference": {
+          "volume_relative_error": 9.059994044990916e-06,
+          "quadrature24_48_l1_per_photon": 0.00010169026434280156
+        },
+        "quadrupole_anisotropy": 0.00011837079123975234,
+        "centroid_over_radius": [
+          6.320500151013339e-07,
+          3.0502301122696534e-05,
+          -1.9024875415123962e-05
+        ],
+        "centroid_norm_over_radius": 3.595463454914028e-05,
+        "rms_radius_equivalent_over_true": 1.0122496008131052,
+        "absorbed_outside_R_plus_1_fraction": 0.0,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 268.082573106329,
+          "absorbed": 268.0825731063289,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 1.1368683772161603e-13,
+          "per_source_ledger_max": 3.2457592169521376e-11,
+          "per_angle_ledger_max": 8.673617379884035e-19,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.11425974596653407
+      },
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 49152,
+        "voxel_sphere_l1_per_photon": 0.056804865748647834,
+        "reference": {
+          "volume_relative_error": 5.845492450085032e-07,
+          "quadrature24_48_l1_per_photon": 6.63165201149421e-05
+        },
+        "quadrupole_anisotropy": 9.87332337968714e-05,
+        "centroid_over_radius": [
+          4.067416830800885e-06,
+          8.652568822683069e-06,
+          -1.8797416690473064e-05
+        ],
+        "centroid_norm_over_radius": 2.108918445891222e-05,
+        "rms_radius_equivalent_over_true": 1.0034071294490574,
+        "absorbed_outside_R_plus_1_fraction": 0.0,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 2144.660584850632,
+          "absorbed": 2144.6605848506324,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -4.547473508864641e-13,
+          "per_source_ledger_max": 3.374225343577564e-10,
+          "per_angle_ledger_max": 1.3877787807814457e-17,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.056804865748647834
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 49152,
+        "voxel_sphere_l1_per_photon": 0.039688146421768704,
+        "reference": {
+          "volume_relative_error": 1.7041455351307633e-06,
+          "quadrature24_48_l1_per_photon": 3.109046105925808e-05
+        },
+        "quadrupole_anisotropy": 5.268978991160735e-05,
+        "centroid_over_radius": [
+          -1.10615593896013e-05,
+          9.802804695407893e-06,
+          -1.1094336928143945e-05
+        ],
+        "centroid_norm_over_radius": 1.8480730177705808e-05,
+        "rms_radius_equivalent_over_true": 1.0014401818218641,
+        "absorbed_outside_R_plus_1_fraction": 0.0,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 7238.229473870883,
+          "absorbed": 7238.229473870887,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": -3.637978807091713e-12,
+          "per_source_ledger_max": 1.1550582712516189e-10,
+          "per_angle_ledger_max": 5.551115123125783e-17,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.039688146421768704
+      },
+      {
+        "radius_cells": 16,
+        "grid": 72,
+        "angles": 49152,
+        "voxel_sphere_l1_per_photon": 0.02989005164864581,
+        "reference": {
+          "volume_relative_error": 3.791186637958077e-07,
+          "quadrature24_48_l1_per_photon": 2.408713966858342e-05
+        },
+        "quadrupole_anisotropy": 4.180257863970722e-05,
+        "centroid_over_radius": [
+          -1.7298604637647834e-05,
+          -8.723063452330706e-07,
+          4.876956038193372e-06
+        ],
+        "centroid_norm_over_radius": 1.799409183504563e-05,
+        "rms_radius_equivalent_over_true": 1.0008288667792646,
+        "absorbed_outside_R_plus_1_fraction": 1.3650748023126076e-06,
+        "absorbed_outside_R_plus_2_fraction": 0.0,
+        "escaped_fraction": 0.0,
+        "audit": {
+          "photons": 17157.284678805056,
+          "absorbed": 17157.28467880505,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 7.275957614183426e-12,
+          "per_source_ledger_max": 1.255102688446641e-09,
+          "per_angle_ledger_max": 1.1102230246251565e-16,
+          "capacity_excess": 0.0
+        },
+        "l1_plus_unabsorbed_fraction": 0.02989005164864581
+      }
+    ],
+    "high_angle_crosschecks": [
+      {
+        "radius_cells": 12,
+        "low_angles": 12288,
+        "high_angles": 49152,
+        "low_l1_error": 0.040425652688992515,
+        "high_l1_error": 0.039688146421768704,
+        "field_l1_between_angles_per_photon": 0.011305584996850391
+      },
+      {
+        "radius_cells": 16,
+        "low_angles": 12288,
+        "high_angles": 49152,
+        "low_l1_error": 0.031343076353527295,
+        "high_l1_error": 0.02989005164864581,
+        "field_l1_between_angles_per_photon": 0.014222878725194085
+      }
+    ],
+    "physical_interpretation": "Fixed physical sphere with cell width proportional to1/R; normalized errors are compared. Angular quadrature is held fixed."
+  },
+  "enlarged_box_control": {
+    "radius_cells": 8,
+    "angles": 48,
+    "grid": 128,
+    "escaped_fraction": 0.0,
+    "voxel_sphere_l1_per_photon": 1.5696084397640588,
+    "absorbed_outside_original_40cubed_box_fraction": 0.23240573939345982,
+    "audit": {
+      "photons": 2144.660584850632,
+      "absorbed": 2144.6605848506306,
+      "escaped": 0.0,
+      "retained": 0.0,
+      "ledger_residual": 1.3642420526593924e-12,
+      "per_source_ledger_max": 9.094947017729282e-13,
+      "per_angle_ledger_max": 7.105427357601002e-15,
+      "capacity_excess": 0.0
+    },
+    "purpose": "Same R8 cell resolution/K48 but a128\u00b3 box prevents escape. The larger sphere-shape error proves angular under-resolution remains even without the finite-box leakage artifact."
+  },
+  "angular_phase": {
+    "seed": 918721,
+    "rotations": [
+      [
+        [
+          -0.06814107667486452,
+          0.21750213993535755,
+          0.9736783928963044
+        ],
+        [
+          -0.8357141144979745,
+          -0.5454964688497246,
+          0.06336814105958516
+        ],
+        [
+          0.5449208314043943,
+          -0.8093988025664614,
+          0.21894032498724886
+        ]
+      ],
+      [
+        [
+          -0.4883239143855358,
+          0.6423761024593304,
+          0.5906713956408827
+        ],
+        [
+          -0.749470096229099,
+          0.03801162461419483,
+          -0.6609460577479337
+        ],
+        [
+          -0.4470283318734208,
+          -0.7654463138479078,
+          0.4628796940017106
+        ]
+      ],
+      [
+        [
+          0.9683004457196673,
+          0.24365611561723768,
+          0.055008582434135235
+        ],
+        [
+          -0.19470116149402314,
+          0.5982699840299468,
+          0.7772801836671803
+        ],
+        [
+          0.15647908656421813,
+          -0.7633509831860614,
+          0.6267452209126939
+        ]
+      ],
+      [
+        [
+          0.7744831142361509,
+          0.3101614539505977,
+          -0.5513399842622739
+        ],
+        [
+          -0.5583877045544897,
+          0.7447693706963647,
+          -0.3654062887730709
+        ],
+        [
+          0.2972861873102098,
+          0.590862468731762,
+          0.7500016439173761
+        ]
+      ],
+      [
+        [
+          -0.5085689206426296,
+          0.15230743591676238,
+          -0.8474432712110305
+        ],
+        [
+          0.3183588858871006,
+          -0.8812179934950244,
+          -0.3494316352554925
+        ],
+        [
+          -0.8000032954514094,
+          -0.4475011652555385,
+          0.39967165819184686
+        ]
+      ],
+      [
+        [
+          -0.6400340877434019,
+          0.5143623024823664,
+          -0.5707782304113483
+        ],
+        [
+          -0.7463525009942061,
+          -0.592668963501094,
+          0.30282246277684327
+        ],
+        [
+          -0.18252208300960462,
+          0.6198184584921442,
+          0.7632239302631026
+        ]
+      ],
+      [
+        [
+          -0.32568108203678386,
+          -0.6646666321263285,
+          0.6724210741352425
+        ],
+        [
+          -0.917901191894858,
+          0.05175454591762911,
+          -0.3934194566806005
+        ],
+        [
+          0.22669193792755088,
+          -0.7453453797500215,
+          -0.626953770356274
+        ]
+      ],
+      [
+        [
+          -0.23098075531997495,
+          0.9697317420929628,
+          0.07917221134439305
+        ],
+        [
+          0.9330158743245802,
+          0.1976878765602518,
+          0.30066739384149643
+        ],
+        [
+          0.27591532927721274,
+          0.14331731171929654,
+          -0.950437204254653
+        ]
+      ]
+    ],
+    "rows": [
+      {
+        "radius_cells": 8,
+        "angles": 48,
+        "phases": 8,
+        "l1_error_min": 1.3276395756000074,
+        "l1_error_mean": 1.3329336091137582,
+        "l1_error_max": 1.3402847826454405,
+        "l1_error_std": 0.004600929340694036,
+        "max_pairwise_half_l1_per_photon": 0.6934235119183346,
+        "quadrupole_anisotropy_max": 0.024870324292354383,
+        "centroid_norm_over_radius_max": 0.051376984739338216,
+        "escaped_fraction_max": 0.24278118165614518
+      },
+      {
+        "radius_cells": 8,
+        "angles": 192,
+        "phases": 8,
+        "l1_error_min": 0.720648915094706,
+        "l1_error_mean": 0.7266047283752628,
+        "l1_error_max": 0.7352080216812272,
+        "l1_error_std": 0.004900478359554131,
+        "max_pairwise_half_l1_per_photon": 0.4693665902650151,
+        "quadrupole_anisotropy_max": 0.0069869636212839875,
+        "centroid_norm_over_radius_max": 0.004150679516573329,
+        "escaped_fraction_max": 0.0
+      },
+      {
+        "radius_cells": 8,
+        "angles": 768,
+        "phases": 8,
+        "l1_error_min": 0.08007517243616258,
+        "l1_error_mean": 0.08297318822672163,
+        "l1_error_max": 0.08532425626601588,
+        "l1_error_std": 0.0018015501096437638,
+        "max_pairwise_half_l1_per_photon": 0.052916992706008206,
+        "quadrupole_anisotropy_max": 0.0037326546836320106,
+        "centroid_norm_over_radius_max": 0.0014749825290011336,
+        "escaped_fraction_max": 0.0
+      },
+      {
+        "radius_cells": 8,
+        "angles": 3072,
+        "phases": 8,
+        "l1_error_min": 0.059129024592788,
+        "l1_error_mean": 0.06050911654236426,
+        "l1_error_max": 0.06216068414665732,
+        "l1_error_std": 0.000880039239051347,
+        "max_pairwise_half_l1_per_photon": 0.018747183993022182,
+        "quadrupole_anisotropy_max": 0.0008633937090166329,
+        "centroid_norm_over_radius_max": 0.0004194683408771662,
+        "escaped_fraction_max": 0.0
+      },
+      {
+        "radius_cells": 8,
+        "angles": 12288,
+        "phases": 8,
+        "l1_error_min": 0.05669190179652801,
+        "l1_error_mean": 0.057214187471397435,
+        "l1_error_max": 0.057793341128951965,
+        "l1_error_std": 0.0003920196890393208,
+        "max_pairwise_half_l1_per_photon": 0.007143638322396083,
+        "quadrupole_anisotropy_max": 0.0005524024315097052,
+        "centroid_norm_over_radius_max": 0.00022063802242438025,
+        "escaped_fraction_max": 0.0
+      },
+      {
+        "radius_cells": 12,
+        "angles": 48,
+        "phases": 8,
+        "l1_error_min": 1.118833861396136,
+        "l1_error_mean": 1.1207566491959702,
+        "l1_error_max": 1.12287285832287,
+        "l1_error_std": 0.0013013420125919145,
+        "max_pairwise_half_l1_per_photon": 0.30836270224054724,
+        "quadrupole_anisotropy_max": 0.0357537324682133,
+        "centroid_norm_over_radius_max": 0.05001754014200547,
+        "escaped_fraction_max": 0.6743678811913218
+      },
+      {
+        "radius_cells": 12,
+        "angles": 192,
+        "phases": 8,
+        "l1_error_min": 1.2744067296579273,
+        "l1_error_mean": 1.276794639395582,
+        "l1_error_max": 1.2778012567545523,
+        "l1_error_std": 0.0009978947914122264,
+        "max_pairwise_half_l1_per_photon": 0.7817738898516524,
+        "quadrupole_anisotropy_max": 0.0025847003669207547,
+        "centroid_norm_over_radius_max": 0.006777121177123229,
+        "escaped_fraction_max": 0.02794330969620275
+      },
+      {
+        "radius_cells": 12,
+        "angles": 768,
+        "phases": 8,
+        "l1_error_min": 0.2593047271004713,
+        "l1_error_mean": 0.2646541865605697,
+        "l1_error_max": 0.2705181527289365,
+        "l1_error_std": 0.0036048747714125693,
+        "max_pairwise_half_l1_per_photon": 0.17622312159057685,
+        "quadrupole_anisotropy_max": 0.002627235539868263,
+        "centroid_norm_over_radius_max": 0.0011188682137545003,
+        "escaped_fraction_max": 0.0
+      },
+      {
+        "radius_cells": 12,
+        "angles": 3072,
+        "phases": 8,
+        "l1_error_min": 0.05161764272886626,
+        "l1_error_mean": 0.05594253318829814,
+        "l1_error_max": 0.060875567923121036,
+        "l1_error_std": 0.0028108077865337568,
+        "max_pairwise_half_l1_per_photon": 0.03283584726313399,
+        "quadrupole_anisotropy_max": 0.0010232450816831781,
+        "centroid_norm_over_radius_max": 0.0004655864450036724,
+        "escaped_fraction_max": 0.0
+      },
+      {
+        "radius_cells": 12,
+        "angles": 12288,
+        "phases": 8,
+        "l1_error_min": 0.04034066616770686,
+        "l1_error_mean": 0.04070550808813271,
+        "l1_error_max": 0.04102717599963727,
+        "l1_error_std": 0.0002069723764480313,
+        "max_pairwise_half_l1_per_photon": 0.010008274506900531,
+        "quadrupole_anisotropy_max": 0.0003224355620297328,
+        "centroid_norm_over_radius_max": 0.0001457921938241694,
+        "escaped_fraction_max": 0.0
+      }
+    ],
+    "meaning": "Keep the physical sphere and grid fixed; rotate only the equal-weight quadrature. Exact isotropic physics is unchanged.",
+    "recommended_standard": "Report mean and worst reference error plus max pairwise half-L1/Q over quadrature orientations; this measures sensitivity, not a proof of accuracy."
+  },
+  "overlap": {
+    "spatial_refinement_fixed_K49152": [
+      {
+        "radius_cells": 4,
+        "grid": 24,
+        "angles": 49152,
+        "analytic_cone_weight": 0.125,
+        "continuum_expected_cone_weight": 0.125,
+        "actual_B_exclusive_exit_weight": 0.0972900390625,
+        "shared_A_B_last_cell_weight": 0.0545654296875,
+        "B_exit_fraction_lower_bound": 0.0972900390625,
+        "B_exit_fraction_upper_bound": 0.15185546875,
+        "cone_footprint_symmetric_difference": 0.0277099609375,
+        "definite_footprint_mismatch_weight": 0.00010172526041666667,
+        "ambiguous_footprint_weight": 0.0545654296875,
+        "cone_ambiguous_last_cell_weight": 0.027608235677083332,
+        "false_negative_cone_weight": 0.0277099609375,
+        "false_positive_cone_weight": 0.0,
+        "false_negative_fraction_of_input_cone": 0.2216796875,
+        "first_front_centroid_over_R": [
+          0.0946507546740033,
+          1.2941009524129027e-05,
+          -2.366794439459474e-05
+        ],
+        "absorber_cell_centroid_over_R": [
+          0.08746846516927083,
+          4.57763671875e-05,
+          -0.0001983642578125
+        ],
+        "quadrature_continuum_centroid_over_R": [
+          0.10908564836373168,
+          -1.01969350804557e-06,
+          1.4495754426649576e-06
+        ],
+        "exact_continuum_centroid_x_over_R": 0.10908564814814027,
+        "mean_absolute_front_distance_error_over_R": 0.07308671071859581,
+        "mean_absolute_cone_front_distance_error_over_R": 0.18488203264168168,
+        "front_distance_99pct_error_over_R": 0.5445389069259429
+      },
+      {
+        "radius_cells": 8,
+        "grid": 40,
+        "angles": 49152,
+        "analytic_cone_weight": 0.125,
+        "continuum_expected_cone_weight": 0.125,
+        "actual_B_exclusive_exit_weight": 0.11275227864583333,
+        "shared_A_B_last_cell_weight": 0.02764892578125,
+        "B_exit_fraction_lower_bound": 0.11275227864583333,
+        "B_exit_fraction_upper_bound": 0.14040120442708334,
+        "cone_footprint_symmetric_difference": 0.012247721354166666,
+        "definite_footprint_mismatch_weight": 0.00014241536458333334,
+        "ambiguous_footprint_weight": 0.02764892578125,
+        "cone_ambiguous_last_cell_weight": 0.012105305989583334,
+        "false_negative_cone_weight": 0.012247721354166666,
+        "false_positive_cone_weight": 0.0,
+        "false_negative_fraction_of_input_cone": 0.09798177083333333,
+        "first_front_centroid_over_R": [
+          0.10270287811494118,
+          1.330355328812338e-06,
+          -1.5807988357341197e-06
+        ],
+        "absorber_cell_centroid_over_R": [
+          0.09895579020182292,
+          1.52587890625e-05,
+          -7.62939453125e-06
+        ],
+        "quadrature_continuum_centroid_over_R": [
+          0.10908564836373168,
+          -1.01969350804557e-06,
+          1.4495754426649576e-06
+        ],
+        "exact_continuum_centroid_x_over_R": 0.10908564814814027,
+        "mean_absolute_front_distance_error_over_R": 0.037833009432896164,
+        "mean_absolute_cone_front_distance_error_over_R": 0.09323730689025188,
+        "front_distance_99pct_error_over_R": 0.32971944537988235
+      },
+      {
+        "radius_cells": 12,
+        "grid": 56,
+        "angles": 49152,
+        "analytic_cone_weight": 0.125,
+        "continuum_expected_cone_weight": 0.125,
+        "actual_B_exclusive_exit_weight": 0.1142578125,
+        "shared_A_B_last_cell_weight": 0.01812744140625,
+        "B_exit_fraction_lower_bound": 0.1142578125,
+        "B_exit_fraction_upper_bound": 0.13238525390625,
+        "cone_footprint_symmetric_difference": 0.010823567708333334,
+        "definite_footprint_mismatch_weight": 6.103515625e-05,
+        "ambiguous_footprint_weight": 0.01812744140625,
+        "cone_ambiguous_last_cell_weight": 0.010762532552083334,
+        "false_negative_cone_weight": 0.010782877604166666,
+        "false_positive_cone_weight": 4.0690104166666664e-05,
+        "false_negative_fraction_of_input_cone": 0.08626302083333333,
+        "first_front_centroid_over_R": [
+          0.10444530552793395,
+          -1.2520109613583117e-05,
+          4.418663536403363e-06
+        ],
+        "absorber_cell_centroid_over_R": [
+          0.1021152072482639,
+          -1.1867947048611111e-05,
+          7.798936631944445e-05
+        ],
+        "quadrature_continuum_centroid_over_R": [
+          0.10908564836373112,
+          -1.01969350804556e-06,
+          1.4495754426652867e-06
+        ],
+        "exact_continuum_centroid_x_over_R": 0.10908564814814027,
+        "mean_absolute_front_distance_error_over_R": 0.025699736366764345,
+        "mean_absolute_cone_front_distance_error_over_R": 0.06733717544819114,
+        "front_distance_99pct_error_over_R": 0.29383395038815435,
+        "event_vs_frozen_histogram_linf": 6.505213034913027e-19,
+        "maximum_first_hit_atom_demand": 0.0009765625,
+        "event_audit": {
+          "photons": 1.0,
+          "absorbed": 1.0,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 0.0,
+          "per_source_ledger_max": 7.274181257344026e-13,
+          "per_angle_ledger_max": 0.0,
+          "capacity_excess": 0.0
+        }
+      },
+      {
+        "radius_cells": 16,
+        "grid": 72,
+        "angles": 49152,
+        "analytic_cone_weight": 0.125,
+        "continuum_expected_cone_weight": 0.125,
+        "actual_B_exclusive_exit_weight": 0.11781819661458333,
+        "shared_A_B_last_cell_weight": 0.013590494791666666,
+        "B_exit_fraction_lower_bound": 0.11781819661458333,
+        "B_exit_fraction_upper_bound": 0.13140869140625,
+        "cone_footprint_symmetric_difference": 0.007181803385416667,
+        "definite_footprint_mismatch_weight": 0.00010172526041666667,
+        "ambiguous_footprint_weight": 0.013590494791666666,
+        "cone_ambiguous_last_cell_weight": 0.007080078125,
+        "false_negative_cone_weight": 0.007181803385416667,
+        "false_positive_cone_weight": 0.0,
+        "false_negative_fraction_of_input_cone": 0.057454427083333336,
+        "first_front_centroid_over_R": [
+          0.10589990693776834,
+          -1.5065277178073458e-06,
+          -1.0492275663000455e-05
+        ],
+        "absorber_cell_centroid_over_R": [
+          0.10413360595703125,
+          -3.814697265625e-05,
+          1.7801920572916668e-05
+        ],
+        "quadrature_continuum_centroid_over_R": [
+          0.10908564836373168,
+          -1.01969350804557e-06,
+          1.4495754426649576e-06
+        ],
+        "exact_continuum_centroid_x_over_R": 0.10908564814814027,
+        "mean_absolute_front_distance_error_over_R": 0.018853973794599927,
+        "mean_absolute_cone_front_distance_error_over_R": 0.047774311895727097,
+        "front_distance_99pct_error_over_R": 0.12576462557059034
+      },
+      {
+        "radius_cells": 24,
+        "grid": 104,
+        "angles": 49152,
+        "analytic_cone_weight": 0.125,
+        "continuum_expected_cone_weight": 0.125,
+        "actual_B_exclusive_exit_weight": 0.12066650390625,
+        "shared_A_B_last_cell_weight": 0.0091552734375,
+        "B_exit_fraction_lower_bound": 0.12066650390625,
+        "B_exit_fraction_upper_bound": 0.12982177734375,
+        "cone_footprint_symmetric_difference": 0.00445556640625,
+        "definite_footprint_mismatch_weight": 6.103515625e-05,
+        "ambiguous_footprint_weight": 0.0091552734375,
+        "cone_ambiguous_last_cell_weight": 0.00439453125,
+        "false_negative_cone_weight": 0.00439453125,
+        "false_positive_cone_weight": 6.103515625e-05,
+        "false_negative_fraction_of_input_cone": 0.03515625,
+        "first_front_centroid_over_R": [
+          0.10705600651035672,
+          8.869352521944442e-06,
+          7.629987088756279e-06
+        ],
+        "absorber_cell_centroid_over_R": [
+          0.10590277777777778,
+          3.3060709635416664e-05,
+          -1.9497341579861113e-05
+        ],
+        "quadrature_continuum_centroid_over_R": [
+          0.10908564836373112,
+          -1.01969350804556e-06,
+          1.4495754426652867e-06
+        ],
+        "exact_continuum_centroid_x_over_R": 0.10908564814814027,
+        "mean_absolute_front_distance_error_over_R": 0.012527633524142863,
+        "mean_absolute_cone_front_distance_error_over_R": 0.03129482249113199,
+        "front_distance_99pct_error_over_R": 0.05643557526710876
+      },
+      {
+        "radius_cells": 32,
+        "grid": 136,
+        "angles": 49152,
+        "analytic_cone_weight": 0.125,
+        "continuum_expected_cone_weight": 0.125,
+        "actual_B_exclusive_exit_weight": 0.12150065104166667,
+        "shared_A_B_last_cell_weight": 0.006795247395833333,
+        "B_exit_fraction_lower_bound": 0.12150065104166667,
+        "B_exit_fraction_upper_bound": 0.1282958984375,
+        "cone_footprint_symmetric_difference": 0.0035400390625,
+        "definite_footprint_mismatch_weight": 0.00010172526041666667,
+        "ambiguous_footprint_weight": 0.006795247395833333,
+        "cone_ambiguous_last_cell_weight": 0.0034383138020833335,
+        "false_negative_cone_weight": 0.0035196940104166665,
+        "false_positive_cone_weight": 2.0345052083333332e-05,
+        "false_negative_fraction_of_input_cone": 0.028157552083333332,
+        "first_front_centroid_over_R": [
+          0.10760510481947809,
+          1.0002412149198242e-05,
+          -1.1066856657450503e-05
+        ],
+        "absorber_cell_centroid_over_R": [
+          0.10672887166341145,
+          2.1616617838541668e-05,
+          -2.4159749348958332e-05
+        ],
+        "quadrature_continuum_centroid_over_R": [
+          0.10908564836373168,
+          -1.01969350804557e-06,
+          1.4495754426649576e-06
+        ],
+        "exact_continuum_centroid_x_over_R": 0.10908564814814027,
+        "mean_absolute_front_distance_error_over_R": 0.009544134195432456,
+        "mean_absolute_cone_front_distance_error_over_R": 0.023515356093385027,
+        "front_distance_99pct_error_over_R": 0.03897688478489144
+      }
+    ],
+    "angular_refinement_at_R12": [
+      {
+        "radius_cells": 12,
+        "angles": 48,
+        "phases": 8,
+        "analytic_cone_weight_min": 0.10416666666666667,
+        "analytic_cone_weight_max": 0.14583333333333334,
+        "analytic_cone_max_absolute_quadrature_error": 0.020833333333333343,
+        "actual_B_exit_weight_mean": 0.11197916666666667,
+        "actual_B_exit_weight_min": 0.10416666666666667,
+        "actual_B_exit_weight_max": 0.125,
+        "cone_footprint_symmetric_difference_mean": 0.010416666666666666,
+        "cone_footprint_symmetric_difference_max": 0.041666666666666664
+      },
+      {
+        "radius_cells": 12,
+        "angles": 192,
+        "phases": 8,
+        "analytic_cone_weight_min": 0.11979166666666667,
+        "analytic_cone_weight_max": 0.13541666666666666,
+        "analytic_cone_max_absolute_quadrature_error": 0.010416666666666657,
+        "actual_B_exit_weight_mean": 0.109375,
+        "actual_B_exit_weight_min": 0.10416666666666667,
+        "actual_B_exit_weight_max": 0.11458333333333333,
+        "cone_footprint_symmetric_difference_mean": 0.018229166666666668,
+        "cone_footprint_symmetric_difference_max": 0.03125
+      },
+      {
+        "radius_cells": 12,
+        "angles": 768,
+        "phases": 8,
+        "analytic_cone_weight_min": 0.12239583333333333,
+        "analytic_cone_weight_max": 0.12890625,
+        "analytic_cone_max_absolute_quadrature_error": 0.00390625,
+        "actual_B_exit_weight_mean": 0.11328125,
+        "actual_B_exit_weight_min": 0.11067708333333333,
+        "actual_B_exit_weight_max": 0.1171875,
+        "cone_footprint_symmetric_difference_mean": 0.012532552083333334,
+        "cone_footprint_symmetric_difference_max": 0.015625
+      },
+      {
+        "radius_cells": 12,
+        "angles": 3072,
+        "phases": 8,
+        "analytic_cone_weight_min": 0.1240234375,
+        "analytic_cone_weight_max": 0.1259765625,
+        "analytic_cone_max_absolute_quadrature_error": 0.0009765625,
+        "actual_B_exit_weight_mean": 0.11433919270833333,
+        "actual_B_exit_weight_min": 0.11328125,
+        "actual_B_exit_weight_max": 0.11588541666666667,
+        "cone_footprint_symmetric_difference_mean": 0.010782877604166668,
+        "cone_footprint_symmetric_difference_max": 0.012044270833333334
+      },
+      {
+        "radius_cells": 12,
+        "angles": 12288,
+        "phases": 8,
+        "analytic_cone_weight_min": 0.12467447916666667,
+        "analytic_cone_weight_max": 0.12540690104166666,
+        "analytic_cone_max_absolute_quadrature_error": 0.0004069010416666574,
+        "actual_B_exit_weight_mean": 0.11432902018229167,
+        "actual_B_exit_weight_min": 0.11385091145833333,
+        "actual_B_exit_weight_max": 0.11482747395833333,
+        "cone_footprint_symmetric_difference_mean": 0.010762532552083334,
+        "cone_footprint_symmetric_difference_max": 0.011637369791666666
+      }
+    ],
+    "rotation_seed": 22871,
+    "interpretation": "Actual ray tags use the final transparent voxel before the first opaque face. B-only is a confirmed B-front exit; shared A/B last cells have ambiguous lobe attribution and bound the total B-exit weight. The strict B-only symmetric difference treats shared cells as outside B-only; it is not a rigorous physical error bound. Definite mismatches and continuous first-face distances are reported separately.",
+    "limitation": "Infinitesimal front increment in a frozen two-ball union; it does not validate bulk front evolution or recombination."
+  },
+  "definitions": {
+    "shape_error": "sum_voxels |absorbed - continuous_sphere_voxel_integral| / emitted_photons",
+    "quadrupole": "sqrt(3/2) Frobenius norm of central second-moment tensor/trace minus I/3;0 for isotropic second moments.",
+    "orientation_distance": "Half L1 difference between two quadrature orientations / emitted photons; cancellation-free moved-mass diagnostic.",
+    "l1_plus_unabsorbed": "Inside-box morphology L1/Q plus escaped/Q plus retained/Q, reported to prevent large angular leakage from making the inside-box L1 deceptively smaller.",
+    "illustrative_target": "5% atom-weighted L1 morphology error; a declared diagnostic threshold, not an externally established science requirement."
+  },
+  "figures": [
+    "/workspace/scratch/40b418003e4a/21cmFAST_photon_conserving/research/pc_alternatives/figures/validation_geometry_convergence.png",
+    "/workspace/scratch/40b418003e4a/21cmFAST_photon_conserving/research/pc_alternatives/figures/validation_geometry_convergence.pdf"
+  ]
+}

@@ -1,0 +1,242 @@
+{
+  "scope": "Validated Qin20 instantaneous SFRD adapter and one coarse chronological interval; no transport/chemistry coupling",
+  "fixture": "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/frozen_native_step",
+  "cache": "/workspace/scratch/40b418003e4a/validation_native_rates_grid32",
+  "fixture_sha256": {
+    "previous_density.h5": "05756a5893bc66238d333eab0e1566ea8d60e543431a057d0c1e9d9cfb5d6922",
+    "spin.h5": "e146b71d7569644c7738be841ec48908f386fdb3712f4c397e40354dd59d5756",
+    "density.h5": "293d25d2c4b91b7655f041dcb1ce1f18329264eaf5e986e8fe1776b3707ecdc7",
+    "previous_ionized.h5": "d4e8dbb9fbc8a385c6405a0023ea77dcc1b0996a55b087a3082e27c5bec9e91a",
+    "initial.h5": "c40b6831c64812aae985a2c438d5f1de71e9948cde9f64e9ea94599114e1b3db"
+  },
+  "auxiliary_inputs_sha256": {
+    "/workspace/scratch/40b418003e4a/qin20_native_cost_grid32/source_capacity.npz": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+    "/workspace/scratch/40b418003e4a/21cmFAST_photon_conserving/research/pc_alternatives/native_benchmark.json": "d1385dd43e9331ded418c1e1f0b0321854c3049333ea4a953ac0af83479fc564"
+  },
+  "extraction": {
+    "scope": "Exact short-prefix replay from frozen ICs, then current instantaneous emissivity with correct previous feedback",
+    "redshift_previous": 8.0,
+    "redshift_current": 7.5,
+    "nodes": [
+      35.0,
+      12.0,
+      8.0
+    ],
+    "progress": [
+      {
+        "redshift": 35.0,
+        "elapsed_seconds": 2.750911344999622
+      },
+      {
+        "redshift": 12.0,
+        "elapsed_seconds": 8.392501442001958
+      },
+      {
+        "redshift": 8.0,
+        "elapsed_seconds": 19.388879386002372
+      }
+    ],
+    "replay_agreement": {
+      "neutral_fraction": {
+        "bitwise_equal": true,
+        "max_abs_difference": 0.0
+      },
+      "cumulative_recombinations": {
+        "bitwise_equal": true,
+        "max_abs_difference": 0.0
+      },
+      "nion_conditional_filtered_acg": {
+        "bitwise_equal": true,
+        "max_abs_difference": 0.0
+      },
+      "nion_conditional_filtered_mcg": {
+        "bitwise_equal": true,
+        "max_abs_difference": 0.0
+      }
+    },
+    "density_bitwise_equal": true,
+    "total_seconds": 19.75233480099996
+  },
+  "available_native_fields": [
+    "n_ion",
+    "sfrd_acg",
+    "sfrd_mcg",
+    "xray_emissivity"
+  ],
+  "missing_saved_inputs_initially": [
+    "EmissivityFields(z8)",
+    "EmissivityFields(z7.5)",
+    "TsBox(z8)"
+  ],
+  "native_source_files_sha256": {
+    "Constants.c": "fd99ed35973fd37655bd290183275d3e6848f7967a1dc76ca20b820ad23d77c0",
+    "Constants.h": "8abec348c2ceb1b877e1e7d578cf57bd2a2b2b18ec5ea008ae28f0d85dc51a02",
+    "EmissivityFields.c": "25f6f3e692b795384728ba2a0d1248147574937d8ffde0080c5742ccc1f17047",
+    "hmf.c": "35f25e29598c2c6484807741b6dbef4da6b01bfd80aa6c8945a1c27a5969684d",
+    "scaling_relations.c": "2a8d2d96bfe69f09fe095d98162fe2b8c3a3e4b4713fdac525c69d9dff746510",
+    "IonisationBox.c": "c8abb46cdd8eea73cc73562656e8bfdef0119be3057acf7fed2b4a149e55d8c1"
+  },
+  "template_physical_comparison": {
+    "astro_options": {},
+    "astro_params": {},
+    "matter_options": {},
+    "cosmo_params": {}
+  },
+  "adapter_parameters": {
+    "t_STAR": 0.5,
+    "F_ESC10_ACG": -1.22,
+    "F_ESC7_MCG": -2.22,
+    "ALPHA_ESC": 0.0,
+    "POP2_ION": 5000.0,
+    "POP3_ION": 44021.0
+  },
+  "units": {
+    "sfrd": "Msun / second / comoving Mpc^3; Eulerian density already included",
+    "effective_rate": "1/second in source normalized to mean baryonic mass per cell",
+    "effective_count": "emitted photons divided by mean nucleons per cell under POP yield per stellar nucleon",
+    "rho_b_Msun_per_cMpc3": 6220220637.121727,
+    "physical_constants": {
+      "G": 6.6743e-08,
+      "Msun": 1.989e+33,
+      "m_p": 1.67262192369e-24,
+      "cm_per_Mpc": 3.08567758e+24,
+      "s_per_yr": 31556925.9747
+    },
+    "emitted_photons_per_mean_hydrogen_atom_conversion_factor": 1.3157894736842106,
+    "mean_nucleons_per_cell": 1.805854850456675e+69,
+    "independent_mass_volume_conversion_relative_error": 2.2763725344202445e-16,
+    "physical_interpretation_caveat": "Per-nucleon POP interpretation follows stellar mass normalization; native N_b0 denotes H+He nuclei, while No is H only. Do not silently equate effective native ledger to physical H absorption."
+  },
+  "clock": {
+    "integrated_seconds": 1808600366323887.8,
+    "quadrature_error_seconds": 20.079497690382727,
+    "definition": "Native dtdz matter+Lambda clock; not native radiation-inclusive hubble()",
+    "native_endpoint_approximation_seconds": 1941938247164937.0,
+    "native_hubble_integrated_seconds": 1806415472950388.8,
+    "native_hubble_quadrature_error_seconds": 20.055240501086633,
+    "dtdz_over_hubble_interval": 1.0012095187437309,
+    "integrated_Myr": 57.312311337735785,
+    "native_hubble_integrated_Myr": 57.24307476585769
+  },
+  "native_instantaneous_rate_identity": {
+    "previous": {
+      "sfr_timescale_seconds": 1.5135692983095848e+16,
+      "mean_rate_over_rho_times_timescale": 0.6346132713396686,
+      "instantaneous_emissivity_nion_mean": 0.6346133326296695,
+      "ratio": 0.9999999034215046,
+      "cellwise_rms_error_over_native_nion_mean": 0.04599483755461869
+    },
+    "current": {
+      "sfr_timescale_seconds": 1.648709556089455e+16,
+      "mean_rate_over_rho_times_timescale": 0.7834746586446605,
+      "instantaneous_emissivity_nion_mean": 0.7834747332444749,
+      "ratio": 0.999999904783382,
+      "cellwise_rms_error_over_native_nion_mean": 0.049089535786980824
+    }
+  },
+  "cumulative_packet_difference_diagnostic": {
+    "acg": {
+      "minimum_increment": 0.008562387983793836,
+      "negative_cells": 0,
+      "negative_total": -0.0,
+      "global_increment": 4727.087502845619,
+      "interpretation": "Difference of separately budget-normalized Eulerian cumulative packet closures; not an emission rate"
+    },
+    "mcg": {
+      "minimum_increment": -0.003382602595785822,
+      "negative_cells": 1,
+      "negative_total": 0.003382602595785822,
+      "global_increment": 942.3204027166904,
+      "interpretation": "Difference of separately budget-normalized Eulerian cumulative packet closures; not an emission rate"
+    }
+  },
+  "held_feedback_quadrature_policy": {
+    "redshift_midpoint": 7.741091044087843,
+    "feedback_redshift": 8.0,
+    "redshift_left_evaluation": 7.999999,
+    "left_limit_redshift_offset": 1e-06,
+    "left_limit_time_offset_seconds": 3367676168.101875,
+    "policy": "Hold z8 TsBox and IonizedBox for left/mid/right emissivity evaluations; left is the one-sided z8-minus-1e-6 value with its actual perturbed density. Native exact z8 chronology instead uses z12 feedback. This is a quadrature diagnostic under held feedback, not refined feedback evolution.",
+    "elapsed_seconds": 0.963692846999038
+  },
+  "held_feedback_total": {
+    "trapezoid_integral": 2830.7897869357084,
+    "simpson_integral": 2831.5420403136313,
+    "simpson_over_trapezoid": 1.0002657397526988,
+    "simpson_over_legacy_increment": 0.4994422852403294
+  },
+  "endpoint_integral_caveat": "Left-held and right-held numbers are diagnostics, not rigorous bounds without monotonicity throughout the interval; original endpoint rates use different prior-feedback histories",
+  "species": {
+    "acg": {
+      "rate_old_total": 8.574628815849377e-13,
+      "rate_new_total": 1.1133973660698189e-12,
+      "rate_old_min": 1.9242925763749256e-18,
+      "rate_new_min": 2.4793916611472985e-18,
+      "sum_rate_over_density_mean_budget_old": 1.1218268857849831,
+      "sum_rate_over_density_mean_budget_new": 1.1331963924264314,
+      "integrated_effective_photons": 1782.2492829407906,
+      "original_left_rate_held_for_interval": 1550.8076817436547,
+      "original_right_rate_held_for_interval": 2013.690884137926,
+      "minimum_cell_increment": 0.003982252462578713,
+      "negative_cells": 0,
+      "legacy_cumulative_photon_increment": 4727.087502845621,
+      "rate_integral_over_legacy_increment": 0.3770290441773944,
+      "independently_global_normalized_rate_integral": 1579.6978074393578,
+      "global_normalized_rate_integral_over_legacy_increment": 0.3341799377499165,
+      "held_feedback_quadrature": {
+        "left_rate_total": 8.574633536950469e-13,
+        "midpoint_rate_total": 9.813771647940667e-13,
+        "right_rate_total": 1.1133973660698189e-12,
+        "trapezoid_integral": 1782.2497098700487,
+        "simpson_integral": 1777.3626364556476,
+        "simpson_over_trapezoid": 0.9972579188049033,
+        "simpson_over_legacy_increment": 0.37599528999319504,
+        "left_feedback_change_fraction": 5.505895581681131e-07
+      }
+    },
+    "mcg": {
+      "rate_old_total": 6.29513603304449e-13,
+      "rate_new_total": 5.916879424655605e-13,
+      "rate_old_min": 5.294827829676888e-18,
+      "rate_new_min": 5.1609143282751405e-18,
+      "sum_rate_over_density_mean_budget_old": 1.0327342223993878,
+      "sum_rate_over_density_mean_budget_new": 1.0296978885061818,
+      "integrated_effective_photons": 1104.3327815174684,
+      "original_left_rate_held_for_interval": 1138.538533542297,
+      "original_right_rate_held_for_interval": 1070.12702949264,
+      "minimum_cell_increment": 0.009455129548530079,
+      "negative_cells": 0,
+      "legacy_cumulative_photon_increment": 942.3204027166921,
+      "rate_integral_over_legacy_increment": 1.171929184949936,
+      "independently_global_normalized_rate_integral": 1070.8568888612895,
+      "global_normalized_rate_integral_over_legacy_increment": 1.1364042270272712,
+      "held_feedback_quadrature": {
+        "left_rate_total": 5.678164970883185e-13,
+        "midpoint_rate_total": 5.844293117127768e-13,
+        "right_rate_total": 5.916879424655605e-13,
+        "trapezoid_integral": 1048.54007706566,
+        "simpson_integral": 1054.1794038579837,
+        "simpson_over_trapezoid": 1.0053782653764705,
+        "simpson_over_legacy_increment": 1.118705910239027,
+        "left_feedback_change_fraction": -0.09800758219086836
+      }
+    }
+  },
+  "total_rate_integral": 2886.582064458259,
+  "legacy_cumulative_increment": 5669.407905562313,
+  "total_rate_integral_over_legacy_increment": 0.5091505343311432,
+  "total_rate_integral_with_native_hubble_interval": 2883.0949071281325,
+  "native_endpoint_dt_rate_integral": 3099.393441982728,
+  "no_clipping": true,
+  "template_parameters_modified": false,
+  "temporal_photon_model_changed_relative_to_legacy": true,
+  "temporal_closure_matches_legacy": false,
+  "limitations": [
+    "Trapezoidal rate integral over one coarse interval is not a time-converged photon history",
+    "Native instantaneous emissivity uses previous spin feedback; ionization source uses current spin feedback",
+    "Direct SFRD volume sum differs from native conditional-mean normalization",
+    "Actual absorbed H photons require explicit helium and secondary-ionization treatment",
+    "No recombination, transport, density advection, pending-ray continuation or photoionization-rate coupling validated here"
+  ],
+  "frozen_inputs_unchanged": true
+}

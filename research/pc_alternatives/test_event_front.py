@@ -84,6 +84,51 @@ class EventFrontTests(unittest.TestCase):
         self.assertEqual(result["audit"]["rays_materialized"], 0)
         self.check_ledger(result, capacity)
 
+    def test_tiny_absorption_is_not_large_capacity_subtraction(self):
+        source = np.full((1, 1, 1), 0.001)
+        capacity = np.full_like(source, 1e12)
+        result = event_front.solve(source, capacity, ray_directions=[[1, 0, 0]])
+        self.assertEqual(result["absorbed"][0, 0, 0], 0.001)
+        self.assertEqual(result["audit"]["independent_absorption_ledger"], 0)
+        self.assertEqual(result["audit"]["ledger_residual"], 0)
+
+    def test_strict_horizon_distinguishes_escape_and_target_entry(self):
+        source = np.ones((1, 1, 1))
+        empty = np.zeros_like(source)
+        for distance in (0.5, 0.5 + 5e-11):
+            result = event_front.solve(
+                source, empty, ray_directions=[[1, 0, 0]], maximum_distance=distance
+            )
+            self.assertEqual(result["audit"]["escaped"], 1)
+            self.assertEqual(result["audit"]["retained"], 0)
+        source = np.zeros((3,) * 3)
+        capacity = np.zeros_like(source)
+        source[0, 1, 1], capacity[1, 1, 1] = 1, 100
+        at = event_front.solve(
+            source, capacity, ray_directions=[[1, 0, 0]], maximum_distance=0.5
+        )
+        beyond = event_front.solve(
+            source, capacity, ray_directions=[[1, 0, 0]], maximum_distance=0.5 + 5e-11
+        )
+        self.assertEqual(at["audit"]["retained"], 1)
+        self.assertEqual(at["audit"]["absorbed"], 0)
+        self.assertEqual(beyond["absorbed"][1, 1, 1], 1)
+
+    def test_near_corner_thin_opaque_voxel_is_not_skipped(self):
+        source = np.zeros((5,) * 3)
+        capacity = np.zeros_like(source)
+        source[1, 1, 1] = 1
+        capacity[1, 2, 1] = capacity[2, 2, 1] = 100
+        for epsilon in (1e-10, 1e-12, 1e-14):
+            direction = np.array([[1, 1 + epsilon, 0]])
+            direction /= np.linalg.norm(direction)
+            result = event_front.solve(
+                source, capacity, ray_directions=direction, maximum_distance=3
+            )
+            self.assertEqual(result["absorbed"][1, 2, 1], 1)
+            self.assertEqual(result["absorbed"][2, 2, 1], 0)
+            self.check_ledger(result, capacity)
+
     def test_analytic_continuous_source_competition(self):
         # Along +x: source A(rate2) -> one atom -> source B(rate3,
         # capacity10) -> four atoms -> escape. Shared B exhausts at t=2.4,

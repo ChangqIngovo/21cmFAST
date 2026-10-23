@@ -58,6 +58,8 @@ def solve(source, capacity, *, angles=192, duration=1., periodic=False,
         raise ValueError('Finite positive maximum distance required')
     if n<1 or n**3>np.iinfo(np.int32).max:
         raise ValueError('Grid size exceeds this prototype index representation')
+    if max_distance>np.iinfo(np.int32).max-n-2:
+        raise ValueError('Maximum distance exceeds the unwrapped voxel index range')
     if ray_directions is None and (not isinstance(angles,(int,np.integer)) or angles<1):
         raise ValueError('Positive integer angle count required')
     dirs=np.ascontiguousarray(directions(angles) if ray_directions is None

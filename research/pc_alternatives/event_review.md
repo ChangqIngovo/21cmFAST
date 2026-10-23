@@ -1,5 +1,11 @@
 # Independent event-front review and bounded-heap optimization
 
+Historical review of the pre-validation core. The later independent audit
+[validation_event_reference.md](validation_event_reference.md) found and repaired
+weak-absorption cancellation and fixed-nudge geometry errors. Timings and bitwise
+regression below refer to their recorded old hash. Current evidence is summarized
+in [VALIDATION_REPORT_zh.md](VALIDATION_REPORT_zh.md).
+
 Review scope: constant point-source rates, infinite propagation speed, fixed
 equal-weight angular characteristics, shared opaque-voxel capacities, no
 recombinations. This is a review of that explicitly discrete model, not proof

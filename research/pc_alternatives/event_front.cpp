@@ -12,8 +12,11 @@
 #include <vector>
 
 struct Ray {
-    double x[3], rate, arrival, travelled;
-    int source, direction, next;
+    // Absolute ray parameter and integer voxel cursor avoid nudging a point
+    // across a second nearby face. Reordering retains 64-byte storage here.
+    long double travelled;
+    double rate, arrival;
+    int voxel[3], source, direction, next;
 };
 
 // Fixed blocks retain stable ray indices without vector growth copying all
@@ -114,8 +117,10 @@ extern "C" int evolve_events(int n, const double *source, const double *initial_
     if(n<1||nd<1||duration<=0||max_distance<=0||
        !std::isfinite(duration)||!std::isfinite(max_distance)) return 1;
     if((int64_t)n*n>INT_MAX/n)return 5;
+    if(max_distance>(double)(INT_MAX-n-2))return 6;
     const int cells=n*n*n;
     std::vector<double> capacity(initial_capacity,initial_capacity+cells);
+    std::vector<double> capacity_low(cells,0),absorbed_compensation(cells,0);
     std::vector<double> rate(source,source+cells),last(cells,0);
     std::vector<int> head(cells,-1);
     std::vector<uint8_t> emitted(cells,0);
@@ -123,9 +128,37 @@ extern "C" int evolve_events(int n, const double *source, const double *initial_
     EventHeap heap(cells);
     double local_absorbed=0;
     int64_t events=0,queries=0,assignments=0,stale=0;
+    auto consume = [&](int cell,double now) {
+        double elapsed=now-last[cell];
+        last[cell]=now;
+        if(elapsed<=0||rate[cell]<=0||capacity[cell]<=0)return;
+        double amount=rate[cell]*elapsed;
+        double remaining=capacity[cell]+capacity_low[cell];
+        if(amount>=remaining) {
+            absorbed[cell]=initial_capacity[cell];
+            absorbed_compensation[cell]=0;
+            capacity[cell]=capacity_low[cell]=0;
+            return;
+        }
+        // Record the actual small increment directly. Reconstructing it as
+        // initial_capacity - remaining loses weak absorption in dense cells.
+        double y=amount-absorbed_compensation[cell];
+        double total=absorbed[cell]+y;
+        absorbed_compensation[cell]=(total-absorbed[cell])-y;
+        absorbed[cell]=total;
+        // Compensated subtraction retains debits below an ulp of capacity.
+        double hi=capacity[cell],delta=-amount;
+        double sum=hi+delta;
+        double part=sum-hi;
+        double error=(hi-(sum-part))+(delta-part);
+        double low=capacity_low[cell]+error;
+        double next=sum+low;
+        capacity_low[cell]=low-(next-sum);
+        capacity[cell]=next;
+    };
     auto schedule = [&](int cell,double now) {
         if(capacity[cell]>0 && rate[cell]>0)
-            heap.update(cell,now+capacity[cell]/rate[cell]);
+            heap.update(cell,now+(capacity[cell]+capacity_low[cell])/rate[cell]);
     };
     for(int i=0;i<cells;i++) schedule(i,0);
 
@@ -133,38 +166,56 @@ extern "C" int evolve_events(int n, const double *source, const double *initial_
     auto advance = [&](int ri,double now) -> int {
         Ray &ray=rays[ri];
         const double *v=directions+3*ray.direction;
+        const long double origin[3]={(long double)(ray.source/(n*n))+0.5L,
+            (long double)((ray.source/n)%n)+0.5L,(long double)(ray.source%n)+0.5L};
+        const long double horizon=(long double)max_distance;
         int answer=-1;
         for(int count=0;count<1000000;count++) {
             queries++;
             bool outside=false;
+            int ijk[3];
             for(int a=0;a<3;a++) {
-                if(ray.x[a]<0 || ray.x[a]>=n) {
-                    if(periodic) {
-                        ray.x[a]=std::fmod(ray.x[a],(double)n);
-                        if(ray.x[a]<0)ray.x[a]+=n;
-                    } else outside=true;
-                }
+                outside|=ray.voxel[a]<0||ray.voxel[a]>=n;
+                ijk[a]=ray.voxel[a]%n;
+                if(ijk[a]<0)ijk[a]+=n;
             }
-            if(outside) {answer=-1;break;}
-            int ijk[3]={(int)std::floor(ray.x[0]),(int)std::floor(ray.x[1]),(int)std::floor(ray.x[2])};
+            // Open escape at the horizon is allowed, but an opaque cell first
+            // entered at the horizon gets no positive-length path interval.
+            if(outside&&!periodic) {answer=ray.travelled<=horizon?-1:-2;break;}
+            if(ray.travelled>=horizon) {answer=-2;break;}
             int cell=(ijk[0]*n+ijk[1])*n+ijk[2];
             if(capacity[cell]>0) {answer=cell;break;}
-            double step=std::numeric_limits<double>::infinity();
             if(clearance[cell]>=2) {
-                step=clearance[cell]-1.0000000001;
-                // This clearance is open-box and hence also conservative at a wrap.
-            } else {
+                // A whole-distance transparent jump stays within the certified
+                // empty cube. Its endpoint remains on the original straight ray.
+                long double next=ray.travelled+(clearance[cell]-1);
+                if(next>horizon) {answer=-2;break;}
+                ray.travelled=next;
                 for(int a=0;a<3;a++) {
-                    if(v[a]==0)continue;
-                    double face=v[a]>0?ijk[a]+1.0:ijk[a];
-                    step=std::min(step,(face-ray.x[a])/v[a]);
+                    long double point=origin[a]+next*(long double)v[a];
+                    long double lower=std::floor(point);
+                    ray.voxel[a]=(int)lower;
+                    if(v[a]<0&&point==lower)ray.voxel[a]--;
                 }
-                step+=1e-10;
+            } else {
+                long double crossing[3];
+                long double next=std::numeric_limits<long double>::infinity();
+                for(int a=0;a<3;a++) {
+                    crossing[a]=std::numeric_limits<long double>::infinity();
+                    if(v[a]!=0) {
+                        long double face=(long double)ray.voxel[a]+(v[a]>0?1:0);
+                        crossing[a]=(face-origin[a])/(long double)v[a];
+                        next=std::min(next,crossing[a]);
+                    }
+                }
+                if(!std::isfinite(next)||next<ray.travelled)return 2;
+                if(next>horizon) {answer=-2;break;}
+                // Strict equalities only: nearby distinct crossings must not
+                // skip a thin positive-length opaque voxel near an edge.
+                for(int a=0;a<3;a++)
+                    if(crossing[a]==next)ray.voxel[a]+=v[a]>0?1:-1;
+                ray.travelled=next;
             }
-            if(!std::isfinite(step)||step<=0)return 2;
-            if(ray.travelled+step>max_distance) {answer=-2;break;}
-            for(int a=0;a<3;a++)ray.x[a]+=step*v[a];
-            ray.travelled+=step;
             if(count==999999)return 3;
         }
         if(answer<0) {
@@ -179,9 +230,7 @@ extern "C" int evolve_events(int n, const double *source, const double *initial_
             ray.next=-1;return 0;
         }
         // Lazy update of this cell's old total incident rate before it changes.
-        capacity[answer]-=rate[answer]*(now-last[answer]);
-        if(capacity[answer]<0)capacity[answer]=0;
-        last[answer]=now;
+        consume(answer,now);
         rate[answer]+=ray.rate;
         ray.arrival=now;
         ray.next=head[answer];head[answer]=ri;
@@ -199,7 +248,7 @@ extern "C" int evolve_events(int n, const double *source, const double *initial_
         int ix=cell/(n*n),iy=(cell/n)%n,iz=cell%n;
         for(int k=0;k<nd;k++) {
             if(rays.size()>=(size_t)INT_MAX)return 4;
-            rays.push_back({{ix+0.5,iy+0.5,iz+0.5},source[cell]/nd,now,0,cell,k,-1});
+            rays.push_back({0,source[cell]/nd,now,{ix,iy,iz},cell,k,-1});
             int rc=advance((int)rays.size()-1,now);if(rc)return rc;
         }
         return 0;
@@ -213,7 +262,8 @@ extern "C" int evolve_events(int n, const double *source, const double *initial_
         Event event=heap.top();heap.pop();
         if(event.time>=duration)break;
         const int cell=event.cell;const double now=event.time;
-        capacity[cell]=0;last[cell]=now;events++;
+        absorbed[cell]=initial_capacity[cell];absorbed_compensation[cell]=0;
+        capacity[cell]=capacity_low[cell]=0;last[cell]=now;events++;
         // This cell never becomes opaque again in the declared model.
         int ri=head[cell];head[cell]=-1;
         while(ri>=0) {
@@ -230,11 +280,7 @@ extern "C" int evolve_events(int n, const double *source, const double *initial_
         rate[cell]=0;
     }
     for(int cell=0;cell<cells;cell++) {
-        if(capacity[cell]>0) {
-            capacity[cell]-=rate[cell]*(duration-last[cell]);
-            if(capacity[cell]<0)capacity[cell]=0;
-        }
-        absorbed[cell]=initial_capacity[cell]-capacity[cell];
+        consume(cell,duration);
         if(source[cell]>0&&!emitted[cell]) {
             source_absorbed[cell]+=source[cell]*duration;
             local_absorbed+=source[cell]*duration;
