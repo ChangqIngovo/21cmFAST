@@ -1,0 +1,44 @@
+{
+  "scope": "Local end-to-end check of the new PBS job body and preparation manifest builder; no Gadi connection or submission",
+  "source_commit": "62f9bf28af2e1002d75084e3f71fd03953276413",
+  "local_substitutions": [
+    "PBS_JOBID and PBS_NCPUS supplied locally",
+    "module command replaced by a no-op",
+    "Existing tested native extension and dependencies reused in an isolated test environment; Gadi module availability and login-node pip build not exercised"
+  ],
+  "pytest_summary": "294 passed, 6 warnings, 20 subtests passed in 53.80s",
+  "completed": true,
+  "failed": false,
+  "expected_outputs_verified": [
+    "comparison.json",
+    "comparison.png",
+    "comparison.pdf",
+    "native32_comparison.json",
+    "native64_comparison.json",
+    "incremental_comparison.json",
+    "native32/native_fields.npz",
+    "native64/native_fields.npz"
+  ],
+  "native_equivalence": {
+    "32": {
+      "L1_over_emitted": 1.087327935783548e-17,
+      "maximum_ionized_fraction_difference": 2.0818607246396163e-16
+    },
+    "64": {
+      "L1_over_emitted": 1.370998173915354e-17,
+      "maximum_ionized_fraction_difference": 4.024008875096493e-16
+    }
+  },
+  "benchmark_cases": 8,
+  "script_sha256": {
+    "gadi_prepare.sh": "d5c8a381200a2133980a1f469ac94462420cedc57ab74d817b7451ca589397a9",
+    "gadi_compare.pbs": "481f99774f8b82c15a8ef741837537dca48da35848d6da77ff8dee41e7512a8d"
+  },
+  "checks": {
+    "shell_syntax": "passed",
+    "prepared_file_hashes_before_and_after": "passed",
+    "tracked_source_unchanged": "passed",
+    "fresh_output_directory": "passed",
+    "all_benchmark_assertions": "passed"
+  }
+}

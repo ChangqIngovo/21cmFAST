@@ -94,7 +94,56 @@ photon budget; horizon-retained or escaped photons are reported separately and
 are not silently re-injected. A fully transparent periodic box takes an exact
 zero-ray shortcut, retaining every new photon in its reported ledger.
 
-The repository's `research/pc_reconsidered/gadi_compare.pbs` now includes these
-adaptive-front checks. Native 21cmFAST uses its requested OpenMP threads; the
-event-transport kernel remains serial. `REPORT.md` summarizes the measured
-accuracy and cost; `results.json` retains all cases and source hashes.
+Native 21cmFAST uses its requested OpenMP threads; the event-transport kernel
+remains serial. `REPORT.md` summarizes the measured accuracy and cost;
+`results.json` retains all cases and source hashes.
+
+## Pull and compare on Gadi
+
+From the existing fork checkout on a Gadi login node:
+
+```bash
+(
+  set -euo pipefail
+  cd /g/data/qp00/sz4640/21cmFAST
+  git fetch https://github.com/ChangqIngovo/21cmFAST.git Photon_conserving
+  git switch Photon_conserving
+  git merge --ff-only FETCH_HEAD
+  bash research/pc_adaptive_front/gadi_prepare.sh --submit
+)
+```
+
+The dedicated preparation creates a fresh detached worktree and editable
+environment, selects an available Python >=3.12 module, and builds on the login
+node with two build threads. It records the selected modules, package versions,
+commit and native binary hashes. It does not reuse the older Python 3.11 or
+Meraxes environment. `PC_PYTHON_MODULE` can select a module explicitly;
+`PC_PYTHON` can supply an absolute path to an existing suitable interpreter.
+
+The default job is **normal, 4 CPUs, 16 GB, 4 hours**, with no MPI launcher.
+`PC_THREADS` (1–32), `PC_MEM`, `PC_WALLTIME` and `PC_QUEUE` override resources.
+Omit `--submit` to prepare and print the exact submission command. The job
+performs no package installation on compute nodes. The old
+`tools/gadi_qin20_prepare.sh --submit` runs a different algorithm and is not the
+entry point for this adaptive-front comparison.
+
+The script prints the job ID and fresh directory, normally
+`/g/data/qp00/sz4640/21cmfast_runs/adaptive_<commit>_<time>_<suffix>/`.
+
+| Output relative to the printed directory | Contents |
+|---|---|
+| `jobid.txt`, `run_<jobid>.log` | Submitted job and progress |
+| `run_manifest.json`, `prepared.sha256` | Build and input provenance |
+| `results/comparison.json` | Sphere checks and matched-source accuracy/time/RSS |
+| `results/comparison.png`, `results/comparison.pdf` | Three-panel comparison figure |
+| `results/native32_comparison.json`, `results/native64_comparison.json` | Restricted native integration and transport checks |
+| `results/native32/native_fields.npz`, `results/native64/native_fields.npz` | Sources, capacities, native ES and adaptive PC ionization/brightness |
+| `results/incremental_comparison.json` | Fixed-K384 continuation from the same resolved front |
+| `COMPLETED` / `FAILED` | Success / exit status |
+
+Both native grids are newly generated at z=8, box=200 cMpc, seed=1234 using the
+restricted L-INTEGRAL setup. All models in a comparison receive the same source
+and capacity arrays. This newly generated 32³ fixture differs from the
+E-INTEGRAL 32³ fixture used in the published local cost table. The job tests the
+new spatial solver and its native interface; it does not evolve full coupled
+Qin20 histories.

@@ -1,0 +1,114 @@
+#!/usr/bin/env bash
+#PBS -N adaptive_pc_cmp
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=4
+#PBS -l mem=16GB
+#PBS -l walltime=04:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${RUN_DIR:?Submit with qsub -v RUN_DIR=/path/to/prepared/run}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing allocated CPU count}"
+cd "$RUN_DIR"
+test -f PREPARED
+mkdir .running || { echo 'Already launched; prepare a fresh RUN_DIR.' >&2; exit 2; }
+exec > "run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > FAILED; fi' EXIT
+printf 'Job: %s\nRun: %s\nStart: %s\n' "$PBS_JOBID" "$RUN_DIR" "$(date)"
+sha256sum -c prepared.sha256
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1
+module --force purge
+source "$RUN_DIR/runtime.env"
+module load "${PC_MODULES[@]}"
+export CC=gcc CXX=g++
+export OMP_NUM_THREADS="$PBS_NCPUS" OMP_PROC_BIND=spread OMP_PLACES=cores
+export OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export PYTHONUNBUFFERED=1 MPLBACKEND=Agg
+module list
+pc_python="$RUN_DIR/venv/bin/python"
+"$pc_python" - <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import subprocess
+import matplotlib
+import numpy
+import py21cmfast
+import pytest
+
+run = Path(os.environ['RUN_DIR']).resolve()
+manifest = json.loads((run / 'run_manifest.json').read_text())
+if manifest['schema'] != 1:
+    raise RuntimeError('Unknown preparation manifest schema')
+source = Path(manifest['source_checkout'])
+if source != run / 'source':
+    raise RuntimeError('Prepared source path changed')
+actual = Path(py21cmfast.__file__).resolve().parent
+if actual != source / 'src/py21cmfast':
+    raise RuntimeError(f'Native package comes from {actual}, not the prepared source')
+versions = {'python_version': platform.python_version(), 'numpy_version': numpy.__version__,
+            'matplotlib_version': matplotlib.__version__, 'pytest_version': pytest.__version__,
+            'py21cmfast_version': py21cmfast.__version__}
+for key, actual in versions.items():
+    if actual != manifest[key]:
+        raise RuntimeError(f'Prepared version changed: {key}: {manifest[key]} -> {actual}')
+for name, expected in manifest['files_sha256'].items():
+    if hashlib.sha256((run / name).read_bytes()).hexdigest() != expected:
+        raise RuntimeError(f'Prepared input changed: {name}')
+commit = subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip()
+if commit != manifest['commit']:
+    raise RuntimeError('Prepared checkout changed revision')
+subprocess.run(['git', '-C', str(source), 'diff', '--exit-code', commit, '--'], check=True)
+packages = subprocess.check_output([str(run / 'venv/bin/python'), '-m', 'pip', 'freeze'], text=True)
+if packages != (run / 'python_packages.txt').read_text():
+    raise RuntimeError('Prepared Python package set changed')
+if not 1 <= int(os.environ['PBS_NCPUS']) <= 32:
+    raise RuntimeError('This comparison supports 1 to 32 allocated native threads')
+results = run / 'results'
+if results.exists() and any(results.iterdir()):
+    raise RuntimeError('Results directory is nonempty; prepare a new run')
+results.mkdir(exist_ok=True)
+print('Commit:', commit, flush=True)
+print('Native threads:', os.environ['PBS_NCPUS'], '; transport kernel: serial', flush=True)
+print(manifest['scope'], flush=True)
+print(manifest['fixture_note'], flush=True)
+PY
+
+cd "$RUN_DIR/source"
+"$pc_python" -m pytest -q \
+    research/pc_reconsidered research/pc_refinement research/pc_adaptive_front \
+    -o "cache_dir=$RUN_DIR/pytest_cache"
+
+# Each native check stores source/capacity, native ES and new PC brightness,
+# plus matched balanced/full-eight/adaptive-eight transport timings.
+for pc_grid in 32 64; do
+    "$pc_python" research/pc_adaptive_front/native_check.py \
+        --dimension "$pc_grid" --threads "$PBS_NCPUS" \
+        --directory "$RUN_DIR/results/native${pc_grid}" \
+        --output "$RUN_DIR/results/native${pc_grid}_comparison.json"
+done
+"$pc_python" research/pc_adaptive_front/benchmarks.py \
+    --native32 "$RUN_DIR/results/native32/native_fields.npz" \
+    --native64 "$RUN_DIR/results/native64/native_fields.npz" \
+    --measure-rss --output "$RUN_DIR/results/comparison.json"
+"$pc_python" research/pc_adaptive_front/incremental_benchmark.py \
+    --native "$RUN_DIR/results/native32/native_fields.npz" --angles 384 \
+    --output "$RUN_DIR/results/incremental_comparison.json"
+"$pc_python" research/pc_adaptive_front/plot_adaptive_results.py \
+    --results "$RUN_DIR/results/comparison.json" \
+    --output-base "$RUN_DIR/results/comparison"
+
+# Recheck the pinned inputs after all subprocesses have finished.
+pc_commit=$(cat "$RUN_DIR/commit.txt")
+git diff --exit-code "$pc_commit" --
+cd "$RUN_DIR"
+sha256sum -c prepared.sha256
+touch COMPLETED
+printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$RUN_DIR"
