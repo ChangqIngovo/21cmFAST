@@ -1,0 +1,141 @@
+#!/usr/bin/env bash
+#PBS -N pc_time_evolution
+#PBS -P qp00
+#PBS -q hugemem
+#PBS -l ncpus=32
+#PBS -l mem=320GB
+#PBS -l walltime=12:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${RUN_DIR:?Submit with qsub -v RUN_DIR=/prepared/evolution/run}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing allocated CPU count}"
+cd "$RUN_DIR"
+test -f PREPARED
+if [[ -f COMPLETED ]]; then echo 'Already completed.'; exit 0; fi
+mkdir .running || { echo 'Run is active or has a stale lock; inspect qstat before removing .running.' >&2; exit 2; }
+exec > "run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; rmdir "$RUN_DIR/.running" || true; if (( status != 0 )); then printf "%s\n" "$status" > "$RUN_DIR/FAILED"; fi' EXIT
+printf 'Job: %s\nRun: %s\nStart: %s\n' "$PBS_JOBID" "$RUN_DIR" "$(date)"
+sha256sum --quiet -c prepared.sha256
+module --force purge
+source "$RUN_DIR/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export CC=gcc CXX=g++
+export OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export MPLBACKEND=Agg
+pc_python=$(cat "$RUN_DIR/python_path.txt")
+"$pc_python" - <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import subprocess
+import sys
+import h5py
+import matplotlib
+import numpy
+import py21cmfast
+import pytest
+import scipy
+run = Path(os.environ['RUN_DIR'])
+m = json.loads((run/'run_manifest.json').read_text())
+if m.get('schema') != 1 or m.get('experiment') != 'prescribed-source-evolution':
+    raise RuntimeError('Wrong preparation manifest.')
+if str(Path(sys.executable).absolute()) != m['python']:
+    raise RuntimeError('Selected Python executable changed.')
+if str(run/'source') != m['source_checkout']:
+    raise RuntimeError('Prepared run moved after preparation.')
+
+def digest(path):
+    with Path(path).open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+versions = dict(python_version=platform.python_version(), numpy_version=numpy.__version__,
+                scipy_version=scipy.__version__, h5py_version=h5py.__version__,
+                matplotlib_version=matplotlib.__version__, pytest_version=pytest.__version__,
+                py21cmfast_version=py21cmfast.__version__)
+for key, value in versions.items():
+    if m[key] != value:
+        raise RuntimeError('Runtime version changed: '+key)
+if (str(Path(sys.executable).resolve()) != m['python_binary']
+        or digest(Path(sys.executable).resolve()) != m['python_binary_sha256']):
+    raise RuntimeError('Python binary changed.')
+compiler = shutil.which('g++')
+if (compiler is None or str(Path(compiler).resolve()) != m['compiler']
+        or digest(Path(compiler).resolve()) != m['compiler_sha256']):
+    raise RuntimeError('Compiler changed.')
+if subprocess.check_output(['g++', '-dumpfullversion', '-dumpversion'], text=True).strip() != m['compiler_version']:
+    raise RuntimeError('Compiler version changed.')
+if subprocess.check_output([m['python'], '-m', 'pip', 'freeze'], text=True) != (run/'python_packages.txt').read_text():
+    raise RuntimeError('Python package set changed.')
+native = Path(py21cmfast.__file__).resolve().parent
+if str(native) != m['native_package']:
+    raise RuntimeError('The imported native package moved.')
+footprint = {str(path.relative_to(native)): digest(path)
+    for path in sorted(native.rglob('*'))
+    if path.is_file() and '__pycache__' not in path.parts and path.suffix not in ('.pyc', '.pyo')}
+if footprint != m['native_footprint_sha256']:
+    raise RuntimeError('Native sources, data or compiled extension changed after preparation.')
+for relative, expected in m['native_source_hashes'].items():
+    if digest(run/'source/src/py21cmfast'/relative) != expected or digest(native/relative) != expected:
+        raise RuntimeError('Archived and installed native sources differ: '+relative)
+if not 1 <= int(os.environ['PBS_NCPUS']) <= 32:
+    raise RuntimeError('Use 1 to 32 allocated CPUs.')
+results = run/'results'
+if results.exists() and any(results.iterdir()):
+    raise RuntimeError('Results already exist; prepare a fresh RUN_DIR to preserve the previous attempt.')
+print('Revision:', m['commit'], flush=True)
+print('Native package:', m['native_package'], m['py21cmfast_version'], flush=True)
+print('Scope:', m['scope'], flush=True)
+print('Native threads / maximum independent history workers:', os.environ['PBS_NCPUS'], flush=True)
+print('COMPLETED means execution and photon audits passed; convergence is reported separately.', flush=True)
+PY
+cd "$RUN_DIR/source"
+"$pc_python" -m pytest -q research/pc_evolution --confcutdir=research/pc_evolution \
+    -o "cache_dir=$RUN_DIR/pytest_cache"
+mapfile -t pc_arguments < <("$pc_python" - <<'PY'
+import json
+import os
+from pathlib import Path
+config = json.loads((Path(os.environ['RUN_DIR'])/'experiment_config.json').read_text())
+for key, value in config.items():
+    print('--'+key.replace('_', '-'))
+    for item in value if isinstance(value, list) else [value]:
+        print(item)
+PY
+)
+# The workflow sets single-threaded environments for independent history workers.
+export OMP_NUM_THREADS="$PBS_NCPUS" OMP_PROC_BIND=spread OMP_PLACES=cores
+"$pc_python" research/pc_evolution/workflow.py run --root "$RUN_DIR/results" \
+    --threads "$PBS_NCPUS" "${pc_arguments[@]}"
+cd "$RUN_DIR"
+sha256sum --quiet -c prepared.sha256
+"$pc_python" - <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+run = Path(os.environ['RUN_DIR'])
+m = json.loads((run/'run_manifest.json').read_text())
+native = Path(m['native_package'])
+def digest(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+footprint = {str(path.relative_to(native)): digest(path)
+    for path in sorted(native.rglob('*'))
+    if path.is_file() and '__pycache__' not in path.parts and path.suffix not in ('.pyc', '.pyo')}
+if footprint != m['native_footprint_sha256']:
+    raise RuntimeError('Installed native package changed during the job.')
+PY
+test -f results/COMPLETED
+rm -f FAILED
+touch COMPLETED
+printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$RUN_DIR"
