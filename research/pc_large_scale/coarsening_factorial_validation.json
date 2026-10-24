@@ -1,0 +1,203 @@
+{
+  "scope": "Frozen native fixture factorial; not cosmological evolution or continuum convergence",
+  "fixture": "/workspace/scratch/40b418003e4a/upload/native_fields32",
+  "fixture_sha256": "502ef71b98c64a298acad576e917713ceef939b22b500699e2ab6756131b6e92",
+  "code_sha256": {
+    "pc_adaptive_front/adaptive.py": "5d87d35d28323e320572efaf32fe464265846955eb58a5c8d89f3a998aea930c",
+    "pc_adaptive_front/adaptive.cpp": "d1d51121146e241b98263645e41ac46363705977df6b4eece57f0697e1e647f0",
+    "pc_reconsidered/hybrid.py": "cc5a0a9ee85a1aa163849201a5714d329927afeb55c615ef36a81e7ee435a32d",
+    "pc_refinement/front_subcells.py": "c461b7c7f71ff7b7e2348a9b0891d0ed6298edf9b8c996a508d8fd09c51cfcd5",
+    "pc_alternatives/characteristics.py": "15b87ad85050658fe5dda0ebc3fc2615c4bf430af4b0320320c96dd7c3c8dc26",
+    "pc_large_scale/pc_statistics.py": "e9a21f8f60d23baa1cbd4b0fa3c56940c93985ae1a892a7a7d183307a784ee44",
+    "pc_large_scale/diagnose_coarsening.py": "d3a13648215f8bd9a050cc5a34f63047d6623ee923aadaf2358d8c4f73239052",
+    "pc_large_scale/coarsening_factorial.py": "8ef062cb011b70c3f75d9bf8f899ac487dde99d420f31a489e34475242b5f7bd"
+  },
+  "config": {
+    "fine_grid": 32,
+    "coarse_grid": 16,
+    "dose": 0.8,
+    "angles": 384,
+    "angle_check": 768,
+    "box_hMpc": 135.6,
+    "band_hMpc_inv": [
+      0.04,
+      0.08
+    ],
+    "horizon_boxes": 4.0
+  },
+  "models": {
+    "original_K384": {
+      "seconds": 15.04244361900055,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "b2_common_mesh": 195.02901142581777,
+      "full_fft_modes": 18,
+      "global_relative_residual": 1.2874900800779967e-17,
+      "maximum_source_relative_residual": 3.4754530006859154e-14,
+      "maximum_local_fraction_violation": 0.0
+    },
+    "density_smooth_K384": {
+      "seconds": 14.043526122000912,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "b2_common_mesh": 192.43704767102636,
+      "full_fft_modes": 18,
+      "global_relative_residual": 1.382357770189007e-17,
+      "maximum_source_relative_residual": 2.7932572577046285e-14,
+      "maximum_local_fraction_violation": 0.0
+    },
+    "source_smooth_K384": {
+      "seconds": 14.042726777002827,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "b2_common_mesh": 197.9077695344035,
+      "full_fft_modes": 18,
+      "global_relative_residual": 1.6398557862046064e-17,
+      "maximum_source_relative_residual": 2.983621585921098e-14,
+      "maximum_local_fraction_violation": 0.0
+    },
+    "both_smooth_K384": {
+      "seconds": 14.081151320999197,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "b2_common_mesh": 195.55878499050093,
+      "full_fft_modes": 18,
+      "global_relative_residual": 1.7821573213711217e-17,
+      "maximum_source_relative_residual": 3.440102840272606e-14,
+      "maximum_local_fraction_violation": 0.0
+    },
+    "coarse_solve_K384": {
+      "seconds": 0.6538190769970242,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "b2_common_mesh": 201.3541027320833,
+      "full_fft_modes": 18,
+      "global_relative_residual": 3.32036915388536e-18,
+      "maximum_source_relative_residual": 3.440102840272606e-14,
+      "maximum_local_fraction_violation": 0.0
+    },
+    "original_K768": {
+      "seconds": 27.200831326001207,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "b2_common_mesh": 194.88019985810618,
+      "full_fft_modes": 18,
+      "global_relative_residual": 6.3696877645964046e-18,
+      "maximum_source_relative_residual": 8.011387125939405e-14,
+      "maximum_local_fraction_violation": 0.0
+    },
+    "coarse_solve_K768": {
+      "seconds": 1.349905006998597,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "b2_common_mesh": 201.0627594145268,
+      "full_fft_modes": 18,
+      "global_relative_residual": 2.879912021227098e-17,
+      "maximum_source_relative_residual": 6.96765232000465e-14,
+      "maximum_local_fraction_violation": 0.0
+    }
+  },
+  "projection_decomposition": {
+    "384": {
+      "native_fine_over_coarse_b2": 0.9680144063820498,
+      "output_projection_factor": 0.9994086049240231,
+      "input_coarsening_and_solver_factor": 0.9685872240970349,
+      "factorization_residual": 1.1102230246251565e-16,
+      "same_mesh_HI_cross_correlation": 0.999416826247389,
+      "same_mesh_absorbed_L1_over_atoms": 0.02909750018257917,
+      "same_mesh_absorbed_L1_over_fine_absorbed": 0.03637187522822396,
+      "same_mesh_maximum_fraction_difference": 0.24554424874545966,
+      "Q_mass_difference": 0.0,
+      "spectra": {
+        "fine_native": {
+          "Q_mass": 0.8,
+          "k_hMpc_inv": 0.05913155619423069,
+          "full_fft_modes": 18,
+          "P_HI": 22603.25198803409,
+          "P_matter": 115.96545142047603,
+          "P_cross": -1585.8319628397687,
+          "b_HI_squared": 194.9136722287879,
+          "r_HI_matter": -0.9795066574050345,
+          "P_21_mK2_hMpc3": 562627.2323421512,
+          "Delta2_21_mK2": 5.8931695220366604
+        },
+        "fine_projected": {
+          "Q_mass": 0.8,
+          "k_hMpc_inv": 0.05913155619423069,
+          "full_fft_modes": 18,
+          "P_HI": 22161.02241641754,
+          "P_matter": 113.62936341830775,
+          "P_cross": -1554.4041464526683,
+          "b_HI_squared": 195.02901142581777,
+          "r_HI_matter": -0.97954358040724,
+          "P_21_mK2_hMpc3": 551619.5065480844,
+          "Delta2_21_mK2": 5.777870456460891
+        },
+        "coarse_solved": {
+          "Q_mass": 0.8,
+          "k_hMpc_inv": 0.05913155619423069,
+          "full_fft_modes": 18,
+          "P_HI": 22879.738515111167,
+          "P_matter": 113.62936341830775,
+          "P_cross": -1577.298251165544,
+          "b_HI_squared": 201.3541027320833,
+          "r_HI_matter": -0.9782345705220585,
+          "P_21_mK2_hMpc3": 569509.3769818526,
+          "Delta2_21_mK2": 5.965255696870572
+        }
+      },
+      "interpretation": "native ratio = output projection factor * input coarsening and solver factor; no deconvolution or field recalibration"
+    },
+    "768": {
+      "native_fine_over_coarse_b2": 0.9686616705597204,
+      "output_projection_factor": 0.9993923885732376,
+      "input_coarsening_and_solver_factor": 0.9692505982986428,
+      "factorization_residual": 1.1102230246251565e-16,
+      "same_mesh_HI_cross_correlation": 0.9994243845176856,
+      "same_mesh_absorbed_L1_over_atoms": 0.029006763246982585,
+      "same_mesh_absorbed_L1_over_fine_absorbed": 0.03625845405872823,
+      "same_mesh_maximum_fraction_difference": 0.2445047529584456,
+      "Q_mass_difference": 0.0,
+      "spectra": {
+        "fine_native": {
+          "Q_mass": 0.8,
+          "k_hMpc_inv": 0.05913155619423069,
+          "full_fft_modes": 18,
+          "P_HI": 22585.638713795906,
+          "P_matter": 115.96545142047603,
+          "P_cross": -1585.0998274046485,
+          "b_HI_squared": 194.76178842182267,
+          "r_HI_matter": -0.9794361263095821,
+          "P_21_mK2_hMpc3": 562188.8127845424,
+          "Delta2_21_mK2": 5.888577350477511
+        },
+        "fine_projected": {
+          "Q_mass": 0.8,
+          "k_hMpc_inv": 0.05913155619423069,
+          "full_fft_modes": 18,
+          "P_HI": 22144.113052709192,
+          "P_matter": 113.62936341830775,
+          "P_cross": -1553.6912484671227,
+          "b_HI_squared": 194.88019985810618,
+          "r_HI_matter": -0.9794680808295965,
+          "P_21_mK2_hMpc3": 551198.6083291498,
+          "Delta2_21_mK2": 5.7734618100017085
+        },
+        "coarse_solved": {
+          "Q_mass": 0.8,
+          "k_hMpc_inv": 0.05913155619423069,
+          "full_fft_modes": 18,
+          "P_HI": 22846.633359401043,
+          "P_matter": 113.62936341830775,
+          "P_cross": -1576.1207430464153,
+          "b_HI_squared": 201.0627594145268,
+          "r_HI_matter": -0.978212238021943,
+          "P_21_mK2_hMpc3": 568685.342363148,
+          "Delta2_21_mK2": 5.956624447935398
+        }
+      },
+      "interpretation": "native ratio = output projection factor * input coarsening and solver factor; no deconvolution or field recalibration"
+    }
+  },
+  "interpretation": "The four fine-grid cases isolate density/source smoothing and their interaction. The remaining direct-coarse change combines source-centre relocation and front spatial discretization; these are not separately identified."
+}

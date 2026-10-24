@@ -1,0 +1,91 @@
+{
+  "scope": "Static native32 automated distance controller, fixed budget0.9; 92-mode low-k statistic",
+  "fixture_sha256": "502ef71b98c64a298acad576e917713ceef939b22b500699e2ab6756131b6e92",
+  "audit": {
+    "distance_converged": true,
+    "history": [
+      {
+        "maximum_distance": 10.666666666666666,
+        "retained_fraction": 0.03562829579819986,
+        "statistic": 202.68661369113963,
+        "seconds": 1.8559439980017487,
+        "field_L1_over_emitted": null,
+        "statistic_absolute_change": null
+      },
+      {
+        "maximum_distance": 21.333333333333332,
+        "retained_fraction": 0.008545213713953228,
+        "statistic": 267.484999564766,
+        "seconds": 2.477638284999557,
+        "field_L1_over_emitted": 0.02708308208424664,
+        "statistic_absolute_change": 64.79838587362636
+      },
+      {
+        "maximum_distance": 42.666666666666664,
+        "retained_fraction": 0.0007683256191911101,
+        "statistic": 291.9351499916137,
+        "seconds": 2.7578200610005297,
+        "field_L1_over_emitted": 0.007776888094762115,
+        "statistic_absolute_change": 24.4501504268477
+      },
+      {
+        "maximum_distance": 85.33333333333333,
+        "retained_fraction": 1.0471022078778395e-05,
+        "statistic": 294.51069847084017,
+        "seconds": 2.930679840999801,
+        "field_L1_over_emitted": 0.000757854597112333,
+        "statistic_absolute_change": 2.5755484792264838
+      }
+    ],
+    "retained_tolerance": 0.0001,
+    "field_tolerance": 0.001,
+    "statistic_rtol": 0.01,
+    "statistic_atol": 0.0,
+    "angular_reference_distance": 10.666666666666666,
+    "source_budget_rescaled": false,
+    "retained_photons_reemitted": false,
+    "scope": "successive-distance stability at fixed angular and spatial discretization"
+  },
+  "Q_mass": 0.8999905760801291,
+  "ledger": {
+    "model": "lazy eight-subcell event transport",
+    "photons": 29491.199994240065,
+    "absorbed": 29490.891191233794,
+    "escaped": 0.0,
+    "retained": 0.30880300626935697,
+    "ledger_residual": -5.861977570020827e-14,
+    "source_relative_error": 5.720089946308917e-15,
+    "angle_relative_error": 1.3338301341919734e-14,
+    "maximum_local_fraction_violation": 0.0,
+    "preparation_seconds": 0.0018535800008976366,
+    "seconds": 2.930679840999801,
+    "return_dense": false,
+    "maximum_distance": 85.33333333333333,
+    "angular_reference_distance": 10.666666666666666,
+    "effective_density": "remaining",
+    "source_positions": "original coarse centres",
+    "continuum_accuracy_certified": false,
+    "events": 199548,
+    "rays_materialized": 874386,
+    "queries": 29128649,
+    "assignments": 6810185,
+    "promotions": 29983,
+    "peak_live_child_parents": 14266,
+    "total_child_slots_highwater": 14266,
+    "ray_bytes": 42074112,
+    "cell_allocated_bytes": 12550400,
+    "heap_allocated_bytes": 2097152,
+    "parent_skips": 11367824,
+    "uniform_coarse_events": 1118,
+    "final_sparse_parent_count": 8176,
+    "source_launches": 199548,
+    "fine_events": 198430,
+    "coarsenings": 21807,
+    "state_bytes": 818112
+  },
+  "code_sha256": {
+    "research/pc_adaptive_front/distance_control.py": "767df0bdc2af85e75d07965f351dd1b4d20fe08e61aa7e302c6e65c00d99737f",
+    "research/pc_adaptive_front/adaptive.py": "5d87d35d28323e320572efaf32fe464265846955eb58a5c8d89f3a998aea930c",
+    "research/pc_adaptive_front/adaptive.cpp": "d1d51121146e241b98263645e41ac46363705977df6b4eece57f0697e1e647f0"
+  }
+}

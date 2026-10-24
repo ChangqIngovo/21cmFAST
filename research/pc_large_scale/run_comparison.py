@@ -104,7 +104,7 @@ def validate_config(c):
 
 def code_hashes():
     files = list(HERE.glob('*.py'))
-    for folder in ('pc_reconsidered', 'pc_refinement', 'pc_adaptive_front'):
+    for folder in ('pc_alternatives', 'pc_reconsidered', 'pc_refinement', 'pc_adaptive_front'):
         files += list((RESEARCH/folder).glob('*.py'))+list((RESEARCH/folder).glob('*.cpp'))
     return {str(p.relative_to(RESEARCH)): digest(p) for p in sorted(files)}
 

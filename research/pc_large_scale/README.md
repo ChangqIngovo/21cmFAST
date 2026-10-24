@@ -137,3 +137,48 @@ unchanged completed tasks are verified and skipped. A PBS-killed job may leave
 still be read from `summary.json`.
 
 Local unit and small-native end-to-end validation is recorded in `validation.json`.
+
+## Late-stage follow-up and common-mesh diagnosis
+
+The large run's native fine/coarse power ratio includes both output projection
+and changes to the solved ionization field. `diagnose_coarsening.py` sums the
+already solved fine absorbed counts onto the coarse mesh and compares them to
+the direct coarse solve. It records the exact decomposition
+
+    b2_fine / b2_coarse = (b2_fine / b2_projected) * (b2_projected / b2_coarse)
+
+The first factor measures output projection, including aliasing and the matter
+denominator. The second compares both solutions on identical cells and
+capacities; it still combines input coarsening and transport discretization.
+It also measures the common-mesh cross-correlation and count-field L1 error.
+It does not alter or replace the original resolution comparison. Use existing
+data without another transport solve:
+
+```bash
+python research/pc_large_scale/diagnose_coarsening.py \
+    --root /path/to/large_run/results --output /path/to/parent_coarsening.json
+```
+
+The late follow-up reuses the completed parent's immutable native source and
+capacity files and its Python environment, with new code archived at the
+selected commit. It runs 120 cases: four seeds, three grids, photon doses 0.8
+and 0.9, path-cutoff factors 1/2/4/8, and doubled angular sampling at factor 8.
+Every path-length
+comparison uses the same per-source angular bank, checked explicitly. The
+source amplitude is not calibrated to compensate for retained photons.
+Therefore inspect the reported change in actual Q with each power change.
+
+```bash
+bash research/pc_large_scale/gadi_late_prepare.sh /path/to/large_run --submit
+```
+
+Omitting the parent path selects the most recently completed `large_pc_*` run
+under `/g/data/qp00/sz4640/21cmfast_runs`; the selected path is printed and
+recorded. Defaults are 32 independent workers, 320 GB, 6 h scheduling limit. The
+job also calculates the common-mesh diagnosis for the original comparison.
+Read `results/summary.json` for individual and combined retention, field-L1,
+and bias checks, and `results/parent_coarsening.json` for the decomposition.
+Scientific nonconvergence is recorded as a result rather than an execution
+failure. Failed tasks are resumable after input/source hash verification.
+
+Local follow-up findings and their scope are in `late_research.md`.

@@ -1,0 +1,260 @@
+{
+  "scope": "Static native fixture; fixed angular bank and fixed photon budget; independent reruns",
+  "fixture": "/workspace/scratch/40b418003e4a/upload/native_fields32",
+  "fixture_sha256": "502ef71b98c64a298acad576e917713ceef939b22b500699e2ab6756131b6e92",
+  "shape": [
+    32,
+    32,
+    32
+  ],
+  "angles": "adaptive, fixed reference horizon",
+  "angular_reference_distance_cells": 10.666666666666666,
+  "code_sha256": {
+    "pc_large_scale/horizon_probe.py": "0eb28b3affe059c68f58b5fbb429fe9cec79039003b99b28b64f46e3c02e3b76",
+    "pc_adaptive_front/adaptive.py": "5d87d35d28323e320572efaf32fe464265846955eb58a5c8d89f3a998aea930c",
+    "pc_adaptive_front/adaptive.cpp": "d1d51121146e241b98263645e41ac46363705977df6b4eece57f0697e1e647f0"
+  },
+  "timing": "Single serial solve per configuration; compilation excluded; shared host",
+  "cases": [
+    {
+      "dose": 0.8,
+      "horizon_box_fraction": 0.3333333333333333,
+      "Q_mass": 0.7886406999064693,
+      "retained_fraction": 0.014199125116913404,
+      "ledger_relative_residual": 8.673617381578083e-18,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "c9d38381c604b27bab1e1d9ec419ae86a4fddcbe55bcbd684ad4d94d1960da19",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 1.228830845997436,
+      "solver_seconds": 1.2287999789987225,
+      "queries": 11292283,
+      "ray_bytes": 32243712,
+      "low_k": {
+        "b_HI_squared": 107.97970959682692,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "dose": 0.8,
+      "horizon_box_fraction": 0.6666666666666666,
+      "Q_mass": 0.7989003399401271,
+      "retained_fraction": 0.001374575074841025,
+      "ledger_relative_residual": 8.646512327260652e-17,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "c9d38381c604b27bab1e1d9ec419ae86a4fddcbe55bcbd684ad4d94d1960da19",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 1.4846600759992725,
+      "solver_seconds": 1.4846205759968143,
+      "queries": 13444236,
+      "ray_bytes": 32833536,
+      "low_k": {
+        "b_HI_squared": 119.49927177540499,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      },
+      "versus_previous_horizon": {
+        "field_L1_over_emitted": 0.012824550042072383,
+        "negative_count_over_emitted": 0.0,
+        "max_fraction_difference": 0.359992204264583,
+        "b2_relative_change": 0.10668265567290036,
+        "previous_retained_fraction": 0.014199125116913404
+      }
+    },
+    {
+      "dose": 0.8,
+      "horizon_box_fraction": 1.3333333333333333,
+      "Q_mass": 0.7999843799240288,
+      "retained_fraction": 1.952509496410711e-05,
+      "ledger_relative_residual": 1.1561999732279379e-17,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "c9d38381c604b27bab1e1d9ec419ae86a4fddcbe55bcbd684ad4d94d1960da19",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 1.4163318799983244,
+      "solver_seconds": 1.4162951739999698,
+      "queries": 13806337,
+      "ray_bytes": 33030144,
+      "low_k": {
+        "b_HI_squared": 120.78312676676225,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      },
+      "versus_previous_horizon": {
+        "field_L1_over_emitted": 0.0013550499798769178,
+        "negative_count_over_emitted": 0.0,
+        "max_fraction_difference": 0.08507611903067679,
+        "b2_relative_change": 0.01074362188390765,
+        "previous_retained_fraction": 0.001374575074841025
+      }
+    },
+    {
+      "dose": 0.8,
+      "horizon_box_fraction": 2.6666666666666665,
+      "Q_mass": 0.8,
+      "retained_fraction": 0.0,
+      "ledger_relative_residual": 0.0,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "c9d38381c604b27bab1e1d9ec419ae86a4fddcbe55bcbd684ad4d94d1960da19",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 1.375776158998633,
+      "solver_seconds": 1.375740475999919,
+      "queries": 13813544,
+      "ray_bytes": 33030144,
+      "low_k": {
+        "b_HI_squared": 120.79956659975564,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      },
+      "versus_previous_horizon": {
+        "field_L1_over_emitted": 1.9525094964106667e-05,
+        "negative_count_over_emitted": 0.0,
+        "max_fraction_difference": 0.021439444239930973,
+        "b2_relative_change": 0.00013611034449478865,
+        "previous_retained_fraction": 1.952509496410711e-05
+      }
+    },
+    {
+      "dose": 0.9,
+      "horizon_box_fraction": 0.3333333333333333,
+      "Q_mass": 0.8679345337816201,
+      "retained_fraction": 0.03562829579819986,
+      "ledger_relative_residual": 1.0793834963741613e-16,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "7f251980a129c2286c843ae52c12fd11a16cc30c08e56260c35f7e7e0ae6488c",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 1.7891804539976874,
+      "solver_seconds": 1.7891426989990578,
+      "queries": 16960697,
+      "ray_bytes": 39518208,
+      "low_k": {
+        "b_HI_squared": 202.68661369113963,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      }
+    },
+    {
+      "dose": 0.9,
+      "horizon_box_fraction": 0.6666666666666666,
+      "Q_mass": 0.8923093076574422,
+      "retained_fraction": 0.008545213713953228,
+      "ledger_relative_residual": 7.902629169882252e-17,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "7f251980a129c2286c843ae52c12fd11a16cc30c08e56260c35f7e7e0ae6488c",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 2.4872555479996663,
+      "solver_seconds": 2.4871231300021464,
+      "queries": 24433200,
+      "ray_bytes": 41484288,
+      "low_k": {
+        "b_HI_squared": 267.484999564766,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      },
+      "versus_previous_horizon": {
+        "field_L1_over_emitted": 0.02708308208424664,
+        "negative_count_over_emitted": 0.0,
+        "max_fraction_difference": 0.7059915959502655,
+        "b2_relative_change": 0.3196974121456695,
+        "previous_retained_fraction": 0.03562829579819986
+      }
+    },
+    {
+      "dose": 0.9,
+      "horizon_box_fraction": 1.3333333333333333,
+      "Q_mass": 0.8993085069427281,
+      "retained_fraction": 0.0007683256191911101,
+      "ledger_relative_residual": 6.830473687992739e-17,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "7f251980a129c2286c843ae52c12fd11a16cc30c08e56260c35f7e7e0ae6488c",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 3.0011539670013008,
+      "solver_seconds": 3.001120336000895,
+      "queries": 28422669,
+      "ray_bytes": 42074112,
+      "low_k": {
+        "b_HI_squared": 291.9351499916137,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      },
+      "versus_previous_horizon": {
+        "field_L1_over_emitted": 0.007776888094762115,
+        "negative_count_over_emitted": 0.0,
+        "max_fraction_difference": 0.24098552751697783,
+        "b2_relative_change": 0.09140755730837768,
+        "previous_retained_fraction": 0.008545213713953228
+      }
+    },
+    {
+      "dose": 0.9,
+      "horizon_box_fraction": 2.6666666666666665,
+      "Q_mass": 0.8999905760801291,
+      "retained_fraction": 1.0471022078778395e-05,
+      "ledger_relative_residual": 8.194008503794642e-17,
+      "local_fraction_violation": 0.0,
+      "angle_counts_sha256": "7f251980a129c2286c843ae52c12fd11a16cc30c08e56260c35f7e7e0ae6488c",
+      "angles_min": 24,
+      "angles_max": 192,
+      "wall_seconds": 3.4019555680024496,
+      "solver_seconds": 3.401911190998362,
+      "queries": 29128649,
+      "ray_bytes": 42074112,
+      "low_k": {
+        "b_HI_squared": 294.51069847084017,
+        "full_fft_modes": 92,
+        "integer_fourier_radius_band": [
+          1,
+          3
+        ]
+      },
+      "versus_previous_horizon": {
+        "field_L1_over_emitted": 0.000757854597112333,
+        "negative_count_over_emitted": 0.0,
+        "max_fraction_difference": 0.05577413753679053,
+        "b2_relative_change": 0.008822330847451765,
+        "previous_retained_fraction": 0.0007683256191911101
+      }
+    }
+  ],
+  "reemission_counterexample": {
+    "grid": 12,
+    "angles": 384,
+    "dose": 0.9,
+    "short_horizon_cells": 4,
+    "long_horizon_cells": 16,
+    "emitted": 1555.2000000000003,
+    "short_absorbed": 484.7148057706539,
+    "direct_long_absorbed": 1384.1149220370717,
+    "isotropic_reemission_total_absorbed": 1399.3132821956112,
+    "reemission_vs_direct_L1_over_emitted": 0.02025189197802852,
+    "reemission_vs_direct_max_fraction_difference": 0.5025049568603313,
+    "scope": "Counterexample to reemitting retained source totals from final gas state"
+  }
+}

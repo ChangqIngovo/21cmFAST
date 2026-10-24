@@ -126,13 +126,15 @@ def _check_counts(s, c, initial_ionized, initial_state):
 def solve(source, capacity, initial_ionized=None, *, initial_state=None,
           min_angles=24, max_angles=12288, rays_per_surface_cell=4.,
           periodic=True, maximum_distance=None, return_dense=False,
-          effective_density="remaining"):
+          effective_density="remaining", angular_reference_distance=None):
     """Solve a constant-emission, static-gas interval; return counts and state.
 
     Pass the returned ``state`` to the next call as ``initial_state`` to preserve
     the resolved front. A coarse ``initial_ionized`` instead assumes all eight
     children initially share the same ionized fraction. ``return_dense`` is an
     optional debugging/reference output and defeats sparse output memory.
+    ``angular_reference_distance`` fixes the radius cap used to choose angles;
+    it does not truncate transport. Hold it constant in distance comparisons.
     """
     lib = library()  # One-time compilation is excluded from timings.
     started = time.perf_counter()
@@ -143,6 +145,9 @@ def solve(source, capacity, initial_ionized=None, *, initial_state=None,
     horizon = float(n*np.sqrt(3.) if maximum_distance is None else maximum_distance)
     if not np.isfinite(horizon) or horizon <= 0 or 2*horizon > _INTMAX-2*n-2:
         raise ValueError("Maximum distance exceeds supported positive voxel range")
+    angular_horizon = horizon if angular_reference_distance is None else float(angular_reference_distance)
+    if not np.isfinite(angular_horizon) or angular_horizon <= 0 or 2*angular_horizon > _INTMAX-2*n-2:
+        raise ValueError("Angular reference distance exceeds supported positive voxel range")
     for name, count in (("min_angles", min_angles), ("max_angles", max_angles)):
         if (isinstance(count, bool) or not isinstance(count, (int, np.integer))
                 or count < 24 or count > _INTMAX or count % 24):
@@ -164,6 +169,7 @@ def solve(source, capacity, initial_ionized=None, *, initial_state=None,
                  "source_relative_error": 0., "angle_relative_error": 0.,
                  "maximum_local_fraction_violation": 0., "effective_density": effective_density,
                  "source_positions": "original coarse centres", "maximum_distance": horizon,
+                 "angular_reference_distance": angular_horizon,
                  "return_dense": bool(return_dense), "continuum_accuracy_certified": False,
                  "state_bytes": c.nbytes, "preparation_seconds": time.perf_counter()-started}
         for name in ("events", "rays_materialized", "queries", "assignments", "promotions",
@@ -187,7 +193,7 @@ def solve(source, capacity, initial_ionized=None, *, initial_state=None,
     levels, counts, radius, _ = hybrid.estimate_angles(
         s, density, rem, min_angles=min_angles, max_angles=max_angles,
         rays_per_surface_cell=rays_per_surface_cell, periodic=periodic,
-        maximum_distance=horizon)
+        maximum_distance=angular_horizon)
     used = np.unique(levels[s > 0]) if (s > 0).any() else np.array([0])
     mapping = np.zeros(len(counts), dtype=np.int32)
     mapping[used] = np.arange(len(used))
@@ -272,6 +278,7 @@ def solve(source, capacity, initial_ionized=None, *, initial_state=None,
              "maximum_local_fraction_violation": local_violation,
              "preparation_seconds": preparation_seconds, "seconds": time.perf_counter()-started,
              "return_dense": bool(return_dense), "maximum_distance": horizon,
+             "angular_reference_distance": angular_horizon,
              "effective_density": effective_density,
              "source_positions": "original coarse centres", "continuum_accuracy_certified": False}
     names = ("events", "rays_materialized", "queries", "assignments", "promotions",

@@ -98,6 +98,33 @@ Native 21cmFAST uses its requested OpenMP threads; the event-transport kernel
 remains serial. `REPORT.md` summarizes the measured accuracy and cost;
 `results.json` retains all cases and source hashes.
 
+### Controlled transport distance
+
+`angular_reference_distance` optionally fixes the radius cap used by the angle
+predictor while `maximum_distance` changes the actual path cutoff. The default
+is unchanged. Distance-only tests must keep the angular bank fixed.
+
+`distance_control.solve_distance_converged` reruns the same static source and
+initial gas state at increasing distances, without rescaling the source or
+re-emitting retained photons. It returns both the last solution and an explicit
+convergence flag. Acceptance requires small retained fraction and small
+successive absorbed-field L1 change; an optional scalar-statistic callback adds
+a power/bias check. Exhausting the distance ladder is not successful convergence.
+Example for a periodic box with `n` original cells per side:
+
+```python
+from distance_control import solve_distance_converged
+result, check = solve_distance_converged(
+    source, capacity, distances=[n/3, 2*n/3, 4*n/3, 8*n/3],
+    retained_tolerance=1e-4, field_tolerance=1e-3,
+)
+```
+
+This controls truncation at fixed spatial/angular discretization. Retained
+photon totals do not retain ray positions, directions or emission times;
+re-emitting them from source centres after a completed interval changes the
+transport problem. Full cosmological continuation remains separate work.
+
 ## Pull and compare on Gadi
 
 From the existing fork checkout on a Gadi login node:
