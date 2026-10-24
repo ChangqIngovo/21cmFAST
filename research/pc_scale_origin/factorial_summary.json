@@ -1,0 +1,55 @@
+{
+  "scope": "One static native32 fixture, conservatively coarsened to source/density16; measured oncommon8 mesh (18 Fourier modes)",
+  "input_result_sha256": {
+    "factorial_results.json": "37462c916eefadd8076eceb25abe976d67793c3db045c5d80b157dc40f9d24a2",
+    "factorial_high_angles.json": "71db4fd22d582868cd8f3d82e607ffe9edaac24596536396096415319b698056",
+    "factorial_front_angular_check.json": "3805ae396bf5198b6df33c7e7b34e4b7fa3557cf9e81ed325406e26f7c3bf86f",
+    "factorial_fine_angular_check.json": "ebf08b7fdd5521e2d742e6b7c40e811b359fffbe9835cd56ccd96eba0aefe8d7",
+    "factorial_front_final_check.json": "59abdc3cdfa02492ba14fe9597f4f4bfa0581373ffb6c2e06f5f7e45aa769cb1"
+  },
+  "case_count": 66,
+  "max_global_relative_residual": 6.098637221422089e-19,
+  "max_source_relative_residual": 3.296829098490889e-16,
+  "final_front_only": {
+    "source_grid": 8,
+    "piecewise_density_grid": 8,
+    "measurement_grid": 8,
+    "fine_gas_grid": 32,
+    "coarse_gas_grid": 16,
+    "angles": 12288,
+    "source_positions_fixed": true,
+    "density_field_fixed": true,
+    "b2_fine": 535.4319311053827,
+    "b2_coarse": 608.0387337655202,
+    "b2_ratio": 1.1356041700954276,
+    "maximum_Q_difference": 3.196884168499281e-08,
+    "retained_fraction_fine": 0.0,
+    "retained_fraction_coarse": 3.552093524509362e-08,
+    "signed_cross_bias_fine": -22.69481198578907,
+    "signed_cross_bias_coarse": -24.247949551595035,
+    "density_ionization_covariance_fine": 0.0077313219604396854,
+    "density_ionization_covariance_coarse": 0.00932984058606745,
+    "angular_doubling_b2_change_fine": -0.0017882083285697403,
+    "angular_doubling_b2_change_coarse": 0.0008062971698798993
+  },
+  "interpretation": "Gas-front coarsening alone causes a robust power increase with stronger ionization-density covariance in this controlled fixture. Fine-grid source/density coarsening contributions can interact and should not be added as independent percentages. The causal existence is established locally; the production500 percentage attribution remains unmeasured.",
+  "fine_source_front_refinement": {
+    "source_grid": 16,
+    "piecewise_density_grid": 16,
+    "measurement_grid": 8,
+    "gas_grids": [
+      32,
+      64
+    ],
+    "angles": 1536,
+    "dose": 0.9,
+    "b2_gas32": 537.1724792198602,
+    "b2_gas64": 522.6368681022333,
+    "relative_change": -0.027059485881959278,
+    "both_retained_fraction": [
+      0.0,
+      0.0
+    ]
+  },
+  "terminology_note": "The field named stochastic_HI_power is the power orthogonal to the linear matter mode in that band; it does not imply a stochastic physical source."
+}

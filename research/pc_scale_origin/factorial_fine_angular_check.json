@@ -1,0 +1,154 @@
+{
+  "scope": "Frozen source-position/density/front-mesh factorial; all spectra on one mesh",
+  "fixture": "/workspace/scratch/40b418003e4a/upload/native_fields32",
+  "fixture_sha256": "502ef71b98c64a298acad576e917713ceef939b22b500699e2ab6756131b6e92",
+  "code_sha256": {
+    "pc_scale_origin/point_front.cpp": "d9e26fdaf688e81dca7fa8475931fcc50b8ac748ae813e8a6aca6821e599e636",
+    "pc_scale_origin/point_front.py": "60e03cd1991ec810cf38ecc95fd7b8db5d79dc5f0af11f1f6e5a3cf5bff6e4f5",
+    "pc_scale_origin/factorial.py": "9a00661b16e59e8faa00d890b9725175e14bc5b4ccc8335accef359346113248",
+    "pc_refinement/front_subcells.py": "c461b7c7f71ff7b7e2348a9b0891d0ed6298edf9b8c996a508d8fd09c51cfcd5",
+    "pc_large_scale/pc_statistics.py": "e9a21f8f60d23baa1cbd4b0fa3c56940c93985ae1a892a7a7d183307a784ee44"
+  },
+  "config": {
+    "base_grid": 16,
+    "measurement_grid": 8,
+    "doses": [
+      0.9
+    ],
+    "angles": 1536,
+    "box_hMpc": 135.6,
+    "band_hMpc_inv": [
+      0.04,
+      0.08
+    ],
+    "horizon_boxes": 8.0,
+    "doubled_angles": false,
+    "variants": [
+      "A_fine_sources_gas2",
+      "I_fine_sources_gas4"
+    ]
+  },
+  "cases": [
+    {
+      "key": "q0.900_K1536_A_fine_sources_gas2",
+      "variant": "A_fine_sources_gas2",
+      "dose": 0.9,
+      "angles": 1536,
+      "source_grid": 16,
+      "gas_grid": 32,
+      "density_grid": 16,
+      "seconds": 7.234400230001484,
+      "retained_fraction": 0.0,
+      "mass_budget_closed_for_comparison": true,
+      "spectra": {
+        "Q_mass": 0.9000000000000001,
+        "Q_volume": 0.8912387535727851,
+        "k_hMpc_inv": 0.05913155619423069,
+        "full_fft_modes": 18,
+        "P_HI": 59725.35366942767,
+        "P_matter": 111.18468644590146,
+        "P_cross": -2519.46805971035,
+        "b_HI_squared": 537.1724792198602,
+        "r_HI_matter": -0.9777031268025644,
+        "P_21_mK2_hMpc3": 371662.3436914665,
+        "Delta2_21_mK2": 3.89293135921173,
+        "signed_cross_bias": -22.66020744624966,
+        "stochastic_HI_power": 2633.684782191005
+      },
+      "independent_audit": {
+        "global_relative_residual": 1.2046690807747338e-19,
+        "maximum_source_relative_residual": 0.0,
+        "maximum_local_fraction_violation": 0.0,
+        "negative_fraction": 0.0
+      },
+      "solver_audit": {
+        "scope": "Dense explicit-source static opaque-cell reference",
+        "photons": 29491.199994240065,
+        "absorbed": 29491.199994240065,
+        "retained": 0.0,
+        "escaped": 0.0,
+        "ledger_residual": -3.552713678800501e-15,
+        "relative_ledger_residual": 1.2046690807747335e-19,
+        "source_relative_error": 0.0,
+        "maximum_local_fraction_violation": 0.0,
+        "angles": 1536,
+        "maximum_distance": 256.0,
+        "seconds": 7.234378847002517,
+        "events": 24129,
+        "queries": 102594512,
+        "assignments": 25991622,
+        "rays": 6291456,
+        "ray_size": 80,
+        "ray_bytes": 503316480
+      }
+    },
+    {
+      "key": "q0.900_K1536_I_fine_sources_gas4",
+      "variant": "I_fine_sources_gas4",
+      "dose": 0.9,
+      "angles": 1536,
+      "source_grid": 16,
+      "gas_grid": 64,
+      "density_grid": 16,
+      "seconds": 15.520778936999704,
+      "retained_fraction": 0.0,
+      "mass_budget_closed_for_comparison": true,
+      "spectra": {
+        "Q_mass": 0.9000000000000001,
+        "Q_volume": 0.8914607104001182,
+        "k_hMpc_inv": 0.05913155619423069,
+        "full_fft_modes": 18,
+        "P_HI": 58109.216305014765,
+        "P_matter": 111.18468644590146,
+        "P_cross": -2486.968287527046,
+        "b_HI_squared": 522.6368681022333,
+        "r_HI_matter": -0.978419839698072,
+        "P_21_mK2_hMpc3": 361605.35174949124,
+        "Delta2_21_mK2": 3.7875906380577025,
+        "signed_cross_bias": -22.367903054141514,
+        "stochastic_HI_power": 2480.9507508854585
+      },
+      "independent_audit": {
+        "global_relative_residual": 1.8070036211621006e-19,
+        "maximum_source_relative_residual": 0.0,
+        "maximum_local_fraction_violation": 0.0,
+        "negative_fraction": 0.0
+      },
+      "solver_audit": {
+        "scope": "Dense explicit-source static opaque-cell reference",
+        "photons": 29491.199994240065,
+        "absorbed": 29491.199994240065,
+        "retained": 0.0,
+        "escaped": 0.0,
+        "ledger_residual": -5.329070518200751e-15,
+        "relative_ledger_residual": 1.8070036211621006e-19,
+        "source_relative_error": 0.0,
+        "maximum_local_fraction_violation": 0.0,
+        "angles": 1536,
+        "maximum_distance": 512.0,
+        "seconds": 15.520752377000463,
+        "events": 216288,
+        "queries": 212693631,
+        "assignments": 41941394,
+        "rays": 6291456,
+        "ray_size": 80,
+        "ray_bytes": 503316480
+      }
+    }
+  ],
+  "contrasts": [
+    {
+      "dose": 0.9,
+      "angles": 1536,
+      "effect": "front2_to4_at_fixed_fine_sources",
+      "before": "A_fine_sources_gas2",
+      "after": "I_fine_sources_gas4",
+      "b2_ratio": 0.9729405141180407,
+      "signed_cross_bias_change": 0.2923043921081465,
+      "Q_mass_change": 0.0,
+      "common_mesh_L1_over_atoms": 0.004811560881009967,
+      "both_mass_budgets_closed": true
+    }
+  ],
+  "interpretation": "All before/after ratios share one output mesh and total emitted budget. Density and source aggregation effects may interact; multiplicative chains depend on order. Gas refinement retains source coordinates and the same piecewise density, so it does not create new physical density information. A source aggregation comparison changes spatial positions, not the summed isotropic emission at each coincident point. This diagnoses one small realization, not the production500 results."
+}
