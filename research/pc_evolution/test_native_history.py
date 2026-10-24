@@ -104,15 +104,20 @@ def test_structural_or_physical_corruption_is_rejected(change, message):
         validate_history(history, verify_hashes=False)
 
 
-def test_true_native_history_shares_ics_and_uses_separate_reference_density(tmp_path):
+@pytest.mark.parametrize("highres_dimension", [None, 32], ids=["default_dim", "explicit_dim"])
+def test_true_native_history_shares_ics_and_uses_separate_reference_density(tmp_path, highres_dimension):
     pytest.importorskip("py21cmfast")
     path = tmp_path / "native.npz"
     result = build_native_history(output=path, dimension=8, box_len=24., threads=2,
                                   seed=1234, z_start=10., z_end=8., intervals=2,
-                                  reference_z=8.5)
+                                  reference_z=8.5, highres_dimension=highres_dimension)
     loaded = load_history(path)
     np.testing.assert_array_equal(loaded["redshifts"], [10., 9., 8.])
     assert loaded["rates"].shape == (3, 8, 8, 8)
+    expected_dim = 24 if highres_dimension is None else highres_dimension
+    assert loaded["metadata"]["highres_dimension"] == expected_dim
+    assert loaded["metadata"]["inputs"]["simulation_options"]["DIM"] == expected_dim
+    assert loaded["metadata"]["inputs"]["simulation_options"]["HII_DIM"] == 8
     assert loaded["metadata"]["reference_redshift_is_source_endpoint"] is False
     assert loaded["metadata"]["same_initial_conditions_for_all_nodes"] is True
     assert loaded["metadata"]["local_cumulative_n_ion_differenced"] is False
@@ -128,3 +133,27 @@ def test_true_native_history_shares_ics_and_uses_separate_reference_density(tmp_
     assert array_hash(result["capacity"]) not in {
         row["native_density_capacity_sha256_float64"]
         for row in result["metadata"]["source_provenance"]}
+
+
+@pytest.mark.parametrize("highres_dimension", [True, 0, -1, 7, 8.5, "32"])
+def test_invalid_highres_dimension_rejected_before_generation(tmp_path, highres_dimension):
+    path = tmp_path / "new" / "native.npz"
+    with pytest.raises(ValueError, match="highres_dimension must be an integer >= 8"):
+        build_native_history(output=path, dimension=8, highres_dimension=highres_dimension)
+    assert not path.parent.exists()
+
+
+def test_native_dimension_override_preserves_other_inputs(monkeypatch):
+    pytest.importorskip("py21cmfast")
+    from native_history import ROOT
+    monkeypatch.syspath_prepend(str(ROOT / "research/pc_reconsidered"))
+    from native_driver import prepare_native
+    default, default_changes = prepare_native(dimension=8)
+    override, override_changes = prepare_native(dimension=8, highres_dimension=32)
+    a = default.asdict(include_cosmo_tables="never", only_cstruct_params=False)
+    b = override.asdict(include_cosmo_tables="never", only_cstruct_params=False)
+    assert a["simulation_options"]["DIM"] == 24
+    assert b["simulation_options"]["DIM"] == 32
+    b["simulation_options"]["DIM"] = a["simulation_options"]["DIM"]
+    assert a == b
+    assert default_changes == override_changes

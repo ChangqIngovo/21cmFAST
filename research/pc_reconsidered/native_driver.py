@@ -289,11 +289,22 @@ def compare_native_coeval(coeval, *, min_angles=24, max_angles=12288,
                 control=control, candidate=candidate, metadata=metadata)
 
 
-def prepare_native(*, dimension=32, box_len=200., threads=4, random_seed=1234):
-    """Construct documented restrictions from a Qin20 parameter starting point."""
+def prepare_native(*, dimension=32, box_len=200., threads=4, random_seed=1234,
+                   highres_dimension=None):
+    """Construct documented restrictions from a Qin20 parameter starting point.
+
+    ``highres_dimension`` sets the native initial-condition DIM independently
+    of the source/transport HII_DIM.  Omitting it retains DIM = 3 * HII_DIM.
+    """
+    if highres_dimension is None:
+        highres_dimension = 3 * dimension
+    elif (isinstance(highres_dimension, (bool, np.bool_))
+          or not isinstance(highres_dimension, (int, np.integer))
+          or highres_dimension < dimension):
+        raise ValueError("highres_dimension must be an integer >= dimension")
     from py21cmfast.wrapper.inputs import InputParameters
     base = InputParameters.from_template(
-        "Qin20", random_seed=random_seed, HII_DIM=dimension, DIM=3 * dimension,
+        "Qin20", random_seed=random_seed, HII_DIM=dimension, DIM=int(highres_dimension),
         HIRES_TO_LOWRES_FACTOR=None, BOX_LEN=box_len, N_THREADS=threads,
         R_BUBBLE_MAX=min(50., box_len / 3),
     )

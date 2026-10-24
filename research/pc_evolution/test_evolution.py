@@ -1,5 +1,6 @@
 """Independent history, storage and photon accounting checks."""
 from pathlib import Path
+import json
 import sys
 
 import numpy as np
@@ -9,6 +10,7 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from evolution import checkpoint_state, read_checkpoint, run_history, solve
 from fine_state_metrics import fine_state_metrics
+import evolution
 
 
 def fixture(rates=None):
@@ -183,3 +185,175 @@ def test_early_source_quadrature_error_is_not_diluted_by_late_emission():
     assert checkpoint["source_quadrature"]["coarse_endpoint_emitted"] == 0
     assert np.count_nonzero(checkpoint["fields"]["source_coarse_endpoint_emitted"]) == 0
     assert quadrature["checkpoints"][-1]["cumulative_L1_over_emitted"] < .01
+
+
+def _interrupt_after_checkpoint(data, output, monkeypatch, **kwargs):
+    """Kill after one uncommitted step, requiring that step to be repeated."""
+    original = evolution.solve
+    calls = 0
+    def interrupted(*args, **options):
+        nonlocal calls
+        calls += 1
+        if calls == 7:  # neutral initialization, nodes 1..5, fail at node 6
+            raise InterruptedError("simulated worker termination")
+        return original(*args, **options)
+    monkeypatch.setattr(evolution, "solve", interrupted)
+    with pytest.raises(InterruptedError):
+        run_history(data, output=output, **kwargs)
+    monkeypatch.setattr(evolution, "solve", original)
+    progress = json.loads((output/"progress.json").read_text())["payload"]
+    assert progress["checkpoints"][-1]["node_index"] == 4
+    assert len(progress["steps"]) == 4
+
+
+def test_interrupted_evolution_resumes_all_fine_state_and_source_ledgers(tmp_path, monkeypatch):
+    rates = np.zeros((9, 3, 3, 3))
+    rates[:, 0, 1, 1] = [0, .1, 2, 4, .2, 0, 0, 0, 0]
+    rates[:, 2, 1, 1] = [0, 0, 0, 0, 1, 3, 2, .5, 0]
+    data = fixture(rates)
+    options = dict(angles=96)
+    reference = run_history(data, output=tmp_path/"reference", **options)
+    output = tmp_path/"interrupted"
+    _interrupt_after_checkpoint(data, output, monkeypatch, **options)
+    # Unknown files are neither removed nor treated as checkpoints.
+    note = output/"user_notes.txt"
+    note.write_text("keep this")
+    resumed = run_history(data, output=output, resume=True, **options)
+    assert note.read_text() == "keep this"
+    assert resumed["final_ledger"] == reference["final_ledger"]
+    assert resumed["source_quadrature"] == reference["source_quadrature"]
+    assert [r["ledger"] for r in resumed["steps"]] == [r["ledger"] for r in reference["steps"]]
+    assert [r["ledger"] for r in resumed["checkpoints"]] == [r["ledger"] for r in reference["checkpoints"]]
+    for actual, expected in zip(resumed["checkpoints"], reference["checkpoints"]):
+        af, ef = read_checkpoint(actual["path"]), read_checkpoint(expected["path"])
+        for name in ("ionized", "cleared_bits", "partial_ids", "partial_ionized",
+                     "source_emitted", "source_absorbed", "source_escaped", "source_retained",
+                     "source_coarse_endpoint_emitted", "summed_interval_quadrature_l1",
+                     "signed_interval_quadrature_difference"):
+            np.testing.assert_array_equal(af[name], ef[name])
+    # A complete restart does not recompute the transport or mutate its report.
+    def must_not_solve(*args, **kwargs):
+        raise AssertionError("complete run should be read only")
+    monkeypatch.setattr(evolution, "solve", must_not_solve)
+    assert run_history(data, output=output, resume=True, **options) == resumed
+
+
+def test_resume_preserves_retained_inventory_without_reemission(tmp_path, monkeypatch):
+    rates = np.zeros((9, 3, 3, 3))
+    rates[:3, 1, 1, 1] = 8
+    data = fixture(rates)
+    options = dict(angles=24, maximum_distance=.1)
+    reference = run_history(data, **options)
+    output = tmp_path/"retained"
+    _interrupt_after_checkpoint(data, output, monkeypatch, **options)
+    resumed = run_history(data, output=output, resume=True, **options)
+    before = read_checkpoint(resumed["checkpoints"][1]["path"])
+    after = read_checkpoint(resumed["checkpoints"][-1]["path"])
+    assert resumed["final_ledger"]["retained"] > 0
+    assert resumed["final_ledger"] == reference["final_ledger"]
+    np.testing.assert_array_equal(before["source_retained"], after["source_retained"])
+    np.testing.assert_array_equal(before["ionized"], after["ionized"])
+
+
+@pytest.mark.parametrize("change", ["rates", "capacity", "metadata", "angles", "stride", "horizon", "code"])
+def test_resume_rejects_changed_inputs_or_method(tmp_path, monkeypatch, change):
+    data = fixture()
+    output = tmp_path/"run"
+    _interrupt_after_checkpoint(data, output, monkeypatch, angles=24)
+    options = dict(angles=24)
+    if change == "rates":
+        data["rates"][7, 0, 1, 1] += .01
+    elif change == "capacity":
+        data["capacity"][0, 0, 0] *= 1.01
+    elif change == "metadata":
+        data["metadata"]["fixture"] = "a different source convention"
+    elif change == "angles":
+        options["angles"] = 48
+    elif change == "stride":
+        options["stride"] = 2
+    elif change == "horizon":
+        options["maximum_distance"] = 25
+    else:
+        digest = evolution._file_digest
+        monkeypatch.setattr(evolution, "_file_digest",
+                            lambda path: "changed" if Path(path).name == "refined.cpp" else digest(path))
+    with pytest.raises(ValueError, match="input, code, runtime or settings changed"):
+        run_history(data, output=output, resume=True, **options)
+
+
+@pytest.mark.parametrize("target", ["checkpoint", "journal", "summary"])
+def test_resume_rejects_changed_persistent_outputs(tmp_path, monkeypatch, target):
+    data = fixture()
+    output = tmp_path/"run"
+    report = run_history(data, output=output, angles=24)
+    if target == "checkpoint":
+        # A zip reader may tolerate trailing bytes; the hash check must not.
+        with Path(report["checkpoints"][0]["path"]).open("ab") as stream:
+            stream.write(b"modified")
+    elif target == "journal":
+        path = output/"progress.json"
+        value = json.loads(path.read_text())
+        value["payload"]["steps"][0]["emitted_increment"] += 1
+        path.write_text(json.dumps(value))
+    else:
+        with (output/"summary.json").open("a") as stream:
+            stream.write("\n")
+    with pytest.raises(ValueError, match="checksum"):
+        run_history(data, output=output, angles=24, resume=True)
+
+
+def test_resume_replays_checkpoint_published_before_its_journal(tmp_path, monkeypatch):
+    data = fixture()
+    output = tmp_path/"run"
+    original = evolution._write_progress
+    def interrupted(path, payload):
+        if payload["checkpoints"][-1]["node_index"] == 8:
+            raise InterruptedError("checkpoint renamed before journal")
+        return original(path, payload)
+    monkeypatch.setattr(evolution, "_write_progress", interrupted)
+    with pytest.raises(InterruptedError):
+        run_history(data, output=output, angles=24, stride=4)
+    assert (output/"checkpoints/node_00008.npz").is_file()
+    assert json.loads((output/"progress.json").read_text())["payload"]["checkpoints"][-1]["node_index"] == 4
+    monkeypatch.setattr(evolution, "_write_progress", original)
+    resumed = run_history(data, output=output, angles=24, stride=4, resume=True)
+    reference = run_history(data, angles=24, stride=4)
+    np.testing.assert_array_equal(read_checkpoint(resumed["checkpoints"][-1]["path"])["ionized"],
+                                  final(reference)["ionized"])
+    assert resumed["final_ledger"] == reference["final_ledger"]
+
+
+def test_resume_requires_explicit_existing_journal(tmp_path):
+    with pytest.raises(ValueError, match="output directory"):
+        run_history(fixture(), resume=True)
+    with pytest.raises(FileNotFoundError, match="progress.json"):
+        run_history(fixture(), output=tmp_path/"absent", resume=True)
+    with pytest.raises(ValueError, match="boolean"):
+        run_history(fixture(), output=tmp_path/"absent", resume="yes")
+
+
+def test_resume_recovers_initial_checkpoint_before_first_journal(tmp_path, monkeypatch):
+    data = fixture()
+    output = tmp_path/"run"
+    original = evolution._write_progress
+    def interrupted(*args, **kwargs):
+        raise InterruptedError("initial checkpoint published without journal")
+    monkeypatch.setattr(evolution, "_write_progress", interrupted)
+    with pytest.raises(InterruptedError):
+        run_history(data, output=output, angles=24, stride=4)
+    assert (output/"checkpoints/node_00000.npz").is_file()
+    assert not (output/"progress.json").exists()
+    monkeypatch.setattr(evolution, "_write_progress", original)
+    resumed = run_history(data, output=output, angles=24, stride=4, resume=True)
+    reference = run_history(data, angles=24, stride=4)
+    np.testing.assert_array_equal(read_checkpoint(resumed["checkpoints"][-1]["path"])["ionized"],
+                                  final(reference)["ionized"])
+    assert resumed["final_ledger"] == reference["final_ledger"]
+
+
+def test_missing_journal_cannot_restart_completed_history_from_zero(tmp_path):
+    output = tmp_path/"run"
+    run_history(fixture(), output=output, angles=24)
+    (output/"progress.json").unlink()
+    with pytest.raises(ValueError, match="noninitial results"):
+        run_history(fixture(), output=output, angles=24, resume=True)

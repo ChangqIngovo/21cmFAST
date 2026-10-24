@@ -127,6 +127,11 @@ def _write_checkpoint(path, fields):
             stream.flush()
             os.fsync(stream.fileno())
         temporary.replace(path)
+        descriptor = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
     finally:
         if temporary is not None and temporary.exists():
             temporary.unlink()
@@ -134,8 +139,107 @@ def _write_checkpoint(path, fields):
         return hashlib.file_digest(stream, "sha256").hexdigest()
 
 
+def _file_digest(path):
+    with Path(path).open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def _json_bytes(value):
+    return json.dumps(value, sort_keys=True, separators=(",", ":"), allow_nan=False).encode()
+
+
+def _atomic_json(path, value):
+    """Publish one complete JSON record; uncommitted temporary files are ignored."""
+    temporary = None
+    try:
+        with tempfile.NamedTemporaryFile(mode="w", dir=path.parent,
+                                         prefix=".evolution-", suffix=".json.partial",
+                                         delete=False) as stream:
+            temporary = Path(stream.name)
+            stream.write(json.dumps(value, indent=2, allow_nan=False)+"\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        temporary.replace(path)
+        # Persist the directory entry as well as the file contents.
+        descriptor = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(descriptor)
+        finally:
+            os.close(descriptor)
+    finally:
+        if temporary is not None and temporary.exists():
+            temporary.unlink()
+
+
+def _history_identity(capacity, rates, times, redshifts, metadata, settings):
+    """Hash source slices without materializing a second full rate history."""
+    arrays = {}
+    for name, value in (("capacity", capacity), ("rates", rates),
+                        ("times_seconds", times), ("redshifts", redshifts)):
+        digest = hashlib.sha256()
+        digest.update(_json_bytes(dict(shape=list(np.shape(value)),
+                                       dtype=np.asarray(value[0]).dtype.str)))
+        for row in value:
+            digest.update(np.ascontiguousarray(row).tobytes())
+        arrays[name] = digest.hexdigest()
+    files = (HERE/"evolution.py", HERE.parent/"pc_refined_front/refined.py",
+             HERE.parent/"pc_refined_front/refined.cpp",
+             HERE.parent/"pc_refinement/front_subcells.py",
+             HERE.parent/"pc_reconsidered/source_budget.py")
+    return dict(version=1, arrays=arrays, metadata=metadata, settings=settings,
+                code_sha256={str(path.relative_to(HERE.parent)): _file_digest(path)
+                             for path in files},
+                runtime=dict(python=sys.version, numpy=np.__version__,
+                             longdouble_dtype=np.dtype(np.longdouble).str,
+                             longdouble_mantissa=int(np.finfo(np.longdouble).nmant)))
+
+
+def _write_progress(path, payload):
+    _atomic_json(path, dict(version=1,
+                           sha256=hashlib.sha256(_json_bytes(payload)).hexdigest(),
+                           payload=payload))
+
+
+def _read_progress(path, identity):
+    record = json.loads(path.read_text())
+    payload = record.get("payload")
+    if (record.get("version") != 1 or not isinstance(payload, dict)
+            or record.get("sha256") != hashlib.sha256(_json_bytes(payload)).hexdigest()):
+        raise ValueError("Evolution progress journal checksum mismatch")
+    if payload.get("identity") != identity:
+        raise ValueError("Evolution resume input, code, runtime or settings changed")
+    return payload
+
+
+def _recover_initial_checkpoint(directory, identity):
+    """Recognize the sole crash window before the first journal exists.
+
+    No interval has run yet. Rebuilding the neutral initialization is safe
+    only when its published checkpoint identifies this exact history and no
+    later published result exists. Unrelated files are left untouched.
+    """
+    path = directory/"checkpoints/node_00000.npz"
+    if not path.is_file():
+        raise FileNotFoundError("Evolution resume requires a durable progress.json or initial checkpoint")
+    if ((directory/"summary.json").exists()
+            or any(other != path for other in path.parent.glob("node_*.npz"))):
+        raise ValueError("Missing evolution journal for existing noninitial results")
+    fields = read_checkpoint(path)
+    fingerprint = hashlib.sha256(_json_bytes(identity)).hexdigest()
+    if ("evolution_identity_sha256" not in fields
+            or str(fields["evolution_identity_sha256"].item()) != fingerprint
+            or int(fields["node_index"]) != 0 or float(fields["time_seconds"]) != 0):
+        raise ValueError("Unjournaled initial checkpoint belongs to a different history")
+    for key in ("ionized", "cleared_bits", "partial_ids", "partial_ionized",
+                "source_emitted", "source_absorbed", "source_escaped", "source_retained",
+                "source_coarse_endpoint_emitted", "summed_interval_quadrature_l1",
+                "signed_interval_quadrature_difference"):
+        if np.any(fields[key] != 0):
+            raise ValueError("Unjournaled initial checkpoint is not a neutral initial state")
+
+
 def run_history(history, *, subcells_per_axis=4, angles=384, stride=1,
-                maximum_distance=None, output=None):
+                maximum_distance=None, output=None, resume=False):
     """Run an initially neutral, fixed-capacity history and return a report.
 
     ``history`` is a mapping (an open npz archive is accepted) containing
@@ -154,6 +258,10 @@ def run_history(history, *, subcells_per_axis=4, angles=384, stride=1,
     output those entries instead contain an in-memory ``fields`` mapping.
     No dense fine field is constructed. The returned state stores ionized
     gas only; escaped and retained photons are accumulated, never re-emitted.
+    ``resume=True`` restores the last atomically journaled checkpoint in
+    ``output`` after verifying inputs, code, settings and all checkpoint hashes.
+    Work after that checkpoint is repeated. A completed identical run is read
+    back without invoking the transport solver.
     """
     if isinstance(stride, (bool, np.bool_)) or stride not in (1, 2, 4):
         raise ValueError("Time stride must be 1, 2 or 4")
@@ -170,10 +278,43 @@ def run_history(history, *, subcells_per_axis=4, angles=384, stride=1,
     horizon = float(8*len(capacity) if maximum_distance is None else maximum_distance)
     if not np.isfinite(horizon) or horizon <= 0:
         raise ValueError("Positive finite transport horizon required")
+    if not isinstance(resume, (bool, np.bool_)):
+        raise ValueError("resume must be boolean")
     directory = Path(output).resolve() if output is not None else None
+    if resume and directory is None:
+        raise ValueError("Evolution resume requires an output directory")
+    identity = None
+    progress = None
     if directory is not None:
-        if directory.exists() and any(directory.iterdir()):
+        identity = _history_identity(capacity, rates, times, redshifts, metadata,
+                                     dict(subcells_per_axis=int(subcells_per_axis),
+                                          angles=int(angles), stride=int(stride),
+                                          maximum_distance=horizon, periodic=True))
+        if resume:
+            if not (directory/"progress.json").is_file():
+                _recover_initial_checkpoint(directory, identity)
+            else:
+                progress = _read_progress(directory/"progress.json", identity)
+        elif directory.exists() and any(directory.iterdir()):
             raise FileExistsError("Evolution output must be a fresh or empty directory")
+        if progress is not None:
+            checkpoints = progress.get("checkpoints", [])
+            if not checkpoints:
+                raise ValueError("Evolution progress has no durable checkpoint")
+            expected = [0, *[i for i in range(1, len(times))
+                              if i % 4 == 0 or i == len(times)-1]]
+            if [row["node_index"] for row in checkpoints] != expected[:len(checkpoints)]:
+                raise ValueError("Evolution checkpoint sequence changed")
+            for row in checkpoints:
+                path = directory/"checkpoints"/f"node_{row['node_index']:05d}.npz"
+                if row["path"] != str(path) or _file_digest(path) != row["sha256"]:
+                    raise ValueError("Evolution checkpoint path or checksum changed")
+            if progress.get("status") == "complete":
+                if _file_digest(directory/"summary.json") != progress.get("summary_sha256"):
+                    raise ValueError("Evolution completed summary checksum changed")
+                return json.loads((directory/"summary.json").read_text())
+            if progress.get("status") != "running":
+                raise ValueError("Evolution progress has an unsupported status")
         (directory/"checkpoints").mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
     angles = int(angles)
@@ -181,13 +322,51 @@ def run_history(history, *, subcells_per_axis=4, angles=384, stride=1,
     angular = np.full(capacity.shape, angles, dtype=np.int32)
     options = dict(subcells_per_axis=subcells_per_axis, angle_counts=angular,
                    maximum_distance=horizon, periodic=True)
-    state = solve(np.zeros_like(capacity), capacity, **options)["state"]
-    cumulative = {name: np.zeros(capacity.shape, dtype=np.longdouble)
-                  for name in ("emitted", "absorbed", "escaped", "retained")}
-    coarse_endpoint_emitted = np.zeros(capacity.shape, dtype=np.longdouble)
-    steps, checkpoints = [], []
-    quadrature_l1 = np.longdouble(0)
-    quadrature_signed = np.longdouble(0)
+    identity_sha256 = hashlib.sha256(_json_bytes(identity)).hexdigest() if identity else None
+    elapsed_before = 0.
+    start_node = 0
+    if progress is None:
+        state = solve(np.zeros_like(capacity), capacity, **options)["state"]
+        cumulative = {name: np.zeros(capacity.shape, dtype=np.longdouble)
+                      for name in ("emitted", "absorbed", "escaped", "retained")}
+        coarse_endpoint_emitted = np.zeros(capacity.shape, dtype=np.longdouble)
+        steps, checkpoints = [], []
+        quadrature_l1 = np.longdouble(0)
+        quadrature_signed = np.longdouble(0)
+    else:
+        steps, checkpoints = progress["steps"], progress["checkpoints"]
+        fields = read_checkpoint(checkpoints[-1]["path"])
+        if str(fields["evolution_identity_sha256"].item()) != identity_sha256:
+            raise ValueError("Evolution checkpoint belongs to a different history")
+        start_node = int(fields["node_index"])
+        if (start_node != checkpoints[-1]["node_index"]
+                or float(fields["time_seconds"]) != times[start_node]
+                or float(fields["redshift"]) != redshifts[start_node]):
+            raise ValueError("Evolution checkpoint coordinates changed")
+        expected_steps = [(left, min(left+stride, len(times)-1))
+                          for left in range(0, start_node, stride)]
+        if [(row["left_node"], row["right_node"]) for row in steps] != expected_steps:
+            raise ValueError("Evolution journal step sequence changed")
+        state = checkpoint_state(fields)
+        cumulative = {name: np.array(fields["source_"+name], dtype=np.longdouble, copy=True)
+                      for name in ("emitted", "absorbed", "escaped", "retained")}
+        coarse_endpoint_emitted = np.array(fields["source_coarse_endpoint_emitted"],
+                                           dtype=np.longdouble, copy=True)
+        quadrature_l1 = np.longdouble(fields["summed_interval_quadrature_l1"].item())
+        quadrature_signed = np.longdouble(fields["signed_interval_quadrature_difference"].item())
+        restored_ledger = _ledger(state, capacity, cumulative["emitted"], cumulative["absorbed"],
+                                  cumulative["escaped"], cumulative["retained"])
+        if restored_ledger != checkpoints[-1]["ledger"] or not restored_ledger["passed"]:
+            raise ValueError("Evolution restored photon ledger changed")
+        elapsed_before = float(progress["elapsed_seconds"])
+
+    def journal(status="running", **extra):
+        if directory is not None:
+            _write_progress(directory/"progress.json",
+                            dict(identity=identity, status=status, steps=steps,
+                                 checkpoints=checkpoints,
+                                 elapsed_seconds=elapsed_before+time.perf_counter()-started,
+                                 **extra))
 
     def checkpoint(index):
         ledger = _ledger(state, capacity, cumulative["emitted"], cumulative["absorbed"],
@@ -200,6 +379,10 @@ def run_history(history, *, subcells_per_axis=4, angles=384, stride=1,
                       redshift=np.array(redshifts[index]))
         fields.update({"source_"+name: value for name, value in cumulative.items()})
         fields["source_coarse_endpoint_emitted"] = coarse_endpoint_emitted
+        fields["summed_interval_quadrature_l1"] = np.array(quadrature_l1)
+        fields["signed_interval_quadrature_difference"] = np.array(quadrature_signed)
+        if identity_sha256:
+            fields["evolution_identity_sha256"] = np.array(identity_sha256)
         emitted = _sum(cumulative["emitted"])
         normalization = max(emitted, np.longdouble(np.finfo(float).tiny))
         cumulative_quadrature_delta = coarse_endpoint_emitted-cumulative["emitted"]
@@ -220,11 +403,22 @@ def run_history(history, *, subcells_per_axis=4, angles=384, stride=1,
             row["fields"] = {name: np.array(value, copy=True) for name, value in fields.items()}
         else:
             path = directory/"checkpoints"/f"node_{index:05d}.npz"
+            if path.exists():
+                # A crash can publish a checkpoint before publishing its journal.
+                # Replace only that exact, identifiable checkpoint, never an
+                # unrelated user file or an already journaled checkpoint.
+                with np.load(path, allow_pickle=False) as orphan:
+                    if ("evolution_identity_sha256" not in orphan
+                            or str(orphan["evolution_identity_sha256"].item()) != identity_sha256
+                            or int(orphan["node_index"]) != index):
+                        raise FileExistsError(f"Unrecognized checkpoint already exists: {path}")
             row.update(path=str(path), sha256=_write_checkpoint(path, fields))
         checkpoints.append(row)
+        journal()
 
-    checkpoint(0)
-    for left in range(0, len(times)-1, stride):
+    if progress is None:
+        checkpoint(0)
+    for left in range(start_node, len(times)-1, stride):
         right = min(left+stride, len(times)-1)
         grouped = np.zeros(capacity.shape, dtype=np.longdouble)
         for node in range(left, right):
@@ -284,20 +478,11 @@ def run_history(history, *, subcells_per_axis=4, angles=384, stride=1,
                                         Q_mass=row["Q_mass"], **row["source_quadrature"])
                                    for row in checkpoints]),
                   final_ledger=checkpoints[-1]["ledger"],
-                  seconds=time.perf_counter()-started,
-                  timing_scope="Includes initial solver compilation if needed, checkpoints and diagnostics",
+                  seconds=elapsed_before+time.perf_counter()-started,
+                  timing_scope="Includes solver compilation if needed, checkpoints and diagnostics; resumes sum committed elapsed time and exclude discarded work",
                   continuum_accuracy_certified=False)
     if directory is not None:
         path = directory/"summary.json"
-        temporary = None
-        try:
-            with tempfile.NamedTemporaryFile(mode="w", dir=directory, suffix=".json", delete=False) as stream:
-                temporary = Path(stream.name)
-                stream.write(json.dumps(report, indent=2, allow_nan=False)+"\n")
-                stream.flush()
-                os.fsync(stream.fileno())
-            temporary.replace(path)
-        finally:
-            if temporary is not None and temporary.exists():
-                temporary.unlink()
+        _atomic_json(path, report)
+        journal("complete", summary_sha256=_file_digest(path))
     return report

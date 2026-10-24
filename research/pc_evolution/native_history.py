@@ -189,14 +189,19 @@ def _positive_integer(value, name, minimum=1):
 
 
 def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed=1234,
-                         z_start=25., z_end=5., intervals=320, reference_z=8.):
+                         z_start=25., z_end=5., intervals=320, reference_z=8.,
+                         highres_dimension=None):
     """Generate and save native endpoint rates and one explicit frozen gas grid.
 
     ``intervals + 1`` endpoints are uniformly spaced in redshift; their physical
     times follow the integrated native matter+Lambda clock.  A non-endpoint
     reference redshift is separately generated from the same IC object.
+    ``highres_dimension`` selects native IC DIM independently of the source
+    grid; its default remains three times ``dimension``.
     """
     dimension = _positive_integer(dimension, "dimension", 2)
+    highres_dimension = (3 * dimension if highres_dimension is None else
+                        _positive_integer(highres_dimension, "highres_dimension", dimension))
     threads = _positive_integer(threads, "threads")
     intervals = _positive_integer(intervals, "intervals")
     seed = _positive_integer(seed, "seed")
@@ -219,7 +224,8 @@ def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed
     from py21cmfast.io.caching import OutputCache
 
     inputs, differences = prepare_native(dimension=dimension, box_len=box_len,
-                                         threads=threads, random_seed=seed)
+                                         threads=threads, random_seed=seed,
+                                         highres_dimension=highres_dimension)
     if inputs.astro_options.HALO_SCALING_RELATIONS_MEDIAN:
         raise ValueError("Native rate conversion requires the mean-scaling integral convention")
     cosmo = {key: float(getattr(inputs.cosmo_params, key))
@@ -309,6 +315,7 @@ def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed
         "initial_hires_density_sha256": initial_density_sha,
         "random_seed": seed,
         "dimension": dimension,
+        "highres_dimension": highres_dimension,
         "box_len_cMpc": float(box_len),
         "hlittle": cosmo["hlittle"],
         "box_hMpc": float(box_len) * cosmo["hlittle"],
@@ -345,6 +352,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--dimension", type=int, default=32)
+    parser.add_argument("--highres-dimension", type=int, default=None,
+                        help="Native IC DIM; defaults to 3 * dimension")
     parser.add_argument("--box-len", type=float, default=200.)
     parser.add_argument("--threads", type=int, default=32)
     parser.add_argument("--seed", type=int, default=1234)
