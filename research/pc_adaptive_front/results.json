@@ -1,0 +1,2709 @@
+{
+  "scope": "Exact-model lazy subdivision versus full subdivision; separate analytic sphere spatial error",
+  "coarse_controls": "Original Fibonacci and latest balanced profiles use their own angular rules; matched_coarse uses the same octant rule as both fine solvers. Fixed-K tests cap all profiles equally; native defaults retain balanced 1.25x angular boost.",
+  "timing": "Warm compilation plus one untimed solve per model/case; three or requested sequential alternating measured repeats; shared host; serial event transport",
+  "memory": "Optional separate-process RSS includes all Python/native allocations; per-core audit is separate",
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "platform": "Linux-6.18.55-x86_64-with-glibc2.39",
+    "cpu": "AMD EPYC 9V74 80-Core Processor",
+    "threads": {
+      "OMP_NUM_THREADS": "1",
+      "OPENBLAS_NUM_THREADS": "1",
+      "MKL_NUM_THREADS": "1"
+    }
+  },
+  "source_hashes": {
+    "pc_adaptive_front/benchmarks.py": "e0fa765a11e16316358b260fa276033c0739d7cf7567098cc40531252f270fa0",
+    "pc_adaptive_front/adaptive.py": "835b156ac8f039b948b227098406d087e99f548185cdbb840dd2d067c002c4fc",
+    "pc_adaptive_front/adaptive.cpp": "d1d51121146e241b98263645e41ac46363705977df6b4eece57f0697e1e647f0",
+    "pc_refinement/front_subcells.py": "c461b7c7f71ff7b7e2348a9b0891d0ed6298edf9b8c996a508d8fd09c51cfcd5",
+    "pc_refinement/front_subcells.cpp": "8bf1e8dbda243fb6bc80eed8981562f9e2cfbe65b2836c85f93fa66c8b4fdd07",
+    "pc_refinement/upgraded.py": "7e31d88f7ea2fe50468d21bfdd2dad93296fea15e9fcfdfb73385d33b6fd8770",
+    "pc_refinement/budgeted.py": "ce5ff3a254e08b2e5f5f397ca16474b7df950a1505649d6eacd13ef5bde0711b",
+    "pc_refinement/speed_core.py": "5ab8db1135a840b8d6afbf8b34ce30a9164879a25f5b9bc5b68cf428709706be",
+    "pc_refinement/speed_core.cpp": "fb10d69c7904346f815ef307242ffc3e6d43a5a7284ee16483c615b61aee9266",
+    "pc_reconsidered/compare_models.py": "56a65b4fcf55895a66d2725cbf35e53fa7ed6a0b0ca5592ecb9968c0a0f7bee2",
+    "pc_reconsidered/hybrid.py": "cc5a0a9ee85a1aa163849201a5714d329927afeb55c615ef36a81e7ee435a32d",
+    "pc_reconsidered/hybrid.cpp": "ca6d17c7faea84f42f8890430be14ff5cbde35d9b22df6a119cd9ca174a225b3"
+  },
+  "cases": [
+    {
+      "case": "isolated",
+      "shape": [
+        24,
+        24,
+        24
+      ],
+      "angles": 1536,
+      "maximum_distance": 12.0,
+      "metadata": {
+        "radius_cells": 4.0,
+        "centre": [
+          12,
+          12,
+          12
+        ]
+      },
+      "analytic_reference_audit": {
+        "analytic_kind": "continuous sphere integrated over voxels",
+        "quadrature": 64,
+        "volume_relative_error": 8.352342655282285e-07,
+        "quadrature32_64_l1_over_Q": 6.236349636168152e-05
+      },
+      "input_hashes": {
+        "source": "eddd54e27551046750f02bbc2a61593a9755159e3d4556594ba7ba19e418f11f",
+        "capacity": "27802a79e65404e60964eca3393e4de89bae7d9c33d79c3f13d5fbd775e2f982",
+        "initial": "7c98d2da7afa2bdee9765910c81cb588e14781b77538fb54df84f7e7039e4348"
+      },
+      "equivalence": {
+        "L1_over_emitted": 1.0146300741647939e-17,
+        "maximum_count_difference": 1.1102230246251565e-16,
+        "volume_mean_absolute_ionized_fraction_difference": 1.9676261648811007e-19,
+        "maximum_ionized_fraction_difference": 1.1102230246251565e-16,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 6.573146341691269e-15,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 0.0
+        },
+        "maximum_subcell_fraction_difference": 0.0,
+        "subcell_L1_over_emitted": 0.0
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.001863701000729634,
+            0.0021516110000447952,
+            0.0018912719997388194
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 268.082573106329,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.684341886080802e-14,
+            "per_source_relative_ledger_max": 8.269442171805144e-15,
+            "per_angle_ledger_max": 3.701195166322391e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 1536,
+            "sources_at_angle_limit": 0,
+            "events": 202,
+            "rays_materialized": 1536,
+            "queries": 18026,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.0010461920001034741,
+            "seconds": 0.0018628400002853596,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.9340091617753418e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 8.269442171805144e-15
+          },
+          "median_seconds": 0.0018912719997388194,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.11417053611230936,
+            "maximum_count_difference": 0.5170319740538435,
+            "volume_mean_absolute_ionized_fraction_difference": 0.002214057515474316,
+            "maximum_ionized_fraction_difference": 0.5170319740538435
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0830100454486704,
+            "maximum_count_difference": 0.42780331224188295,
+            "volume_mean_absolute_ionized_fraction_difference": 0.001609776228121591,
+            "maximum_ionized_fraction_difference": 0.42780331224188295
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.0026336809996792,
+            0.002557747000537347,
+            0.0025670009999885224
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 268.082573106329,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.684341886080802e-14,
+            "per_source_relative_ledger_max": 8.269442171805144e-15,
+            "per_angle_ledger_max": 3.701195166322391e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 1536,
+            "sources_at_angle_limit": 1,
+            "events": 202,
+            "rays_materialized": 1536,
+            "queries": 18026,
+            "ray_allocated_bytes": 196608,
+            "transport_seconds": 0.0013162850000298931,
+            "seconds": 0.002319111000360863,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": 5.184741524999481e-14,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.9340091617753418e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 8.269442171805144e-15
+          },
+          "median_seconds": 0.0025670009999885224,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.11417053611230936,
+            "maximum_count_difference": 0.5170319740538435,
+            "volume_mean_absolute_ionized_fraction_difference": 0.002214057515474316,
+            "maximum_ionized_fraction_difference": 0.5170319740538435
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0830100454486704,
+            "maximum_count_difference": 0.42780331224188295,
+            "volume_mean_absolute_ionized_fraction_difference": 0.001609776228121591,
+            "maximum_ionized_fraction_difference": 0.42780331224188295
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.0022089759995651548,
+            0.0022514610000143875,
+            0.002061817000139854
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 268.082573106329,
+            "parent_skip": false,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.595524044110789e-14,
+            "source_relative_error": 1.6962958301138757e-14,
+            "maximum_angle_ledger_residual": 2.7755575615628914e-17,
+            "rays_materialized": 1536,
+            "events": 209,
+            "queries": 18240,
+            "ray_bytes": 262144,
+            "seconds": 0.002053996000540792,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.087239009710433e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.6962958301138757e-14
+          },
+          "median_seconds": 0.0022089759995651548,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.12698746236022498,
+            "maximum_count_difference": 0.5209048099892808,
+            "volume_mean_absolute_ionized_fraction_difference": 0.002462610363264773,
+            "maximum_ionized_fraction_difference": 0.5209048099892808
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.07701171994186845,
+            "maximum_count_difference": 0.2275254473786832,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0014934534173437557,
+            "maximum_ionized_fraction_difference": 0.2275254473786832
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            0.011278152000159025,
+            0.010975940000207629,
+            0.009586426000169013
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 268.082573106329,
+            "parent_skip": true,
+            "absorbed": 268.082573106329,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -3.164135620181696e-15,
+            "source_relative_error": 1.6962958301138758e-15,
+            "maximum_angle_ledger_residual": 5.551115123125783e-17,
+            "rays_materialized": 1536,
+            "events": 1856,
+            "queries": 32112,
+            "ray_bytes": 262144,
+            "seconds": 0.009571814999617345,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.180283963824352e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.6962958301138758e-15
+          },
+          "median_seconds": 0.010975940000207629,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.07393812310980785,
+            "maximum_count_difference": 0.3918795827121465,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0014338485455678398,
+            "maximum_ionized_fraction_difference": 0.3918795827121465
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            0.004411703999721794,
+            0.004334768999797234,
+            0.0037962360001984052
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 268.082573106329,
+            "absorbed": 268.082573106329,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -4.440892098500626e-15,
+            "source_relative_error": 8.269442171805144e-15,
+            "angle_relative_error": 3.1805546814635167e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.0008247810001194011,
+            "seconds": 0.003773142000682128,
+            "return_dense": false,
+            "maximum_distance": 12.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 1849,
+            "rays_materialized": 1536,
+            "queries": 32112,
+            "assignments": 16056,
+            "promotions": 412,
+            "peak_live_child_parents": 242,
+            "total_child_slots_highwater": 242,
+            "ray_bytes": 196608,
+            "cell_allocated_bytes": 1397568,
+            "heap_allocated_bytes": 118784,
+            "parent_skips": 2664,
+            "uniform_coarse_events": 1,
+            "final_sparse_parent_count": 242,
+            "source_launches": 1,
+            "fine_events": 1848,
+            "coarsenings": 170,
+            "state_bytes": 127048
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.6565388965955818e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 8.269442171805144e-15
+          },
+          "median_seconds": 0.004334768999797234,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.07393812310980785,
+            "maximum_count_difference": 0.3918795827121465,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0014338485455678398,
+            "maximum_ionized_fraction_difference": 0.3918795827121465
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 1.0146300741647939e-17,
+            "maximum_count_difference": 1.1102230246251565e-16,
+            "volume_mean_absolute_ionized_fraction_difference": 1.9676261648811007e-19,
+            "maximum_ionized_fraction_difference": 1.1102230246251565e-16
+          }
+        }
+      ]
+    },
+    {
+      "case": "isolated",
+      "shape": [
+        24,
+        24,
+        24
+      ],
+      "angles": 6144,
+      "maximum_distance": 12.0,
+      "metadata": {
+        "radius_cells": 4.0,
+        "centre": [
+          12,
+          12,
+          12
+        ]
+      },
+      "analytic_reference_audit": {
+        "analytic_kind": "continuous sphere integrated over voxels",
+        "quadrature": 64,
+        "volume_relative_error": 8.352342655282285e-07,
+        "quadrature32_64_l1_over_Q": 6.236349636168152e-05
+      },
+      "input_hashes": {
+        "source": "eddd54e27551046750f02bbc2a61593a9755159e3d4556594ba7ba19e418f11f",
+        "capacity": "27802a79e65404e60964eca3393e4de89bae7d9c33d79c3f13d5fbd775e2f982",
+        "initial": "7c98d2da7afa2bdee9765910c81cb588e14781b77538fb54df84f7e7039e4348"
+      },
+      "equivalence": {
+        "L1_over_emitted": 1.4701782707285788e-17,
+        "maximum_count_difference": 1.1102230246251565e-16,
+        "volume_mean_absolute_ionized_fraction_difference": 2.851050157276697e-19,
+        "maximum_ionized_fraction_difference": 1.1102230246251565e-16,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 9.329627065626316e-15,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 0.0
+        },
+        "maximum_subcell_fraction_difference": 0.0,
+        "subcell_L1_over_emitted": 0.0
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.00355739899987384,
+            0.003585671000109869,
+            0.0034502489997976227
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 268.082573106329,
+            "absorbed": 268.0825731063289,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 4.2407395752846894e-14,
+            "per_angle_ledger_max": 1.1563693795915708e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 6144,
+            "angles_max": 6144,
+            "angles_mean": 6144.0,
+            "angles_sum": 6144,
+            "sources_at_angle_limit": 0,
+            "events": 203,
+            "rays_materialized": 6144,
+            "queries": 72212,
+            "ray_allocated_bytes": 524288,
+            "transport_seconds": 0.0025100060001932434,
+            "seconds": 0.0034213449998787837,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 4.829846220386494e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 4.2407395752846894e-14
+          },
+          "median_seconds": 0.00355739899987384,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.11410835829497978,
+            "maximum_count_difference": 0.47583227066545575,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0022128517292142,
+            "maximum_ionized_fraction_difference": 0.47583227066545575
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.06819562082102731,
+            "maximum_count_difference": 0.23051514211108415,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0013224867986316945,
+            "maximum_ionized_fraction_difference": 0.23051514211108415
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.003978488000029756,
+            0.004015401999822643,
+            0.0039861889999883715
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 268.082573106329,
+            "absorbed": 268.0825731063289,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 4.2407395752846894e-14,
+            "per_angle_ledger_max": 1.1563693795915708e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 6144,
+            "angles_max": 6144,
+            "angles_mean": 6144.0,
+            "angles_sum": 6144,
+            "sources_at_angle_limit": 1,
+            "events": 203,
+            "rays_materialized": 6144,
+            "queries": 72212,
+            "ray_allocated_bytes": 393216,
+            "transport_seconds": 0.002699599000152375,
+            "seconds": 0.003780490999815811,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": 1.2947976024690888e-13,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 4.829846220386494e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 4.2407395752846894e-14
+          },
+          "median_seconds": 0.0039861889999883715,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.11410835829497978,
+            "maximum_count_difference": 0.47583227066545575,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0022128517292142,
+            "maximum_ionized_fraction_difference": 0.47583227066545575
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.06819562082102731,
+            "maximum_count_difference": 0.23051514211108415,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0013224867986316945,
+            "maximum_ionized_fraction_difference": 0.23051514211108415
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.003468176000751555,
+            0.003534264999871084,
+            0.003415217000110715
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 268.082573106329,
+            "parent_skip": false,
+            "absorbed": 268.0825731063289,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.2265188864546417e-13,
+            "source_relative_error": 4.728424626442429e-14,
+            "maximum_angle_ledger_residual": 1.3877787807814457e-17,
+            "rays_materialized": 6144,
+            "events": 203,
+            "queries": 72192,
+            "ray_bytes": 524288,
+            "seconds": 0.0034071039999616914,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 4.575153365034922e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 4.728424626442429e-14
+          },
+          "median_seconds": 0.003468176000751555,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.11564429632060841,
+            "maximum_count_difference": 0.494345355843258,
+            "volume_mean_absolute_ionized_fraction_difference": 0.002242637479940645,
+            "maximum_ionized_fraction_difference": 0.494345355843258
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.06950854424033008,
+            "maximum_count_difference": 0.24882152583100192,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0013479477280687784,
+            "maximum_ionized_fraction_difference": 0.24882152583100192
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            0.012562619000163977,
+            0.01796383400051127,
+            0.011949283000831201
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 268.082573106329,
+            "parent_skip": true,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.98965321785272e-14,
+            "source_relative_error": 8.481479150569379e-15,
+            "maximum_angle_ledger_residual": 6.938893903907228e-18,
+            "rays_materialized": 6144,
+            "events": 1904,
+            "queries": 129216,
+            "ray_bytes": 524288,
+            "seconds": 0.011933430000681255,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.234256836783291e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 8.481479150569379e-15
+          },
+          "median_seconds": 0.012562619000163977,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.052268272487027284,
+            "maximum_count_difference": 0.24552383001225608,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0010136149435868791,
+            "maximum_ionized_fraction_difference": 0.24552383001225608
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            0.0071719130000929,
+            0.007907211000201642,
+            0.007160616999499325
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 268.082573106329,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.850875339774575e-14,
+            "source_relative_error": 1.7811106216195695e-14,
+            "angle_relative_error": 1.5902773407317583e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.0008257529998445534,
+            "seconds": 0.007136870999602252,
+            "return_dense": false,
+            "maximum_distance": 12.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 1897,
+            "rays_materialized": 6144,
+            "queries": 129216,
+            "assignments": 64608,
+            "promotions": 436,
+            "peak_live_child_parents": 266,
+            "total_child_slots_highwater": 266,
+            "ray_bytes": 393216,
+            "cell_allocated_bytes": 1466176,
+            "heap_allocated_bytes": 118784,
+            "parent_skips": 10482,
+            "uniform_coarse_events": 1,
+            "final_sparse_parent_count": 266,
+            "source_launches": 1,
+            "fine_events": 1896,
+            "coarsenings": 170,
+            "state_bytes": 128680
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.182489996264679e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.7811106216195695e-14
+          },
+          "median_seconds": 0.0071719130000929,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.052268272487027284,
+            "maximum_count_difference": 0.24552383001225608,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0010136149435868791,
+            "maximum_ionized_fraction_difference": 0.24552383001225608
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 1.4701782707285788e-17,
+            "maximum_count_difference": 1.1102230246251565e-16,
+            "volume_mean_absolute_ionized_fraction_difference": 2.851050157276697e-19,
+            "maximum_ionized_fraction_difference": 1.1102230246251565e-16
+          }
+        }
+      ]
+    },
+    {
+      "case": "isolated-r8",
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "angles": 6144,
+      "maximum_distance": 16.0,
+      "metadata": {
+        "radius_cells": 8.0,
+        "centre": [
+          16,
+          16,
+          16
+        ],
+        "scope": "Separate uniform sphere spatial-error test; not cosmological grid convergence"
+      },
+      "analytic_reference_audit": {
+        "kind": "Continuous sphere integrated over parent voxels",
+        "xy_quadrature": 64,
+        "quadrature32_to64_L1_over_Q": 3.292640290550673e-05,
+        "relative_volume_error": 9.439140664646573e-07
+      },
+      "input_hashes": {
+        "source": "5ef8128f6e5a5eaa2a36f32e7bd46667cdfd87be309a4529729c9a6da6482bcb",
+        "capacity": "ca87cb806dd8ced9b360431c5b5b2bde0483e20ab598192347e4632e105b312c",
+        "initial": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+      },
+      "equivalence": {
+        "L1_over_emitted": 9.033313670497782e-18,
+        "maximum_count_difference": 1.1102230246251565e-16,
+        "volume_mean_absolute_ionized_fraction_difference": 5.912289971835016e-19,
+        "maximum_ionized_fraction_difference": 1.1102230246251565e-16,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 2.1691382927581187e-13,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 0.0
+        },
+        "maximum_subcell_fraction_difference": 0.0,
+        "subcell_L1_over_emitted": 0.0
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.007263599999532744,
+            0.0072691380000833306,
+            0.007427774999996473
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 2144.660584850632,
+            "absorbed": 2144.6605848506315,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 4.547473508864641e-13,
+            "per_source_relative_ledger_max": 7.421294256748207e-15,
+            "per_angle_ledger_max": 1.2953505455770564e-16,
+            "capacity_excess": 0.0,
+            "angles_min": 6144,
+            "angles_max": 6144,
+            "angles_mean": 6144.0,
+            "angles_sum": 6144,
+            "sources_at_angle_limit": 0,
+            "events": 1872,
+            "rays_materialized": 6144,
+            "queries": 146405,
+            "ray_allocated_bytes": 524288,
+            "transport_seconds": 0.00578254999982164,
+            "seconds": 0.0073710799997570575,
+            "periodic": true,
+            "maximum_distance": 16.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.625614151103997e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 7.421294256748207e-15
+          },
+          "median_seconds": 0.0072691380000833306,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.05824628511679096,
+            "maximum_count_difference": 0.5733030588020801,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0038122104462876456,
+            "maximum_ionized_fraction_difference": 0.5733030588020801
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.04445867703925078,
+            "maximum_count_difference": 0.6258789348905063,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0029098136078089887,
+            "maximum_ionized_fraction_difference": 0.6258789348905063
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.008456481000393978,
+            0.00779242000044178,
+            0.00741552599993156
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 2144.660584850632,
+            "absorbed": 2144.6605848506315,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 4.547473508864641e-13,
+            "per_source_relative_ledger_max": 7.421294256748207e-15,
+            "per_angle_ledger_max": 1.2953505455770564e-16,
+            "capacity_excess": 0.0,
+            "angles_min": 6144,
+            "angles_max": 6144,
+            "angles_mean": 6144.0,
+            "angles_sum": 6144,
+            "sources_at_angle_limit": 1,
+            "events": 1872,
+            "rays_materialized": 6144,
+            "queries": 146405,
+            "ray_allocated_bytes": 393216,
+            "transport_seconds": 0.0055459160003010766,
+            "seconds": 0.006979827000577643,
+            "periodic": true,
+            "maximum_distance": 16.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": 5.631051180898794e-13,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.625614151103997e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 7.421294256748207e-15
+          },
+          "median_seconds": 0.00779242000044178,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.05824628511679096,
+            "maximum_count_difference": 0.5733030588020801,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0038122104462876456,
+            "maximum_ionized_fraction_difference": 0.5733030588020801
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.04445867703925078,
+            "maximum_count_difference": 0.6258789348905063,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0029098136078089887,
+            "maximum_ionized_fraction_difference": 0.6258789348905063
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.008014739999453013,
+            0.007751688999633188,
+            0.00704549500005669
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 2144.660584850632,
+            "parent_skip": false,
+            "absorbed": 2144.6605848506315,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.471179065352771e-13,
+            "source_relative_error": 5.131294886094474e-14,
+            "maximum_angle_ledger_residual": 1.1102230246251565e-16,
+            "rays_materialized": 6144,
+            "events": 1869,
+            "queries": 146592,
+            "ray_bytes": 524288,
+            "seconds": 0.007035971000732388,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.5510699007571957e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 5.131294886094474e-14
+          },
+          "median_seconds": 0.007751688999633188,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.058623169430611646,
+            "maximum_count_difference": 0.5733360268189849,
+            "volume_mean_absolute_ionized_fraction_difference": 0.003836877466944985,
+            "maximum_ionized_fraction_difference": 0.5733360268189849
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.04158260449797823,
+            "maximum_count_difference": 0.2910693731504316,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0027215751001662142,
+            "maximum_ionized_fraction_difference": 0.2910693731504316
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            0.038235603000430274,
+            0.0351007249992108,
+            0.03225075200043648
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 2144.660584850632,
+            "parent_skip": true,
+            "absorbed": 2144.660584850632,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.040412531798211e-14,
+            "source_relative_error": 1.6962958301138757e-14,
+            "maximum_angle_ledger_residual": 1.1102230246251565e-16,
+            "rays_materialized": 6144,
+            "events": 15984,
+            "queries": 275712,
+            "ray_bytes": 524288,
+            "seconds": 0.03222607499992591,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.3502145595449818e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.6962958301138757e-14
+          },
+          "median_seconds": 0.0351007249992108,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.031025379402217976,
+            "maximum_count_difference": 0.5104236317412778,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0020306063334342515,
+            "maximum_ionized_fraction_difference": 0.5104236317412778
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            0.019820110000182467,
+            0.0209992100008094,
+            0.0192926420004369
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 2144.660584850632,
+            "absorbed": 2144.660584850632,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 4.3076653355456074e-14,
+            "source_relative_error": 1.999508709746731e-13,
+            "angle_relative_error": 3.1805546814635167e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.0013837750002494431,
+            "seconds": 0.0192583010002636,
+            "return_dense": false,
+            "maximum_distance": 16.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 15977,
+            "rays_materialized": 6144,
+            "queries": 275712,
+            "assignments": 137592,
+            "promotions": 2678,
+            "peak_live_child_parents": 1014,
+            "total_child_slots_highwater": 1014,
+            "ray_bytes": 393216,
+            "cell_allocated_bytes": 3584576,
+            "heap_allocated_bytes": 294912,
+            "parent_skips": 18408,
+            "uniform_coarse_events": 1,
+            "final_sparse_parent_count": 978,
+            "source_launches": 1,
+            "fine_events": 15976,
+            "coarsenings": 1700,
+            "state_bytes": 328648
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.0085534121221428e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.999508709746731e-13
+          },
+          "median_seconds": 0.019820110000182467,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.031025379402217973,
+            "maximum_count_difference": 0.5104236317412778,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0020306063334342515,
+            "maximum_ionized_fraction_difference": 0.5104236317412778
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 9.033313670497782e-18,
+            "maximum_count_difference": 1.1102230246251565e-16,
+            "volume_mean_absolute_ionized_fraction_difference": 5.912289971835016e-19,
+            "maximum_ionized_fraction_difference": 1.1102230246251565e-16
+          }
+        }
+      ]
+    },
+    {
+      "case": "equal-overlap",
+      "shape": [
+        24,
+        24,
+        24
+      ],
+      "angles": 1536,
+      "maximum_distance": 12.0,
+      "metadata": {
+        "isolated_radius_cells": 4.0,
+        "separation_cells": 6,
+        "sources": [
+          [
+            9,
+            12,
+            12
+          ],
+          [
+            15,
+            12,
+            12
+          ]
+        ]
+      },
+      "analytic_reference_audit": null,
+      "input_hashes": {
+        "source": "fd6475c1accdf7317f86fbfd0cae07cee4d13dd592d5c856935173715b97f9cd",
+        "capacity": "27802a79e65404e60964eca3393e4de89bae7d9c33d79c3f13d5fbd775e2f982",
+        "initial": "7c98d2da7afa2bdee9765910c81cb588e14781b77538fb54df84f7e7039e4348"
+      },
+      "equivalence": {
+        "L1_over_emitted": 9.007430250238476e-18,
+        "maximum_count_difference": 1.1102230246251565e-16,
+        "volume_mean_absolute_ionized_fraction_difference": 3.4935403335644033e-19,
+        "maximum_ionized_fraction_difference": 1.1102230246251565e-16,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 6.573146341691269e-15,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 0.0
+        },
+        "maximum_subcell_fraction_difference": 0.0,
+        "subcell_L1_over_emitted": 0.0
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.002499580999938189,
+            0.0024570169998696656,
+            0.0027532390004125773
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 536.165146212658,
+            "absorbed": 536.1651462126579,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 1.569073642855335e-14,
+            "per_angle_ledger_max": 9.250955036732567e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 3072,
+            "sources_at_angle_limit": 0,
+            "events": 407,
+            "rays_materialized": 3072,
+            "queries": 38549,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.0019653839999591582,
+            "seconds": 0.0027242159994784743,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.299483055836742e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.569073642855335e-14
+          },
+          "median_seconds": 0.002499580999938189,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.07613041708780827,
+            "maximum_count_difference": 0.3261696908756446,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0029527254202195716,
+            "maximum_ionized_fraction_difference": 0.3261696908756446
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.002904965999732667,
+            0.002822632000061276,
+            0.0035492169999997714
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 536.165146212658,
+            "absorbed": 536.1651462126579,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 1.569073642855335e-14,
+            "per_angle_ledger_max": 9.250955036732567e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 3072,
+            "sources_at_angle_limit": 2,
+            "events": 407,
+            "rays_materialized": 3072,
+            "queries": 38549,
+            "ray_allocated_bytes": 196608,
+            "transport_seconds": 0.002281514999594947,
+            "seconds": 0.0032038310000643833,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": 1.2329026688462363e-13,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.299483055836742e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.569073642855335e-14
+          },
+          "median_seconds": 0.002904965999732667,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.07613041708780827,
+            "maximum_count_difference": 0.3261696908756446,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0029527254202195716,
+            "maximum_ionized_fraction_difference": 0.3261696908756446
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.002889682999921206,
+            0.0032135259998540278,
+            0.00259970000024623
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 536.165146212658,
+            "parent_skip": false,
+            "absorbed": 536.1651462126579,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.266209359584991e-13,
+            "source_relative_error": 1.4630551534732178e-14,
+            "maximum_angle_ledger_residual": 1.1102230246251565e-16,
+            "rays_materialized": 3072,
+            "events": 411,
+            "queries": 38680,
+            "ray_bytes": 262144,
+            "seconds": 0.00259215900041454,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 2.361603264459076e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.4630551534732178e-14
+          },
+          "median_seconds": 0.002889682999921206,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0694498445167403,
+            "maximum_count_difference": 0.30682877752059234,
+            "volume_mean_absolute_ionized_fraction_difference": 0.002693618781811663,
+            "maximum_ionized_fraction_difference": 0.30682877752059234
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            0.010882100999879185,
+            0.01332878100038215,
+            0.011642896000012115
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 536.165146212658,
+            "parent_skip": true,
+            "absorbed": 536.165146212658,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.551115123125783e-16,
+            "source_relative_error": 2.756480723935048e-15,
+            "maximum_angle_ledger_residual": 1.1102230246251565e-16,
+            "rays_materialized": 3072,
+            "events": 3760,
+            "queries": 69023,
+            "ray_bytes": 262144,
+            "seconds": 0.011625911000010092,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.0353368103722386e-18,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 2.756480723935048e-15
+          },
+          "median_seconds": 0.011642896000012115,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            0.0053720380001323065,
+            0.005822699000418652,
+            0.00621224099995743
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 536.165146212658,
+            "absorbed": 536.165146212658,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -2.220446049250313e-16,
+            "source_relative_error": 1.4418514555967945e-14,
+            "angle_relative_error": 3.1805546814635167e-16,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.0010260609997203574,
+            "seconds": 0.006190228000377829,
+            "return_dense": false,
+            "maximum_distance": 12.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 3746,
+            "rays_materialized": 3072,
+            "queries": 69023,
+            "assignments": 33404,
+            "promotions": 777,
+            "peak_live_child_parents": 442,
+            "total_child_slots_highwater": 442,
+            "ray_bytes": 196608,
+            "cell_allocated_bytes": 1904448,
+            "heap_allocated_bytes": 126976,
+            "parent_skips": 6474,
+            "uniform_coarse_events": 2,
+            "final_sparse_parent_count": 426,
+            "source_launches": 2,
+            "fine_events": 3744,
+            "coarsenings": 351,
+            "state_bytes": 139560
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 4.1413472414889545e-19,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.4418514555967945e-14
+          },
+          "median_seconds": 0.005822699000418652,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 9.007430250238476e-18,
+            "maximum_count_difference": 1.1102230246251565e-16,
+            "volume_mean_absolute_ionized_fraction_difference": 3.4935403335644033e-19,
+            "maximum_ionized_fraction_difference": 1.1102230246251565e-16
+          }
+        }
+      ]
+    },
+    {
+      "case": "transparent-overlap-increment",
+      "shape": [
+        24,
+        24,
+        24
+      ],
+      "angles": 1536,
+      "maximum_distance": 12.0,
+      "metadata": {
+        "radius_cells": 4.0,
+        "separation_cells": 6,
+        "emitter": [
+          9,
+          12,
+          12
+        ],
+        "other_centre": [
+          15,
+          12,
+          12
+        ],
+        "continuum_direction_fraction_through_overlap": 0.125,
+        "warning": "Absorber-centre cone fractions are not ray-labelled exit fractions; finite voxels alter the geometric footprint."
+      },
+      "analytic_reference_audit": null,
+      "input_hashes": {
+        "source": "b52c67ec9988c6aab3d241f884b94db1b4d5292daa18f6b57220d9a756ce4ffb",
+        "capacity": "27802a79e65404e60964eca3393e4de89bae7d9c33d79c3f13d5fbd775e2f982",
+        "initial": "0026472448e7e6af075ae570a66822f74a339931da93180485182108a040b808"
+      },
+      "equivalence": {
+        "L1_over_emitted": 2.168404344971009e-17,
+        "maximum_count_difference": 6.776263578034403e-21,
+        "volume_mean_absolute_ionized_fraction_difference": 1.568579531952408e-23,
+        "maximum_ionized_fraction_difference": 6.776263578034403e-21,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 1.1102230246251565e-14,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 0.0
+        },
+        "maximum_subcell_fraction_difference": 0.0,
+        "subcell_L1_over_emitted": 0.0
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.0026505759997235145,
+            0.003029121000508894,
+            0.0026492340002732817
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 0.01,
+            "absorbed": 0.01,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 1.1449174941446927e-14,
+            "per_angle_ledger_max": 2.8248217918685895e-22,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 1536,
+            "sources_at_angle_limit": 1,
+            "events": 0,
+            "rays_materialized": 1536,
+            "queries": 8149,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.0012077830006091972,
+            "seconds": 0.0026213329992970102,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.2620790914089075e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.1449174941446927e-14
+          },
+          "median_seconds": 0.0026505759997235145,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.19401041666666666,
+            "maximum_count_difference": 2.6041666666666665e-05,
+            "volume_mean_absolute_ionized_fraction_difference": 1.4034318335262347e-07,
+            "maximum_ionized_fraction_difference": 2.6041666666666665e-05
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.0030674980007461272,
+            0.0030728359997738153,
+            0.0028573649997269968
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 0.01,
+            "absorbed": 0.01,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 1.1449174941446927e-14,
+            "per_angle_ledger_max": 2.8248217918685895e-22,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 1536,
+            "sources_at_angle_limit": 1,
+            "events": 0,
+            "rays_materialized": 1536,
+            "queries": 8149,
+            "ray_allocated_bytes": 196608,
+            "transport_seconds": 0.0012092150000171387,
+            "seconds": 0.0026397999999971944,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": -1.2620790914089075e-19,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.2620790914089075e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.1449174941446927e-14
+          },
+          "median_seconds": 0.0030674980007461272,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.19401041666666666,
+            "maximum_count_difference": 2.6041666666666665e-05,
+            "volume_mean_absolute_ionized_fraction_difference": 1.4034318335262347e-07,
+            "maximum_ionized_fraction_difference": 2.6041666666666665e-05
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.0025337310007671476,
+            0.002963482999803091,
+            0.0026609010001266142
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 0.01,
+            "parent_skip": false,
+            "absorbed": 0.009999999999999998,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -1.2536087619363645e-19,
+            "source_relative_error": 1.1449174941446927e-14,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 1536,
+            "events": 0,
+            "queries": 8068,
+            "ray_bytes": 262144,
+            "seconds": 0.002654502000041248,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.2536087619363645e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.1449174941446927e-14
+          },
+          "median_seconds": 0.0026609010001266142,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 2.168404344971009e-17,
+            "maximum_count_difference": 6.776263578034403e-21,
+            "volume_mean_absolute_ionized_fraction_difference": 1.568579531952408e-23,
+            "maximum_ionized_fraction_difference": 6.776263578034403e-21
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            0.009596562999831804,
+            0.013392256999395613,
+            0.009423634000086167
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 0.01,
+            "parent_skip": true,
+            "absorbed": 0.009999999999999998,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 9.147955830346444e-20,
+            "source_relative_error": 3.469446951953614e-16,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 1536,
+            "events": 0,
+            "queries": 9244,
+            "ray_bytes": 262144,
+            "seconds": 0.009407379000549554,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 9.147955830346444e-18,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 3.469446951953614e-16
+          },
+          "median_seconds": 0.009596562999831804,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            0.0046862640001563705,
+            0.0037155660002099467,
+            0.0032952779993138392
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 0.01,
+            "absorbed": 0.01,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -1.2536087619363645e-19,
+            "source_relative_error": 1.1449174941446927e-14,
+            "angle_relative_error": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.0014267090000430471,
+            "seconds": 0.003273215000263008,
+            "return_dense": false,
+            "maximum_distance": 12.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 0,
+            "rays_materialized": 1536,
+            "queries": 12120,
+            "assignments": 1536,
+            "promotions": 241,
+            "peak_live_child_parents": 241,
+            "total_child_slots_highwater": 241,
+            "ray_bytes": 196608,
+            "cell_allocated_bytes": 1804864,
+            "heap_allocated_bytes": 110592,
+            "parent_skips": 10584,
+            "uniform_coarse_events": 0,
+            "final_sparse_parent_count": 241,
+            "source_launches": 1,
+            "fine_events": 0,
+            "coarsenings": 0,
+            "state_bytes": 126980
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.2536087619363645e-17,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 1.1449174941446927e-14
+          },
+          "median_seconds": 0.0037155660002099467,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 2.168404344971009e-17,
+            "maximum_count_difference": 6.776263578034403e-21,
+            "volume_mean_absolute_ionized_fraction_difference": 1.568579531952408e-23,
+            "maximum_ionized_fraction_difference": 6.776263578034403e-21
+          }
+        }
+      ]
+    },
+    {
+      "case": "all-partial",
+      "shape": [
+        24,
+        24,
+        24
+      ],
+      "angles": 96,
+      "maximum_distance": 12.0,
+      "metadata": {
+        "oracle": "Every cell's own photons fit locally; no correction is needed."
+      },
+      "analytic_reference_audit": {
+        "analytic_kind": "exact local absorption",
+        "error": 0.0
+      },
+      "input_hashes": {
+        "source": "f603345f69371b33ee9bc1ba501686437de5530875b990a6629412847644b776",
+        "capacity": "d5f48a2e00d28d4cb791991d86d159c7d38c8a35d6aed854f9cec2f8e93bc750",
+        "initial": "7c98d2da7afa2bdee9765910c81cb588e14781b77538fb54df84f7e7039e4348"
+      },
+      "equivalence": {
+        "L1_over_emitted": 0.0,
+        "maximum_count_difference": 0.0,
+        "volume_mean_absolute_ionized_fraction_difference": 0.0,
+        "maximum_ionized_fraction_difference": 0.0,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 0.0,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 0.0
+        },
+        "maximum_subcell_fraction_difference": 0.0,
+        "subcell_L1_over_emitted": 0.0
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.0023799210002835025,
+            0.001913656000397168,
+            0.0021656220005752402
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 1979.1705960308846,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 0.0,
+            "per_angle_ledger_max": 9.185360805297194e-15,
+            "capacity_excess": 0.0,
+            "angles_min": 96,
+            "angles_max": 96,
+            "angles_mean": 96.0,
+            "angles_sum": 1327104,
+            "sources_at_angle_limit": 0,
+            "events": 0,
+            "rays_materialized": 0,
+            "queries": 0,
+            "ray_allocated_bytes": 0,
+            "transport_seconds": 0.0010177789999943343,
+            "seconds": 0.002138130999810528,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 0.0
+          },
+          "median_seconds": 0.0021656220005752402,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.004208661000120628,
+            0.002273703999890131,
+            0.002357067999582796
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 1979.1705960308846,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 0.0,
+            "per_angle_ledger_max": 9.185360805297194e-15,
+            "capacity_excess": 0.0,
+            "angles_min": 96,
+            "angles_max": 96,
+            "angles_mean": 96.0,
+            "angles_sum": 1327104,
+            "sources_at_angle_limit": 13824,
+            "events": 0,
+            "rays_materialized": 0,
+            "queries": 0,
+            "ray_allocated_bytes": 0,
+            "transport_seconds": 0.0011425350003264612,
+            "seconds": 0.002088127000206441,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": 0.0,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 0.0
+          },
+          "median_seconds": 0.002357067999582796,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.0040366849998463294,
+            0.0022745839996787254,
+            0.002108786999997392
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 1979.1705960308846,
+            "parent_skip": false,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "source_relative_error": 0.0,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 0,
+            "events": 0,
+            "queries": 0,
+            "ray_bytes": 0,
+            "seconds": 0.0021014369995100424,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 0.0
+          },
+          "median_seconds": 0.0022745839996787254,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            0.011908522999874549,
+            0.012308899999879941,
+            0.012679713999204978
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 1979.1705960308846,
+            "parent_skip": true,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "source_relative_error": 0.0,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 0,
+            "events": 0,
+            "queries": 0,
+            "ray_bytes": 0,
+            "seconds": 0.012654344999646128,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 0.0
+          },
+          "median_seconds": 0.012308899999879941,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            0.002078892000099586,
+            0.0024628359997223015,
+            0.0032959789996311883
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 1979.1705960308846,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "source_relative_error": 0.0,
+            "angle_relative_error": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.0017938870005309582,
+            "seconds": 0.003269609000199125,
+            "return_dense": false,
+            "maximum_distance": 12.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 0,
+            "rays_materialized": 0,
+            "queries": 0,
+            "assignments": 0,
+            "promotions": 0,
+            "peak_live_child_parents": 0,
+            "total_child_slots_highwater": 0,
+            "ray_bytes": 0,
+            "cell_allocated_bytes": 1672768,
+            "heap_allocated_bytes": 55296,
+            "parent_skips": 0,
+            "uniform_coarse_events": 0,
+            "final_sparse_parent_count": 0,
+            "source_launches": 0,
+            "fine_events": 0,
+            "coarsenings": 0,
+            "state_bytes": 110592
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 0.0
+          },
+          "median_seconds": 0.0024628359997223015,
+          "vs_continuum_sphere": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          },
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          }
+        }
+      ]
+    },
+    {
+      "case": "native32",
+      "shape": [
+        32,
+        32,
+        32
+      ],
+      "angles": null,
+      "maximum_distance": 16.0,
+      "metadata": {
+        "fixture": "/workspace/scratch/40b418003e4a/native32_reconsidered/source_capacity.npz",
+        "fixture_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+        "scope": "Frozen native source; no continuum morphology oracle"
+      },
+      "analytic_reference_audit": null,
+      "input_hashes": {
+        "source": "f150937cd701e71a805ff4dc4ef042e0888dd797c47880e7249ee54018d8941a",
+        "capacity": "cf70d32108ab078a5ff54c81883df82190102bc3e8233597c90d07a8ff8ff56e",
+        "initial": "8a39d2abd3999ab73c34db2476849cddf303ce389b35826850f9a700589b4a90"
+      },
+      "equivalence": {
+        "L1_over_emitted": 1.582858831297366e-17,
+        "maximum_count_difference": 3.3306690738754696e-16,
+        "volume_mean_absolute_ionized_fraction_difference": 1.389353807975064e-17,
+        "maximum_ionized_fraction_difference": 4.573001140920645e-16,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 4.400710383976603e-16,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 5.871758683442663e-19
+        },
+        "maximum_subcell_fraction_difference": 1.7685670254482552e-15,
+        "subcell_L1_over_emitted": 9.318652124901501e-18
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.5214878679998947,
+            0.5236487469992426,
+            0.491853681000066
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 25702.93821088438,
+            "absorbed": 25630.836862532567,
+            "escaped": 0.0,
+            "retained": 72.10134835181097,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 4.677401293215405e-15,
+            "per_angle_ledger_max": 8.911205107153819e-13,
+            "capacity_excess": 0.0,
+            "angles_min": 24,
+            "angles_max": 384,
+            "angles_mean": 29.19873046875,
+            "angles_sum": 956784,
+            "sources_at_angle_limit": 0,
+            "events": 16623,
+            "rays_materialized": 569280,
+            "queries": 7288889,
+            "ray_allocated_bytes": 36438016,
+            "transport_seconds": 0.4891688220004653,
+            "seconds": 0.49178899500020634,
+            "periodic": true,
+            "maximum_distance": 16.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 4.146662513427402e-18,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 4.677401293215405e-15
+          },
+          "median_seconds": 0.5214878679998947,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.015213726412833218,
+            "maximum_count_difference": 0.34127741543535706,
+            "volume_mean_absolute_ionized_fraction_difference": 0.013819227024202876,
+            "maximum_ionized_fraction_difference": 0.4404622771937839
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 88059904,
+            "warm_process_rss_bytes": 47423488,
+            "increase_in_rss_high_water_bytes": 40636416,
+            "seconds": 0.5875574840001718,
+            "audit": {
+              "model": "source-adaptive quadrature of shared sharp-front events",
+              "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+              "photons": 25702.93821088438,
+              "absorbed": 25630.836862532567,
+              "escaped": 0.0,
+              "retained": 72.10134835181097,
+              "ledger_residual": 0.0,
+              "per_source_relative_ledger_max": 4.677401293215405e-15,
+              "per_angle_ledger_max": 8.911205107153819e-13,
+              "capacity_excess": 0.0,
+              "angles_min": 24,
+              "angles_max": 384,
+              "angles_mean": 29.19873046875,
+              "angles_sum": 956784,
+              "sources_at_angle_limit": 0,
+              "events": 16623,
+              "rays_materialized": 569280,
+              "queries": 7288889,
+              "ray_allocated_bytes": 36438016,
+              "transport_seconds": 0.583656692000659,
+              "seconds": 0.5874828420000995,
+              "periodic": true,
+              "maximum_distance": 16.0,
+              "angular_accuracy_certified": false
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.6467279890002828,
+            0.7018650469999557,
+            0.6238498009997784
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 25702.93821088438,
+            "absorbed": 25632.578571601167,
+            "escaped": 0.0,
+            "retained": 70.35963928321385,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 6.089649154243929e-15,
+            "per_angle_ledger_max": 5.604960939820103e-13,
+            "capacity_excess": 0.0,
+            "angles_min": 30,
+            "angles_max": 480,
+            "angles_mean": 36.4984130859375,
+            "angles_sum": 1195980,
+            "sources_at_angle_limit": 0,
+            "events": 16584,
+            "rays_materialized": 710430,
+            "queries": 9080286,
+            "ray_allocated_bytes": 34209792,
+            "transport_seconds": 0.6214119309997841,
+            "seconds": 0.6233636650003973,
+            "periodic": true,
+            "maximum_distance": 16.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": 3.552713678800501e-15,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.3822208378091342e-19,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 6.089649154243929e-15
+          },
+          "median_seconds": 0.6467279890002828,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.015018079898870685,
+            "maximum_count_difference": 0.28948499922687104,
+            "volume_mean_absolute_ionized_fraction_difference": 0.013633583130467081,
+            "maximum_ionized_fraction_difference": 0.37361752113087054
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 86040576,
+            "warm_process_rss_bytes": 47738880,
+            "increase_in_rss_high_water_bytes": 38301696,
+            "seconds": 0.6873588510006812,
+            "audit": {
+              "model": "source-adaptive quadrature of shared sharp-front events",
+              "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+              "photons": 25702.93821088438,
+              "absorbed": 25632.578571601167,
+              "escaped": 0.0,
+              "retained": 70.35963928321385,
+              "ledger_residual": 0.0,
+              "per_source_relative_ledger_max": 6.089649154243929e-15,
+              "per_angle_ledger_max": 5.604960939820103e-13,
+              "capacity_excess": 0.0,
+              "angles_min": 30,
+              "angles_max": 480,
+              "angles_mean": 36.4984130859375,
+              "angles_sum": 1195980,
+              "sources_at_angle_limit": 0,
+              "events": 16584,
+              "rays_materialized": 710430,
+              "queries": 9080286,
+              "ray_allocated_bytes": 34209792,
+              "transport_seconds": 0.6831402050001998,
+              "seconds": 0.6868592449991411,
+              "periodic": true,
+              "maximum_distance": 16.0,
+              "angular_accuracy_certified": false,
+              "angular_boost": 1.25,
+              "effective_density": "remaining",
+              "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+              "solver_profile": "balanced",
+              "maximum_local_fraction_violation": 0.0,
+              "independent_global_residual": 3.552713678800501e-15,
+              "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+              "continuum_accuracy_certified": false
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.5285790610005279,
+            0.5527844239995829,
+            0.48977877000015724
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 25702.93821088438,
+            "parent_skip": false,
+            "absorbed": 25633.975007843695,
+            "escaped": 0.0,
+            "retained": 68.96320304068183,
+            "ledger_residual": -1.4033219031261979e-13,
+            "source_relative_error": 5.197910888574278e-15,
+            "maximum_angle_ledger_residual": 1.3642420526593924e-12,
+            "rays_materialized": 569616,
+            "events": 16637,
+            "queries": 7532945,
+            "ray_bytes": 36700160,
+            "seconds": 0.48975928100026067,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 5.66710543501745e-18,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 5.226604239551546e-15
+          },
+          "median_seconds": 0.5285790610005279,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.011628175203668729,
+            "maximum_count_difference": 0.22117464945039378,
+            "volume_mean_absolute_ionized_fraction_difference": 0.010529511332145922,
+            "maximum_ionized_fraction_difference": 0.2341282641762058
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 88252416,
+            "warm_process_rss_bytes": 47730688,
+            "increase_in_rss_high_water_bytes": 40521728,
+            "seconds": 0.5766186689997994,
+            "audit": {
+              "subcells_per_axis": 1,
+              "photons": 25702.93821088438,
+              "parent_skip": false,
+              "absorbed": 25633.975007843695,
+              "escaped": 0.0,
+              "retained": 68.96320304068183,
+              "ledger_residual": -1.4033219031261979e-13,
+              "source_relative_error": 5.197910888574278e-15,
+              "maximum_angle_ledger_residual": 1.3642420526593924e-12,
+              "rays_materialized": 569616,
+              "events": 16637,
+              "queries": 7532945,
+              "ray_bytes": 36700160,
+              "seconds": 0.5765984189993105,
+              "quadrature": "octant-balanced, cyclic permutations, equal weights",
+              "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            1.6103693340000973,
+            1.7016086530002212,
+            1.4937743219998083
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 25702.93821088438,
+            "parent_skip": true,
+            "absorbed": 25608.340904757497,
+            "escaped": 0.0,
+            "retained": 94.59730612687935,
+            "ledger_residual": -2.6645352591003757e-14,
+            "source_relative_error": 6.850782793491395e-16,
+            "maximum_angle_ledger_residual": 3.637978807091713e-12,
+            "rays_materialized": 594027,
+            "events": 141235,
+            "queries": 12450508,
+            "ray_bytes": 38273024,
+            "seconds": 1.4937445369996567,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 6.91110418904567e-19,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 6.693894637915256e-16
+          },
+          "median_seconds": 1.6103693340000973,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 118579200,
+            "warm_process_rss_bytes": 47738880,
+            "increase_in_rss_high_water_bytes": 70840320,
+            "seconds": 1.555527813999106,
+            "audit": {
+              "subcells_per_axis": 2,
+              "photons": 25702.93821088438,
+              "parent_skip": true,
+              "absorbed": 25608.340904757497,
+              "escaped": 0.0,
+              "retained": 94.59730612687935,
+              "ledger_residual": -2.6645352591003757e-14,
+              "source_relative_error": 6.850782793491395e-16,
+              "maximum_angle_ledger_residual": 3.637978807091713e-12,
+              "rays_materialized": 594027,
+              "events": 141235,
+              "queries": 12450508,
+              "ray_bytes": 38273024,
+              "seconds": 1.55532275799942,
+              "quadrature": "octant-balanced, cyclic permutations, equal weights",
+              "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            1.3000428099994679,
+            1.5045269620004547,
+            1.4336271740003212
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 25702.93821088438,
+            "absorbed": 25608.340904757497,
+            "escaped": 0.0,
+            "retained": 94.59730612687936,
+            "ledger_residual": -3.907985046680551e-14,
+            "source_relative_error": 5.232233415720163e-15,
+            "angle_relative_error": 8.765954589450356e-15,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.0021839390001332504,
+            "seconds": 1.4335889370004224,
+            "return_dense": false,
+            "maximum_distance": 16.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 138365,
+            "rays_materialized": 594027,
+            "queries": 12450508,
+            "assignments": 3783178,
+            "promotions": 24571,
+            "peak_live_child_parents": 11071,
+            "total_child_slots_highwater": 11071,
+            "ray_bytes": 28704768,
+            "cell_allocated_bytes": 10881344,
+            "heap_allocated_bytes": 1048576,
+            "parent_skips": 3071141,
+            "uniform_coarse_events": 410,
+            "final_sparse_parent_count": 10628,
+            "source_launches": 138365,
+            "fine_events": 137955,
+            "coarsenings": 13943,
+            "state_bytes": 984848
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.7968870891518744e-18,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 5.1868484914202365e-15
+          },
+          "median_seconds": 1.4336271740003212,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 1.582858831297366e-17,
+            "maximum_count_difference": 3.3306690738754696e-16,
+            "volume_mean_absolute_ionized_fraction_difference": 1.389353807975064e-17,
+            "maximum_ionized_fraction_difference": 4.573001140920645e-16
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 89595904,
+            "warm_process_rss_bytes": 47734784,
+            "increase_in_rss_high_water_bytes": 41861120,
+            "seconds": 1.6370111719998022,
+            "audit": {
+              "model": "lazy eight-subcell event transport",
+              "photons": 25702.93821088438,
+              "absorbed": 25608.340904757497,
+              "escaped": 0.0,
+              "retained": 94.59730612687936,
+              "ledger_residual": -3.907985046680551e-14,
+              "source_relative_error": 5.232233415720163e-15,
+              "angle_relative_error": 8.765954589450356e-15,
+              "maximum_local_fraction_violation": 0.0,
+              "preparation_seconds": 0.004018717000690231,
+              "seconds": 1.6369623500004309,
+              "return_dense": false,
+              "maximum_distance": 16.0,
+              "effective_density": "remaining",
+              "source_positions": "original coarse centres",
+              "continuum_accuracy_certified": false,
+              "events": 138365,
+              "rays_materialized": 594027,
+              "queries": 12450508,
+              "assignments": 3783178,
+              "promotions": 24571,
+              "peak_live_child_parents": 11071,
+              "total_child_slots_highwater": 11071,
+              "ray_bytes": 28704768,
+              "cell_allocated_bytes": 10881344,
+              "heap_allocated_bytes": 1048576,
+              "parent_skips": 3071141,
+              "uniform_coarse_events": 410,
+              "final_sparse_parent_count": 10628,
+              "source_launches": 138365,
+              "fine_events": 137955,
+              "coarsenings": 13943,
+              "state_bytes": 984848
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        }
+      ]
+    },
+    {
+      "case": "native64",
+      "shape": [
+        64,
+        64,
+        64
+      ],
+      "angles": null,
+      "maximum_distance": 32.0,
+      "metadata": {
+        "fixture": "/workspace/scratch/40b418003e4a/native_adapter64/native_fields.npz",
+        "fixture_sha256": "f4051b06ad5ad0a656ee8a751fff8757b2bee4d206e6b882fc95ee9b95a8044b",
+        "scope": "Frozen native source; no continuum morphology oracle"
+      },
+      "analytic_reference_audit": null,
+      "input_hashes": {
+        "source": "6eb0699991983695a63b4946bac7f371d5a1bdb5c25e7b5d6e94aac4ccc319f9",
+        "capacity": "3ca10e974410527b70d796907e689447535cc1fad2cac856c49ace8332d09fae",
+        "initial": "5647f05ec18958947d32874eeb788fa396a05d0bab7c1b71f112ceb7e9b31eee"
+      },
+      "equivalence": {
+        "L1_over_emitted": 1.3612264518542469e-17,
+        "maximum_count_difference": 4.440892098500626e-16,
+        "volume_mean_absolute_ionized_fraction_difference": 4.1073751004328894e-18,
+        "maximum_ionized_fraction_difference": 4.024008875096493e-16,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 3.139293503194012e-16,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 0.0
+        },
+        "maximum_subcell_fraction_difference": 1.5648050466645898e-15,
+        "subcell_L1_over_emitted": 7.045671513137554e-18
+      },
+      "models": [
+        {
+          "model": "original_fibonacci",
+          "seconds_samples": [
+            0.6210645529999965,
+            0.5892554519996338,
+            0.6201069200005804
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 92277.41597486407,
+            "absorbed": 92277.41597486407,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 6.4071291574852414e-15,
+            "per_angle_ledger_max": 1.1747824935071094e-12,
+            "capacity_excess": 0.0,
+            "angles_min": 24,
+            "angles_max": 384,
+            "angles_mean": 26.4202880859375,
+            "angles_sum": 6925920,
+            "sources_at_angle_limit": 0,
+            "events": 25396,
+            "rays_materialized": 1174272,
+            "queries": 6711368,
+            "ray_allocated_bytes": 75235328,
+            "transport_seconds": 0.6084437839999737,
+            "seconds": 0.6195044550004241,
+            "periodic": true,
+            "maximum_distance": 32.0,
+            "angular_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 3.080028751362733e-19,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 6.4071291574852414e-15
+          },
+          "median_seconds": 0.6201069200005804,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.026633649320442813,
+            "maximum_count_difference": 0.447165508851592,
+            "volume_mean_absolute_ionized_fraction_difference": 0.008578445625517864,
+            "maximum_ionized_fraction_difference": 0.7683165323908542
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 163074048,
+            "warm_process_rss_bytes": 53182464,
+            "increase_in_rss_high_water_bytes": 109891584,
+            "seconds": 0.6850973659993542,
+            "audit": {
+              "model": "source-adaptive quadrature of shared sharp-front events",
+              "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+              "photons": 92277.41597486407,
+              "absorbed": 92277.41597486407,
+              "escaped": 0.0,
+              "retained": 0.0,
+              "ledger_residual": 0.0,
+              "per_source_relative_ledger_max": 6.4071291574852414e-15,
+              "per_angle_ledger_max": 1.1747824935071094e-12,
+              "capacity_excess": 0.0,
+              "angles_min": 24,
+              "angles_max": 384,
+              "angles_mean": 26.4202880859375,
+              "angles_sum": 6925920,
+              "sources_at_angle_limit": 0,
+              "events": 25396,
+              "rays_materialized": 1174272,
+              "queries": 6711368,
+              "ray_allocated_bytes": 75235328,
+              "transport_seconds": 0.662583390000691,
+              "seconds": 0.684435479000058,
+              "periodic": true,
+              "maximum_distance": 32.0,
+              "angular_accuracy_certified": false
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "balanced_coarse",
+          "seconds_samples": [
+            0.849912323999888,
+            0.6925750110003719,
+            0.8297729579999213
+          ],
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 92277.41597486407,
+            "absorbed": 92277.41597486407,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 8.57934552007122e-15,
+            "per_angle_ledger_max": 2.0160539904168218e-12,
+            "capacity_excess": 0.0,
+            "angles_min": 30,
+            "angles_max": 480,
+            "angles_mean": 33.025360107421875,
+            "angles_sum": 8657400,
+            "sources_at_angle_limit": 0,
+            "events": 25407,
+            "rays_materialized": 1468200,
+            "queries": 8388850,
+            "ray_allocated_bytes": 70582272,
+            "transport_seconds": 0.8123921329997756,
+            "seconds": 0.825883937000981,
+            "periodic": true,
+            "maximum_distance": 32.0,
+            "angular_accuracy_certified": false,
+            "angular_boost": 1.25,
+            "effective_density": "remaining",
+            "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+            "solver_profile": "balanced",
+            "maximum_local_fraction_violation": 0.0,
+            "independent_global_residual": -1.1368683772161603e-13,
+            "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+            "continuum_accuracy_certified": false
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.2320115005450931e-18,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 8.57934552007122e-15
+          },
+          "median_seconds": 0.8297729579999213,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.02624484476027003,
+            "maximum_count_difference": 0.4471511601604653,
+            "volume_mean_absolute_ionized_fraction_difference": 0.008451530624852209,
+            "maximum_ionized_fraction_difference": 0.6813642625686068
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 157773824,
+            "warm_process_rss_bytes": 54063104,
+            "increase_in_rss_high_water_bytes": 103710720,
+            "seconds": 0.8757918609999251,
+            "audit": {
+              "model": "source-adaptive quadrature of shared sharp-front events",
+              "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+              "photons": 92277.41597486407,
+              "absorbed": 92277.41597486407,
+              "escaped": 0.0,
+              "retained": 0.0,
+              "ledger_residual": 0.0,
+              "per_source_relative_ledger_max": 8.57934552007122e-15,
+              "per_angle_ledger_max": 2.0160539904168218e-12,
+              "capacity_excess": 0.0,
+              "angles_min": 30,
+              "angles_max": 480,
+              "angles_mean": 33.025360107421875,
+              "angles_sum": 8657400,
+              "sources_at_angle_limit": 0,
+              "events": 25407,
+              "rays_materialized": 1468200,
+              "queries": 8388850,
+              "ray_allocated_bytes": 70582272,
+              "transport_seconds": 0.8304848930001754,
+              "seconds": 0.872036810001191,
+              "periodic": true,
+              "maximum_distance": 32.0,
+              "angular_accuracy_certified": false,
+              "angular_boost": 1.25,
+              "effective_density": "remaining",
+              "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+              "solver_profile": "balanced",
+              "maximum_local_fraction_violation": 0.0,
+              "independent_global_residual": -1.1368683772161603e-13,
+              "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+              "continuum_accuracy_certified": false
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "matched_coarse",
+          "seconds_samples": [
+            0.6233295880001606,
+            0.5809922230000666,
+            0.6418222439997407
+          ],
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 92277.41597486407,
+            "parent_skip": false,
+            "absorbed": 92277.41597486407,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -1.4210854715202004e-14,
+            "source_relative_error": 8.049702675075827e-15,
+            "maximum_angle_ledger_residual": 2.2737367544323206e-12,
+            "rays_materialized": 1176096,
+            "events": 25476,
+            "queries": 6820540,
+            "ray_bytes": 75497472,
+            "seconds": 0.6417963829990185,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 1.5400143756813664e-19,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 8.049702675075827e-15
+          },
+          "median_seconds": 0.6233295880001606,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.022151698384611757,
+            "maximum_count_difference": 0.3233642079021848,
+            "volume_mean_absolute_ionized_fraction_difference": 0.00710205202528553,
+            "maximum_ionized_fraction_difference": 0.4089972641027081
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 162594816,
+            "warm_process_rss_bytes": 54042624,
+            "increase_in_rss_high_water_bytes": 108552192,
+            "seconds": 0.6460353779993966,
+            "audit": {
+              "subcells_per_axis": 1,
+              "photons": 92277.41597486407,
+              "parent_skip": false,
+              "absorbed": 92277.41597486407,
+              "escaped": 0.0,
+              "retained": 0.0,
+              "ledger_residual": -1.4210854715202004e-14,
+              "source_relative_error": 8.049702675075827e-15,
+              "maximum_angle_ledger_residual": 2.2737367544323206e-12,
+              "rays_materialized": 1176096,
+              "events": 25476,
+              "queries": 6820540,
+              "ray_bytes": 75497472,
+              "seconds": 0.6460100490003242,
+              "quadrature": "octant-balanced, cyclic permutations, equal weights",
+              "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "full_subcells",
+          "seconds_samples": [
+            2.4261871520002387,
+            2.320339009000236,
+            2.226699615999678
+          ],
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 92277.41597486407,
+            "parent_skip": true,
+            "absorbed": 92277.41597486407,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "source_relative_error": 6.283520260879383e-16,
+            "maximum_angle_ledger_residual": 2.0463630789890885e-12,
+            "rays_materialized": 1253532,
+            "events": 230496,
+            "queries": 11904171,
+            "ray_bytes": 80478208,
+            "seconds": 2.226654755999334,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 0.0,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 6.283520260879383e-16
+          },
+          "median_seconds": 2.320339009000236,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 0.0,
+            "maximum_count_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 392208384,
+            "warm_process_rss_bytes": 54046720,
+            "increase_in_rss_high_water_bytes": 338161664,
+            "seconds": 2.1727558350003164,
+            "audit": {
+              "subcells_per_axis": 2,
+              "photons": 92277.41597486407,
+              "parent_skip": true,
+              "absorbed": 92277.41597486407,
+              "escaped": 0.0,
+              "retained": 0.0,
+              "ledger_residual": 0.0,
+              "source_relative_error": 6.283520260879383e-16,
+              "maximum_angle_ledger_residual": 2.0463630789890885e-12,
+              "rays_materialized": 1253532,
+              "events": 230496,
+              "queries": 11904171,
+              "ray_bytes": 80478208,
+              "seconds": 2.172372766999615,
+              "quadrature": "octant-balanced, cyclic permutations, equal weights",
+              "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        },
+        {
+          "model": "adaptive_subcells",
+          "seconds_samples": [
+            1.7899873469996237,
+            1.8357812459998968,
+            1.7526441449999766
+          ],
+          "audit": {
+            "model": "lazy eight-subcell event transport",
+            "photons": 92277.41597486407,
+            "absorbed": 92277.41597486407,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -2.842170943040401e-14,
+            "source_relative_error": 4.192904131375689e-15,
+            "angle_relative_error": 6.574546234068337e-15,
+            "maximum_local_fraction_violation": 0.0,
+            "preparation_seconds": 0.010946943999442738,
+            "seconds": 1.7525849329995253,
+            "return_dense": false,
+            "maximum_distance": 32.0,
+            "effective_density": "remaining",
+            "source_positions": "original coarse centres",
+            "continuum_accuracy_certified": false,
+            "events": 212597,
+            "rays_materialized": 1253532,
+            "queries": 11904171,
+            "assignments": 4467522,
+            "promotions": 67767,
+            "peak_live_child_parents": 51102,
+            "total_child_slots_highwater": 51102,
+            "ray_bytes": 60358656,
+            "cell_allocated_bytes": 58687872,
+            "heap_allocated_bytes": 6291456,
+            "parent_skips": 1869008,
+            "uniform_coarse_events": 2557,
+            "final_sparse_parent_count": 51101,
+            "source_launches": 212597,
+            "fine_events": 210040,
+            "coarsenings": 16666,
+            "state_bytes": 5572020
+          },
+          "independent_ledger": {
+            "passed": true,
+            "relative_count_residual": 3.080028751362733e-19,
+            "maximum_local_fraction_violation": 0.0,
+            "maximum_source_relative_residual": 4.192904131375689e-15
+          },
+          "median_seconds": 1.7899873469996237,
+          "vs_full_subcell_model": {
+            "L1_over_emitted": 1.3612264518542469e-17,
+            "maximum_count_difference": 4.440892098500626e-16,
+            "volume_mean_absolute_ionized_fraction_difference": 4.1073751004328894e-18,
+            "maximum_ionized_fraction_difference": 4.024008875096493e-16
+          },
+          "process_memory": {
+            "peak_process_rss_bytes": 193298432,
+            "warm_process_rss_bytes": 54038528,
+            "increase_in_rss_high_water_bytes": 139259904,
+            "seconds": 1.9040559830000348,
+            "audit": {
+              "model": "lazy eight-subcell event transport",
+              "photons": 92277.41597486407,
+              "absorbed": 92277.41597486407,
+              "escaped": 0.0,
+              "retained": 0.0,
+              "ledger_residual": -2.842170943040401e-14,
+              "source_relative_error": 4.192904131375689e-15,
+              "angle_relative_error": 6.574546234068337e-15,
+              "maximum_local_fraction_violation": 0.0,
+              "preparation_seconds": 0.019972162000158278,
+              "seconds": 1.9038143829993714,
+              "return_dense": false,
+              "maximum_distance": 32.0,
+              "effective_density": "remaining",
+              "source_positions": "original coarse centres",
+              "continuum_accuracy_certified": false,
+              "events": 212597,
+              "rays_materialized": 1253532,
+              "queries": 11904171,
+              "assignments": 4467522,
+              "promotions": 67767,
+              "peak_live_child_parents": 51102,
+              "total_child_slots_highwater": 51102,
+              "ray_bytes": 60358656,
+              "cell_allocated_bytes": 58687872,
+              "heap_allocated_bytes": 6291456,
+              "parent_skips": 1869008,
+              "uniform_coarse_events": 2557,
+              "final_sparse_parent_count": 51101,
+              "source_launches": 212597,
+              "fine_events": 210040,
+              "coarsenings": 16666,
+              "state_bytes": 5572020
+            },
+            "scope": "Fresh Linux process; VmHWM reset after warmup; total RSS includes interpreter, inputs, outputs and transport"
+          }
+        }
+      ]
+    }
+  ]
+}

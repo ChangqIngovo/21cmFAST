@@ -71,6 +71,12 @@ omits recombination evolution. It must not be described as a full Qin20 PC run.
 
 ## Gadi
 
+The native CLI also accepts `--solver adaptive-front` for the on-demand
+eight-subcell spatial model. See [its report](../pc_adaptive_front/REPORT.md)
+for matched full-subcell accuracy and measured cost, and
+[its README](../pc_adaptive_front/README.md) for carried-state usage. The
+`balanced` default remains available for lower-cost coarse fronts.
+
 `gadi_compare.pbs` runs the tests, spatial comparisons and restricted native
 integration with a supplied installed Python environment. Submit from an
 isolated checkout of the desired commit:

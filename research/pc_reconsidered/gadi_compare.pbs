@@ -11,7 +11,7 @@
 #PBS -j oe
 
 # Research comparisons, not a complete Qin20 PC simulation.
-# The native integration compares the original and balanced spatial kernels.
+# The native integration compares original, balanced and adaptive-front kernels.
 # Submit from an isolated checkout with an installed native build:
 # qsub -v PC_REV="$(git rev-parse HEAD)",PC_PYTHON=/absolute/venv/bin/python \
 #   research/pc_reconsidered/gadi_compare.pbs
@@ -93,6 +93,8 @@ PY
     --confcutdir=research/pc_reconsidered
 "$PC_PYTHON" -m pytest research/pc_refinement -q \
     --confcutdir=research/pc_refinement
+"$PC_PYTHON" -m pytest research/pc_adaptive_front -q \
+    --confcutdir=research/pc_adaptive_front
 "$PC_PYTHON" research/pc_reconsidered/compare_models.py \
     --methods es-control es-global es-front radial-shell voronoi adaptive-event \
     --reference-angles 16384 --dense-reference-angles 768 --refinement 4 \
@@ -112,5 +114,14 @@ for pc_solver in original balanced; do
         --output "$out/results/native_integration_${pc_solver}" --solver "$pc_solver" \
         --dimension 32 --box-len 200 --redshift 8 --threads "$PBS_NCPUS"
 done
+"$PC_PYTHON" research/pc_adaptive_front/native_check.py \
+    --directory "$out/results/native_integration_adaptive-front" \
+    --output "$out/results/adaptive_native.json" --threads "$PBS_NCPUS"
+"$PC_PYTHON" research/pc_adaptive_front/benchmarks.py \
+    --native32 "$out/native_fixture/source_capacity.npz" \
+    --measure-rss --output "$out/results/adaptive_front.json"
+"$PC_PYTHON" research/pc_adaptive_front/incremental_benchmark.py \
+    --native "$out/native_fixture/source_capacity.npz" \
+    --output "$out/results/adaptive_increment.json"
 touch "$out/COMPLETED"
 printf 'Finished: %s\nResults: %s\n' "$(date)" "$out/results"

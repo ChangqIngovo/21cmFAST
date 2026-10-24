@@ -1,0 +1,68 @@
+{
+  "scope": "Final local adaptive-front implementation; restricted native 21cmFAST integration; no Gadi submission",
+  "parent_commit": "e9f7ab2b2392383ae3c17baf6a887af60926802a",
+  "python": "3.12.14",
+  "pytest": {
+    "command": "python -m pytest -q research/pc_reconsidered research/pc_refinement research/pc_adaptive_front",
+    "passed": 294,
+    "subtests_passed": 20,
+    "warnings": 6,
+    "seconds": 54.5,
+    "warning_scope": "Qin20 template validation before restricted overrides; no test failures"
+  },
+  "independent_random_cases": 48,
+  "checks": {
+    "ruff_F821_F822_F823": "passed",
+    "pbs_bash_syntax": "passed",
+    "git_diff_whitespace": "passed",
+    "figure_visual_inspection": "passed"
+  },
+  "native": {
+    "L1_over_emitted": 1.0919705134337556e-17,
+    "maximum_ionized_fraction_difference": 2.0193138133728727e-16
+  },
+  "code_sha256": {
+    "research/pc_adaptive_front/adaptive.cpp": "d1d51121146e241b98263645e41ac46363705977df6b4eece57f0697e1e647f0",
+    "research/pc_adaptive_front/adaptive.py": "835b156ac8f039b948b227098406d087e99f548185cdbb840dd2d067c002c4fc",
+    "research/pc_adaptive_front/audit_fuzz.py": "7231cdbd18e0b6c77220285ec5a16bb8b5c1eb150153f9d4c49a397f12272113",
+    "research/pc_adaptive_front/audit_state_check.py": "25909735d3967ebbcc5c1b71628613c84ef7d352bb4dcabf8aebba4808ee24f6",
+    "research/pc_adaptive_front/benchmarks.py": "e0fa765a11e16316358b260fa276033c0739d7cf7567098cc40531252f270fa0",
+    "research/pc_adaptive_front/calendar.cpp": "d7459f6bdc1c4dca24b8cff1fc5e49334939ad2f12eca3761896a482cf1e6e74",
+    "research/pc_adaptive_front/face_table.cpp": "8515c210bb31e690136c58fdf335cb3b7114ec263da42d324a655e040dc17499",
+    "research/pc_adaptive_front/hierarchy.cpp": "cce6691ed6ff1b1cf3dd8609adf567c04d0004ca4e755b9bfee062df20965921",
+    "research/pc_adaptive_front/hierarchy_benchmark.py": "0efe226a2d98619353039cdba40d55a9dddceda8056cda02c3a692c1121f8670",
+    "research/pc_adaptive_front/hierarchy_cached.cpp": "bd2cf22c5af9d21408e1d83548280b1fed8b3296e175a64e11e994cdee6acf3e",
+    "research/pc_adaptive_front/hierarchy_cached_benchmark.py": "8699caf51c6b3a1174e320a323cd4d3b61e72f267debc45dea37941b4d1a4f67",
+    "research/pc_adaptive_front/incremental_benchmark.py": "d8f52ef1492d0c7102481f5fad18779fc747343416cee0cea9ef0117878ac354",
+    "research/pc_adaptive_front/lazy.cpp": "b020180351593307f788e7f89aa616fe6f01e9cb90a9b286069d6e58adbc0f41",
+    "research/pc_adaptive_front/local_dda.cpp": "d1d51121146e241b98263645e41ac46363705977df6b4eece57f0697e1e647f0",
+    "research/pc_adaptive_front/native_check.py": "33220202d6834c0c6b20386e36dfa60c5dc800fa2ebf6403f3c16d692226ab93",
+    "research/pc_adaptive_front/optimize_core.py": "d57bf289ef291a4eaeaa8582f634cacaeac8890d08363352b429ed9d611d85cf",
+    "research/pc_adaptive_front/optimized.cpp": "939040ad39824ad022001669612b5cc5fc7cf4168b44780b46ad4d8a13a4cd96",
+    "research/pc_adaptive_front/plot_adaptive_results.py": "565181eeca67e993191d058ffacf93c6325b1579702958a86a5ffb359f2af732",
+    "research/pc_adaptive_front/test_adversarial.py": "eaf8490d87b5e204b773bede81563c8707dd5b680c7416b1b4396acd4bd4de06",
+    "research/pc_adaptive_front/test_calendar_queue.cpp": "6470e62e051b9d43597bafda307b8bfb175615dd861650a7dbd97dc20c920b97",
+    "research/pc_adaptive_front/test_geometry.py": "700753b442cc5b8fdaa41cdd82340b8c9b23329f5e37848b2b3e03b3bcb8cfe8",
+    "research/pc_adaptive_front/test_hierarchy.py": "5e750ba496c3cb48d5f58f16f2332decb5bc5e2f44288c6bdd9e5a2e38cd6bb8",
+    "research/pc_adaptive_front/test_hierarchy_cached.py": "473b2d032a4adb7ad9157e5afaf14995947199e0dfaca470495c63fb7e36463b",
+    "research/pc_adaptive_front/test_local_dda.py": "d079697521cf018d88e6c212ea951158ee49d8f24da139d87c9bfa1a1a959b7a",
+    "research/pc_adaptive_front/test_optimized_core.py": "1995b372d676a3c1696efb964412eda808659b94072feaa2e77c2af2cb8f7722",
+    "research/pc_adaptive_front/test_state.py": "afba1f9e2c8a8fca08bdfdac701328c03dad2d2535e91fb702b6ea41dc8dbadc",
+    "research/pc_reconsidered/gadi_compare.pbs": "464d598c429fb1bcdf55686129cabd1c148df2278ad2410e3de0a498a8ad4da7",
+    "research/pc_reconsidered/native_driver.py": "0a027b91ee9d18d31e5b1cd251852fbf25d126520617dfb4bd77ec662d6a2648",
+    "research/pc_reconsidered/test_native_driver.py": "2f120cc137442d92629ab3e7105f5fad9d1eaf0f2cfd32b1f8fc8bd6b3c0a516"
+  },
+  "data_sha256": {
+    "results.json": "abfed5522ac1d0d7ea0a98ddce338b9dfce5c703c5899e3b3715ac20563536be",
+    "incremental_results.json": "8df5fed26826433058b2a8ab672bc87d9e63d9c98031a6ff701c8e885fc3acf8",
+    "native_results.json": "d025915161be429f649062cbe39cf9837cba7ce9e8bf8e39b1877e51f06aaee8",
+    "audit_fuzz.json": "2d9509d1a074324195f9870b79772888c8aa0d6f83cde99e3006bf5231d1b333"
+  },
+  "limitations": [
+    "Static equal-density children; no subcell density reconstruction",
+    "Discrete full-eight-subcell equivalence is not a full radiation-transfer accuracy certificate",
+    "Restricted native coeval, not complete coupled Qin20 time evolution",
+    "Serial transport; about 2.2 times the latest balanced coarse solver in the two frozen native fields",
+    "Shared-host timing variation is retained in raw samples"
+  ]
+}

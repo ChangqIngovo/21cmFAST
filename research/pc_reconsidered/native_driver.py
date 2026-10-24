@@ -8,7 +8,7 @@ brightness-temperature functions are used.  Three distinct outputs are kept:
 native ES; an ES control on one additive source field with positive ball filters;
 and the source-adaptive angular candidate on that same source field.
 The default balanced research profile uses the compact kernel and denser angular
-sampling; original, compact and incremental remain explicit CLI choices.
+sampling; original, compact, incremental and adaptive-front remain explicit CLI choices.
 
 The native n_ion field is a cumulative *effective* photon budget per mean-baryon
 cell in Lagrangian-source mode.  It is already an extensive Eulerian source
@@ -33,7 +33,7 @@ import time
 
 import numpy as np
 
-SOLVERS = ("original", "balanced", "incremental", "compact")
+SOLVERS = ("original", "balanced", "incremental", "compact", "adaptive-front")
 
 
 def _spatial_solver(profile):
@@ -43,6 +43,18 @@ def _spatial_solver(profile):
     if profile == "original":
         from hybrid import library, solve
         return solve, library
+    if profile == "adaptive-front":
+        directory = str(Path(__file__).resolve().parents[1] / "pc_adaptive_front")
+        if directory not in sys.path:
+            sys.path.insert(0, directory)
+        from adaptive import library, solve
+
+        def adaptive_selected(source, capacity, **kwargs):
+            result = solve(source, capacity, **kwargs)
+            result["audit"]["solver_profile"] = profile
+            return result
+
+        return adaptive_selected, library
     refinement = str(Path(__file__).resolve().parents[1] / "pc_refinement")
     if refinement not in sys.path:
         sys.path.insert(0, refinement)

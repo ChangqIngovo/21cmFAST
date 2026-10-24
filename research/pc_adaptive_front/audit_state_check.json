@@ -1,0 +1,13 @@
+{
+  "scope": "Fixed-grid, fixed-direction opaque-cell time subdivision; no cosmological evolution",
+  "angles_per_source": 1536,
+  "source_photons": 165.0,
+  "first_half_mixed_parents": 115,
+  "persistent_L1_over_Q": 2.300348463901366e-17,
+  "averaged_state_L1_over_Q": 0.01979243488697665,
+  "averaged_state_maximum_parent_ionization_error": 0.08203124999999989,
+  "one_step_unabsorbed": 0.0,
+  "persistent_steps_unabsorbed": 0.0,
+  "averaged_steps_unabsorbed": 0.0,
+  "note": "Both continuations preserve photons; coarse averaging loses the location of remaining neutral atoms."
+}

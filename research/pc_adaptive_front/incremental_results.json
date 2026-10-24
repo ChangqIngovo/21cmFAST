@@ -1,0 +1,142 @@
+{
+  "scope": "Static native half-dose increment from identical resolved fine initial state; no cosmological evolution",
+  "timing": "Compilation and initial-state generation excluded; sequential alternating repeats; dense debug output untimed",
+  "fixture": "/workspace/scratch/40b418003e4a/native32_reconsidered/source_capacity.npz",
+  "fixture_sha256": "8cc89abc1fc85ab6d780eedd53d98023a2104792dba41f5477c31a2308d25a2c",
+  "angles": 384,
+  "shape": [
+    32,
+    32,
+    32
+  ],
+  "maximum_distance": 16.0,
+  "variant_compile_flags": [],
+  "initial_state": {
+    "coarse_ionized_sha256": "1b963e1a50dca2276b44d30fe489e62aacf5040a4ef8465156a08d7d0b06bf89",
+    "fine_ionized_sha256": "dbf774dbf42650adb4dccd932f333b5f5df31fcf96cf7bd725172741fadf7090",
+    "nonuniform_parents": 4095
+  },
+  "first_half_audit": {
+    "subcells_per_axis": 2,
+    "photons": 12851.46910544219,
+    "parent_skip": true,
+    "absorbed": 12851.46910544219,
+    "escaped": 0.0,
+    "retained": 0.0,
+    "ledger_residual": -6.306066779870889e-14,
+    "source_relative_error": 3.624158771187771e-15,
+    "maximum_angle_ledger_residual": 1.2789769243681803e-13,
+    "rays_materialized": 734688,
+    "events": 15306,
+    "queries": 4743557,
+    "ray_bytes": 47185920,
+    "seconds": 0.4857535600012852,
+    "quadrature": "octant-balanced, cyclic permutations, equal weights",
+    "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+  },
+  "models": [
+    {
+      "name": "full_subcells",
+      "seconds_samples": [
+        14.437010791999455,
+        14.120200123999894,
+        16.96914026000013
+      ],
+      "audit": {
+        "subcells_per_axis": 2,
+        "photons": 12851.46910544219,
+        "parent_skip": true,
+        "absorbed": 12754.187173677998,
+        "escaped": 0.0,
+        "retained": 97.28193176419032,
+        "ledger_residual": 4.973799150320701e-14,
+        "source_relative_error": 4.549157627784067e-15,
+        "maximum_angle_ledger_residual": 5.186961971048731e-13,
+        "rays_materialized": 6779616,
+        "events": 125936,
+        "queries": 123659409,
+        "ray_bytes": 434110464,
+        "seconds": 16.969107269000233,
+        "quadrature": "octant-balanced, cyclic permutations, equal weights",
+        "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+      },
+      "independent_ledger": {
+        "passed": true,
+        "relative_count_residual": 4.837772932331969e-18,
+        "maximum_local_fraction_violation": 1.8847238006164524e-16,
+        "maximum_source_relative_residual": 4.549157627784067e-15
+      },
+      "median_seconds": 14.437010791999455
+    },
+    {
+      "name": "adaptive",
+      "seconds_samples": [
+        12.844600935000017,
+        12.96417980500064,
+        13.204531178000252
+      ],
+      "audit": {
+        "model": "lazy eight-subcell event transport",
+        "photons": 12851.46910544219,
+        "absorbed": 12754.187173677998,
+        "escaped": 0.0,
+        "retained": 97.28193176419033,
+        "ledger_residual": 5.240252676230739e-14,
+        "source_relative_error": 3.7349736579106795e-14,
+        "angle_relative_error": 1.5498565810186302e-14,
+        "maximum_local_fraction_violation": 0.0,
+        "preparation_seconds": 0.1078771680004138,
+        "seconds": 13.204490467000142,
+        "return_dense": false,
+        "maximum_distance": 16.0,
+        "effective_density": "remaining",
+        "source_positions": "original coarse centres",
+        "continuum_accuracy_certified": false,
+        "events": 124452,
+        "rays_materialized": 6779616,
+        "queries": 123066277,
+        "assignments": 34960442,
+        "promotions": 19311,
+        "peak_live_child_parents": 10563,
+        "total_child_slots_highwater": 10563,
+        "ray_bytes": 325582848,
+        "cell_allocated_bytes": 10946624,
+        "heap_allocated_bytes": 1048576,
+        "parent_skips": 36398207,
+        "uniform_coarse_events": 212,
+        "final_sparse_parent_count": 10111,
+        "source_launches": 130896,
+        "fine_events": 124240,
+        "coarsenings": 13295,
+        "state_bytes": 949692
+      },
+      "independent_ledger": {
+        "passed": true,
+        "relative_count_residual": 3.870218345865575e-18,
+        "maximum_local_fraction_violation": 1.8847238006164524e-16,
+        "maximum_source_relative_residual": 3.7349736579106795e-14
+      },
+      "median_seconds": 12.96417980500064,
+      "vs_full_subcells": {
+        "L1_over_emitted": 1.9442879831838638e-17,
+        "maximum_count_difference": 2.220446049250313e-16,
+        "volume_mean_absolute_ionized_fraction_difference": 8.338238143662828e-18,
+        "maximum_ionized_fraction_difference": 2.8986953907958234e-16,
+        "source_ledgers": {
+          "source_absorbed_L1_over_emitted": 1.5946109479988324e-15,
+          "source_escaped_L1_over_emitted": 0.0,
+          "source_retained_L1_over_emitted": 1.528922202152189e-18
+        },
+        "maximum_subcell_fraction_difference": 6.541176911032279e-16,
+        "subcell_L1_over_emitted": 6.8194510690385995e-18
+      }
+    }
+  ],
+  "source_hashes": {
+    "/workspace/scratch/40b418003e4a/21cmFAST/research/pc_adaptive_front/incremental_benchmark.py": "d8f52ef1492d0c7102481f5fad18779fc747343416cee0cea9ef0117878ac354",
+    "/workspace/scratch/40b418003e4a/21cmFAST/research/pc_adaptive_front/adaptive.py": "835b156ac8f039b948b227098406d087e99f548185cdbb840dd2d067c002c4fc",
+    "/workspace/scratch/40b418003e4a/21cmFAST/research/pc_refinement/front_subcells.py": "c461b7c7f71ff7b7e2348a9b0891d0ed6298edf9b8c996a508d8fd09c51cfcd5",
+    "/workspace/scratch/40b418003e4a/21cmFAST/research/pc_refinement/front_subcells.cpp": "8bf1e8dbda243fb6bc80eed8981562f9e2cfbe65b2836c85f93fa66c8b4fdd07",
+    "/workspace/scratch/40b418003e4a/21cmFAST/research/pc_adaptive_front/adaptive.cpp": "d1d51121146e241b98263645e41ac46363705977df6b4eece57f0697e1e647f0"
+  }
+}
