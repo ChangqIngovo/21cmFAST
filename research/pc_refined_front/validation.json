@@ -1,0 +1,58 @@
+{
+  "scope": "Fixed-source static front refinement with native restricted 21cmFAST coeval integration; no Gadi submission",
+  "tests": {
+    "combined_suite": 90,
+    "total_passed": 90,
+    "native_end_to_end_profiles": [
+      "original",
+      "balanced",
+      "adaptive-front",
+      "refined-front"
+    ],
+    "commands": [
+      "python -m pytest research/pc_refined_front research/pc_reconsidered/test_native_driver.py -q --confcutdir=research"
+    ],
+    "storage_selection_tests_included": 6,
+    "combined_suite_seconds": 15.26
+  },
+  "independent_reference": {
+    "cases": 400,
+    "solves": 800,
+    "maximum_field_L1_over_emitted": 7.569884097681334e-17,
+    "maximum_source_ledger_L1_over_emitted": 2.6049645224768728e-17
+  },
+  "template_controls": {
+    "cases": 60,
+    "solves": 240,
+    "maximum_field_L1_over_atoms": 2.3502127862827752e-18
+  },
+  "benchmark": {
+    "model_case_count": 51,
+    "maximum_relative_global_residual": 6.727383610688659e-16,
+    "maximum_source_relative_residual": 2.8940936742691044e-13,
+    "maximum_local_fraction_violation": -0.0,
+    "maximum_dense_reference_L1_over_emitted": 2.0383000846708497e-16,
+    "maximum_template_control_L1_over_emitted": 5.5565361350734594e-18
+  },
+  "shell_syntax_passed": true,
+  "source_sha256": {
+    "research/pc_reconsidered/native_driver.py": "caa3a37c126eed3a6964c9b5ae98c8a67d722634e7e170dc843f65b47ada41ff",
+    "research/pc_reconsidered/test_native_driver.py": "96f3b983c53744b578a9bcfca0e402b972e503abb3a6b2b2c2dfd4d0430d72c0",
+    "research/pc_refined_front/audit_refined.py": "65715a0bcf994aa69b6cf7ae681a3e4936196d598b89d673919f167768e9b55f",
+    "research/pc_refined_front/benchmark.py": "b6cd0b8b72222f23983df25ba642aab4f9df8205e75f871d63f5d222b6fcf92e",
+    "research/pc_refined_front/gadi_compare.pbs": "3ee687e5fc12f5cb2ddeae564dcaa52aedb8673e0d9f92df295cf296205d85ce",
+    "research/pc_refined_front/gadi_prepare.sh": "335e44d0295c6ecaf7d0d8c024093c89df1284227546b8dd6b14c3df734f06e6",
+    "research/pc_refined_front/large_followup.py": "1c41a61dc03a03b7352d299d07f48fb5382525472d061bc1e35c516f6273b1bc",
+    "research/pc_refined_front/packing_benchmark.py": "dc3aeea86afe11503dc412d698f017c96c33029243b0497e7c14c2f4bce28fec",
+    "research/pc_refined_front/plot_benchmark.py": "9f12a7b0d267c209cf2772658d15c1bd1db0d074e39d0e5723210b8edd49fc70",
+    "research/pc_refined_front/reference_prepack.cpp": "9c79fdef8af3880879f1bddbb06482004817f4406ba15a4fafca1530ca6dcafd",
+    "research/pc_refined_front/refined.cpp": "d0614595b3e0e99ca1b2eb7df29b2cdf248de75f8195631fd98cb97a03114ae6",
+    "research/pc_refined_front/refined.py": "ac1a5896fd1dc1b56e119fba891d6ccb96a393fc4a5d67609b6333c45fb43295",
+    "research/pc_refined_front/summarize_benchmark.py": "36aa487fac25ded01c3ad775f3418b255efd0475b56d6303fea75a71c18bf29b",
+    "research/pc_refined_front/test_heap.py": "d0222dd5b9d1be8cd99f4fb1cac9b952cec07efd6192c38078e9ff9a7102c7d4",
+    "research/pc_refined_front/test_large_followup.py": "090762a84bcc03afb9aa4de41f7c9e29cf65b1e430d26c38d0dfd24e39ae2ba5",
+    "research/pc_refined_front/test_refined.py": "32c575bea9b28bb3881c2860917392e7c220093888d5c0c3195cd1a873c90508",
+    "research/pc_refined_front/test_refined_heap.cpp": "268aac8649c696db0e7f9dcd84a3f7608ac211e59632bd39c995a090306cd09d",
+    "research/pc_refined_front/test_storage.py": "9d936059967d6886ec3ea8c6ddc05efb01070d7ed15847e0dd29c1b8e360dddf"
+  }
+}

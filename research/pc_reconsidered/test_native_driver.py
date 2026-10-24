@@ -88,7 +88,7 @@ def test_invalid_fraction_cannot_be_used_for_reionization_history(bad):
         update_reionization_redshift([bad], 8.)
 
 
-@pytest.mark.parametrize("solver", ["original", "balanced", "adaptive-front"])
+@pytest.mark.parametrize("solver", ["original", "balanced", "adaptive-front", "refined-front"])
 def test_true_native_sources_candidate_and_brightness_end_to_end(tmp_path, solver):
     pytest.importorskip("py21cmfast")
     from native_driver import run_native

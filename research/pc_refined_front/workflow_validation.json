@@ -1,0 +1,135 @@
+{
+  "scope": "Local driver verification with frozen packed-ray template core and same-worker angular prediction timing; synthetic periodic fields; no Gadi submission",
+  "unit_tests": {
+    "passed": 4,
+    "command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 .venv/bin/python -m pytest research/pc_refined_front/test_large_followup.py -q --confcutdir=research/pc_refined_front"
+  },
+  "shell_syntax": {
+    "passed": true,
+    "files": [
+      "gadi_prepare.sh",
+      "gadi_compare.pbs"
+    ]
+  },
+  "actual_solver_cases": {
+    "cases": 12,
+    "grids": [
+      4,
+      8
+    ],
+    "doses": [
+      0.8,
+      0.9
+    ],
+    "models": [
+      "adaptive_f2",
+      "refined_f2",
+      "refined_f4"
+    ],
+    "all_ledgers_passed": true,
+    "all_f2_checks_passed": true,
+    "maximum_f2_L1_over_emitted": 0.0
+  },
+  "actual_parallel_subprocess_run": {
+    "cases": 3,
+    "seconds_before_collection": 5.931516796998039,
+    "requested_workers": 2,
+    "simultaneous_tasks": 2,
+    "failures": [],
+    "completion_marker": true,
+    "all_ledgers_passed": true
+  },
+  "timing_scope": "Compilation excluded. runtime_ratio uses end_to_end_seconds_with_angle_estimate: adaptive prediction is inside solve; refined prediction is remeasured on the same worker and added to raw solve time. Template construction remains included. transport_and_output_seconds subtracts audit preparation, but includes output reconstruction and is not pure kernel time. One serial transport kernel per independent worker.",
+  "parallel_case_timings": [
+    {
+      "task": "seed1234_n4_q0.800000_adaptive_f2",
+      "raw_solve_seconds": 0.0010959709979943,
+      "timing": {
+        "raw_solve_seconds": 0.0010959709979943,
+        "separately_measured_angle_estimate_seconds": null,
+        "end_to_end_seconds_with_angle_estimate": 0.0010959709979943,
+        "preparation_seconds_with_angle_estimate": 0.0008428420005657244,
+        "transport_and_output_seconds": 0.00022604799960390665,
+        "angle_prediction": "Inside adaptive.solve",
+        "scope": "Compilation excluded. End-to-end includes one angular prediction, solver preparation, transport, template construction and output-state reconstruction. Transport-and-output is not pure kernel time."
+      },
+      "template_build_seconds": null,
+      "use_local_templates": null,
+      "ray_storage": null,
+      "contiguous_ray_budget_bytes": null
+    },
+    {
+      "task": "seed1234_n4_q0.800000_refined_f2",
+      "raw_solve_seconds": 0.000825586001155898,
+      "timing": {
+        "raw_solve_seconds": 0.000825586001155898,
+        "separately_measured_angle_estimate_seconds": 0.0005109049998281989,
+        "end_to_end_seconds_with_angle_estimate": 0.001336491000984097,
+        "preparation_seconds_with_angle_estimate": 0.0009637930015742313,
+        "transport_and_output_seconds": 0.0003494039992801845,
+        "angle_prediction": "Remeasured on this worker before refined.solve",
+        "scope": "Compilation excluded. End-to-end includes one angular prediction, solver preparation, transport, template construction and output-state reconstruction. Transport-and-output is not pure kernel time."
+      },
+      "template_build_seconds": 8.263e-06,
+      "use_local_templates": true,
+      "ray_storage": "contiguous",
+      "contiguous_ray_budget_bytes": 4294967296
+    },
+    {
+      "task": "seed1234_n4_q0.800000_refined_f4",
+      "raw_solve_seconds": 0.0009180449997074902,
+      "timing": {
+        "raw_solve_seconds": 0.0009180449997074902,
+        "separately_measured_angle_estimate_seconds": 0.0005136990002938546,
+        "end_to_end_seconds_with_angle_estimate": 0.0014317440000013448,
+        "preparation_seconds_with_angle_estimate": 0.0009201780012517702,
+        "transport_and_output_seconds": 0.0004883410001639277,
+        "angle_prediction": "Remeasured on this worker before refined.solve",
+        "scope": "Compilation excluded. End-to-end includes one angular prediction, solver preparation, transport, template construction and output-state reconstruction. Transport-and-output is not pure kernel time."
+      },
+      "template_build_seconds": 3.338e-05,
+      "use_local_templates": true,
+      "ray_storage": "contiguous",
+      "contiguous_ray_budget_bytes": 4294967296
+    }
+  ],
+  "source_sha256": {
+    "large_followup.py": "1c41a61dc03a03b7352d299d07f48fb5382525472d061bc1e35c516f6273b1bc",
+    "gadi_prepare.sh": "335e44d0295c6ecaf7d0d8c024093c89df1284227546b8dd6b14c3df734f06e6",
+    "gadi_compare.pbs": "3ee687e5fc12f5cb2ddeae564dcaa52aedb8673e0d9f92df295cf296205d85ce",
+    "test_large_followup.py": "090762a84bcc03afb9aa4de41f7c9e29cf65b1e430d26c38d0dfd24e39ae2ba5",
+    "refined.py": "ac1a5896fd1dc1b56e119fba891d6ccb96a393fc4a5d67609b6333c45fb43295",
+    "refined.cpp": "d0614595b3e0e99ca1b2eb7df29b2cdf248de75f8195631fd98cb97a03114ae6"
+  },
+  "native_adapter_sha256": "caa3a37c126eed3a6964c9b5ae98c8a67d722634e7e170dc843f65b47ada41ff",
+  "input_sha256": {
+    "/workspace/scratch/40b418003e4a/refined_packed_workflow_f9j071c9/parent/run_manifest.json": "d5ef3795d09f39fe78db844108dd1235d342fc655cc42ec9597f27663ca808df",
+    "/workspace/scratch/40b418003e4a/refined_packed_workflow_f9j071c9/parent/results/experiment.json": "6c4aed8398d28e58997f7bd484d0312ad2de77614c58ae265f3fe2f186d4d101",
+    "/workspace/scratch/40b418003e4a/refined_packed_workflow_f9j071c9/parent/results/fixtures/seed1234/n4/source.npy": "1a98e5ce87fadb1a3fb142ca0b34d7f81c03da27803085fa2277c58d2d1ad1cc",
+    "/workspace/scratch/40b418003e4a/refined_packed_workflow_f9j071c9/parent/results/fixtures/seed1234/n4/capacity.npy": "1a98e5ce87fadb1a3fb142ca0b34d7f81c03da27803085fa2277c58d2d1ad1cc",
+    "/workspace/scratch/40b418003e4a/refined_packed_workflow_f9j071c9/parent/results/fixtures/seed1234/n8/source.npy": "781e7825d30bb8b08cfb22e7a4ee56beece34a41cf6776deef11f09fed83df8d",
+    "/workspace/scratch/40b418003e4a/refined_packed_workflow_f9j071c9/parent/results/fixtures/seed1234/n8/capacity.npy": "781e7825d30bb8b08cfb22e7a4ee56beece34a41cf6776deef11f09fed83df8d"
+  },
+  "prepared_default": {
+    "cases": 48,
+    "grids": [
+      25,
+      50
+    ],
+    "doses": [
+      0.8,
+      0.9
+    ],
+    "refinements": [
+      2,
+      4
+    ],
+    "workers": 32,
+    "memory_gb": 320,
+    "walltime_hours": 12,
+    "walltime_is_allocation_not_prediction": true,
+    "contiguous_ray_reservation_gib": 4,
+    "ray_storage_scope": "Reservation/storage-selection threshold, not an RSS or total memory limit; larger potential banks use block storage"
+  },
+  "local_results_directory": "/workspace/scratch/40b418003e4a/refined_packed_workflow_f9j071c9"
+}

@@ -8,7 +8,8 @@ brightness-temperature functions are used.  Three distinct outputs are kept:
 native ES; an ES control on one additive source field with positive ball filters;
 and the source-adaptive angular candidate on that same source field.
 The default balanced research profile uses the compact kernel and denser angular
-sampling; original, compact, incremental and adaptive-front remain explicit CLI choices.
+sampling; original, compact, incremental, adaptive-front and refined-front
+remain explicit CLI choices.
 
 The native n_ion field is a cumulative *effective* photon budget per mean-baryon
 cell in Lagrangian-source mode.  It is already an extensive Eulerian source
@@ -33,7 +34,7 @@ import time
 
 import numpy as np
 
-SOLVERS = ("original", "balanced", "incremental", "compact", "adaptive-front")
+SOLVERS = ("original", "balanced", "incremental", "compact", "adaptive-front", "refined-front")
 
 
 def _spatial_solver(profile):
@@ -55,6 +56,33 @@ def _spatial_solver(profile):
             return result
 
         return adaptive_selected, library
+    if profile == "refined-front":
+        directory = str(Path(__file__).resolve().parents[1] / "pc_refined_front")
+        if directory not in sys.path:
+            sys.path.insert(0, directory)
+        from refined import library, solve
+        from hybrid import estimate_angles
+
+        def refined_selected(source, capacity, *, min_angles=24, max_angles=12288,
+                             rays_per_surface_cell=4., periodic=True,
+                             maximum_distance=None):
+            horizon = (len(source)*np.sqrt(3.) if maximum_distance is None
+                       else float(maximum_distance))
+            # Use the original source/density mesh for the angular predictor,
+            # so front refinement does not also change angular resolution.
+            levels, counts, radius, _ = estimate_angles(
+                source, capacity, capacity, min_angles=min_angles,
+                max_angles=max_angles, rays_per_surface_cell=rays_per_surface_cell,
+                periodic=periodic, maximum_distance=horizon)
+            result = solve(source, capacity, subcells_per_axis=4,
+                           angle_counts=counts[levels], periodic=periodic,
+                           maximum_distance=horizon)
+            result["estimated_radius"] = radius
+            result["audit"]["solver_profile"] = profile
+            result["audit"]["angular_predictor"] = "original coarse source/density grid"
+            return result
+
+        return refined_selected, library
     refinement = str(Path(__file__).resolve().parents[1] / "pc_refinement")
     if refinement not in sys.path:
         sys.path.insert(0, refinement)
