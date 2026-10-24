@@ -4,7 +4,10 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from native_driver import from_native_coeval, update_reionization_redshift, validate_inputs
+from native_driver import (
+    _native_box, _spatial_solver, from_native_coeval, update_reionization_redshift,
+    validate_inputs,
+)
 
 
 def fake_coeval():
@@ -59,6 +62,17 @@ def test_native_source_deficit_is_not_clipped():
         from_native_coeval(coeval)
 
 
+@pytest.mark.parametrize("capacity_value,absorption_value", [
+    (1e-15, 2e-15), (1e-15, -1e-16), (0., 1e-30),
+])
+def test_native_box_rejects_local_void_overfill_instead_of_clipping(
+        capacity_value, absorption_value):
+    capacity = np.full((2,) * 3, capacity_value)
+    absorbed = np.full_like(capacity, absorption_value)
+    with pytest.raises(ValueError, match="native atom capacity"):
+        _native_box(fake_coeval(), absorbed, capacity)
+
+
 def test_reionization_labels_keep_first_crossing_without_claiming_transport():
     labels = update_reionization_redshift([0., .3, 0.], 10.)
     np.testing.assert_array_equal(labels, [10., -1., 10.])
@@ -74,12 +88,16 @@ def test_invalid_fraction_cannot_be_used_for_reionization_history(bad):
         update_reionization_redshift([bad], 8.)
 
 
-def test_true_native_sources_candidate_and_brightness_end_to_end(tmp_path):
+@pytest.mark.parametrize("solver", ["original", "balanced"])
+def test_true_native_sources_candidate_and_brightness_end_to_end(tmp_path, solver):
     pytest.importorskip("py21cmfast")
     from native_driver import run_native
     result = run_native(output=tmp_path / "native", dimension=8, box_len=24.,
                         redshift=8., threads=2, max_angles=96,
-                        rays_per_surface_cell=1.)
+                        rays_per_surface_cell=1., solver=solver)
+    assert result["metadata"]["solver_profile"] == solver
+    assert result["metadata"]["solver_parameters"]["surface_sampling_override"] == 1.
+    assert "not Qin20 exact" in result["metadata"]["scope"]
     sources = result["source"]
     solution = result["candidate"]
     np.testing.assert_allclose(
@@ -104,3 +122,20 @@ def test_true_native_sources_candidate_and_brightness_end_to_end(tmp_path):
         assert np.all(labels[xhi <= 1e-6] == 8.)
         assert np.all(labels[xhi > 1e-6] == -1.)
     np.testing.assert_allclose(factors, factors[0], rtol=3e-7)
+
+
+def test_unknown_solver_is_rejected_before_compilation():
+    with pytest.raises(ValueError, match="Unknown spatial solver"):
+        _spatial_solver("unregistered-method")
+
+
+@pytest.mark.parametrize("profile", ["compact", "incremental"])
+def test_selected_profile_preserves_counts_and_reports_identity(profile):
+    solve, warmup = _spatial_solver(profile)
+    warmup()
+    source = np.full((4,)*3, .1)
+    capacity = np.ones_like(source)
+    result = solve(source, capacity)
+    assert result["audit"]["solver_profile"] == profile
+    np.testing.assert_array_equal(result["absorbed"], source)
+    assert result["unabsorbed"] == 0.

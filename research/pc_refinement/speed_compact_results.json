@@ -1,0 +1,281 @@
+{
+  "scope": "Same photons, opacity, angular samples and source locations; exact arithmetic-path acceleration only",
+  "timing": "one worker, sequential alternating order, compilation excluded; shared host wall-time noise remains",
+  "source_hashes": {
+    "speed_benchmark.py": "7d17e4ee6dac8c8a4e1aaa6fdb0791ebf81d9b6ac72da0e8c9288c236dc3513c",
+    "speed_core.cpp": "fb10d69c7904346f815ef307242ffc3e6d43a5a7284ee16483c615b61aee9266",
+    "speed_core.py": "5ab8db1135a840b8d6afbf8b34ce30a9164879a25f5b9bc5b68cf428709706be"
+  },
+  "cases": [
+    {
+      "name": "sphere_R8",
+      "bitwise_equal_maps_and_source_ledgers": true,
+      "seconds_samples": {
+        "original": [
+          0.008839157000011255,
+          0.008634090999976252,
+          0.008431287999883352,
+          0.00851106800018897,
+          0.008444158000202151,
+          0.008484958000053666,
+          0.008442736000006335
+        ],
+        "compact": [
+          0.008921729000121559,
+          0.008792275999894628,
+          0.00891391800018937,
+          0.008782801999814183,
+          0.00888670699987415,
+          0.008790343999862671,
+          0.008891734000144424
+        ]
+      },
+      "median_seconds": {
+        "original": 0.008484958000053666,
+        "compact": 0.00888670699987415
+      },
+      "speedup": {
+        "original": 1.0,
+        "compact": 0.9547921406853885
+      },
+      "audits": {
+        "original": {
+          "model": "source-adaptive quadrature of shared sharp-front events",
+          "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+          "photons": 2144.660584850632,
+          "absorbed": 2144.6605848506315,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 4.547473508864641e-13,
+          "per_source_relative_ledger_max": 7.421294256748207e-15,
+          "per_angle_ledger_max": 1.2953505455770564e-16,
+          "capacity_excess": 0.0,
+          "angles_min": 6144,
+          "angles_max": 6144,
+          "angles_mean": 6144.0,
+          "angles_sum": 6144,
+          "sources_at_angle_limit": 0,
+          "events": 1872,
+          "rays_materialized": 6144,
+          "queries": 146405,
+          "ray_allocated_bytes": 524288,
+          "transport_seconds": 0.008442736000006335,
+          "seconds": 0.010346591999905286,
+          "periodic": true,
+          "maximum_distance": 16.0,
+          "angular_accuracy_certified": false,
+          "exact_optimization": "original"
+        },
+        "compact": {
+          "model": "source-adaptive quadrature of shared sharp-front events",
+          "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+          "photons": 2144.660584850632,
+          "absorbed": 2144.6605848506315,
+          "escaped": 0.0,
+          "retained": 0.0,
+          "ledger_residual": 4.547473508864641e-13,
+          "per_source_relative_ledger_max": 7.421294256748207e-15,
+          "per_angle_ledger_max": 1.2953505455770564e-16,
+          "capacity_excess": 0.0,
+          "angles_min": 6144,
+          "angles_max": 6144,
+          "angles_mean": 6144.0,
+          "angles_sum": 6144,
+          "sources_at_angle_limit": 0,
+          "events": 1872,
+          "rays_materialized": 6144,
+          "queries": 146405,
+          "ray_allocated_bytes": 393216,
+          "transport_seconds": 0.008891734000144424,
+          "seconds": 0.01110730400000648,
+          "periodic": true,
+          "maximum_distance": 16.0,
+          "angular_accuracy_certified": false,
+          "exact_optimization": "compact",
+          "fast_crossings": 0,
+          "fallback_crossings": 73205
+        }
+      }
+    },
+    {
+      "name": "native32",
+      "bitwise_equal_maps_and_source_ledgers": true,
+      "seconds_samples": {
+        "original": [
+          0.4940729590000501,
+          0.5046946269999353,
+          0.5889864739999666,
+          0.6010681400000522,
+          0.5792431669999587,
+          0.5936608499998783,
+          0.6065536959999918
+        ],
+        "compact": [
+          0.4875811419999536,
+          0.4675788179999927,
+          0.5228539899999305,
+          0.5457790030000069,
+          0.5639071129999138,
+          0.596157508000033,
+          0.5673276009999881
+        ]
+      },
+      "median_seconds": {
+        "original": 0.5889864739999666,
+        "compact": 0.5457790030000069
+      },
+      "speedup": {
+        "original": 1.0,
+        "compact": 1.0791666054620264
+      },
+      "audits": {
+        "original": {
+          "model": "source-adaptive quadrature of shared sharp-front events",
+          "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+          "photons": 25702.93821088438,
+          "absorbed": 25630.836862532567,
+          "escaped": 0.0,
+          "retained": 72.10134835181097,
+          "ledger_residual": 0.0,
+          "per_source_relative_ledger_max": 4.677401293215405e-15,
+          "per_angle_ledger_max": 8.911205107153819e-13,
+          "capacity_excess": 0.0,
+          "angles_min": 24,
+          "angles_max": 384,
+          "angles_mean": 29.19873046875,
+          "angles_sum": 956784,
+          "sources_at_angle_limit": 0,
+          "events": 16623,
+          "rays_materialized": 569280,
+          "queries": 7288889,
+          "ray_allocated_bytes": 36438016,
+          "transport_seconds": 0.6065536959999918,
+          "seconds": 0.6084621029999653,
+          "periodic": true,
+          "maximum_distance": 16.0,
+          "angular_accuracy_certified": false,
+          "exact_optimization": "original"
+        },
+        "compact": {
+          "model": "source-adaptive quadrature of shared sharp-front events",
+          "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+          "photons": 25702.93821088438,
+          "absorbed": 25630.836862532567,
+          "escaped": 0.0,
+          "retained": 72.10134835181097,
+          "ledger_residual": 0.0,
+          "per_source_relative_ledger_max": 4.677401293215405e-15,
+          "per_angle_ledger_max": 8.911205107153819e-13,
+          "capacity_excess": 0.0,
+          "angles_min": 24,
+          "angles_max": 384,
+          "angles_mean": 29.19873046875,
+          "angles_sum": 956784,
+          "sources_at_angle_limit": 0,
+          "events": 16623,
+          "rays_materialized": 569280,
+          "queries": 7288889,
+          "ray_allocated_bytes": 27328512,
+          "transport_seconds": 0.5673276009999881,
+          "seconds": 0.570332887999939,
+          "periodic": true,
+          "maximum_distance": 16.0,
+          "angular_accuracy_certified": false,
+          "exact_optimization": "compact",
+          "fast_crossings": 0,
+          "fallback_crossings": 5172585
+        }
+      }
+    },
+    {
+      "name": "native64",
+      "bitwise_equal_maps_and_source_ledgers": true,
+      "seconds_samples": {
+        "original": [
+          0.6537502740000036,
+          0.5697749920000206,
+          0.5829003349999766,
+          0.6175504490001913,
+          0.6511349869999776,
+          0.6629459969999516,
+          0.5728549160000966
+        ],
+        "compact": [
+          0.5712425710000844,
+          0.541477703000055,
+          0.5435968209999373,
+          0.5520164259999092,
+          0.6070386540000072,
+          0.6285028959998726,
+          0.5468847600000117
+        ]
+      },
+      "median_seconds": {
+        "original": 0.6175504490001913,
+        "compact": 0.5520164259999092
+      },
+      "speedup": {
+        "original": 1.0,
+        "compact": 1.1187175234533562
+      },
+      "audits": {
+        "original": {
+          "model": "source-adaptive quadrature of shared sharp-front events",
+          "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+          "photons": 92277.41597486407,
+          "absorbed": 92277.05123202383,
+          "escaped": 0.0,
+          "retained": 0.3647428402292716,
+          "ledger_residual": 0.0,
+          "per_source_relative_ledger_max": 6.4071291574852414e-15,
+          "per_angle_ledger_max": 1.1747824935071094e-12,
+          "capacity_excess": 0.0,
+          "angles_min": 24,
+          "angles_max": 384,
+          "angles_mean": 26.4202880859375,
+          "angles_sum": 6925920,
+          "sources_at_angle_limit": 0,
+          "events": 25396,
+          "rays_materialized": 1174272,
+          "queries": 6710697,
+          "ray_allocated_bytes": 75235328,
+          "transport_seconds": 0.5728549160000966,
+          "seconds": 0.583460131000038,
+          "periodic": true,
+          "maximum_distance": 16.0,
+          "angular_accuracy_certified": false,
+          "exact_optimization": "original"
+        },
+        "compact": {
+          "model": "source-adaptive quadrature of shared sharp-front events",
+          "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+          "photons": 92277.41597486407,
+          "absorbed": 92277.05123202383,
+          "escaped": 0.0,
+          "retained": 0.3647428402292716,
+          "ledger_residual": 0.0,
+          "per_source_relative_ledger_max": 6.4071291574852414e-15,
+          "per_angle_ledger_max": 1.1747824935071094e-12,
+          "capacity_excess": 0.0,
+          "angles_min": 24,
+          "angles_max": 384,
+          "angles_mean": 26.4202880859375,
+          "angles_sum": 6925920,
+          "sources_at_angle_limit": 0,
+          "events": 25396,
+          "rays_materialized": 1174272,
+          "queries": 6710697,
+          "ray_allocated_bytes": 56426496,
+          "transport_seconds": 0.5468847600000117,
+          "seconds": 0.5576205770000797,
+          "periodic": true,
+          "maximum_distance": 16.0,
+          "angular_accuracy_certified": false,
+          "exact_optimization": "compact",
+          "fast_crossings": 0,
+          "fallback_crossings": 4113680
+        }
+      }
+    }
+  ]
+}

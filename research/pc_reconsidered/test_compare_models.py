@@ -51,6 +51,27 @@ class BenchmarkOracleTests(unittest.TestCase):
         self.assertFalse(independent_ledger(source * 0.3, 0.7, case)["passed"])
         self.assertTrue(independent_ledger(source * 0.2, 0.8, case)["passed"])
 
+    def test_global_budget_cannot_hide_local_overionization_in_any_units(self):
+        for units in (1e-20, 1., 1e20):
+            source = np.zeros((4,) * 3)
+            source[1, 1, 1] = 100 * units
+            capacity = np.ones_like(source) * units
+            capacity[2, 2, 2] = 1e-8 * units
+            absorbed = np.zeros_like(source)
+            absorbed[2, 2, 2] = 2e-8 * units
+            case = Case("local", source, capacity, np.zeros_like(source), 2)
+            result = independent_ledger(absorbed, float(source.sum() - absorbed.sum()), case)
+            self.assertFalse(result["passed"])
+            self.assertAlmostEqual(result["maximum_local_fraction_violation"], 1.)
+
+    def test_weak_global_budget_has_no_absolute_unit_tolerance(self):
+        source = np.ones((2,) * 3) * 1e-20
+        case = Case("weak", source, np.ones_like(source), np.zeros_like(source), 2)
+        self.assertFalse(independent_ledger(source * 2, 0., case)["passed"])
+        self.assertTrue(independent_ledger(source, 0., case)["passed"])
+        with self.assertRaises(AssertionError):
+            independent_ledger(source, float("nan"), case)
+
     def test_auto_power_does_not_hide_opposite_phase(self):
         rng = np.random.default_rng(291)
         reference = rng.normal(size=(24,) * 3)

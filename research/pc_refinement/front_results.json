@@ -1,0 +1,665 @@
+{
+  "scope": "Same source points and total angular counts; refinement uniformly divides gas capacity; no chemistry.",
+  "cases": [
+    {
+      "name": "isolated",
+      "models": {
+        "original-fibonacci": {
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 268.082573106329,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.684341886080802e-14,
+            "per_source_relative_ledger_max": 8.269442171805144e-15,
+            "per_angle_ledger_max": 3.701195166322391e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 1536,
+            "sources_at_angle_limit": 0,
+            "events": 202,
+            "rays_materialized": 1536,
+            "queries": 18026,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.0015259500000865955,
+            "seconds": 0.0026220650001960166,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "seconds_samples": [
+            0.003200722999736172,
+            0.0022708689998580667,
+            0.0026220650001960166
+          ],
+          "median_seconds": 0.0026220650001960166,
+          "vs_analytic": {
+            "L1_over_Q": 0.11417053611230936,
+            "max_cell": 0.5170319740538435
+          },
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.07163437552723023,
+            "max_cell": 0.31975667702391075
+          }
+        },
+        "balanced-coarse": {
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 268.082573106329,
+            "parent_skip": true,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.595524044110789e-14,
+            "source_relative_error": 1.6962958301138757e-14,
+            "maximum_angle_ledger_residual": 2.7755575615628914e-17,
+            "rays_materialized": 1536,
+            "events": 209,
+            "queries": 18240,
+            "ray_bytes": 262144,
+            "seconds": 0.002037056999597553,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.002205450000019482,
+            0.002110137000272516,
+            0.002037056999597553
+          ],
+          "median_seconds": 0.002110137000272516,
+          "vs_analytic": {
+            "L1_over_Q": 0.126987462360225,
+            "max_cell": 0.5209048099892808
+          },
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.0830100809777444,
+            "max_cell": 0.32362951295934805
+          }
+        },
+        "balanced-subcells": {
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 268.082573106329,
+            "parent_skip": true,
+            "absorbed": 268.082573106329,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": -3.164135620181696e-15,
+            "source_relative_error": 1.6962958301138758e-15,
+            "maximum_angle_ledger_residual": 5.551115123125783e-17,
+            "rays_materialized": 1536,
+            "events": 1856,
+            "queries": 32112,
+            "ray_bytes": 262144,
+            "seconds": 0.009361930000068241,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.010401079000075697,
+            0.009720128000026307,
+            0.009361930000068241
+          ],
+          "median_seconds": 0.009720128000026307,
+          "vs_analytic": {
+            "L1_over_Q": 0.07393812310980785,
+            "max_cell": 0.3918795827121465
+          },
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.05252448651251966,
+            "max_cell": 0.19460428568221377
+          }
+        }
+      },
+      "reference_audit": {
+        "subcells_per_axis": 2,
+        "photons": 268.082573106329,
+        "parent_skip": true,
+        "absorbed": 268.0825731063291,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": -1.0838552277903091e-13,
+        "source_relative_error": 1.698416199901518e-13,
+        "maximum_angle_ledger_residual": 1.734723475976807e-18,
+        "rays_materialized": 49152,
+        "events": 1856,
+        "queries": 1024608,
+        "ray_bytes": 3145728,
+        "seconds": 0.046368469999833906,
+        "quadrature": "octant-balanced, cyclic permutations, equal weights",
+        "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+      },
+      "metadata": {
+        "radius_cells": 4.0,
+        "centre": [
+          12,
+          12,
+          12
+        ]
+      }
+    },
+    {
+      "name": "equal-overlap",
+      "models": {
+        "original-fibonacci": {
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 536.165146212658,
+            "absorbed": 536.1651462126579,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 1.569073642855335e-14,
+            "per_angle_ledger_max": 9.250955036732567e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 3072,
+            "sources_at_angle_limit": 0,
+            "events": 407,
+            "rays_materialized": 3072,
+            "queries": 38549,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.0023088900002221635,
+            "seconds": 0.003072005000376521,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "seconds_samples": [
+            0.002886301999751595,
+            0.002615805999994336,
+            0.003072005000376521
+          ],
+          "median_seconds": 0.002886301999751595,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.061586867939080005,
+            "max_cell": 0.3447403021304525
+          }
+        },
+        "balanced-coarse": {
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 536.165146212658,
+            "parent_skip": true,
+            "absorbed": 536.1651462126579,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.266209359584991e-13,
+            "source_relative_error": 1.4630551534732178e-14,
+            "maximum_angle_ledger_residual": 1.1102230246251565e-16,
+            "rays_materialized": 3072,
+            "events": 411,
+            "queries": 38680,
+            "ray_bytes": 262144,
+            "seconds": 0.0027953759995398286,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.002757919000032416,
+            0.002744068999618321,
+            0.0027953759995398286
+          ],
+          "median_seconds": 0.002757919000032416,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.07079177584671431,
+            "max_cell": 0.3870876040051877
+          }
+        },
+        "balanced-subcells": {
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 536.165146212658,
+            "parent_skip": true,
+            "absorbed": 536.165146212658,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.551115123125783e-16,
+            "source_relative_error": 2.756480723935048e-15,
+            "maximum_angle_ledger_residual": 1.1102230246251565e-16,
+            "rays_materialized": 3072,
+            "events": 3760,
+            "queries": 69023,
+            "ray_bytes": 262144,
+            "seconds": 0.012283485999887489,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.01082158100007291,
+            0.01150961500025005,
+            0.012283485999887489
+          ],
+          "median_seconds": 0.01150961500025005,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.04099190849433221,
+            "max_cell": 0.1765242751117977
+          }
+        }
+      },
+      "reference_audit": {
+        "subcells_per_axis": 2,
+        "photons": 536.165146212658,
+        "parent_skip": true,
+        "absorbed": 536.1651462126582,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": -2.354783035229957e-13,
+        "source_relative_error": 5.406942958487979e-14,
+        "maximum_angle_ledger_residual": 3.469446951953614e-18,
+        "rays_materialized": 98304,
+        "events": 3784,
+        "queries": 2208378,
+        "ray_bytes": 6291456,
+        "seconds": 0.09356868399981977,
+        "quadrature": "octant-balanced, cyclic permutations, equal weights",
+        "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+      },
+      "metadata": {
+        "isolated_radius_cells": 4.0,
+        "separation_cells": 6,
+        "sources": [
+          [
+            9,
+            12,
+            12
+          ],
+          [
+            15,
+            12,
+            12
+          ]
+        ]
+      }
+    },
+    {
+      "name": "transparent-overlap-increment",
+      "models": {
+        "original-fibonacci": {
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 0.01,
+            "absorbed": 0.009999999999999993,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 6.938893903907228e-18,
+            "per_source_relative_ledger_max": 1.1657341758564144e-13,
+            "per_angle_ledger_max": 3.531027239835737e-23,
+            "capacity_excess": 0.0,
+            "angles_min": 12288,
+            "angles_max": 12288,
+            "angles_mean": 12288.0,
+            "angles_sum": 12288,
+            "sources_at_angle_limit": 0,
+            "events": 0,
+            "rays_materialized": 12288,
+            "queries": 65110,
+            "ray_allocated_bytes": 786432,
+            "transport_seconds": 0.006103720999817597,
+            "seconds": 0.00811985599966647,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "seconds_samples": [
+            0.008884564000254613,
+            0.007890382000368845,
+            0.00811985599966647
+          ],
+          "median_seconds": 0.00811985599966647,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.021525065104166668,
+            "max_cell": 3.865559895833328e-06
+          }
+        },
+        "balanced-coarse": {
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 0.01,
+            "parent_skip": true,
+            "absorbed": 0.009999999999999992,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 7.352245982167327e-18,
+            "source_relative_error": 1.1657341758564144e-13,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 12288,
+            "events": 0,
+            "queries": 65180,
+            "ray_bytes": 786432,
+            "seconds": 0.007041777999802434,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.007258654000452225,
+            0.007107446000190976,
+            0.007041777999802434
+          ],
+          "median_seconds": 0.007107446000190976,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.03499348958333327,
+            "max_cell": 4.882812500000072e-06
+          }
+        },
+        "balanced-subcells": {
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 0.01,
+            "parent_skip": true,
+            "absorbed": 0.009999999999999998,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 7.064254780100865e-19,
+            "source_relative_error": 1.1449174941446927e-14,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 12288,
+            "events": 0,
+            "queries": 74924,
+            "ray_bytes": 786432,
+            "seconds": 0.016970878999472916,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.018138532000193663,
+            0.018038983000224107,
+            0.016970878999472916
+          ],
+          "median_seconds": 0.018038983000224107,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.03499348958333376,
+            "max_cell": 4.882812500000018e-06
+          }
+        }
+      },
+      "reference_audit": {
+        "subcells_per_axis": 2,
+        "photons": 0.01,
+        "parent_skip": true,
+        "absorbed": 0.009999999999999995,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 6.247715018947719e-18,
+        "source_relative_error": 7.684824998577255e-14,
+        "maximum_angle_ledger_residual": 0.0,
+        "rays_materialized": 49152,
+        "events": 0,
+        "queries": 298860,
+        "ray_bytes": 3145728,
+        "seconds": 0.043503171000338625,
+        "quadrature": "octant-balanced, cyclic permutations, equal weights",
+        "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+      },
+      "metadata": {
+        "radius_cells": 4.0,
+        "separation_cells": 6,
+        "emitter": [
+          9,
+          12,
+          12
+        ],
+        "other_centre": [
+          15,
+          12,
+          12
+        ],
+        "continuum_direction_fraction_through_overlap": 0.125,
+        "warning": "Absorber-centre cone fractions are not ray-labelled exit fractions; finite voxels alter the geometric footprint."
+      }
+    },
+    {
+      "name": "opaque-plane",
+      "models": {
+        "original-fibonacci": {
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 1.0,
+            "absorbed": 0.35416666666666663,
+            "escaped": 0.0,
+            "retained": 0.6458333333333541,
+            "ledger_residual": -2.0872192862952943e-14,
+            "per_source_relative_ledger_max": 8.43769498715119e-15,
+            "per_angle_ledger_max": 4.519714866989743e-21,
+            "capacity_excess": 0.0,
+            "angles_min": 12288,
+            "angles_max": 12288,
+            "angles_mean": 12288.0,
+            "angles_sum": 12288,
+            "sources_at_angle_limit": 0,
+            "events": 0,
+            "rays_materialized": 12288,
+            "queries": 70786,
+            "ray_allocated_bytes": 786432,
+            "transport_seconds": 0.008010633000139933,
+            "seconds": 0.011060100000122475,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "seconds_samples": [
+            0.011569595000310073,
+            0.01114806999976281,
+            0.011060100000122475
+          ],
+          "median_seconds": 0.01114806999976281,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.025756835937499993,
+            "max_cell": 0.0003662109375
+          }
+        },
+        "balanced-coarse": {
+          "audit": {
+            "subcells_per_axis": 1,
+            "photons": 1.0,
+            "parent_skip": true,
+            "absorbed": 0.35514322916666663,
+            "escaped": 0.0,
+            "retained": 0.6448567708333537,
+            "ledger_residual": -2.0333452803444896e-14,
+            "source_relative_error": 7.771561172376096e-15,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 12288,
+            "events": 0,
+            "queries": 70760,
+            "ray_bytes": 786432,
+            "seconds": 0.010715963999700762,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.010700790000100824,
+            0.01056388499955574,
+            0.010715963999700762
+          ],
+          "median_seconds": 0.010700790000100824,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.03165690104166667,
+            "max_cell": 0.0002644856770833335
+          }
+        },
+        "balanced-subcells": {
+          "audit": {
+            "subcells_per_axis": 2,
+            "photons": 1.0,
+            "parent_skip": true,
+            "absorbed": 0.35514322916666663,
+            "escaped": 0.0,
+            "retained": 0.6448567708333218,
+            "ledger_residual": 1.1541548966542692e-14,
+            "source_relative_error": 1.4654943925052066e-14,
+            "maximum_angle_ledger_residual": 0.0,
+            "rays_materialized": 12288,
+            "events": 0,
+            "queries": 68884,
+            "ray_bytes": 786432,
+            "seconds": 0.020767068999703042,
+            "quadrature": "octant-balanced, cyclic permutations, equal weights",
+            "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+          },
+          "seconds_samples": [
+            0.02123342799995953,
+            0.021248779999950784,
+            0.020767068999703042
+          ],
+          "median_seconds": 0.02123342799995953,
+          "vs_high_angle_subcells": {
+            "L1_over_Q": 0.031656901041666685,
+            "max_cell": 0.0002644856770833335
+          }
+        }
+      },
+      "reference_audit": {
+        "subcells_per_axis": 2,
+        "photons": 1.0,
+        "parent_skip": true,
+        "absorbed": 0.3540852864583333,
+        "escaped": 0.0,
+        "retained": 0.6459147135416206,
+        "ledger_residual": 4.613627188621017e-14,
+        "source_relative_error": 5.839773109528323e-14,
+        "maximum_angle_ledger_residual": 0.0,
+        "rays_materialized": 49152,
+        "events": 0,
+        "queries": 275048,
+        "ray_bytes": 3145728,
+        "seconds": 0.04948452099961287,
+        "quadrature": "octant-balanced, cyclic permutations, equal weights",
+        "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+      },
+      "metadata": {
+        "source_x": 8,
+        "plane_x": 12,
+        "analytic_absorbed_fraction": 0.35416666666666663,
+        "analytic_absorbed_fraction_description": "isotropic rays intersect the near face x=plane_x-0.5 before the range limit",
+        "isotropic_hemisphere_upper_bound": 0.5,
+        "warning": "The remainder is radiation outside the selected angular/length support; it must not be silently reassigned."
+      }
+    }
+  ],
+  "source_hashes": {
+    "pc_refinement/front_benchmark.py": "354ccd4a83709c76cd60db4239fa8a7412e3a7b1c0c722ee40a5310273df31ff",
+    "pc_refinement/front_subcells.py": "c461b7c7f71ff7b7e2348a9b0891d0ed6298edf9b8c996a508d8fd09c51cfcd5",
+    "pc_refinement/front_subcells.cpp": "8bf1e8dbda243fb6bc80eed8981562f9e2cfbe65b2836c85f93fa66c8b4fdd07",
+    "pc_reconsidered/hybrid.py": "cc5a0a9ee85a1aa163849201a5714d329927afeb55c615ef36a81e7ee435a32d",
+    "pc_reconsidered/hybrid.cpp": "ca6d17c7faea84f42f8890430be14ff5cbde35d9b22df6a119cd9ca174a225b3"
+  },
+  "native": {
+    "path": "/workspace/scratch/40b418003e4a/native32_reconsidered/source_capacity.npz",
+    "shape": [
+      32,
+      32,
+      32
+    ],
+    "models": {
+      "original-fibonacci": {
+        "audit": {
+          "model": "source-adaptive quadrature of shared sharp-front events",
+          "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+          "photons": 25702.93821088438,
+          "absorbed": 25630.836862532567,
+          "escaped": 0.0,
+          "retained": 72.10134835181097,
+          "ledger_residual": 0.0,
+          "per_source_relative_ledger_max": 4.677401293215405e-15,
+          "per_angle_ledger_max": 8.911205107153819e-13,
+          "capacity_excess": 0.0,
+          "angles_min": 24,
+          "angles_max": 384,
+          "angles_mean": 29.19873046875,
+          "angles_sum": 956784,
+          "sources_at_angle_limit": 0,
+          "events": 16623,
+          "rays_materialized": 569280,
+          "queries": 7288889,
+          "ray_allocated_bytes": 36438016,
+          "transport_seconds": 0.5758060499997555,
+          "seconds": 0.5778092250002373,
+          "periodic": true,
+          "maximum_distance": 16.0,
+          "angular_accuracy_certified": false
+        },
+        "median_seconds": 0.5778092250002373,
+        "seconds_samples": [
+          0.5900726820000273,
+          0.5313663590000033,
+          0.5778092250002373
+        ],
+        "change_from_original": {
+          "L1_over_Q": 0.0,
+          "max_cell": 0.0
+        }
+      },
+      "balanced-coarse": {
+        "audit": {
+          "subcells_per_axis": 1,
+          "photons": 25702.93821088438,
+          "parent_skip": true,
+          "absorbed": 25633.975007843695,
+          "escaped": 0.0,
+          "retained": 68.96320304068183,
+          "ledger_residual": -1.4033219031261979e-13,
+          "source_relative_error": 5.197910888574278e-15,
+          "maximum_angle_ledger_residual": 1.3642420526593924e-12,
+          "rays_materialized": 569616,
+          "events": 16637,
+          "queries": 7532945,
+          "ray_bytes": 36700160,
+          "seconds": 0.5553289149997909,
+          "quadrature": "octant-balanced, cyclic permutations, equal weights",
+          "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+        },
+        "median_seconds": 0.5553289149997909,
+        "seconds_samples": [
+          0.6346446200000173,
+          0.5378299779999907,
+          0.5553289149997909
+        ],
+        "change_from_original": {
+          "L1_over_Q": 0.009008971734619384,
+          "max_cell": 0.2611372694178652
+        }
+      },
+      "balanced-subcells": {
+        "audit": {
+          "subcells_per_axis": 2,
+          "photons": 25702.93821088438,
+          "parent_skip": true,
+          "absorbed": 25608.340904757497,
+          "escaped": 0.0,
+          "retained": 94.59730612687935,
+          "ledger_residual": -2.6645352591003757e-14,
+          "source_relative_error": 6.850782793491395e-16,
+          "maximum_angle_ledger_residual": 3.637978807091713e-12,
+          "rays_materialized": 594027,
+          "events": 141235,
+          "queries": 12450508,
+          "ray_bytes": 38273024,
+          "seconds": 1.613970338999934,
+          "quadrature": "octant-balanced, cyclic permutations, equal weights",
+          "source_positions": "original coarse cell centres, identical in both spatial resolutions"
+        },
+        "median_seconds": 1.5456515099999706,
+        "seconds_samples": [
+          1.499218999000277,
+          1.5456515099999706,
+          1.613970338999934
+        ],
+        "change_from_original": {
+          "L1_over_Q": 0.015213726412833218,
+          "max_cell": 0.34127741543535706
+        }
+      }
+    },
+    "note": "Morphology changes here are not errors: no continuum oracle is available for this frozen native field."
+  }
+}

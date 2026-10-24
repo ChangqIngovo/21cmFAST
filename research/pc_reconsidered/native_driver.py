@@ -7,6 +7,8 @@ feedback.  Native initial conditions, displacement, emissivity, density and
 brightness-temperature functions are used.  Three distinct outputs are kept:
 native ES; an ES control on one additive source field with positive ball filters;
 and the source-adaptive angular candidate on that same source field.
+The default balanced research profile uses the compact kernel and denser angular
+sampling; original, compact and incremental remain explicit CLI choices.
 
 The native n_ion field is a cumulative *effective* photon budget per mean-baryon
 cell in Lagrangian-source mode.  It is already an extensive Eulerian source
@@ -26,9 +28,30 @@ from dataclasses import dataclass
 import hashlib
 import json
 from pathlib import Path
+import sys
 import time
 
 import numpy as np
+
+SOLVERS = ("original", "balanced", "incremental", "compact")
+
+
+def _spatial_solver(profile):
+    """Select an explicitly named research kernel without changing native physics."""
+    if profile not in SOLVERS:
+        raise ValueError(f"Unknown spatial solver {profile!r}; choose one of {SOLVERS}")
+    if profile == "original":
+        from hybrid import library, solve
+        return solve, library
+    refinement = str(Path(__file__).resolve().parents[1] / "pc_refinement")
+    if refinement not in sys.path:
+        sys.path.insert(0, refinement)
+    from upgraded import solve, warmup
+
+    def selected(source, capacity, **kwargs):
+        return solve(source, capacity, profile=profile, **kwargs)
+
+    return selected, lambda: warmup(profile=profile)
 
 
 @dataclass
@@ -119,13 +142,15 @@ def update_reionization_redshift(xhi, redshift, previous=None):
 
 def _native_box(coeval, absorbed, capacity):
     """Make only the fields used by the deliberately restricted native modules."""
-    from py21cmfast.wrapper.outputs import IonizedBox
     absorbed = np.asarray(absorbed, dtype=float)
     if absorbed.shape != capacity.shape or not np.isfinite(absorbed).all():
         raise ValueError("Invalid absorption field")
-    tolerance = 5e-10 * np.maximum(capacity, 1.)
+    # Relative to the local atom count, including voids. A unit-scale floor would
+    # silently allow large fractional overionization in low-density cells.
+    tolerance = 5e-10 * capacity
     if (absorbed < -tolerance).any() or (absorbed > capacity + tolerance).any():
         raise ValueError("Absorption violates native atom capacity")
+    from py21cmfast.wrapper.outputs import IonizedBox
     fraction = np.divide(absorbed, capacity, out=np.zeros_like(absorbed), where=capacity > 0)
     # Only sub-tolerance floating-point bound errors are removed here. The double
     # precision absorption and its independent ledger are saved without clipping.
@@ -143,24 +168,29 @@ def _native_box(coeval, absorbed, capacity):
 
 
 def compare_native_coeval(coeval, *, min_angles=24, max_angles=12288,
-                         rays_per_surface_cell=4., maximum_distance=None,
-                         workers=1):
+                         rays_per_surface_cell=None, maximum_distance=None,
+                         workers=1, solver="balanced"):
     """Return actual native IonizedBox/BrightnessTemp objects for the two arms."""
     from py21cmfast.drivers.single_field import brightness_temperature
     from fast_candidates import source_consistent_es
-    from hybrid import solve
 
     source = from_native_coeval(coeval)
+    solve, warmup = _spatial_solver(solver)
     n = source.source.shape[0]
     cell_mpc = coeval.inputs.simulation_options.BOX_LEN / n
     if maximum_distance is None:
         maximum_distance = min(n / 2, coeval.inputs.astro_params.R_BUBBLE_MAX / cell_mpc)
+    warmup_started = time.perf_counter()
+    warmup()
+    warmup_seconds = time.perf_counter() - warmup_started
     started = time.perf_counter()
     control = source_consistent_es(source.source, source.capacity,
                                    max_radius=maximum_distance, workers=workers)
-    candidate = solve(source.source, source.capacity, min_angles=min_angles,
-                      max_angles=max_angles, rays_per_surface_cell=rays_per_surface_cell,
-                      periodic=True, maximum_distance=maximum_distance)
+    spatial_parameters = dict(min_angles=min_angles, max_angles=max_angles,
+                              periodic=True, maximum_distance=maximum_distance)
+    if rays_per_surface_cell is not None:
+        spatial_parameters["rays_per_surface_cell"] = rays_per_surface_cell
+    candidate = solve(source.source, source.capacity, **spatial_parameters)
     boxes = {}
     brightness = {}
     audits = {}
@@ -192,6 +222,11 @@ def compare_native_coeval(coeval, *, min_angles=24, max_angles=12288,
     }
     metadata = {
         "scope": "21cmFAST-native restricted coeval integration; not Qin20 exact or coupled time evolution",
+        "solver_profile": solver,
+        "solver_parameters": {**spatial_parameters,
+                              "surface_sampling_override": rays_per_surface_cell},
+        "solver_warmup_seconds": warmup_seconds,
+        "comparison_timing_scope": "matched control, spatial candidate and native brightness; solver compilation/warmup excluded",
         "redshift": float(coeval.redshift),
         "source": source.metadata,
         "maximum_distance_cells": float(maximum_distance),
@@ -242,10 +277,12 @@ def prepare_native(*, dimension=32, box_len=200., threads=4, random_seed=1234):
 
 def run_native(*, output, redshift=8., dimension=32, box_len=200., threads=4,
                random_seed=1234, min_angles=24, max_angles=12288,
-               rays_per_surface_cell=4.):
+               rays_per_surface_cell=None, solver="balanced"):
     """Generate ICs and native sources, run PC/control, then native 21-cm outputs."""
     from py21cmfast import run_coeval
     from py21cmfast.io.caching import OutputCache
+    if solver not in SOLVERS:
+        raise ValueError(f"Unknown spatial solver {solver!r}")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     if (output / "native_comparison.json").exists():
@@ -257,7 +294,8 @@ def run_native(*, output, redshift=8., dimension=32, box_len=200., threads=4,
                         write=False, cache=OutputCache(output / "native_cache"))[0]
     native_seconds = time.perf_counter() - started
     result = compare_native_coeval(coeval, min_angles=min_angles, max_angles=max_angles,
-                                   rays_per_surface_cell=rays_per_surface_cell, workers=threads)
+                                   rays_per_surface_cell=rays_per_surface_cell, workers=threads,
+                                   solver=solver)
     result["metadata"]["input_differences_from_Qin20_with_same_geometry"] = differences
     result["metadata"]["inputs"] = inputs.asdict(include_cosmo_tables="never", only_cstruct_params=False)
     result["metadata"]["native_generation_seconds"] = native_seconds
@@ -286,6 +324,10 @@ if __name__ == "__main__":
     parser.add_argument("--random-seed", type=int, default=1234)
     parser.add_argument("--min-angles", type=int, default=24)
     parser.add_argument("--max-angles", type=int, default=12288)
-    parser.add_argument("--rays-per-surface-cell", type=float, default=4.)
+    parser.add_argument("--solver", choices=SOLVERS, default="balanced",
+                        help="Research spatial kernel; every choice retains the restricted native physics")
+    parser.add_argument("--rays-per-surface-cell", type=float, default=None,
+                        help="Override the selected profile's surface sampling parameter")
     result = run_native(**vars(parser.parse_args()))
-    print(json.dumps(result["metadata"]["audits"], indent=2))
+    print(json.dumps({key: result["metadata"][key] for key in
+                      ("scope", "solver_profile", "solver_parameters", "audits")}, indent=2))

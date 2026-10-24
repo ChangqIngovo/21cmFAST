@@ -1,0 +1,1910 @@
+{
+  "scope": "same saved high-angle reference fields; no new RT oracle",
+  "cases": [
+    {
+      "case": "all-partial",
+      "variants": [
+        {
+          "name": "original",
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 1979.1705960308846,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 0.0,
+            "per_angle_ledger_max": 3.6741443221188774e-14,
+            "capacity_excess": 0.0,
+            "angles_min": 24,
+            "angles_max": 24,
+            "angles_mean": 24.0,
+            "angles_sum": 331776,
+            "sources_at_angle_limit": 0,
+            "events": 0,
+            "rays_materialized": 0,
+            "queries": 0,
+            "ray_allocated_bytes": 0,
+            "transport_seconds": 0.0011694939998960763,
+            "seconds": 0.0024426970003332826,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.0,
+            "maximum_absorption_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0,
+            "absorption_field_correlation": 1.0,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0,
+              "weighted_residual_power": 0.0,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 0.9999999999999998,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "probe_rms16_remaining",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 0.4649992639849439,
+            "dominant_source_fraction": null,
+            "dominant_sources": 0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 1979.1705960308846,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 0.0,
+            "per_angle_ledger_max": 8.12804684668933e-14,
+            "per_angle_relative_ledger_max": 4.5908114262955225e-15,
+            "capacity_excess": 0.0,
+            "angles_mean": 49.72569444444444,
+            "angles_max": 96,
+            "angles_sum": 687408,
+            "rays_materialized": 0,
+            "ray_allocated_bytes": 0,
+            "predictor_seconds": 0.0012958770003024256,
+            "seconds": 0.002593957000044611,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.0,
+            "maximum_absorption_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0,
+            "absorption_field_correlation": 1.0,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0,
+              "weighted_residual_power": 0.0,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 0.9999999999999998,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "probe_rms16_guarded",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 0.4649992639849439,
+            "dominant_source_fraction": 0.01,
+            "dominant_sources": 0,
+            "maximum_source_photon_fraction": 0.000250847861041881,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 1979.1705960308846,
+            "absorbed": 1979.1705960308846,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 0.0,
+            "per_source_relative_ledger_max": 0.0,
+            "per_angle_ledger_max": 8.12804684668933e-14,
+            "per_angle_relative_ledger_max": 4.5908114262955225e-15,
+            "capacity_excess": 0.0,
+            "angles_mean": 49.72569444444444,
+            "angles_max": 96,
+            "angles_sum": 687408,
+            "rays_materialized": 0,
+            "ray_allocated_bytes": 0,
+            "predictor_seconds": 0.0013035189999754948,
+            "seconds": 0.0027163939998899878,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.0,
+            "maximum_absorption_difference": 0.0,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0,
+            "maximum_ionized_fraction_difference": 0.0,
+            "absorption_field_correlation": 1.0,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0,
+              "weighted_residual_power": 0.0,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 0.9999999999999998,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.0,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 0.0
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "case": "isolated",
+      "variants": [
+        {
+          "name": "original",
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 268.082573106329,
+            "absorbed": 268.08257310632894,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.684341886080802e-14,
+            "per_source_relative_ledger_max": 8.269442171805144e-15,
+            "per_angle_ledger_max": 3.701195166322391e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 1536,
+            "sources_at_angle_limit": 0,
+            "events": 202,
+            "rays_materialized": 1536,
+            "queries": 18026,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.0011227929999222397,
+            "seconds": 0.001907680999920558,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.02055517138796456,
+            "maximum_absorption_difference": 0.12228541045054642,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0003986171322574603,
+            "maximum_ionized_fraction_difference": 0.12228541045054642,
+            "absorption_field_correlation": 0.9993498012630185,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0004714151454604748,
+              "weighted_residual_power": 7.093101009768517e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9998444103084115,
+                  "cross_coherence": 0.9999985841657865,
+                  "residual_power_over_reference": 2.837500638564536e-06
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9996152760959153,
+                  "cross_coherence": 0.9999876468531923,
+                  "residual_power_over_reference": 2.4738550847689456e-05
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9991893420799006,
+                  "cross_coherence": 0.9997578928363252,
+                  "residual_power_over_reference": 0.0004841823796592972
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9975696480240333,
+                  "cross_coherence": 0.9997441517590725,
+                  "residual_power_over_reference": 0.0005125527521232223
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.9974838238052011,
+                  "cross_coherence": 0.9998131661609605,
+                  "residual_power_over_reference": 0.00037478205521165696
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0005237753684738761,
+              -0.00077482644430461,
+              0.002528661677453606
+            ],
+            "reference_centroid_offset_cells": [
+              1.3059208247950242e-05,
+              -2.1506202639517878e-05,
+              5.2159972957301455e-06
+            ],
+            "centroid_difference_cells": 0.002687649688849702
+          }
+        },
+        {
+          "name": "probe_rms16_remaining",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": null,
+            "dominant_sources": 0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 268.082573106329,
+            "absorbed": 268.0825731063289,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 4.2407395752846894e-14,
+            "per_angle_ledger_max": 1.1563693795915708e-17,
+            "per_angle_relative_ledger_max": 2.6502034003503376e-16,
+            "capacity_excess": 0.0,
+            "angles_mean": 6144.0,
+            "angles_max": 6144,
+            "angles_sum": 6144,
+            "rays_materialized": 6144,
+            "ray_allocated_bytes": 524288,
+            "predictor_seconds": 0.0009744860003593203,
+            "seconds": 0.0038202880000426376,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.006634822367899422,
+            "maximum_absorption_difference": 0.06534374800504283,
+            "volume_mean_absolute_ionized_fraction_difference": 0.00012866610622756826,
+            "maximum_ionized_fraction_difference": 0.06534374800504283,
+            "absorption_field_correlation": 0.9999208009563422,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.00010852048369131432,
+              "weighted_residual_power": 1.0354393102892573e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9999688203067822,
+                  "cross_coherence": 0.9999998570686977,
+                  "residual_power_over_reference": 2.861011952658137e-07
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9999339230311162,
+                  "cross_coherence": 0.9999986494973556,
+                  "residual_power_over_reference": 2.702007627675355e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9998087012493185,
+                  "cross_coherence": 0.9999678288659909,
+                  "residual_power_over_reference": 6.434526310393478e-05
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9991882583965377,
+                  "cross_coherence": 0.999960412491755,
+                  "residual_power_over_reference": 7.930767313953872e-05
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.999581894812555,
+                  "cross_coherence": 0.9999699994773119,
+                  "residual_power_over_reference": 6.0032212816630845e-05
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0004684161903562115,
+              -0.0002384955592742697,
+              0.00059171994167978
+            ],
+            "reference_centroid_offset_cells": [
+              1.3059208247950242e-05,
+              -2.1506202639517878e-05,
+              5.2159972957301455e-06
+            ],
+            "centroid_difference_cells": 0.0007892336898104697
+          }
+        },
+        {
+          "name": "probe_rms16_guarded",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": 0.01,
+            "dominant_sources": 1,
+            "maximum_source_photon_fraction": 1.0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 268.082573106329,
+            "absorbed": 268.0825731063289,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 4.2407395752846894e-14,
+            "per_angle_ledger_max": 1.1563693795915708e-17,
+            "per_angle_relative_ledger_max": 2.6502034003503376e-16,
+            "capacity_excess": 0.0,
+            "angles_mean": 6144.0,
+            "angles_max": 6144,
+            "angles_sum": 6144,
+            "rays_materialized": 6144,
+            "ray_allocated_bytes": 524288,
+            "predictor_seconds": 0.0016387999999096792,
+            "seconds": 0.00455387800002427,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.006634822367899422,
+            "maximum_absorption_difference": 0.06534374800504283,
+            "volume_mean_absolute_ionized_fraction_difference": 0.00012866610622756826,
+            "maximum_ionized_fraction_difference": 0.06534374800504283,
+            "absorption_field_correlation": 0.9999208009563422,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.00010852048369131432,
+              "weighted_residual_power": 1.0354393102892573e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9999688203067822,
+                  "cross_coherence": 0.9999998570686977,
+                  "residual_power_over_reference": 2.861011952658137e-07
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9999339230311162,
+                  "cross_coherence": 0.9999986494973556,
+                  "residual_power_over_reference": 2.702007627675355e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9998087012493185,
+                  "cross_coherence": 0.9999678288659909,
+                  "residual_power_over_reference": 6.434526310393478e-05
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9991882583965377,
+                  "cross_coherence": 0.999960412491755,
+                  "residual_power_over_reference": 7.930767313953872e-05
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.999581894812555,
+                  "cross_coherence": 0.9999699994773119,
+                  "residual_power_over_reference": 6.0032212816630845e-05
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0004684161903562115,
+              -0.0002384955592742697,
+              0.00059171994167978
+            ],
+            "reference_centroid_offset_cells": [
+              1.3059208247950242e-05,
+              -2.1506202639517878e-05,
+              5.2159972957301455e-06
+            ],
+            "centroid_difference_cells": 0.0007892336898104697
+          }
+        }
+      ]
+    },
+    {
+      "case": "equal-overlap",
+      "variants": [
+        {
+          "name": "original",
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 536.165146212658,
+            "absorbed": 536.1651462126579,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 1.569073642855335e-14,
+            "per_angle_ledger_max": 9.250955036732567e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 1536,
+            "angles_max": 1536,
+            "angles_mean": 1536.0,
+            "angles_sum": 3072,
+            "sources_at_angle_limit": 0,
+            "events": 407,
+            "rays_materialized": 3072,
+            "queries": 38549,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.0017075850000765058,
+            "seconds": 0.0028506399999059795,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.020313229275331496,
+            "maximum_absorption_difference": 0.1464173535931177,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0007878505168156363,
+            "maximum_ionized_fraction_difference": 0.1464173535931177,
+            "absorption_field_correlation": 0.9992784714409181,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0007668179401471488,
+              "weighted_residual_power": 0.00010204019931922713,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.999600397250896,
+                  "cross_coherence": 0.9999984185494378,
+                  "residual_power_over_reference": 3.20219767702023e-06
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9992332932385201,
+                  "cross_coherence": 0.9999860757058665,
+                  "residual_power_over_reference": 2.798492654868866e-05
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0006271178913617,
+                  "cross_coherence": 0.9997584233786755,
+                  "residual_power_over_reference": 0.00048340300432195136
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9977217347952936,
+                  "cross_coherence": 0.9996714457045447,
+                  "residual_power_over_reference": 0.0006576587336240863
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.9965364688473921,
+                  "cross_coherence": 0.9997262387791584,
+                  "residual_power_over_reference": 0.0005495776555952585
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              8.441079902209647e-05,
+              -0.0007592373689127098,
+              0.0012660404869601904
+            ],
+            "reference_centroid_offset_cells": [
+              9.143887797798878e-06,
+              -5.6547499627612175e-06,
+              -2.9157223355475132e-05
+            ],
+            "centroid_difference_cells": 0.0015003629495277642
+          }
+        },
+        {
+          "name": "probe_rms16_remaining",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": null,
+            "dominant_sources": 0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 536.165146212658,
+            "absorbed": 536.1651462126576,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 2.2737367544323206e-13,
+            "per_source_relative_ledger_max": 8.969164201727118e-14,
+            "per_angle_ledger_max": 2.3127387591831416e-17,
+            "per_angle_relative_ledger_max": 2.6502034003503376e-16,
+            "capacity_excess": 0.0,
+            "angles_mean": 6144.0,
+            "angles_max": 6144,
+            "angles_sum": 12288,
+            "rays_materialized": 12288,
+            "ray_allocated_bytes": 786432,
+            "predictor_seconds": 0.00099569900021379,
+            "seconds": 0.006047936999948433,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.006367110045188015,
+            "maximum_absorption_difference": 0.07060076170892682,
+            "volume_mean_absolute_ionized_fraction_difference": 0.00024694896472296843,
+            "maximum_ionized_fraction_difference": 0.07060076170892682,
+            "absorption_field_correlation": 0.999918130069768,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0003206880384973157,
+              "weighted_residual_power": 1.1375049316813967e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0000945884048067,
+                  "cross_coherence": 0.9999998250979095,
+                  "residual_power_over_reference": 3.5205736030239536e-07
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9998497416935488,
+                  "cross_coherence": 0.9999982267691295,
+                  "residual_power_over_reference": 3.55184010161787e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9980621973899583,
+                  "cross_coherence": 0.9999719399633985,
+                  "residual_power_over_reference": 5.7005352440965254e-05
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.998890111844733,
+                  "cross_coherence": 0.9999644598194751,
+                  "residual_power_over_reference": 7.134903842364664e-05
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.9986459974723413,
+                  "cross_coherence": 0.9999704891636652,
+                  "residual_power_over_reference": 5.9440342652389054e-05
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0007146317027370074,
+              -0.0004240266520232135,
+              0.00024301788236057688
+            ],
+            "reference_centroid_offset_cells": [
+              9.143887797798878e-06,
+              -5.6547499627612175e-06,
+              -2.9157223355475132e-05
+            ],
+            "centroid_difference_cells": 0.000879184532427199
+          }
+        },
+        {
+          "name": "probe_rms16_guarded",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": 0.01,
+            "dominant_sources": 2,
+            "maximum_source_photon_fraction": 0.5,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 536.165146212658,
+            "absorbed": 536.1651462126576,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 2.2737367544323206e-13,
+            "per_source_relative_ledger_max": 8.969164201727118e-14,
+            "per_angle_ledger_max": 2.3127387591831416e-17,
+            "per_angle_relative_ledger_max": 2.6502034003503376e-16,
+            "capacity_excess": 0.0,
+            "angles_mean": 6144.0,
+            "angles_max": 6144,
+            "angles_sum": 12288,
+            "rays_materialized": 12288,
+            "ray_allocated_bytes": 786432,
+            "predictor_seconds": 0.001394647999859444,
+            "seconds": 0.006618889000037598,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.006367110045188015,
+            "maximum_absorption_difference": 0.07060076170892682,
+            "volume_mean_absolute_ionized_fraction_difference": 0.00024694896472296843,
+            "maximum_ionized_fraction_difference": 0.07060076170892682,
+            "absorption_field_correlation": 0.999918130069768,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0003206880384973157,
+              "weighted_residual_power": 1.1375049316813967e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0000945884048067,
+                  "cross_coherence": 0.9999998250979095,
+                  "residual_power_over_reference": 3.5205736030239536e-07
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9998497416935488,
+                  "cross_coherence": 0.9999982267691295,
+                  "residual_power_over_reference": 3.55184010161787e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9980621973899583,
+                  "cross_coherence": 0.9999719399633985,
+                  "residual_power_over_reference": 5.7005352440965254e-05
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.998890111844733,
+                  "cross_coherence": 0.9999644598194751,
+                  "residual_power_over_reference": 7.134903842364664e-05
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.9986459974723413,
+                  "cross_coherence": 0.9999704891636652,
+                  "residual_power_over_reference": 5.9440342652389054e-05
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0007146317027370074,
+              -0.0004240266520232135,
+              0.00024301788236057688
+            ],
+            "reference_centroid_offset_cells": [
+              9.143887797798878e-06,
+              -5.6547499627612175e-06,
+              -2.9157223355475132e-05
+            ],
+            "centroid_difference_cells": 0.000879184532427199
+          }
+        }
+      ]
+    },
+    {
+      "case": "unequal-overlap",
+      "variants": [
+        {
+          "name": "original",
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 333.53242005611634,
+            "absorbed": 333.5324200561163,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 5.684341886080802e-14,
+            "per_source_relative_ledger_max": 1.7174995279902993e-14,
+            "per_angle_ledger_max": 2.7755575615628914e-17,
+            "capacity_excess": 0.0,
+            "angles_min": 384,
+            "angles_max": 1536,
+            "angles_mean": 960.0,
+            "angles_sum": 1920,
+            "sources_at_angle_limit": 0,
+            "events": 256,
+            "rays_materialized": 1920,
+            "queries": 21424,
+            "ray_allocated_bytes": 262144,
+            "transport_seconds": 0.001256476999969891,
+            "seconds": 0.002108856999711861,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.02185357555779406,
+            "maximum_absorption_difference": 0.12228541045054642,
+            "volume_mean_absolute_ionized_fraction_difference": 0.000527262437982512,
+            "maximum_ionized_fraction_difference": 0.12228541045054642,
+            "absorption_field_correlation": 0.9993174106405334,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0014243693140341444,
+              "weighted_residual_power": 8.696890399604688e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9983927506320875,
+                  "cross_coherence": 0.9999968523151467,
+                  "residual_power_over_reference": 6.93664070330858e-06
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9992268090015252,
+                  "cross_coherence": 0.9999769167678569,
+                  "residual_power_over_reference": 4.629812697402424e-05
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0004133270725908,
+                  "cross_coherence": 0.999893894735337,
+                  "residual_power_over_reference": 0.0002122970819666935
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9968859198318339,
+                  "cross_coherence": 0.999791634739429,
+                  "residual_power_over_reference": 0.00041850930510696564
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.998466519039303,
+                  "cross_coherence": 0.9997251422610909,
+                  "residual_power_over_reference": 0.0005498821691549905
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0003521913626844574,
+              -0.0001502345077790934,
+              0.001622890279999686
+            ],
+            "reference_centroid_offset_cells": [
+              -0.0006882579526693151,
+              -9.42440540378869e-06,
+              -6.232560767727042e-06
+            ],
+            "centroid_difference_cells": 0.0016693739749214615
+          }
+        },
+        {
+          "name": "probe_rms16_remaining",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": null,
+            "dominant_sources": 0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 333.53242005611634,
+            "absorbed": 333.5324200561162,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 2.798888119687895e-14,
+            "per_angle_ledger_max": 1.3877787807814457e-17,
+            "per_angle_relative_ledger_max": 3.256887993818641e-16,
+            "capacity_excess": 0.0,
+            "angles_mean": 3840.0,
+            "angles_max": 6144,
+            "angles_sum": 7680,
+            "rays_materialized": 7680,
+            "ray_allocated_bytes": 524288,
+            "predictor_seconds": 0.0010908650001510978,
+            "seconds": 0.004433895000147459,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.007161497205996617,
+            "maximum_absorption_difference": 0.06772339316034826,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0001727858430512997,
+            "maximum_ionized_fraction_difference": 0.06772339316034826,
+            "absorption_field_correlation": 0.9999090010679437,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0005376303866174474,
+              "weighted_residual_power": 1.1353747067226706e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9998051915819208,
+                  "cross_coherence": 0.9999996637864628,
+                  "residual_power_over_reference": 6.818500783399448e-07
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9993799366041057,
+                  "cross_coherence": 0.9999978254033869,
+                  "residual_power_over_reference": 4.443994094677276e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9979864510530997,
+                  "cross_coherence": 0.9999874546423142,
+                  "residual_power_over_reference": 2.608005853904929e-05
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9990348397288994,
+                  "cross_coherence": 0.9999702654154157,
+                  "residual_power_over_reference": 5.967345964116625e-05
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.999410542422062,
+                  "cross_coherence": 0.9999606975244865,
+                  "residual_power_over_reference": 7.866867114011694e-05
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0007804103478496443,
+              4.402077771264003e-05,
+              0.0010342588551929617
+            ],
+            "reference_centroid_offset_cells": [
+              -0.0006882579526693151,
+              -9.42440540378869e-06,
+              -6.232560767727042e-06
+            ],
+            "centroid_difference_cells": 0.0010459306087038944
+          }
+        },
+        {
+          "name": "probe_rms16_guarded",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": 0.01,
+            "dominant_sources": 2,
+            "maximum_source_photon_fraction": 0.803767660910518,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 333.53242005611634,
+            "absorbed": 333.5324200561162,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 1.1368683772161603e-13,
+            "per_source_relative_ledger_max": 2.798888119687895e-14,
+            "per_angle_ledger_max": 1.3877787807814457e-17,
+            "per_angle_relative_ledger_max": 3.256887993818641e-16,
+            "capacity_excess": 0.0,
+            "angles_mean": 3840.0,
+            "angles_max": 6144,
+            "angles_sum": 7680,
+            "rays_materialized": 7680,
+            "ray_allocated_bytes": 524288,
+            "predictor_seconds": 0.0015911279997453676,
+            "seconds": 0.005041040999913093,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.007161497205996617,
+            "maximum_absorption_difference": 0.06772339316034826,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0001727858430512997,
+            "maximum_ionized_fraction_difference": 0.06772339316034826,
+            "absorption_field_correlation": 0.9999090010679437,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0005376303866174474,
+              "weighted_residual_power": 1.1353747067226706e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9998051915819208,
+                  "cross_coherence": 0.9999996637864628,
+                  "residual_power_over_reference": 6.818500783399448e-07
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9993799366041057,
+                  "cross_coherence": 0.9999978254033869,
+                  "residual_power_over_reference": 4.443994094677276e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 0.9979864510530997,
+                  "cross_coherence": 0.9999874546423142,
+                  "residual_power_over_reference": 2.608005853904929e-05
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9990348397288994,
+                  "cross_coherence": 0.9999702654154157,
+                  "residual_power_over_reference": 5.967345964116625e-05
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.999410542422062,
+                  "cross_coherence": 0.9999606975244865,
+                  "residual_power_over_reference": 7.866867114011694e-05
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              -0.0007804103478496443,
+              4.402077771264003e-05,
+              0.0010342588551929617
+            ],
+            "reference_centroid_offset_cells": [
+              -0.0006882579526693151,
+              -9.42440540378869e-06,
+              -6.232560767727042e-06
+            ],
+            "centroid_difference_cells": 0.0010459306087038944
+          }
+        }
+      ]
+    },
+    {
+      "case": "transparent-overlap-increment",
+      "variants": [
+        {
+          "name": "original",
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 0.01,
+            "absorbed": 0.009999999999999993,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 6.938893903907228e-18,
+            "per_source_relative_ledger_max": 1.1657341758564144e-13,
+            "per_angle_ledger_max": 3.531027239835737e-23,
+            "capacity_excess": 0.0,
+            "angles_min": 12288,
+            "angles_max": 12288,
+            "angles_mean": 12288.0,
+            "angles_sum": 12288,
+            "sources_at_angle_limit": 0,
+            "events": 0,
+            "rays_materialized": 12288,
+            "queries": 65110,
+            "ray_allocated_bytes": 786432,
+            "transport_seconds": 0.006705799999963347,
+            "seconds": 0.009102185999836365,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.019620259602866646,
+            "maximum_absorption_difference": 3.2552083333348586e-06,
+            "volume_mean_absolute_ionized_fraction_difference": 1.4192896124758859e-08,
+            "maximum_ionized_fraction_difference": 3.2552083333348586e-06,
+            "absorption_field_correlation": 0.9997852611843204,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 1.9594281038332046e-08,
+              "weighted_residual_power": 2.4768135605734128e-14,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9999999895954819,
+                  "cross_coherence": 0.9999999999999996,
+                  "residual_power_over_reference": 7.360719766403123e-16
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9999999778039027,
+                  "cross_coherence": 0.9999999999999959,
+                  "residual_power_over_reference": 8.221157200535518e-15
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0000000289701663,
+                  "cross_coherence": 0.9999999999999475,
+                  "residual_power_over_reference": 1.0586437697897483e-13
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9999999105025584,
+                  "cross_coherence": 0.9999999999999062,
+                  "residual_power_over_reference": 1.8963023488490498e-13
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.0000000332672214,
+                  "cross_coherence": 0.9999999999999355,
+                  "residual_power_over_reference": 1.292481299315771e-13
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              0.3505859375000007,
+              -0.00016276041666671187,
+              -0.0007324218749999856
+            ],
+            "reference_centroid_offset_cells": [
+              0.3508033752441472,
+              5.3405761718798735e-05,
+              0.00011825561523435356
+            ],
+            "centroid_difference_cells": 0.0009042450893694083,
+            "absorber_centre_cone_fraction": 0.09122721354166667,
+            "reference_absorber_centre_cone_fraction": 0.0913276672363278,
+            "cone_statistic_warning": "Spatial footprint diagnostic only; not the exact 12.5% ray-label conservation test."
+          }
+        },
+        {
+          "name": "probe_rms16_remaining",
+          "audit": {
+            "probe_sources": 1,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 48,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": null,
+            "dominant_sources": 0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 0.01,
+            "absorbed": 0.009999999999999993,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 6.938893903907228e-18,
+            "per_source_relative_ledger_max": 7.684824998577255e-14,
+            "per_angle_ledger_max": 7.062054479671474e-23,
+            "per_angle_relative_ledger_max": 4.3389262723101535e-17,
+            "capacity_excess": 0.0,
+            "angles_mean": 6144.0,
+            "angles_max": 6144,
+            "angles_sum": 6144,
+            "rays_materialized": 6144,
+            "ray_allocated_bytes": 524288,
+            "predictor_seconds": 0.0014492310001514852,
+            "seconds": 0.005340097000043897,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.03770192464192871,
+            "maximum_absorption_difference": 5.505879720053134e-06,
+            "volume_mean_absolute_ionized_fraction_difference": 2.72728042838026e-08,
+            "maximum_ionized_fraction_difference": 5.505879720053134e-06,
+            "absorption_field_correlation": 0.9992683343144986,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 1.0769596487001696e-08,
+              "weighted_residual_power": 7.361500790178951e-14,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.0000000076488884,
+                  "cross_coherence": 0.9999999999999996,
+                  "residual_power_over_reference": 1.5851516692499034e-15
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9999999955424512,
+                  "cross_coherence": 0.9999999999999928,
+                  "residual_power_over_reference": 1.4288022272868055e-14
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0000000146558772,
+                  "cross_coherence": 0.9999999999998557,
+                  "residual_power_over_reference": 2.8912708010890473e-13
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.0000000128761828,
+                  "cross_coherence": 0.9999999999997004,
+                  "residual_power_over_reference": 5.9934462296746e-13
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.0000000781599245,
+                  "cross_coherence": 0.9999999999997844,
+                  "residual_power_over_reference": 4.327808766685831e-13
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              0.3505859375000004,
+              0.0011393229166666355,
+              -0.0008138020833333503
+            ],
+            "reference_centroid_offset_cells": [
+              0.3508033752441472,
+              5.3405761718798735e-05,
+              0.00011825561523435356
+            ],
+            "centroid_difference_cells": 0.0014474898249897897,
+            "absorber_centre_cone_fraction": 0.09147135416666667,
+            "reference_absorber_centre_cone_fraction": 0.0913276672363278,
+            "cone_statistic_warning": "Spatial footprint diagnostic only; not the exact 12.5% ray-label conservation test."
+          }
+        },
+        {
+          "name": "probe_rms16_guarded",
+          "audit": {
+            "probe_sources": 1,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 48,
+            "effective_density": "remaining",
+            "density_reference": 1.0,
+            "dominant_source_fraction": 0.01,
+            "dominant_sources": 1,
+            "maximum_source_photon_fraction": 1.0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 0.01,
+            "absorbed": 0.009999999999999993,
+            "escaped": 0.0,
+            "retained": 0.0,
+            "ledger_residual": 6.938893903907228e-18,
+            "per_source_relative_ledger_max": 1.1657341758564144e-13,
+            "per_angle_ledger_max": 3.531027239835737e-23,
+            "per_angle_relative_ledger_max": 4.3389262723101535e-17,
+            "capacity_excess": 0.0,
+            "angles_mean": 12288.0,
+            "angles_max": 12288,
+            "angles_sum": 12288,
+            "rays_materialized": 12288,
+            "ray_allocated_bytes": 786432,
+            "predictor_seconds": 0.0031273009999495116,
+            "seconds": 0.009556789999805915,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.019620259602866646,
+            "maximum_absorption_difference": 3.2552083333348586e-06,
+            "volume_mean_absolute_ionized_fraction_difference": 1.4192896124758859e-08,
+            "maximum_ionized_fraction_difference": 3.2552083333348586e-06,
+            "absorption_field_correlation": 0.9997852611843204,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 1.9594281038332046e-08,
+              "weighted_residual_power": 2.4768135605734128e-14,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9999999895954819,
+                  "cross_coherence": 0.9999999999999996,
+                  "residual_power_over_reference": 7.360719766403123e-16
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9999999778039027,
+                  "cross_coherence": 0.9999999999999959,
+                  "residual_power_over_reference": 8.221157200535518e-15
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0000000289701663,
+                  "cross_coherence": 0.9999999999999475,
+                  "residual_power_over_reference": 1.0586437697897483e-13
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.9999999105025584,
+                  "cross_coherence": 0.9999999999999062,
+                  "residual_power_over_reference": 1.8963023488490498e-13
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.0000000332672214,
+                  "cross_coherence": 0.9999999999999355,
+                  "residual_power_over_reference": 1.292481299315771e-13
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              0.3505859375000007,
+              -0.00016276041666671187,
+              -0.0007324218749999856
+            ],
+            "reference_centroid_offset_cells": [
+              0.3508033752441472,
+              5.3405761718798735e-05,
+              0.00011825561523435356
+            ],
+            "centroid_difference_cells": 0.0009042450893694083,
+            "absorber_centre_cone_fraction": 0.09122721354166667,
+            "reference_absorber_centre_cone_fraction": 0.0913276672363278,
+            "cone_statistic_warning": "Spatial footprint diagnostic only; not the exact 12.5% ray-label conservation test."
+          }
+        }
+      ]
+    },
+    {
+      "case": "opaque-plane",
+      "variants": [
+        {
+          "name": "original",
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 1.0,
+            "absorbed": 0.35416666666666663,
+            "escaped": 0.0,
+            "retained": 0.6458333333333541,
+            "ledger_residual": -2.0872192862952943e-14,
+            "per_source_relative_ledger_max": 8.43769498715119e-15,
+            "per_angle_ledger_max": 4.519714866989743e-21,
+            "capacity_excess": 0.0,
+            "angles_min": 12288,
+            "angles_max": 12288,
+            "angles_mean": 12288.0,
+            "angles_sum": 12288,
+            "sources_at_angle_limit": 0,
+            "events": 0,
+            "rays_materialized": 12288,
+            "queries": 70786,
+            "ray_allocated_bytes": 786432,
+            "transport_seconds": 0.007506021000153851,
+            "seconds": 0.010365634000208956,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.02473576863606769,
+            "maximum_absorption_difference": 0.0003445943196614598,
+            "volume_mean_absolute_ionized_fraction_difference": 4.294404277095085e-11,
+            "maximum_ionized_fraction_difference": 3.445943196614598e-10,
+            "absorption_field_correlation": 0.9984490827198114,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 4.942491325522473e-15,
+              "weighted_residual_power": 1.4284461511729022e-22,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 1.4715811945744114e-23
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 5.0756700728271844e-23
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0000000000000047,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 1.197351622040973e-22
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 2.837964175082873e-22
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 2.452189832000506e-22
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              4.0,
+              0.004595588235294092,
+              -0.0006893382352941006
+            ],
+            "reference_centroid_offset_cells": [
+              4.0,
+              -0.00012925045506931055,
+              -0.00035543875144060404
+            ],
+            "centroid_difference_cells": 0.004736622163026367,
+            "absorbed_fraction": 0.35416666666666663,
+            "analytic_absorbed_fraction": 0.35416666666666663,
+            "isotropic_hemisphere_bound_violated": false
+          }
+        },
+        {
+          "name": "probe_rms16_remaining",
+          "audit": {
+            "probe_sources": 1,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 48,
+            "effective_density": "remaining",
+            "density_reference": 1000000.0,
+            "dominant_source_fraction": null,
+            "dominant_sources": 0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 1.0,
+            "absorbed": 0.35416666666666663,
+            "escaped": 0.0,
+            "retained": 0.6458333333333541,
+            "ledger_residual": -2.0872192862952943e-14,
+            "per_source_relative_ledger_max": 8.43769498715119e-15,
+            "per_angle_ledger_max": 4.519714866989743e-21,
+            "per_angle_relative_ledger_max": 5.553825628556996e-17,
+            "capacity_excess": 0.0,
+            "angles_mean": 12288.0,
+            "angles_max": 12288,
+            "angles_sum": 12288,
+            "rays_materialized": 12288,
+            "ray_allocated_bytes": 786432,
+            "predictor_seconds": 0.0016313589999299438,
+            "seconds": 0.009638405000259809,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.02473576863606769,
+            "maximum_absorption_difference": 0.0003445943196614598,
+            "volume_mean_absolute_ionized_fraction_difference": 4.294404277095085e-11,
+            "maximum_ionized_fraction_difference": 3.445943196614598e-10,
+            "absorption_field_correlation": 0.9984490827198114,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 4.942491325522473e-15,
+              "weighted_residual_power": 1.4284461511729022e-22,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 1.4715811945744114e-23
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 5.0756700728271844e-23
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0000000000000047,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 1.197351622040973e-22
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 2.837964175082873e-22
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 2.452189832000506e-22
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              4.0,
+              0.004595588235294092,
+              -0.0006893382352941006
+            ],
+            "reference_centroid_offset_cells": [
+              4.0,
+              -0.00012925045506931055,
+              -0.00035543875144060404
+            ],
+            "centroid_difference_cells": 0.004736622163026367,
+            "absorbed_fraction": 0.35416666666666663,
+            "analytic_absorbed_fraction": 0.35416666666666663,
+            "isotropic_hemisphere_bound_violated": false
+          }
+        },
+        {
+          "name": "probe_rms16_guarded",
+          "audit": {
+            "probe_sources": 1,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 48,
+            "effective_density": "remaining",
+            "density_reference": 1000000.0,
+            "dominant_source_fraction": 0.01,
+            "dominant_sources": 1,
+            "maximum_source_photon_fraction": 1.0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 1.0,
+            "absorbed": 0.35416666666666663,
+            "escaped": 0.0,
+            "retained": 0.6458333333333541,
+            "ledger_residual": -2.0872192862952943e-14,
+            "per_source_relative_ledger_max": 8.43769498715119e-15,
+            "per_angle_ledger_max": 4.519714866989743e-21,
+            "per_angle_relative_ledger_max": 5.553825628556996e-17,
+            "capacity_excess": 0.0,
+            "angles_mean": 12288.0,
+            "angles_max": 12288,
+            "angles_sum": 12288,
+            "rays_materialized": 12288,
+            "ray_allocated_bytes": 786432,
+            "predictor_seconds": 0.003495732999908796,
+            "seconds": 0.012103134999961185,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.02473576863606769,
+            "maximum_absorption_difference": 0.0003445943196614598,
+            "volume_mean_absolute_ionized_fraction_difference": 4.294404277095085e-11,
+            "maximum_ionized_fraction_difference": 3.445943196614598e-10,
+            "absorption_field_correlation": 0.9984490827198114,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 4.942491325522473e-15,
+              "weighted_residual_power": 1.4284461511729022e-22,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 1.4715811945744114e-23
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 5.0756700728271844e-23
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0000000000000047,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 1.197351622040973e-22
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 2.837964175082873e-22
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.000000000000005,
+                  "cross_coherence": 1.0,
+                  "residual_power_over_reference": 2.452189832000506e-22
+                }
+              ]
+            },
+            "centroid_offset_cells": [
+              4.0,
+              0.004595588235294092,
+              -0.0006893382352941006
+            ],
+            "reference_centroid_offset_cells": [
+              4.0,
+              -0.00012925045506931055,
+              -0.00035543875144060404
+            ],
+            "centroid_difference_cells": 0.004736622163026367,
+            "absorbed_fraction": 0.35416666666666663,
+            "analytic_absorbed_fraction": 0.35416666666666663,
+            "isotropic_hemisphere_bound_violated": false
+          }
+        }
+      ]
+    },
+    {
+      "case": "dense-correlated",
+      "variants": [
+        {
+          "name": "original",
+          "audit": {
+            "model": "source-adaptive quadrature of shared sharp-front events",
+            "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+            "photons": 4838.4,
+            "absorbed": 4835.081522025272,
+            "escaped": 0.0,
+            "retained": 3.3184779747265756,
+            "ledger_residual": 9.094947017729282e-13,
+            "per_source_relative_ledger_max": 1.5499293096717706e-14,
+            "per_angle_ledger_max": 1.2651858727341647e-13,
+            "capacity_excess": 0.0,
+            "angles_min": 24,
+            "angles_max": 3072,
+            "angles_mean": 30.71875,
+            "angles_sum": 424656,
+            "sources_at_angle_limit": 0,
+            "events": 2301,
+            "rays_materialized": 126816,
+            "queries": 1406284,
+            "ray_allocated_bytes": 8126464,
+            "transport_seconds": 0.06131857099990157,
+            "seconds": 0.0626222300002155,
+            "periodic": true,
+            "maximum_distance": 12.0,
+            "angular_accuracy_certified": false
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.006464159101388743,
+            "maximum_absorption_difference": 0.16718407366203158,
+            "volume_mean_absolute_ionized_fraction_difference": 0.002494394876699625,
+            "maximum_ionized_fraction_difference": 0.5306267178399128,
+            "absorption_field_correlation": 0.9999313478750298,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.0006981488675206452,
+              "weighted_residual_power": 4.240105496375082e-05,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.9999707881941104,
+                  "cross_coherence": 0.9999941464632369,
+                  "residual_power_over_reference": 1.1707115868133262e-05
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 0.9997379625158871,
+                  "cross_coherence": 0.9999931606704805,
+                  "residual_power_over_reference": 1.3694034920899356e-05
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0018001246613555,
+                  "cross_coherence": 0.999983197632498,
+                  "residual_power_over_reference": 3.4444351627397214e-05
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 0.999683084227326,
+                  "cross_coherence": 0.9999545364319998,
+                  "residual_power_over_reference": 9.093783961800326e-05
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 1.0009602098378454,
+                  "cross_coherence": 0.9999170297608442,
+                  "residual_power_over_reference": 0.00016625051817121294
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "probe_rms16_remaining",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 0.3209406393867426,
+            "dominant_source_fraction": null,
+            "dominant_sources": 0,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 4838.4,
+            "absorbed": 4835.138445638733,
+            "escaped": 0.0,
+            "retained": 3.261554361259119,
+            "ledger_residual": 7.275957614183426e-12,
+            "per_source_relative_ledger_max": 6.845048644273144e-14,
+            "per_angle_ledger_max": 8.31496330122583e-15,
+            "per_angle_relative_ledger_max": 1.734744206201577e-15,
+            "capacity_excess": 0.0,
+            "angles_mean": 65.15972222222223,
+            "angles_max": 12288,
+            "angles_sum": 900768,
+            "rays_materialized": 389112,
+            "ray_allocated_bytes": 24903680,
+            "predictor_seconds": 0.0020365370000945404,
+            "seconds": 0.2733208489999015,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.0019336367055837744,
+            "maximum_absorption_difference": 0.055449314249741644,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0007551023138252559,
+            "maximum_ionized_fraction_difference": 0.05683512592461674,
+            "absorption_field_correlation": 0.9999938147919233,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.00015443930790866344,
+              "weighted_residual_power": 4.4578007564653e-06,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.999995343284472,
+                  "cross_coherence": 0.9999994062726612,
+                  "residual_power_over_reference": 1.1874573340823372e-06
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.0001554019456402,
+                  "cross_coherence": 0.9999990634012618,
+                  "residual_power_over_reference": 1.879379992669459e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0002750086549055,
+                  "cross_coherence": 0.9999981231105279,
+                  "residual_power_over_reference": 3.7731999101255875e-06
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.0000870675827633,
+                  "cross_coherence": 0.9999958189762224,
+                  "residual_power_over_reference": 8.364306687698235e-06
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.9997145731728024,
+                  "cross_coherence": 0.999990628710772,
+                  "residual_power_over_reference": 1.876027347323811e-05
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "probe_rms16_guarded",
+          "audit": {
+            "probe_sources": 0,
+            "probe_angles": 48,
+            "probe_statistic": "rms",
+            "probe_rays": 0,
+            "effective_density": "remaining",
+            "density_reference": 0.3209406393867426,
+            "dominant_source_fraction": 0.01,
+            "dominant_sources": 10,
+            "maximum_source_photon_fraction": 0.08110550037463056,
+            "model": "probe-derived source-specific angle counts; unchanged event core",
+            "photons": 4838.4,
+            "absorbed": 4835.138445638733,
+            "escaped": 0.0,
+            "retained": 3.261554361259119,
+            "ledger_residual": 7.275957614183426e-12,
+            "per_source_relative_ledger_max": 6.845048644273144e-14,
+            "per_angle_ledger_max": 8.31496330122583e-15,
+            "per_angle_relative_ledger_max": 1.734744206201577e-15,
+            "capacity_excess": 0.0,
+            "angles_mean": 65.15972222222223,
+            "angles_max": 12288,
+            "angles_sum": 900768,
+            "rays_materialized": 389112,
+            "ray_allocated_bytes": 24903680,
+            "predictor_seconds": 0.003309712999907788,
+            "seconds": 0.29232878499988146,
+            "angular_accuracy_certified": false,
+            "sampling_backend": "hybrid"
+          },
+          "vs_reference": {
+            "L1_absorption_over_emitted": 0.0019336367055837744,
+            "maximum_absorption_difference": 0.055449314249741644,
+            "volume_mean_absolute_ionized_fraction_difference": 0.0007551023138252559,
+            "maximum_ionized_fraction_difference": 0.05683512592461674,
+            "absorption_field_correlation": 0.9999938147919233,
+            "neutral_count_power": {
+              "definition": "full-FFT mode-count-weighted shell-mean powers of remaining neutral counts; k<=Nyquist/2; shells with >=20 modes",
+              "weighted_absolute_power_difference": 0.00015443930790866344,
+              "weighted_residual_power": 4.4578007564653e-06,
+              "shells": [
+                {
+                  "k_cell_inv": 0.5840228839690652,
+                  "full_fft_modes": 62,
+                  "auto_power_ratio": 0.999995343284472,
+                  "cross_coherence": 0.9999994062726612,
+                  "residual_power_over_reference": 1.1874573340823372e-06
+                },
+                {
+                  "k_cell_inv": 0.8205209481526311,
+                  "full_fft_modes": 98,
+                  "auto_power_ratio": 1.0001554019456402,
+                  "cross_coherence": 0.9999990634012618,
+                  "residual_power_over_reference": 1.879379992669459e-06
+                },
+                {
+                  "k_cell_inv": 1.063057305135228,
+                  "full_fft_modes": 210,
+                  "auto_power_ratio": 1.0002750086549055,
+                  "cross_coherence": 0.9999981231105279,
+                  "residual_power_over_reference": 3.7731999101255875e-06
+                },
+                {
+                  "k_cell_inv": 1.3345441426658535,
+                  "full_fft_modes": 350,
+                  "auto_power_ratio": 1.0000870675827633,
+                  "cross_coherence": 0.9999958189762224,
+                  "residual_power_over_reference": 8.364306687698235e-06
+                },
+                {
+                  "k_cell_inv": 1.5306520348062072,
+                  "full_fft_modes": 186,
+                  "auto_power_ratio": 0.9997145731728024,
+                  "cross_coherence": 0.999990628710772,
+                  "residual_power_over_reference": 1.876027347323811e-05
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "scope": "same frozen native32 cavity; reference-angle refinement only",
+  "angles": 1536,
+  "audit": {
+    "model": "source-adaptive quadrature of shared sharp-front events",
+    "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+    "photons": 12851.46910544219,
+    "absorbed": 12780.501233435505,
+    "escaped": 0.0,
+    "retained": 70.9678720066866,
+    "ledger_residual": -3.637978807091713e-12,
+    "per_source_relative_ledger_max": 1.621861653100065e-13,
+    "per_angle_ledger_max": 8.239849774716035e-14,
+    "capacity_excess": 0.0,
+    "angles_min": 1536,
+    "angles_max": 1536,
+    "angles_mean": 1536.0,
+    "angles_sum": 50331648,
+    "sources_at_angle_limit": 3259,
+    "events": 14910,
+    "rays_materialized": 25489920,
+    "queries": 304530351,
+    "ray_allocated_bytes": 1631584256,
+    "transport_seconds": 22.615175230000204,
+    "seconds": 22.74391772099989,
+    "periodic": true,
+    "maximum_distance": 16.0,
+    "angular_accuracy_certified": false
+  },
+  "comparisons": {
+    "reference768": {
+      "L1_over_emitted": 0.0010500455973026966,
+      "volume_mean_absolute_xHII_error": 0.0004557904299562029,
+      "maximum_absolute_xHII_error": 0.022300705673490778,
+      "delta_volume_mean_xHII": 6.302404386066177e-07
+    },
+    "baseline": {
+      "L1_over_emitted": 0.00567861828063477,
+      "volume_mean_absolute_xHII_error": 0.002440679867574122,
+      "maximum_absolute_xHII_error": 0.08103288256664579,
+      "delta_volume_mean_xHII": -2.3843645165597902e-05
+    },
+    "probe_rms4": {
+      "L1_over_emitted": 0.006793647616644777,
+      "volume_mean_absolute_xHII_error": 0.002927604019566713,
+      "maximum_absolute_xHII_error": 0.11525083647626456,
+      "delta_volume_mean_xHII": -3.6009716383432624e-05
+    },
+    "probe_rms8": {
+      "L1_over_emitted": 0.004413936122843824,
+      "volume_mean_absolute_xHII_error": 0.0019005163161417518,
+      "maximum_absolute_xHII_error": 0.07481820799123655,
+      "delta_volume_mean_xHII": -3.0076366056974542e-05
+    }
+  },
+  "input_hashes": {
+    "source_sha256": "ad2728c8db1acc0dff3f2c29dec15b4ebd5171c8f3e49a7480290be150f34843",
+    "capacity_sha256": "cf70d32108ab078a5ff54c81883df82190102bc3e8233597c90d07a8ff8ff56e",
+    "initial_sha256": "715845c5cbfe90b1cbf5e1d3e29b3fb9a0b49f85451aeb8177d0db23297705ce"
+  },
+  "maximum_distance": 16.0,
+  "fixture_sha256": "968bf22cb7d636ae3718adeeadb1a7033ff48ab04bf628069dd5c2965b0d3495"
+}

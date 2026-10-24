@@ -1,0 +1,4 @@
+__pycache__/
+*.npz
+*.so
+reproduction_runs/

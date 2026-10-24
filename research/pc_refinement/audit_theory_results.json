@@ -1,0 +1,2151 @@
+{
+  "scope": "Order and bounded quadrature perturbation in fixed opaque-cell transport",
+  "random": [
+    {
+      "photons": 6.704154765138872,
+      "weak_photons": 0.0024949867010994908,
+      "weak_fraction": 0.00037215529600737203,
+      "source_count": 216,
+      "weak_source_count": 138,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.002142438256351355,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.002150807090103143,
+          "count_residual": 2.220446049250313e-16
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.002416717295342484,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.002424697986519627,
+          "count_residual": -1.2490009027033011e-15
+        }
+      ],
+      "L1": 0.002792970358722011,
+      "L1_over_Q": 0.0004166029061926282,
+      "bound_2Qweak": 0.0049899734021989816,
+      "bound_fraction": 0.0007443105920147441,
+      "fine_seconds": 0.0003645289998530643,
+      "cheap_seconds": 0.0004260410000824777,
+      "fine_rays": 2976,
+      "cheap_rays": 1331,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 398.49858402269336,
+      "weak_photons": 12.845465362713162,
+      "weak_fraction": 0.03223465748119609,
+      "source_count": 512,
+      "weak_source_count": 55,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 7.682883136443162,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 11.440742093516844,
+          "count_residual": -8.526512829121202e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 7.3069071400982955,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 11.058369391080497,
+          "count_residual": -9.947598300641403e-14
+        }
+      ],
+      "L1": 2.5854933894472207,
+      "L1_over_Q": 0.006488086766451306,
+      "bound_2Qweak": 25.690930725426323,
+      "bound_fraction": 0.06446931496239218,
+      "fine_seconds": 0.004307425999741099,
+      "cheap_seconds": 0.004089627000212204,
+      "fine_rays": 18912,
+      "cheap_rays": 17280,
+      "fine_ray_bytes": 1310720,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 1211.208829188869,
+      "weak_photons": 418.3686156654436,
+      "weak_fraction": 0.34541410662075483,
+      "source_count": 512,
+      "weak_source_count": 320,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 61.57568400697964,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 161.2657136935215,
+          "count_residual": -1.9022977637561667e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 62.50737604754649,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 162.4545964208313,
+          "count_residual": -7.636686422118899e-15
+        }
+      ],
+      "L1": 3.371858910849159,
+      "L1_over_Q": 0.0027838790715447883,
+      "bound_2Qweak": 836.7372313308872,
+      "bound_fraction": 0.6908282132415097,
+      "fine_seconds": 0.006833750000168948,
+      "cheap_seconds": 0.0038741040002605587,
+      "fine_rays": 24336,
+      "cheap_rays": 12960,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1048576,
+      "passed": true
+    },
+    {
+      "photons": 34.9067722077179,
+      "weak_photons": 0.6163791389093772,
+      "weak_fraction": 0.01765786693887141,
+      "source_count": 216,
+      "weak_source_count": 17,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.6014056786244049,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.6050049375639,
+          "count_residual": 4.440892098500626e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.6014003163005632,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.6163791389093772,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.19467263304927063,
+      "L1_over_Q": 0.00557693022691535,
+      "bound_2Qweak": 1.2327582778187545,
+      "bound_fraction": 0.03531573387774282,
+      "fine_seconds": 0.0005607750003946421,
+      "cheap_seconds": 0.00040943599969978095,
+      "fine_rays": 3312,
+      "cheap_rays": 3077,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 172.15936796402656,
+      "weak_photons": 0.02310980899812898,
+      "weak_fraction": 0.00013423497815673834,
+      "source_count": 512,
+      "weak_source_count": 314,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.02082802652403286,
+          "maximum_strong_absorption_increment": 2.7755575615628914e-17,
+          "weak_absorbed": 0.021874229311460505,
+          "count_residual": -1.4210854715202004e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.02072790094654863,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.021760890528777374,
+          "count_residual": -5.773159728050814e-15
+        }
+      ],
+      "L1": 0.001538172880105254,
+      "L1_over_Q": 8.93458716941074e-06,
+      "bound_2Qweak": 0.04621961799625796,
+      "bound_fraction": 0.00026846995631347667,
+      "fine_seconds": 0.002000111000143079,
+      "cheap_seconds": 0.0014479510000455775,
+      "fine_rays": 12816,
+      "cheap_rays": 6936,
+      "fine_ray_bytes": 1048576,
+      "cheap_ray_bytes": 524288,
+      "passed": true
+    },
+    {
+      "photons": 1199.5147544504412,
+      "weak_photons": 89.43165518021411,
+      "weak_fraction": 0.07455652783628101,
+      "source_count": 512,
+      "weak_source_count": 54,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 31.66808674610947,
+          "count_residual": 1.1368683772161603e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 32.34322370678553,
+          "count_residual": 1.1368683772161603e-13
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 178.86331036042822,
+      "bound_fraction": 0.14911305567256203,
+      "fine_seconds": 0.017864107999685075,
+      "cheap_seconds": 0.01655679900022733,
+      "fine_rays": 24576,
+      "cheap_rays": 22632,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    },
+    {
+      "photons": 36.22092040232865,
+      "weak_photons": 23.90492545570177,
+      "weak_fraction": 0.6599756491600615,
+      "source_count": 216,
+      "weak_source_count": 130,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 17.21870252677466,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 17.3229885006783,
+          "count_residual": -3.552713678800501e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 10.165057422712364,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 10.196146942583674,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 9.570405984717427,
+      "L1_over_Q": 0.264223158285678,
+      "bound_2Qweak": 47.80985091140354,
+      "bound_fraction": 1.319951298320123,
+      "fine_seconds": 0.00038566099965464673,
+      "cheap_seconds": 0.00022744300031263265,
+      "fine_rays": 3408,
+      "cheap_rays": 1189,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 431.93762213144817,
+      "weak_photons": 56.14994757326011,
+      "weak_fraction": 0.1299955009618783,
+      "source_count": 512,
+      "weak_source_count": 55,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 28.228115435282866,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 45.559251786753464,
+          "count_residual": 4.263256414560601e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 27.525884875315956,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 44.86767006773954,
+          "count_residual": 2.842170943040401e-14
+        }
+      ],
+      "L1": 10.029758118619254,
+      "L1_over_Q": 0.023220385548094205,
+      "bound_2Qweak": 112.29989514652021,
+      "bound_fraction": 0.2599910019237566,
+      "fine_seconds": 0.006102548999933788,
+      "cheap_seconds": 0.00543539399996007,
+      "fine_rays": 21840,
+      "cheap_rays": 19566,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 540.5935049033,
+      "weak_photons": 0.06449102178426618,
+      "weak_fraction": 0.00011929670112444686,
+      "source_count": 512,
+      "weak_source_count": 313,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.03247947824562211,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.05103241634082204,
+          "count_residual": 0.0
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.030658206928382732,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.05039664701283723,
+          "count_residual": -1.1368683772161603e-13
+        }
+      ],
+      "L1": 0.005926172932946104,
+      "L1_over_Q": 1.0962345790680862e-05,
+      "bound_2Qweak": 0.12898204356853235,
+      "bound_fraction": 0.00023859340224889372,
+      "fine_seconds": 0.004195808000076795,
+      "cheap_seconds": 0.0024818269998831965,
+      "fine_rays": 19632,
+      "cheap_rays": 11064,
+      "fine_ray_bytes": 1310720,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 31.46761171950506,
+      "weak_photons": 5.99433644074514,
+      "weak_fraction": 0.19049225896700564,
+      "source_count": 216,
+      "weak_source_count": 18,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 5.53209728000933,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 5.617029211563496,
+          "count_residual": -2.4424906541753444e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 5.144585362461557,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 5.374242664179276,
+          "count_residual": 2.220446049250313e-15
+        }
+      ],
+      "L1": 2.1636616671298063,
+      "L1_over_Q": 0.06875836928509799,
+      "bound_2Qweak": 11.98867288149028,
+      "bound_fraction": 0.3809845179340113,
+      "fine_seconds": 0.00037644699978045537,
+      "cheap_seconds": 0.000407383000037953,
+      "fine_rays": 3216,
+      "cheap_rays": 2982,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 431.58874195279003,
+      "weak_photons": 294.62389052148484,
+      "weak_fraction": 0.6826496196087355,
+      "source_count": 512,
+      "weak_source_count": 304,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 157.29845604320604,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 173.19564325443372,
+          "count_residual": 4.973799150320701e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 145.32021272092646,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 159.07160058409198,
+          "count_residual": 7.105427357601002e-14
+        }
+      ],
+      "L1": 38.66460584550938,
+      "L1_over_Q": 0.08958668771239349,
+      "bound_2Qweak": 589.2477810429697,
+      "bound_fraction": 1.365299239217471,
+      "fine_seconds": 0.0034606100002747553,
+      "cheap_seconds": 0.0016346810002687562,
+      "fine_rays": 18720,
+      "cheap_rays": 8742,
+      "fine_ray_bytes": 1310720,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 1362.5908747169099,
+      "weak_photons": 139.92513984832783,
+      "weak_fraction": 0.10269050119493754,
+      "source_count": 512,
+      "weak_source_count": 44,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 45.58638469055559,
+          "count_residual": -1.1368683772161603e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 45.262615706896,
+          "count_residual": -3.410605131648481e-13
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 279.85027969665566,
+      "bound_fraction": 0.20538100238987508,
+      "fine_seconds": 0.018244710999624658,
+      "cheap_seconds": 0.016952677000062977,
+      "fine_rays": 24576,
+      "cheap_rays": 22992,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    },
+    {
+      "photons": 20.793441447992983,
+      "weak_photons": 0.0017856163581569068,
+      "weak_fraction": 8.587401766191318e-05,
+      "source_count": 216,
+      "weak_source_count": 127,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0016620604030904715,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.0016960561329117932,
+          "count_residual": -8.881784197001252e-16
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0016265821015395403,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.0016599201776624245,
+          "count_residual": -3.552713678800501e-15
+        }
+      ],
+      "L1": 0.00035462292645393155,
+      "L1_over_Q": 1.7054556713995043e-05,
+      "bound_2Qweak": 0.0035712327163138135,
+      "bound_fraction": 0.00017174803532382635,
+      "fine_seconds": 0.00041931100031433743,
+      "cheap_seconds": 0.00025662699999884353,
+      "fine_rays": 3552,
+      "cheap_rays": 1437,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 476.27542669892495,
+      "weak_photons": 55.93763386898718,
+      "weak_fraction": 0.11744807884944243,
+      "source_count": 512,
+      "weak_source_count": 50,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 30.21614925953068,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 45.54992425621449,
+          "count_residual": 1.4210854715202004e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 29.943036409886034,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 44.61366809255699,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 11.575649767750402,
+      "L1_over_Q": 0.024304528679931013,
+      "bound_2Qweak": 111.87526773797435,
+      "bound_fraction": 0.23489615769888486,
+      "fine_seconds": 0.005358678999982658,
+      "cheap_seconds": 0.004776171999765211,
+      "fine_rays": 20544,
+      "cheap_rays": 18786,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 1209.0996335387392,
+      "weak_photons": 833.6478397771926,
+      "weak_fraction": 0.6894782006816998,
+      "source_count": 512,
+      "weak_source_count": 292,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 114.98306586320895,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 247.33879977960808,
+          "count_residual": -8.344713808838833e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 108.17518984101407,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 233.30777426308453,
+          "count_residual": -3.2307490016592055e-14
+        }
+      ],
+      "L1": 7.495246339315828,
+      "L1_over_Q": 0.006199031189331414,
+      "bound_2Qweak": 1667.2956795543853,
+      "bound_fraction": 1.3789564013633997,
+      "fine_seconds": 0.0061883979997219285,
+      "cheap_seconds": 0.003784298000027775,
+      "fine_rays": 24432,
+      "cheap_rays": 13896,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1048576,
+      "passed": true
+    },
+    {
+      "photons": 34.54066073246105,
+      "weak_photons": 2.759587177535755,
+      "weak_fraction": 0.07989387345281199,
+      "source_count": 216,
+      "weak_source_count": 25,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 2.487121628899015,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 2.5077784579406797,
+          "count_residual": 0.0
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 2.3781845038442304,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 2.397736379960787,
+          "count_residual": 1.7763568394002505e-15
+        }
+      ],
+      "L1": 1.2257274320152933,
+      "L1_over_Q": 0.03548650795968602,
+      "bound_2Qweak": 5.51917435507151,
+      "bound_fraction": 0.15978774690562397,
+      "fine_seconds": 0.0005921719998696062,
+      "cheap_seconds": 0.0004750850002892548,
+      "fine_rays": 4224,
+      "cheap_rays": 4037,
+      "fine_ray_bytes": 524288,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 111.53165751166107,
+      "weak_photons": 0.0283073189188495,
+      "weak_fraction": 0.0002538052383547681,
+      "source_count": 512,
+      "weak_source_count": 309,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.027346118016342055,
+          "maximum_strong_absorption_increment": 2.7755575615628914e-17,
+          "weak_absorbed": 0.02772448764162847,
+          "count_residual": -8.43769498715119e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.027322603013833872,
+          "maximum_strong_absorption_increment": 1.3877787807814457e-17,
+          "weak_absorbed": 0.027750241166433248,
+          "count_residual": -4.440892098500626e-16
+        }
+      ],
+      "L1": 0.002042814719646158,
+      "L1_over_Q": 1.8316007896077166e-05,
+      "bound_2Qweak": 0.056614637837699,
+      "bound_fraction": 0.0005076104767095362,
+      "fine_seconds": 0.0012812290001420479,
+      "cheap_seconds": 0.0008512619997418369,
+      "fine_rays": 10944,
+      "cheap_rays": 5694,
+      "fine_ray_bytes": 786432,
+      "cheap_ray_bytes": 524288,
+      "passed": true
+    },
+    {
+      "photons": 1101.991856590084,
+      "weak_photons": 120.74887050491881,
+      "weak_fraction": 0.1095732874819552,
+      "source_count": 512,
+      "weak_source_count": 44,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 39.81434081833898,
+          "count_residual": -1.1368683772161603e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 39.11492886833591,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 241.49774100983763,
+      "bound_fraction": 0.2191465749639104,
+      "fine_seconds": 0.019276155000170547,
+      "cheap_seconds": 0.020314258000325935,
+      "fine_rays": 24576,
+      "cheap_rays": 22992,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    },
+    {
+      "photons": 40.089634595201645,
+      "weak_photons": 27.311322969615667,
+      "weak_fraction": 0.681256470541255,
+      "source_count": 216,
+      "weak_source_count": 133,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 21.917187710023786,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 22.217590404484405,
+          "count_residual": -7.549516567451064e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 15.124139270054824,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 15.407146700564189,
+          "count_residual": -1.7763568394002505e-15
+        }
+      ],
+      "L1": 11.452871731611397,
+      "L1_over_Q": 0.28568161938253733,
+      "bound_2Qweak": 54.62264593923133,
+      "bound_fraction": 1.36251294108251,
+      "fine_seconds": 0.00042418800012455904,
+      "cheap_seconds": 0.000252749999617663,
+      "fine_rays": 3312,
+      "cheap_rays": 1191,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 427.64138332319584,
+      "weak_photons": 41.65924576090354,
+      "weak_fraction": 0.09741631045426441,
+      "source_count": 512,
+      "weak_source_count": 45,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 24.11761412932861,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 35.44619284797111,
+          "count_residual": 2.842170943040401e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 22.58715945635197,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 33.722461173681786,
+          "count_residual": -1.4210854715202004e-14
+        }
+      ],
+      "L1": 12.630691919410959,
+      "L1_over_Q": 0.029535710087873184,
+      "bound_2Qweak": 83.31849152180708,
+      "bound_fraction": 0.19483262090852882,
+      "fine_seconds": 0.006806257999869558,
+      "cheap_seconds": 0.006609172000025865,
+      "fine_rays": 22128,
+      "cheap_rays": 20352,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 470.5452870327267,
+      "weak_photons": 0.08276852365701719,
+      "weak_fraction": 0.00017589916621832107,
+      "source_count": 512,
+      "weak_source_count": 316,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.04014818680431111,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.06447774799849028,
+          "count_residual": 1.432427343269098e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.040931341280807734,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.06518432820021262,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.005187101462938835,
+      "L1_over_Q": 1.1023596677907156e-05,
+      "bound_2Qweak": 0.16553704731403437,
+      "bound_fraction": 0.00035179833243664213,
+      "fine_seconds": 0.0048824209998201695,
+      "cheap_seconds": 0.00360738199970001,
+      "fine_rays": 20496,
+      "cheap_rays": 11352,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 33.27654625166583,
+      "weak_photons": 2.803497283936801,
+      "weak_fraction": 0.08424844521827314,
+      "source_count": 216,
+      "weak_source_count": 22,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 2.174501741978524,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 2.280324129225632,
+          "count_residual": -3.552713678800501e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 1.6934220441739414,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 1.7588841671008635,
+          "count_residual": -3.552713678800501e-15
+        }
+      ],
+      "L1": 0.7815086644697099,
+      "L1_over_Q": 0.02348526973199893,
+      "bound_2Qweak": 5.606994567873602,
+      "bound_fraction": 0.16849689043654628,
+      "fine_seconds": 0.0004548140000224521,
+      "cheap_seconds": 0.0003986000001532375,
+      "fine_rays": 3888,
+      "cheap_rays": 3606,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 388.32731344525496,
+      "weak_photons": 204.96305756197475,
+      "weak_fraction": 0.5278100470027065,
+      "source_count": 512,
+      "weak_source_count": 285,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 109.02833816374391,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 125.06624712061583,
+          "count_residual": 1.0658141036401503e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 109.72077787661331,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 124.91721836238654,
+          "count_residual": 4.973799150320701e-14
+        }
+      ],
+      "L1": 25.687763468999332,
+      "L1_over_Q": 0.06614977257483255,
+      "bound_2Qweak": 409.9261151239495,
+      "bound_fraction": 1.055620094005413,
+      "fine_seconds": 0.003424046000418457,
+      "cheap_seconds": 0.00298292199977368,
+      "fine_rays": 18336,
+      "cheap_rays": 9192,
+      "fine_ray_bytes": 1310720,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 1064.0776394794093,
+      "weak_photons": 164.85548569394012,
+      "weak_fraction": 0.15492806124052586,
+      "source_count": 512,
+      "weak_source_count": 61,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 55.12882989244807,
+          "count_residual": 0.0
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 50.52702477905348,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 329.71097138788025,
+      "bound_fraction": 0.3098561224810517,
+      "fine_seconds": 0.01772566099998585,
+      "cheap_seconds": 0.017593081000086386,
+      "fine_rays": 24576,
+      "cheap_rays": 22380,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    },
+    {
+      "photons": 11.555779764087111,
+      "weak_photons": 0.0022853475362266135,
+      "weak_fraction": 0.00019776662266695184,
+      "source_count": 216,
+      "weak_source_count": 122,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.002148345269369502,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.002152829884044122,
+          "count_residual": -3.885780586188048e-16
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0021474724901663165,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.0021520889986033887,
+          "count_residual": -3.3306690738754696e-16
+        }
+      ],
+      "L1": 0.00036547019038865103,
+      "L1_over_Q": 3.162661437391306e-05,
+      "bound_2Qweak": 0.004570695072453227,
+      "bound_fraction": 0.0003955332453339037,
+      "fine_seconds": 0.000351418999798625,
+      "cheap_seconds": 0.0002474129996699048,
+      "fine_rays": 2976,
+      "cheap_rays": 1472,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 450.5917895827725,
+      "weak_photons": 43.03260494547007,
+      "weak_fraction": 0.09550241691113881,
+      "source_count": 512,
+      "weak_source_count": 59,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 23.860030283981327,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 36.909912334408034,
+          "count_residual": 5.684341886080802e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 22.66818395821522,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 34.72722522933548,
+          "count_residual": 1.4210854715202004e-14
+        }
+      ],
+      "L1": 6.526044324544207,
+      "L1_over_Q": 0.014483273942001978,
+      "bound_2Qweak": 86.06520989094014,
+      "bound_fraction": 0.19100483382227762,
+      "fine_seconds": 0.006942452999737725,
+      "cheap_seconds": 0.006334949000120105,
+      "fine_rays": 21648,
+      "cheap_rays": 19440,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 1215.75618630037,
+      "weak_photons": 696.097351922366,
+      "weak_fraction": 0.5725632818210354,
+      "source_count": 512,
+      "weak_source_count": 327,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 118.95976801021031,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 238.30023982818335,
+          "count_residual": 5.689893001203927e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 117.30517761185715,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 230.27482881202945,
+          "count_residual": 1.3108958363261536e-13
+        }
+      ],
+      "L1": 5.123618546876093,
+      "L1_over_Q": 0.0042143470908156495,
+      "bound_2Qweak": 1392.194703844732,
+      "bound_fraction": 1.1451265636420709,
+      "fine_seconds": 0.00674353299973518,
+      "cheap_seconds": 0.0037114880001354322,
+      "fine_rays": 24192,
+      "cheap_rays": 12576,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1048576,
+      "passed": true
+    },
+    {
+      "photons": 35.10298767761956,
+      "weak_photons": 2.145279339854687,
+      "weak_fraction": 0.06111386755898394,
+      "source_count": 216,
+      "weak_source_count": 23,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 1.831365708519471,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 1.9226030906918101,
+          "count_residual": 3.552713678800501e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 1.9218815014853692,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 2.1268900705097256,
+          "count_residual": -3.552713678800501e-15
+        }
+      ],
+      "L1": 1.0163348595858774,
+      "L1_over_Q": 0.028952944658720805,
+      "bound_2Qweak": 4.290558679709374,
+      "bound_fraction": 0.12222773511796788,
+      "fine_seconds": 0.0004810850000467326,
+      "cheap_seconds": 0.0004119800000808027,
+      "fine_rays": 3648,
+      "cheap_rays": 3225,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 150.34171972957859,
+      "weak_photons": 0.026805044147703783,
+      "weak_fraction": 0.00017829411686867976,
+      "source_count": 512,
+      "weak_source_count": 300,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.02142620960661291,
+          "maximum_strong_absorption_increment": 1.1657341758564144e-15,
+          "weak_absorbed": 0.025788493575113088,
+          "count_residual": 1.7763568394002505e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.021495469634993936,
+          "maximum_strong_absorption_increment": 8.881784197001252e-16,
+          "weak_absorbed": 0.0257924473214274,
+          "count_residual": -1.509903313490213e-14
+        }
+      ],
+      "L1": 0.0035674432752316747,
+      "L1_over_Q": 2.37288976183622e-05,
+      "bound_2Qweak": 0.05361008829540757,
+      "bound_fraction": 0.0003565882337373595,
+      "fine_seconds": 0.0016971150002973445,
+      "cheap_seconds": 0.0025881270003083046,
+      "fine_rays": 12000,
+      "cheap_rays": 6540,
+      "fine_ray_bytes": 786432,
+      "cheap_ray_bytes": 524288,
+      "passed": true
+    },
+    {
+      "photons": 1379.9334005174655,
+      "weak_photons": 130.73705673193513,
+      "weak_fraction": 0.094741569906859,
+      "source_count": 512,
+      "weak_source_count": 54,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 45.02462634159681,
+          "count_residual": -1.1368683772161603e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 46.41687804576838,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 261.47411346387025,
+      "bound_fraction": 0.189483139813718,
+      "fine_seconds": 0.020929484000134835,
+      "cheap_seconds": 0.016779534999841417,
+      "fine_rays": 24576,
+      "cheap_rays": 22632,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    },
+    {
+      "photons": 35.309846970390986,
+      "weak_photons": 21.142603869294824,
+      "weak_fraction": 0.5987735910332299,
+      "source_count": 216,
+      "weak_source_count": 123,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 16.155486892603598,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 16.24019151466488,
+          "count_residual": 3.9968028886505635e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 16.344525307596108,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 16.437473218593375,
+          "count_residual": 8.881784197001252e-16
+        }
+      ],
+      "L1": 7.720371301396129,
+      "L1_over_Q": 0.21864641067037285,
+      "bound_2Qweak": 42.28520773858965,
+      "bound_fraction": 1.1975471820664598,
+      "fine_seconds": 0.0003650290000223322,
+      "cheap_seconds": 0.0002421749995846767,
+      "fine_rays": 3168,
+      "cheap_rays": 1244,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 367.7811843072183,
+      "weak_photons": 25.329528989426993,
+      "weak_fraction": 0.06887119317193917,
+      "source_count": 512,
+      "weak_source_count": 50,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 17.540330714805876,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 23.01765007257841,
+          "count_residual": -7.105427357601002e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 17.384472211036247,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 22.141092620037156,
+          "count_residual": -5.684341886080802e-14
+        }
+      ],
+      "L1": 11.073809754052776,
+      "L1_over_Q": 0.0301097778422577,
+      "bound_2Qweak": 50.65905797885399,
+      "bound_fraction": 0.13774238634387834,
+      "fine_seconds": 0.006039454000074329,
+      "cheap_seconds": 0.00488259299982019,
+      "fine_rays": 20544,
+      "cheap_rays": 18684,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 474.4707128303405,
+      "weak_photons": 0.08905649821964681,
+      "weak_fraction": 0.00018769651279085652,
+      "source_count": 512,
+      "weak_source_count": 316,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0786547647007355,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.08291195811267221,
+          "count_residual": 2.842170943040401e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.07805862626909915,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.08230325998615493,
+          "count_residual": -5.684341886080802e-14
+        }
+      ],
+      "L1": 0.0031951518970765886,
+      "L1_over_Q": 6.734139348700115e-06,
+      "bound_2Qweak": 0.17811299643929362,
+      "bound_fraction": 0.00037539302558171303,
+      "fine_seconds": 0.0030510439996760397,
+      "cheap_seconds": 0.002094903999932285,
+      "fine_rays": 17760,
+      "cheap_rays": 10272,
+      "fine_ray_bytes": 1310720,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 37.77388162730112,
+      "weak_photons": 13.341518031277387,
+      "weak_fraction": 0.3531942563624382,
+      "source_count": 216,
+      "weak_source_count": 23,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 8.220659486905234,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 8.482001858425916,
+          "count_residual": -1.7763568394002505e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 5.775539575258577,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 5.851441667401626,
+          "count_residual": -7.105427357601002e-15
+        }
+      ],
+      "L1": 7.994435791014825,
+      "L1_over_Q": 0.2116392450713044,
+      "bound_2Qweak": 26.683036062554773,
+      "bound_fraction": 0.7063885127248763,
+      "fine_seconds": 0.00046878600005584303,
+      "cheap_seconds": 0.0003754959998332197,
+      "fine_rays": 3600,
+      "cheap_rays": 2889,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 440.67550503248054,
+      "weak_photons": 274.70901612476996,
+      "weak_fraction": 0.623381633396034,
+      "source_count": 512,
+      "weak_source_count": 296,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 147.09918018294866,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 163.54411007896923,
+          "count_residual": -3.552713678800501e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 124.80706368603975,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 137.58165035372758,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 41.49286983319333,
+      "L1_over_Q": 0.09415742277332852,
+      "bound_2Qweak": 549.4180322495399,
+      "bound_fraction": 1.246763266792068,
+      "fine_seconds": 0.0035731499997382343,
+      "cheap_seconds": 0.001628491999781545,
+      "fine_rays": 18576,
+      "cheap_rays": 9090,
+      "fine_ray_bytes": 1310720,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 1103.2077020618697,
+      "weak_photons": 92.04097372795755,
+      "weak_fraction": 0.0834303219202831,
+      "source_count": 512,
+      "weak_source_count": 64,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 31.078110788688036,
+          "count_residual": -1.1368683772161603e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 31.381128415149046,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 184.0819474559151,
+      "bound_fraction": 0.1668606438405662,
+      "fine_seconds": 0.020343271999990975,
+      "cheap_seconds": 0.01606086400033746,
+      "fine_rays": 24576,
+      "cheap_rays": 22272,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    },
+    {
+      "photons": 8.977408123367962,
+      "weak_photons": 0.0033899767980715093,
+      "weak_fraction": 0.0003776119734656473,
+      "source_count": 216,
+      "weak_source_count": 130,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0033535637797891204,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.003363868405458378,
+          "count_residual": 8.326672684688674e-17
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0033403199040155387,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.0033506227593898216,
+          "count_residual": 1.942890293094024e-16
+        }
+      ],
+      "L1": 0.00019815150849707578,
+      "L1_over_Q": 2.2072240202747664e-05,
+      "bound_2Qweak": 0.006779953596143019,
+      "bound_fraction": 0.0007552239469312946,
+      "fine_seconds": 0.0002689449997888005,
+      "cheap_seconds": 0.0002036470000348345,
+      "fine_rays": 2016,
+      "cheap_rays": 888,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 430.2783482121947,
+      "weak_photons": 11.360198401119273,
+      "weak_fraction": 0.026401975484755077,
+      "source_count": 512,
+      "weak_source_count": 58,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 6.422767895772805,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 9.847988783843844,
+          "count_residual": -1.4210854715202004e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 6.457349952762603,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 9.761403502097506,
+          "count_residual": 5.684341886080802e-14
+        }
+      ],
+      "L1": 1.8747033965044142,
+      "L1_over_Q": 0.004356954990400519,
+      "bound_2Qweak": 22.720396802238547,
+      "bound_fraction": 0.052803950969510155,
+      "fine_seconds": 0.005860263999693416,
+      "cheap_seconds": 0.005234352000115905,
+      "fine_rays": 20976,
+      "cheap_rays": 19224,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 1302.7384305706387,
+      "weak_photons": 933.6369698157783,
+      "weak_fraction": 0.7166726243017313,
+      "source_count": 512,
+      "weak_source_count": 303,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 177.0195459462787,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 304.27253021417636,
+          "count_residual": 4.838143774499315e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 174.54634389662084,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 296.6203956000402,
+          "count_residual": -1.2505621538316802e-14
+        }
+      ],
+      "L1": 16.460150493430294,
+      "L1_over_Q": 0.012635038705521455,
+      "bound_2Qweak": 1867.2739396315567,
+      "bound_fraction": 1.4333452486034626,
+      "fine_seconds": 0.007323096999698464,
+      "cheap_seconds": 0.003930839000076958,
+      "fine_rays": 24336,
+      "cheap_rays": 13512,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1048576,
+      "passed": true
+    },
+    {
+      "photons": 34.31354015760629,
+      "weak_photons": 1.7420992824666761,
+      "weak_fraction": 0.05077002473265658,
+      "source_count": 216,
+      "weak_source_count": 17,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 1.5284548552604493,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 1.5989758104667648,
+          "count_residual": -1.7763568394002505e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 1.103273849847917,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 1.1798868691828825,
+          "count_residual": 8.881784197001252e-16
+        }
+      ],
+      "L1": 0.718225456898078,
+      "L1_over_Q": 0.020931254938988533,
+      "bound_2Qweak": 3.4841985649333522,
+      "bound_fraction": 0.10154004946531316,
+      "fine_seconds": 0.0005034590003560879,
+      "cheap_seconds": 0.00042657199992390815,
+      "fine_rays": 4032,
+      "cheap_rays": 3561,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 165.63518585378145,
+      "weak_photons": 0.02896942233008748,
+      "weak_fraction": 0.00017489896353097917,
+      "source_count": 512,
+      "weak_source_count": 322,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.025518657034817198,
+          "maximum_strong_absorption_increment": 8.881784197001252e-16,
+          "weak_absorbed": 0.02622457812193858,
+          "count_residual": -9.325873406851315e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.025543984552943155,
+          "maximum_strong_absorption_increment": 1.1102230246251565e-16,
+          "weak_absorbed": 0.026325912950503835,
+          "count_residual": 1.0158540675320182e-14
+        }
+      ],
+      "L1": 0.0021375265814011293,
+      "L1_over_Q": 1.2905027216186322e-05,
+      "bound_2Qweak": 0.05793884466017496,
+      "bound_fraction": 0.00034979792706195834,
+      "fine_seconds": 0.0014727569996466627,
+      "cheap_seconds": 0.0012646639997910825,
+      "fine_rays": 11760,
+      "cheap_rays": 6258,
+      "fine_ray_bytes": 786432,
+      "cheap_ray_bytes": 524288,
+      "passed": true
+    },
+    {
+      "photons": 1286.0145555662973,
+      "weak_photons": 114.05350199091441,
+      "weak_fraction": 0.08868756694646499,
+      "source_count": 512,
+      "weak_source_count": 57,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 40.451503676115344,
+          "count_residual": 0.0
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 38.52570046198,
+          "count_residual": -2.2737367544323206e-13
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 228.10700398182883,
+      "bound_fraction": 0.17737513389292997,
+      "fine_seconds": 0.018254895999689325,
+      "cheap_seconds": 0.017848885000148584,
+      "fine_rays": 24576,
+      "cheap_rays": 22524,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    },
+    {
+      "photons": 39.743487406780645,
+      "weak_photons": 23.98258847232996,
+      "weak_fraction": 0.6034344250383595,
+      "source_count": 216,
+      "weak_source_count": 127,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": false,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 19.263750884895636,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 19.83190801372725,
+          "count_residual": 4.440892098500626e-16
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 16.60936575337547,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 16.91308795902625,
+          "count_residual": -2.220446049250313e-15
+        }
+      ],
+      "L1": 5.439617234389958,
+      "L1_over_Q": 0.13686814090355603,
+      "bound_2Qweak": 47.96517694465992,
+      "bound_fraction": 1.206868850076719,
+      "fine_seconds": 0.00046169500001269625,
+      "cheap_seconds": 0.0002838279997376958,
+      "fine_rays": 3216,
+      "cheap_rays": 1049,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 422.64114811685323,
+      "weak_photons": 69.72499309452027,
+      "weak_fraction": 0.1649744550552907,
+      "source_count": 512,
+      "weak_source_count": 61,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 28.331178266139663,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 53.57126925220664,
+          "count_residual": -2.842170943040401e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 29.939260297863065,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 51.42339876127113,
+          "count_residual": -1.4210854715202004e-14
+        }
+      ],
+      "L1": 8.986467588918853,
+      "L1_over_Q": 0.021262642383401448,
+      "bound_2Qweak": 139.44998618904054,
+      "bound_fraction": 0.3299489101105814,
+      "fine_seconds": 0.0063234819999706815,
+      "cheap_seconds": 0.00654590600015581,
+      "fine_rays": 22512,
+      "cheap_rays": 20250,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1310720,
+      "passed": true
+    },
+    {
+      "photons": 629.701127979747,
+      "weak_photons": 0.06893023772487873,
+      "weak_fraction": 0.0001094650059561204,
+      "source_count": 512,
+      "weak_source_count": 320,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": false,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.02388836940268547,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.04984702920020763,
+          "count_residual": 0.0
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.02412119575140395,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 0.0496687129400122,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.004624827409465444,
+      "L1_over_Q": 7.344480109640509e-06,
+      "bound_2Qweak": 0.13786047544975746,
+      "bound_fraction": 0.0002189300119122408,
+      "fine_seconds": 0.005751549999786221,
+      "cheap_seconds": 0.003364546000284463,
+      "fine_rays": 21840,
+      "cheap_rays": 11904,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 38.93067063693587,
+      "weak_photons": 3.8160702409004257,
+      "weak_fraction": 0.09802220661670005,
+      "source_count": 216,
+      "weak_source_count": 23,
+      "strong_angles": 48,
+      "weak_angles": 1,
+      "periodic": true,
+      "horizon": 1.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 3.531032030159186,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 3.645916688579252,
+          "count_residual": 4.440892098500626e-15
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 3.694606520659632,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 3.7449386555900306,
+          "count_residual": 4.440892098500626e-15
+        }
+      ],
+      "L1": 3.0517065742903378,
+      "L1_over_Q": 0.07838823540314252,
+      "bound_2Qweak": 7.632140481800851,
+      "bound_fraction": 0.1960444132334001,
+      "fine_seconds": 0.00041938200001823134,
+      "cheap_seconds": 0.00038263600026766653,
+      "fine_rays": 3216,
+      "cheap_rays": 2745,
+      "fine_ray_bytes": 262144,
+      "cheap_ray_bytes": 262144,
+      "passed": true
+    },
+    {
+      "photons": 398.15303791406143,
+      "weak_photons": 232.23444081359816,
+      "weak_fraction": 0.5832793390960497,
+      "source_count": 512,
+      "weak_source_count": 296,
+      "strong_angles": 48,
+      "weak_angles": 6,
+      "periodic": false,
+      "horizon": 4.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 141.64255228654156,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 162.27084059491466,
+          "count_residual": 5.3290705182007514e-14
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 132.96409146092554,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 153.0763239050114,
+          "count_residual": 4.973799150320701e-14
+        }
+      ],
+      "L1": 30.647480743372643,
+      "L1_over_Q": 0.0769741225734103,
+      "bound_2Qweak": 464.4688816271963,
+      "bound_fraction": 1.1665586781920994,
+      "fine_seconds": 0.0034798700003193517,
+      "cheap_seconds": 0.0018597509997562156,
+      "fine_rays": 19392,
+      "cheap_rays": 9468,
+      "fine_ray_bytes": 1310720,
+      "cheap_ray_bytes": 786432,
+      "passed": true
+    },
+    {
+      "photons": 1284.7746772004384,
+      "weak_photons": 83.02800483494984,
+      "weak_fraction": 0.06462456515400061,
+      "source_count": 512,
+      "weak_source_count": 41,
+      "strong_angles": 48,
+      "weak_angles": 12,
+      "periodic": true,
+      "horizon": 11.2,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 32.12043143711172,
+          "count_residual": 1.1368683772161603e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 0.0,
+          "maximum_strong_absorption_increment": 0.0,
+          "weak_absorbed": 32.11279348002681,
+          "count_residual": 0.0
+        }
+      ],
+      "L1": 0.0,
+      "L1_over_Q": 0.0,
+      "bound_2Qweak": 166.05600966989968,
+      "bound_fraction": 0.12924913030800123,
+      "fine_seconds": 0.018049838000024465,
+      "cheap_seconds": 0.019632171000012022,
+      "fine_rays": 24576,
+      "cheap_rays": 23100,
+      "fine_ray_bytes": 1572864,
+      "cheap_ray_bytes": 1572864,
+      "passed": true
+    }
+  ],
+  "native": [
+    {
+      "photons": 25702.93821088438,
+      "weak_photons": 25.570834156774016,
+      "weak_fraction": 0.0009948603520334332,
+      "source_count": 32768,
+      "weak_source_count": 154,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 25.428508365453283,
+          "maximum_strong_absorption_increment": 1.6653345369377348e-14,
+          "weak_absorbed": 25.5635834790286,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 25.433652051258335,
+          "maximum_strong_absorption_increment": 1.7319479184152442e-14,
+          "weak_absorbed": 25.56898767228394,
+          "count_residual": -2.842170943040401e-14
+        }
+      ],
+      "L1": 0.2516321231793385,
+      "L1_over_Q": 9.790013932056229e-06,
+      "bound_2Qweak": 51.14166831354803,
+      "bound_fraction": 0.0019897207040668664,
+      "fine_seconds": 1.531007898000098,
+      "cheap_seconds": 1.4340702910003529,
+      "fine_rays": 1593024,
+      "cheap_rays": 1591314,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 101974016,
+      "passed": true,
+      "state": "neutral",
+      "requested_weak_fraction": 0.001
+    },
+    {
+      "photons": 25702.93821088438,
+      "weak_photons": 128.46714793968852,
+      "weak_fraction": 0.004998150284829567,
+      "source_count": 32768,
+      "weak_source_count": 656,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 127.5331976290079,
+          "maximum_strong_absorption_increment": 1.8207657603852567e-14,
+          "weak_absorbed": 128.4281662315135,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 127.53043553465503,
+          "maximum_strong_absorption_increment": 1.6431300764452317e-14,
+          "weak_absorbed": 128.42532256909232,
+          "count_residual": 1.5347723092418164e-12
+        }
+      ],
+      "L1": 0.9973957120720516,
+      "L1_over_Q": 3.880473523644414e-05,
+      "bound_2Qweak": 256.93429587937703,
+      "bound_fraction": 0.009996300569659134,
+      "fine_seconds": 1.472230725999907,
+      "cheap_seconds": 1.593256415000269,
+      "fine_rays": 1593024,
+      "cheap_rays": 1585752,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 101711872,
+      "passed": true,
+      "state": "neutral",
+      "requested_weak_fraction": 0.005
+    },
+    {
+      "photons": 25702.93821088438,
+      "weak_photons": 256.794746869982,
+      "weak_fraction": 0.009990871267831847,
+      "source_count": 32768,
+      "weak_source_count": 1208,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 255.3427689349832,
+          "maximum_strong_absorption_increment": 2.4868995751603507e-14,
+          "weak_absorbed": 256.7295047316451,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 255.33265644637171,
+          "maximum_strong_absorption_increment": 1.6209256159527285e-14,
+          "weak_absorbed": 256.7143499035409,
+          "count_residual": 1.4352963262354024e-12
+        }
+      ],
+      "L1": 1.503875222990168,
+      "L1_over_Q": 5.850985636939066e-05,
+      "bound_2Qweak": 513.589493739964,
+      "bound_fraction": 0.019981742535663694,
+      "fine_seconds": 1.4765111169999727,
+      "cheap_seconds": 1.5362141909999991,
+      "fine_rays": 1593024,
+      "cheap_rays": 1580976,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 101187584,
+      "passed": true,
+      "state": "neutral",
+      "requested_weak_fraction": 0.01
+    },
+    {
+      "photons": 25702.93821088438,
+      "weak_photons": 1285.131622690727,
+      "weak_fraction": 0.04999940520988821,
+      "source_count": 32768,
+      "weak_source_count": 4727,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 1276.690186046256,
+          "maximum_strong_absorption_increment": 1.509903313490213e-14,
+          "weak_absorbed": 1284.6700450338253,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 1276.6186839738616,
+          "maximum_strong_absorption_increment": 1.4876988529977098e-14,
+          "weak_absorbed": 1284.5696970236709,
+          "count_residual": 7.105427357601002e-14
+        }
+      ],
+      "L1": 6.705626922603388,
+      "L1_over_Q": 0.00026088950872409474,
+      "bound_2Qweak": 2570.263245381454,
+      "bound_fraction": 0.09999881041977642,
+      "fine_seconds": 1.500531690999651,
+      "cheap_seconds": 1.4100854739999704,
+      "fine_rays": 1593024,
+      "cheap_rays": 1539594,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 98566144,
+      "passed": true,
+      "state": "neutral",
+      "requested_weak_fraction": 0.05
+    },
+    {
+      "photons": 12851.46910544219,
+      "weak_photons": 12.785417078387008,
+      "weak_fraction": 0.0009948603520334332,
+      "source_count": 32768,
+      "weak_source_count": 154,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 12.71288049575565,
+          "maximum_strong_absorption_increment": 7.66053886991358e-15,
+          "weak_absorbed": 12.778166400641595,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 12.718024181560704,
+          "maximum_strong_absorption_increment": 8.659739592076221e-15,
+          "weak_absorbed": 12.783570593896933,
+          "count_residual": -2.842170943040401e-14
+        }
+      ],
+      "L1": 0.25163212317933414,
+      "L1_over_Q": 1.9580027864112123e-05,
+      "bound_2Qweak": 25.570834156774016,
+      "bound_fraction": 0.0019897207040668664,
+      "fine_seconds": 1.445130240999788,
+      "cheap_seconds": 1.4616084489998684,
+      "fine_rays": 1593024,
+      "cheap_rays": 1591314,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 101974016,
+      "passed": true,
+      "state": "after_half_dose",
+      "requested_weak_fraction": 0.001
+    },
+    {
+      "photons": 12851.46910544219,
+      "weak_photons": 64.23357396984426,
+      "weak_fraction": 0.004998150284829567,
+      "source_count": 32768,
+      "weak_source_count": 656,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 63.69676862398107,
+          "maximum_strong_absorption_increment": 9.658940314238862e-15,
+          "weak_absorbed": 64.19459226166924,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 63.6940065296282,
+          "maximum_strong_absorption_increment": 6.439293542825908e-15,
+          "weak_absorbed": 64.19174859924809,
+          "count_residual": 1.5347723092418164e-12
+        }
+      ],
+      "L1": 0.9973957120720511,
+      "L1_over_Q": 7.760947047288825e-05,
+      "bound_2Qweak": 128.46714793968852,
+      "bound_fraction": 0.009996300569659134,
+      "fine_seconds": 1.3444389569999657,
+      "cheap_seconds": 1.3136962190001213,
+      "fine_rays": 1593024,
+      "cheap_rays": 1585752,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 101711872,
+      "passed": true,
+      "state": "after_half_dose",
+      "requested_weak_fraction": 0.005
+    },
+    {
+      "photons": 12851.46910544219,
+      "weak_photons": 128.397373434991,
+      "weak_fraction": 0.009990871267831847,
+      "source_count": 32768,
+      "weak_source_count": 1208,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": -5.551115123125783e-17,
+          "total_absorbed_increment": 127.56009687905171,
+          "maximum_strong_absorption_increment": 9.43689570931383e-15,
+          "weak_absorbed": 128.3321312966541,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 127.5499843904402,
+          "maximum_strong_absorption_increment": 6.661338147750939e-15,
+          "weak_absorbed": 128.31697646854985,
+          "count_residual": 1.4210854715202004e-12
+        }
+      ],
+      "L1": 1.5038752229901653,
+      "L1_over_Q": 0.00011701971273878112,
+      "bound_2Qweak": 256.794746869982,
+      "bound_fraction": 0.019981742535663694,
+      "fine_seconds": 1.3999750660000245,
+      "cheap_seconds": 1.4003082079998421,
+      "fine_rays": 1593024,
+      "cheap_rays": 1580976,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 101187584,
+      "passed": true,
+      "state": "after_half_dose",
+      "requested_weak_fraction": 0.01
+    },
+    {
+      "photons": 12851.46910544219,
+      "weak_photons": 642.5658113453635,
+      "weak_fraction": 0.04999940520988821,
+      "source_count": 32768,
+      "weak_source_count": 4727,
+      "strong_angles": 96,
+      "weak_angles": 6,
+      "periodic": true,
+      "horizon": 16.0,
+      "audits": [
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 637.33769855937,
+          "maximum_strong_absorption_increment": 6.661338147750939e-15,
+          "weak_absorbed": 642.1042336884618,
+          "count_residual": -2.7000623958883807e-13
+        },
+        {
+          "minimum_absorbed_increment": 0.0,
+          "total_absorbed_increment": 637.2661598080185,
+          "maximum_strong_absorption_increment": 7.216449660063518e-15,
+          "weak_absorbed": 642.0038850893961,
+          "count_residual": 1.9895196601282805e-13
+        }
+      ],
+      "L1": 6.705652029335048,
+      "L1_over_Q": 0.0005217809710560964,
+      "bound_2Qweak": 1285.131622690727,
+      "bound_fraction": 0.09999881041977642,
+      "fine_seconds": 1.4305066290003197,
+      "cheap_seconds": 1.4021295410002494,
+      "fine_rays": 1593024,
+      "cheap_rays": 1539594,
+      "fine_ray_bytes": 101974016,
+      "cheap_ray_bytes": 98566144,
+      "passed": true,
+      "state": "after_half_dose",
+      "requested_weak_fraction": 0.05
+    }
+  ]
+}

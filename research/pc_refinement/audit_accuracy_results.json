@@ -1,0 +1,351 @@
+{
+  "scope": "Independent diagnostic gates, not a new transport solver",
+  "angular_quadrature": [
+    {
+      "angles": 24,
+      "dipole_norm": 0.0014063621077224243,
+      "quadrupole_frobenius": 0.011732632527070746,
+      "mean_direction": [
+        0.0,
+        0.0010981704250931808,
+        -0.0008785647929937338
+      ],
+      "second_moment": [
+        [
+          0.33275462962962965,
+          0.005081573634654669,
+          0.006351761330540908
+        ],
+        [
+          0.005081573634654669,
+          0.3339633339112415,
+          -0.0015142177406149056
+        ],
+        [
+          0.006351761330540908,
+          -0.0015142177406149056,
+          0.3332820364591289
+        ]
+      ],
+      "cap": {
+        "expected": 0.35416666666666663,
+        "samples": 133,
+        "axis_fractions": [
+          0.3333333333333333,
+          0.375,
+          0.375,
+          0.375,
+          0.375,
+          0.3333333333333333
+        ],
+        "minimum": 0.2916666666666667,
+        "maximum": 0.4166666666666667,
+        "mean_absolute_fraction_error": 0.027412280701754395,
+        "maximum_absolute_fraction_error": 0.06250000000000006
+      }
+    },
+    {
+      "angles": 48,
+      "dipole_norm": 0.0018161077955304436,
+      "quadrupole_frobenius": 0.003116769298488332,
+      "mean_direction": [
+        -1.850371707708594e-17,
+        0.0017958417154484228,
+        -0.0002705550924335251
+      ],
+      "second_moment": [
+        [
+          0.3331886574074074,
+          0.0003239699805917303,
+          0.002150389410405714
+        ],
+        [
+          0.0003239699805917303,
+          0.33308543988277334,
+          9.8730767374256e-05
+        ],
+        [
+          0.002150389410405714,
+          9.8730767374256e-05,
+          0.33372590270981917
+        ]
+      ],
+      "cap": {
+        "expected": 0.35416666666666663,
+        "samples": 133,
+        "axis_fractions": [
+          0.3541666666666667,
+          0.3333333333333333,
+          0.3333333333333333,
+          0.3541666666666667,
+          0.375,
+          0.375
+        ],
+        "minimum": 0.3125,
+        "maximum": 0.3958333333333333,
+        "mean_absolute_fraction_error": 0.014411027568922331,
+        "maximum_absolute_fraction_error": 0.041666666666666685
+      }
+    },
+    {
+      "angles": 96,
+      "dipole_norm": 0.0009844721510900974,
+      "quadrupole_frobenius": 0.0002912943735050886,
+      "mean_direction": [
+        0.0,
+        0.0006112496071137777,
+        0.0007717249082900045
+      ],
+      "second_moment": [
+        [
+          0.33329716435185175,
+          0.0001438459588928389,
+          -0.0001139341038673301
+        ],
+        [
+          0.0001438459588928389,
+          0.3333716058394949,
+          -8.581878419855995e-05
+        ],
+        [
+          -0.0001139341038673301,
+          -8.581878419855995e-05,
+          0.33333122980865326
+        ]
+      ],
+      "cap": {
+        "expected": 0.35416666666666663,
+        "samples": 133,
+        "axis_fractions": [
+          0.3541666666666667,
+          0.34375,
+          0.3541666666666667,
+          0.3541666666666667,
+          0.375,
+          0.3541666666666667
+        ],
+        "minimum": 0.3333333333333333,
+        "maximum": 0.3854166666666667,
+        "mean_absolute_fraction_error": 0.008302005012531349,
+        "maximum_absolute_fraction_error": 0.031250000000000056
+      }
+    },
+    {
+      "angles": 192,
+      "dipole_norm": 0.00022788756597089482,
+      "quadrupole_frobenius": 0.0003826786066685294,
+      "mean_direction": [
+        1.850371707708594e-17,
+        0.00022566505381537103,
+        -3.174942850894544e-05
+      ],
+      "second_moment": [
+        [
+          0.3333242910879631,
+          3.755187359817257e-05,
+          0.00026690702713052475
+        ],
+        [
+          3.755187359817257e-05,
+          0.33331613452011505,
+          6.2350935711488435e-06
+        ],
+        [
+          0.00026690702713052475,
+          6.2350935711488435e-06,
+          0.33335957439192204
+        ]
+      ],
+      "cap": {
+        "expected": 0.35416666666666663,
+        "samples": 133,
+        "axis_fractions": [
+          0.3541666666666667,
+          0.3697916666666667,
+          0.359375,
+          0.3541666666666667,
+          0.3489583333333333,
+          0.3489583333333333
+        ],
+        "minimum": 0.34375,
+        "maximum": 0.3697916666666667,
+        "mean_absolute_fraction_error": 0.004268483709273208,
+        "maximum_absolute_fraction_error": 0.015625000000000056
+      }
+    },
+    {
+      "angles": 768,
+      "dipole_norm": 2.9723691366149036e-05,
+      "quadrupole_frobenius": 4.609815205042245e-05,
+      "mean_direction": [
+        -1.1564823173178714e-17,
+        2.9572966121646884e-05,
+        -2.9895657206370898e-06
+      ],
+      "second_moment": [
+        [
+          0.33333276819299834,
+          3.2741458076168085e-06,
+          3.2388049666252836e-05
+        ],
+        [
+          3.2741458076168085e-06,
+          0.33333204384716225,
+          3.211237262729621e-07
+        ],
+        [
+          3.2388049666252836e-05,
+          3.211237262729621e-07,
+          0.33333518795983985
+        ]
+      ],
+      "cap": {
+        "expected": 0.35416666666666663,
+        "samples": 133,
+        "axis_fractions": [
+          0.3541666666666667,
+          0.35546875,
+          0.35546875,
+          0.3541666666666667,
+          0.3502604166666667,
+          0.3567708333333333
+        ],
+        "minimum": 0.34765625,
+        "maximum": 0.3606770833333333,
+        "mean_absolute_fraction_error": 0.0018796992481203124,
+        "maximum_absolute_fraction_error": 0.006510416666666685
+      }
+    },
+    {
+      "angles": 3072,
+      "dipole_norm": 4.301278639883584e-06,
+      "quadrupole_frobenius": 4.87212936605037e-06,
+      "mean_direction": [
+        1.4456028966473393e-17,
+        4.294690007193797e-06,
+        2.379825204264261e-07
+      ],
+      "second_moment": [
+        [
+          0.33333329801206496,
+          -1.9045146549167947e-07,
+          3.436933119904605e-06
+        ],
+        [
+          -1.9045146549167947e-07,
+          0.33333321361738794,
+          -1.527184618991912e-08
+        ],
+        [
+          3.436933119904605e-06,
+          -1.527184618991912e-08,
+          0.33333348837055005
+        ]
+      ],
+      "cap": {
+        "expected": 0.35416666666666663,
+        "samples": 133,
+        "axis_fractions": [
+          0.3541666666666667,
+          0.3528645833333333,
+          0.3541666666666667,
+          0.3541666666666667,
+          0.3544921875,
+          0.3551432291666667
+        ],
+        "minimum": 0.3515625,
+        "maximum": 0.3561197916666667,
+        "mean_absolute_fraction_error": 0.0006755169172932443,
+        "maximum_absolute_fraction_error": 0.0026041666666666297
+      }
+    }
+  ],
+  "missed_probe_cones": [
+    {
+      "probe_count": 12,
+      "continuum_cone_fraction": 0.08427014037159647,
+      "continuum_probe_cone_hits": 0,
+      "aperture_half_angle_radians": 0.5890664293226918,
+      "nearest_probe_angle_radians": 0.7854219057635891,
+      "continuum_probe_mean_r2": 25.0,
+      "continuum_true_mean_r2": 47.24731705810147,
+      "continuum_mean_r2_underestimate": 0.47086942589233727,
+      "voxel_probe_max_distance": 5.561578156849093,
+      "voxel_refined_max_distance": 17.79837203333929,
+      "voxel_probe_mean_r2": 25.036121177452205,
+      "voxel_refined_mean_r2": 41.95991760620099,
+      "voxel_probe_far_fraction": 0.0,
+      "voxel_refined_far_fraction": 0.06488037109375
+    },
+    {
+      "probe_count": 24,
+      "continuum_cone_fraction": 0.04269970755726993,
+      "continuum_probe_cone_hits": 0,
+      "aperture_half_angle_radians": 0.4162772870096535,
+      "nearest_probe_angle_radians": 0.555036382679538,
+      "continuum_probe_mean_r2": 25.0,
+      "continuum_true_mean_r2": 36.272722795119265,
+      "continuum_mean_r2_underestimate": 0.3107768572762364,
+      "voxel_probe_max_distance": 5.684210526415794,
+      "voxel_refined_max_distance": 17.666226087056522,
+      "voxel_probe_mean_r2": 25.15818764099755,
+      "voxel_refined_mean_r2": 32.72748885463117,
+      "voxel_probe_far_fraction": 0.0,
+      "voxel_refined_far_fraction": 0.02984619140625
+    }
+  ],
+  "rotation_covariance": [
+    {
+      "angles": 24,
+      "L1_over_emitted": 1.2267083098462943,
+      "maximum_fraction_difference": 1.0,
+      "seconds_both": 0.004532759000085207,
+      "angular_count_max": 24,
+      "emitted": 255.0,
+      "per_source_ledger": 7.105427357601002e-16
+    },
+    {
+      "angles": 96,
+      "L1_over_emitted": 0.24388914494493816,
+      "maximum_fraction_difference": 1.0,
+      "seconds_both": 0.003576738999981899,
+      "angular_count_max": 96,
+      "emitted": 255.0,
+      "per_source_ledger": 8.975276662232845e-16
+    },
+    {
+      "angles": 384,
+      "L1_over_emitted": 0.06645274368704242,
+      "maximum_fraction_difference": 0.6671086078136922,
+      "seconds_both": 0.003939091000120243,
+      "angular_count_max": 384,
+      "emitted": 255.0,
+      "per_source_ledger": 6.432281607933539e-15
+    },
+    {
+      "angles": "adaptive",
+      "L1_over_emitted": 0.041610908583644475,
+      "maximum_fraction_difference": 0.3466185483779118,
+      "seconds_both": 0.00482391499986079,
+      "angular_count_max": 768,
+      "emitted": 255.0,
+      "per_source_ledger": 6.881045441045181e-15
+    }
+  ],
+  "weighting_counterexample": {
+    "photon_count_L1_over_Q": 1.1111110934683743e-07,
+    "volume_mean_absolute_fraction_error": 0.010937510937499999,
+    "maximum_fraction_error": 0.7,
+    "global_count_difference": 7.626578777959313e-18,
+    "capacity_bounds_preserved": true
+  },
+  "acceptance": [
+    "Compare map error to a continuum oracle when one exists, not only a same-core high-angle solution.",
+    "Report count-weighted and volume/fraction errors separately; global count closure is not a local accuracy metric.",
+    "Repeat angular-aperture tests over many normals; a plane aligned with Fibonacci polar axis is not representative.",
+    "Check cubic rotation covariance of both fields; translations alone do not expose orientation bias.",
+    "Require reference angular change below claimed improvements; preserve source origins under subcell refinement.",
+    "Treat sparse first-hit radius probes as estimates: missed solid-angle features can bias surface-area predictions.",
+    "Benchmark setup, compilation separately, repeated kernel medians, materialized ray memory, and full coeval cost."
+  ]
+}

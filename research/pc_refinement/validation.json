@@ -1,0 +1,28 @@
+{
+  "scope": "21cmFAST research PC refinements; static-model tests and restricted native coeval; not full Qin20",
+  "baseline_commit": "468241da3cd8bbe21436092bb9fe81f03ddaf52a",
+  "pytest": {
+    "command": "python -m pytest -q research/pc_reconsidered research/pc_refinement",
+    "passed": 195,
+    "subtests_passed": 20,
+    "warnings": 4,
+    "seconds": 9.71,
+    "warning_note": "Native InputParameters template construction warnings; final restricted physics guards pass"
+  },
+  "other_checks": [
+    "git diff --check",
+    "ruff check --select F821,F822,F823 research/pc_refinement research/pc_reconsidered",
+    "bash -n research/pc_reconsidered/gadi_compare.pbs",
+    "reproduction runner dry-run and prior audit-stage smoke run"
+  ],
+  "environment": {
+    "python": "3.12.14",
+    "numpy": "2.3.5",
+    "scipy": "1.17.0",
+    "compiler": "g++ (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0",
+    "native_runtime_note": "Local FFTW single/OpenMP shared libraries supplied by pyfftw wheel; Gadi script uses module FFTW"
+  },
+  "native_validation": "native_integration.json",
+  "incremental_validation": "incremental_validation.json",
+  "gadi_job_submitted_this_turn": false
+}

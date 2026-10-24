@@ -11,6 +11,7 @@
 #PBS -j oe
 
 # Research comparisons, not a complete Qin20 PC simulation.
+# The native integration compares the original and balanced spatial kernels.
 # Submit from an isolated checkout with an installed native build:
 # qsub -v PC_REV="$(git rev-parse HEAD)",PC_PYTHON=/absolute/venv/bin/python \
 #   research/pc_reconsidered/gadi_compare.pbs
@@ -90,6 +91,8 @@ print('Frozen native package:', actual, flush=True)
 PY
 "$PC_PYTHON" -m pytest research/pc_reconsidered -q \
     --confcutdir=research/pc_reconsidered
+"$PC_PYTHON" -m pytest research/pc_refinement -q \
+    --confcutdir=research/pc_refinement
 "$PC_PYTHON" research/pc_reconsidered/compare_models.py \
     --methods es-control es-global es-front radial-shell voronoi adaptive-event \
     --reference-angles 16384 --dense-reference-angles 768 --refinement 4 \
@@ -104,8 +107,10 @@ PY
     --methods es-control es-global es-front radial-shell voronoi adaptive-event \
     --dense-reference-angles 768 --refinement 4 \
     --output "$out/results/native_frozen.json"
-"$PC_PYTHON" research/pc_reconsidered/native_driver.py \
-    --output "$out/results/native_integration" \
-    --dimension 32 --box-len 200 --redshift 8 --threads "$PBS_NCPUS"
+for pc_solver in original balanced; do
+    "$PC_PYTHON" research/pc_reconsidered/native_driver.py \
+        --output "$out/results/native_integration_${pc_solver}" --solver "$pc_solver" \
+        --dimension 32 --box-len 200 --redshift 8 --threads "$PBS_NCPUS"
+done
 touch "$out/COMPLETED"
 printf 'Finished: %s\nResults: %s\n' "$(date)" "$out/results"

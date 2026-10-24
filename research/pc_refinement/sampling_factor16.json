@@ -1,0 +1,36 @@
+{
+  "audit": {
+    "probe_sources": 4890,
+    "probe_angles": 48,
+    "probe_statistic": "rms",
+    "probe_rays": 234720,
+    "model": "probe-derived source-specific angle counts; unchanged event core",
+    "photons": 12851.46910544219,
+    "absorbed": 12780.063019519479,
+    "escaped": 0.0,
+    "retained": 71.40608592270873,
+    "ledger_residual": 0.0,
+    "per_source_relative_ledger_max": 3.1608658220259e-14,
+    "capacity_excess": 0.0,
+    "angles_mean": 158.927490234375,
+    "angles_max": 3072,
+    "angles_sum": 5207736,
+    "rays_materialized": 4427928,
+    "ray_allocated_bytes": 283639808,
+    "predictor_seconds": 0.02063244000009945,
+    "seconds": 5.463360827000088,
+    "angular_accuracy_certified": false
+  },
+  "vs_fixed768": {
+    "L1_over_emitted": 0.0028232840386574064,
+    "volume_mean_absolute_xHII_error": 0.0012118176557629778,
+    "maximum_absolute_xHII_error": 0.04968067547197754,
+    "delta_volume_mean_xHII": -1.3176296418559403e-05
+  },
+  "vs_original": {
+    "L1_over_emitted": 0.006281690765865024,
+    "volume_mean_absolute_xHII_error": 0.002696976394907764,
+    "maximum_absolute_xHII_error": 0.09903627769679652,
+    "delta_volume_mean_xHII": 1.1297589185645131e-05
+  }
+}

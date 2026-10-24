@@ -256,16 +256,26 @@ def independent_ledger(absorbed, unabsorbed, case):
     a = np.asarray(absorbed, dtype=np.float64)
     if a.shape != case.capacity.shape or not np.isfinite(a).all():
         raise AssertionError("Candidate returned invalid absorbed field")
-    q = float(case.source.sum(dtype=np.float64))
-    residual = q - float(a.sum(dtype=np.float64)) - float(unabsorbed)
+    if not np.isfinite(unabsorbed):
+        raise AssertionError("Candidate returned non-finite unabsorbed photons")
+    q = float(case.source.sum(dtype=np.longdouble))
+    residual = float(np.longdouble(q) - a.sum(dtype=np.longdouble) - np.longdouble(unabsorbed))
     capacity_excess = float(np.maximum(a - case.remaining_capacity, 0).max())
     negative = float(np.maximum(-a, 0).max())
-    scale = max(q, 1.0)
-    valid = abs(residual) < 2e-9 * scale and capacity_excess < 2e-10 * scale and negative < 2e-10 * scale and unabsorbed >= -2e-10 * scale
+    # A bright distant source must never loosen the tolerance of a low-density
+    # cell. Use total local atoms as the scale, allowing roundoff when subtracting
+    # existing ionization. Global accounting uses emitted photons in any units.
+    local_scale = np.maximum(case.capacity, np.finfo(float).tiny)
+    local_violation = float(np.max(np.maximum(np.maximum(a - case.remaining_capacity, 0),
+                                             np.maximum(-a, 0)) / local_scale))
+    scale = max(q, np.finfo(float).tiny)
+    valid = (abs(residual) / scale < 2e-9 and local_violation < 2e-10
+             and unabsorbed / scale >= -2e-10)
     return {"emitted": q, "absorbed": float(a.sum()), "unabsorbed": float(unabsorbed),
             "unabsorbed_fraction": float(unabsorbed / q) if q else 0.0,
             "residual": residual, "relative_residual": residual / q if q else 0.0,
             "maximum_capacity_excess": capacity_excess, "maximum_negative_absorption": negative,
+            "maximum_local_fraction_violation": local_violation,
             "passed": bool(valid)}
 
 

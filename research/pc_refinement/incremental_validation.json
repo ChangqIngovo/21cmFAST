@@ -1,0 +1,130 @@
+{
+  "scope": "same frozen native second-half source and initial state; static no-recombination test",
+  "timing": "compilation excluded; sequential alternating order; shared host; transport serial",
+  "reference": "fixed K3072 with K1536 crosscheck; same opaque-voxel approximation",
+  "reference_1536_to_3072": {
+    "L1_over_emitted": 0.0006456917859517036,
+    "volume_mean_absolute_xHII_error": 0.0002809709478544536,
+    "maximum_absolute_xHII_error": 0.013962754510127682,
+    "delta_volume_mean_xHII": -2.92123444936205e-06
+  },
+  "inputs": {
+    "/workspace/scratch/40b418003e4a/sampling_native32_fields.npz": "968bf22cb7d636ae3718adeeadb1a7033ff48ab04bf628069dd5c2965b0d3495",
+    "/workspace/scratch/40b418003e4a/sampling_reference3072.npz": "b9fe3930bc33c89ded3e78dd5dadaa3b8e08fd84f44c61adf7f38d2708899196",
+    "/workspace/scratch/40b418003e4a/sampling_reference1536.npz": "f2b44993ff6118df507a73117dcbb3fa91f3a1ce597246fb7fb143ba5d0c8da9"
+  },
+  "array_hashes": {
+    "source": "ad2728c8db1acc0dff3f2c29dec15b4ebd5171c8f3e49a7480290be150f34843",
+    "capacity": "cf70d32108ab078a5ff54c81883df82190102bc3e8233597c90d07a8ff8ff56e",
+    "initial": "715845c5cbfe90b1cbf5e1d3e29b3fb9a0b49f85451aeb8177d0db23297705ce"
+  },
+  "maximum_distance": 16.0,
+  "models": [
+    {
+      "profile": "original",
+      "times": [
+        39.26730983099969,
+        42.04738565800017
+      ],
+      "audit": {
+        "model": "source-adaptive quadrature of shared sharp-front events",
+        "scope": "infinite c; static density; no recombinations; approximate radius predictor",
+        "photons": 12851.46910544219,
+        "absorbed": 12779.764837906776,
+        "escaped": 0.0,
+        "retained": 71.70426753542,
+        "ledger_residual": -7.275957614183426e-12,
+        "per_source_relative_ledger_max": 3.785675453893064e-13,
+        "per_angle_ledger_max": 1.3135881271608696e-12,
+        "capacity_excess": 0.0,
+        "angles_min": 24,
+        "angles_max": 12288,
+        "angles_mean": 909.4365234375,
+        "angles_sum": 29800416,
+        "sources_at_angle_limit": 523,
+        "events": 14913,
+        "rays_materialized": 29412336,
+        "queries": 500828629,
+        "ray_allocated_bytes": 1882456064,
+        "transport_seconds": 41.92338908099964,
+        "seconds": 42.0466311199998,
+        "periodic": true,
+        "maximum_distance": 16.0,
+        "angular_accuracy_certified": false
+      },
+      "strict_ledger": {
+        "passed": true,
+        "relative_count_residual": 5.64153434951798e-16,
+        "maximum_local_fraction_violation": 0.0
+      },
+      "vs_reference": {
+        "L1_over_emitted": 0.005695645831021933,
+        "volume_mean_absolute_xHII_error": 0.002447118796943761,
+        "maximum_absolute_xHII_error": 0.08532307137078282,
+        "delta_volume_mean_xHII": -2.676487961495995e-05
+      },
+      "median_seconds": 40.65734774449993
+    },
+    {
+      "profile": "incremental",
+      "times": [
+        6.244168074000299,
+        6.121237664999626
+      ],
+      "audit": {
+        "probe_sources": 4890,
+        "probe_angles": 48,
+        "probe_statistic": "rms",
+        "probe_rays": 234720,
+        "effective_density": "remaining",
+        "density_reference": 0.47003733701696815,
+        "dominant_source_fraction": 0.01,
+        "dominant_sources": 0,
+        "maximum_source_photon_fraction": 0.0010397724497478807,
+        "model": "probe-derived source-specific angle counts; unchanged event core",
+        "photons": 12851.46910544219,
+        "absorbed": 12780.206122062013,
+        "escaped": 0.0,
+        "retained": 71.26298338017608,
+        "ledger_residual": 0.0,
+        "per_source_relative_ledger_max": 3.1677608396937855e-14,
+        "per_angle_ledger_max": 1.9083692959220855e-13,
+        "per_angle_relative_ledger_max": 8.81803177330154e-15,
+        "capacity_excess": 0.0,
+        "angles_mean": 184.225341796875,
+        "angles_max": 3072,
+        "angles_sum": 6036696,
+        "rays_materialized": 4929480,
+        "ray_allocated_bytes": 236716032,
+        "predictor_seconds": 0.020172566999917763,
+        "seconds": 6.12077423799974,
+        "angular_accuracy_certified": false,
+        "sampling_backend": "_pc_speed_compact",
+        "solver_profile": "incremental",
+        "maximum_local_fraction_violation": 0.0,
+        "independent_global_residual": -5.861977570020827e-13,
+        "ray_storage": "48-byte compact rays; 64-byte fallback for wide indices",
+        "physical_scope": "static gas, constant emission, infinite c, opaque voxels; no recombinations",
+        "continuum_accuracy_certified": false
+      },
+      "strict_ledger": {
+        "passed": true,
+        "relative_count_residual": 1.3960430461872254e-17,
+        "maximum_local_fraction_violation": 0.0
+      },
+      "vs_reference": {
+        "L1_over_emitted": 0.002102839858099688,
+        "volume_mean_absolute_xHII_error": 0.0009062718342376816,
+        "maximum_absolute_xHII_error": 0.036971069024822514,
+        "delta_volume_mean_xHII": -1.299266521990754e-05
+      },
+      "median_seconds": 6.182702869499963
+    }
+  ],
+  "code_hashes": {
+    "incremental_validation.py": "50b5310d708224a6c382850c432d4fee85c60874a04f15a365fb570320ac0cb0",
+    "upgraded.py": "7e31d88f7ea2fe50468d21bfdd2dad93296fea15e9fcfdfb73385d33b6fd8770",
+    "sampling_solver.py": "19f639b74c1067fdee46de760253e23dc558fd8d3078bf599b75b12df7daf60b",
+    "speed_core.cpp": "fb10d69c7904346f815ef307242ffc3e6d43a5a7284ee16483c615b61aee9266"
+  }
+}

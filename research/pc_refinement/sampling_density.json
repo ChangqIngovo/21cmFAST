@@ -1,0 +1,170 @@
+{
+  "scope": "remaining neutral capacity vs total capacity in angular predictor only",
+  "uniform_partial": {
+    "total": {
+      "audit": {
+        "probe_sources": 0,
+        "probe_angles": 48,
+        "probe_statistic": "rms",
+        "probe_rays": 0,
+        "effective_density": "total",
+        "density_reference": 1.0,
+        "model": "probe-derived source-specific angle counts; unchanged event core",
+        "photons": 9.047786842338605,
+        "absorbed": 9.047786842338606,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": -1.7763568394002505e-15,
+        "per_source_relative_ledger_max": 1.3154145904818248e-14,
+        "capacity_excess": 0.0,
+        "angles_mean": 96.0,
+        "angles_max": 96,
+        "angles_sum": 96,
+        "rays_materialized": 96,
+        "ray_allocated_bytes": 262144,
+        "predictor_seconds": 0.0011117369999738003,
+        "seconds": 0.0017897339998853568,
+        "angular_accuracy_certified": false
+      },
+      "vs_reference": {
+        "L1_over_emitted": 0.8357813220483609,
+        "volume_mean_absolute_xHII_error": 0.0005470175961155615,
+        "maximum_absolute_xHII_error": 0.010000000000000009,
+        "delta_volume_mean_xHII": 1.4817429690635227e-18
+      }
+    },
+    "remaining": {
+      "audit": {
+        "probe_sources": 0,
+        "probe_angles": 48,
+        "probe_statistic": "rms",
+        "probe_rays": 0,
+        "effective_density": "remaining",
+        "density_reference": 0.010000000000000009,
+        "model": "probe-derived source-specific angle counts; unchanged event core",
+        "photons": 9.047786842338605,
+        "absorbed": 9.047786842338603,
+        "escaped": 0.0,
+        "retained": 0.0,
+        "ledger_residual": 1.7763568394002505e-15,
+        "per_source_relative_ledger_max": 6.675238220355529e-15,
+        "capacity_excess": 0.0,
+        "angles_mean": 3072.0,
+        "angles_max": 3072,
+        "angles_sum": 3072,
+        "rays_materialized": 3072,
+        "ray_allocated_bytes": 262144,
+        "predictor_seconds": 0.0008417429999099113,
+        "seconds": 0.0030912150000403926,
+        "angular_accuracy_certified": false
+      },
+      "vs_reference": {
+        "L1_over_emitted": 0.01754090135771909,
+        "volume_mean_absolute_xHII_error": 1.148049309224032e-05,
+        "maximum_absolute_xHII_error": 0.002286022516575917,
+        "delta_volume_mean_xHII": 1.2612006868710142e-18
+      }
+    }
+  },
+  "native": [
+    {
+      "surface_factor": 4.0,
+      "audit": {
+        "probe_sources": 4890,
+        "probe_angles": 48,
+        "probe_statistic": "rms",
+        "probe_rays": 234720,
+        "effective_density": "remaining",
+        "density_reference": 0.47003733701696815,
+        "model": "probe-derived source-specific angle counts; unchanged event core",
+        "photons": 12851.46910544219,
+        "absorbed": 12779.616632007881,
+        "escaped": 0.0,
+        "retained": 71.85247343430643,
+        "ledger_residual": 1.8189894035458565e-12,
+        "per_source_relative_ledger_max": 9.173295327465307e-15,
+        "capacity_excess": 0.0,
+        "angles_mean": 50.155517578125,
+        "angles_max": 768,
+        "angles_sum": 1643496,
+        "rays_materialized": 1255776,
+        "ray_allocated_bytes": 80478208,
+        "predictor_seconds": 0.019248999999945227,
+        "seconds": 1.5469197590000476,
+        "angular_accuracy_certified": false
+      },
+      "vs_reference3072": {
+        "L1_over_emitted": 0.005800695425000729,
+        "volume_mean_absolute_xHII_error": 0.002494977636014214,
+        "maximum_absolute_xHII_error": 0.10170820132153816,
+        "delta_volume_mean_xHII": -3.524203602658556e-05
+      }
+    },
+    {
+      "surface_factor": 8.0,
+      "audit": {
+        "probe_sources": 4890,
+        "probe_angles": 48,
+        "probe_statistic": "rms",
+        "probe_rays": 234720,
+        "effective_density": "remaining",
+        "density_reference": 0.47003733701696815,
+        "model": "probe-derived source-specific angle counts; unchanged event core",
+        "photons": 12851.46910544219,
+        "absorbed": 12779.916936489964,
+        "escaped": 0.0,
+        "retained": 71.55216895222412,
+        "ledger_residual": 1.8189894035458565e-12,
+        "per_source_relative_ledger_max": 1.4346236828559348e-14,
+        "capacity_excess": 0.0,
+        "angles_mean": 92.13134765625,
+        "angles_max": 1536,
+        "angles_sum": 3018960,
+        "rays_materialized": 2465088,
+        "ray_allocated_bytes": 157810688,
+        "predictor_seconds": 0.01703984699997818,
+        "seconds": 3.2246448149999196,
+        "angular_accuracy_certified": false
+      },
+      "vs_reference3072": {
+        "L1_over_emitted": 0.003508744800305602,
+        "volume_mean_absolute_xHII_error": 0.0015107272315577186,
+        "maximum_absolute_xHII_error": 0.07112388120871373,
+        "delta_volume_mean_xHII": -2.105454326359734e-05
+      }
+    },
+    {
+      "surface_factor": 16.0,
+      "audit": {
+        "probe_sources": 4890,
+        "probe_angles": 48,
+        "probe_statistic": "rms",
+        "probe_rays": 234720,
+        "effective_density": "remaining",
+        "density_reference": 0.47003733701696815,
+        "model": "probe-derived source-specific angle counts; unchanged event core",
+        "photons": 12851.46910544219,
+        "absorbed": 12780.206122062013,
+        "escaped": 0.0,
+        "retained": 71.26298338017608,
+        "ledger_residual": 0.0,
+        "per_source_relative_ledger_max": 3.1677608396937855e-14,
+        "capacity_excess": 0.0,
+        "angles_mean": 184.225341796875,
+        "angles_max": 3072,
+        "angles_sum": 6036696,
+        "rays_materialized": 4929480,
+        "ray_allocated_bytes": 315621376,
+        "predictor_seconds": 0.017229832999873906,
+        "seconds": 6.075055250999867,
+        "angular_accuracy_certified": false
+      },
+      "vs_reference3072": {
+        "L1_over_emitted": 0.002102839858099688,
+        "volume_mean_absolute_xHII_error": 0.0009062718342376816,
+        "maximum_absolute_xHII_error": 0.036971069024822514,
+        "delta_volume_mean_xHII": -1.299266521990754e-05
+      }
+    }
+  ]
+}
