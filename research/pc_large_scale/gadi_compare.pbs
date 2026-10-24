@@ -1,0 +1,99 @@
+#!/usr/bin/env bash
+#PBS -N large_pc_cmp
+#PBS -P qp00
+#PBS -q hugemem
+#PBS -l ncpus=32
+#PBS -l mem=320GB
+#PBS -l walltime=24:00:00
+#PBS -l jobfs=16GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${RUN_DIR:?Submit with qsub -v RUN_DIR=/path/to/prepared/run}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing allocated CPU count}"
+cd "$RUN_DIR"
+test -f PREPARED
+if [[ -f COMPLETED ]]; then echo 'This run already completed.'; exit 0; fi
+mkdir .running || { echo 'Run is active or has a stale .running lock; check qstat before removing it.' >&2; exit 2; }
+exec > "run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; rmdir .running; if (( status != 0 )); then printf "%s\n" "$status" > FAILED; fi' EXIT
+printf 'Job: %s\nRun: %s\nStart: %s\n' "$PBS_JOBID" "$RUN_DIR" "$(date)"
+sha256sum -c prepared.sha256
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1
+module --force purge
+source "$RUN_DIR/runtime.env"
+module load "${PC_MODULES[@]}"
+export CC=gcc CXX=g++
+export OMP_NUM_THREADS="$PBS_NCPUS" OMP_PROC_BIND=spread OMP_PLACES=cores
+export OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export PYTHONUNBUFFERED=1 MPLBACKEND=Agg
+module list
+pc_python="$RUN_DIR/venv/bin/python"
+"$pc_python" - <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import subprocess
+import matplotlib
+import numpy
+import py21cmfast
+import pytest
+
+run = Path(os.environ['RUN_DIR']).resolve()
+manifest = json.loads((run / 'run_manifest.json').read_text())
+if manifest['schema'] != 1 or manifest.get('experiment') != 'large-scale':
+    raise RuntimeError('Unknown preparation manifest schema')
+source = Path(manifest['source_checkout'])
+if source != run / 'source':
+    raise RuntimeError('Prepared source path changed')
+actual = Path(py21cmfast.__file__).resolve().parent
+if actual != source / 'src/py21cmfast':
+    raise RuntimeError(f'Native package comes from {actual}, not the prepared source')
+versions = {'python_version': platform.python_version(), 'numpy_version': numpy.__version__,
+            'matplotlib_version': matplotlib.__version__, 'pytest_version': pytest.__version__,
+            'py21cmfast_version': py21cmfast.__version__}
+for key, actual in versions.items():
+    if actual != manifest[key]:
+        raise RuntimeError(f'Prepared version changed: {key}: {manifest[key]} -> {actual}')
+for name, expected in manifest['files_sha256'].items():
+    if hashlib.sha256((run / name).read_bytes()).hexdigest() != expected:
+        raise RuntimeError(f'Prepared input changed: {name}')
+commit = subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip()
+if commit != manifest['commit']:
+    raise RuntimeError('Prepared checkout changed revision')
+subprocess.run(['git', '-C', str(source), 'diff', '--exit-code', commit, '--'], check=True)
+packages = subprocess.check_output([str(run / 'venv/bin/python'), '-m', 'pip', 'freeze'], text=True)
+if packages != (run / 'python_packages.txt').read_text():
+    raise RuntimeError('Prepared Python package set changed')
+if not 1 <= int(os.environ['PBS_NCPUS']) <= 32:
+    raise RuntimeError('This comparison supports 1 to 32 allocated native threads')
+results = run / 'results'
+results.mkdir(exist_ok=True)
+print('Commit:', commit, flush=True)
+print('Native threads / independent transport workers:', os.environ['PBS_NCPUS'], flush=True)
+print(manifest['scope'], flush=True)
+print(manifest['fixture_note'], flush=True)
+PY
+
+cd "$RUN_DIR/source"
+"$pc_python" -m pytest -q \
+    research/pc_reconsidered research/pc_refinement research/pc_adaptive_front research/pc_large_scale \
+    -o "cache_dir=$RUN_DIR/pytest_cache"
+
+"$pc_python" research/pc_large_scale/run_comparison.py run \
+    --root "$RUN_DIR/results" --config "$RUN_DIR/experiment_config.json" \
+    --threads "$PBS_NCPUS" --workers "$PBS_NCPUS"
+
+pc_commit=$(cat "$RUN_DIR/commit.txt")
+git diff --exit-code "$pc_commit" --
+cd "$RUN_DIR"
+sha256sum -c prepared.sha256
+test -f results/COMPLETED
+rm -f FAILED
+touch COMPLETED
+printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$RUN_DIR"

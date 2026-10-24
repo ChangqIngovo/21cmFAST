@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "box_hMpc": 500.0,
+  "redshift": 8.0,
+  "native_grid": 100,
+  "initial_grid": 800,
+  "grids": [100, 50, 25],
+  "seeds": [1234, 2345, 3456, 4567],
+  "photon_doses": [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+  "validation_doses": [0.5, 0.8],
+  "cosmology": {"hlittle": 0.678, "OMm": 0.308, "OMb": 0.0482, "POWER_INDEX": 0.961, "SIGMA_8": 0.829},
+  "min_angles": 24,
+  "max_angles": 12288,
+  "rays_per_surface_cell": 4.0,
+  "horizon_box_fraction": 0.3333333333333333,
+  "mass_match_tolerance": 0.0002,
+  "retained_fraction_tolerance": 0.0001,
+  "convergence_relative_tolerance": 0.05,
+  "k0_band_hMpc_inv": [0.04, 0.06],
+  "spectral_bins": 32
+}

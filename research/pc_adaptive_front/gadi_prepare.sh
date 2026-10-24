@@ -6,7 +6,21 @@ if [[ $# -gt 1 || ( $# -eq 1 && $1 != --submit ) ]]; then
     echo 'Usage: bash research/pc_adaptive_front/gadi_prepare.sh [--submit]' >&2
     exit 2
 fi
-pc_threads=${PC_THREADS:-4}
+pc_experiment=${PC_EXPERIMENT:-adaptive-comparison}
+case "$pc_experiment" in
+    adaptive-comparison)
+        pc_script=research/pc_adaptive_front/gadi_compare.pbs
+        pc_prefix=adaptive
+        pc_default_threads=4
+        ;;
+    large-scale)
+        pc_script=research/pc_large_scale/gadi_compare.pbs
+        pc_prefix=large_pc
+        pc_default_threads=32
+        ;;
+    *) echo "Unknown PC_EXPERIMENT: $pc_experiment" >&2; exit 2 ;;
+esac
+pc_threads=${PC_THREADS:-$pc_default_threads}
 if [[ ! $pc_threads =~ ^([1-9]|[12][0-9]|3[0-2])$ ]]; then
     echo 'PC_THREADS must be an integer from 1 to 32.' >&2
     exit 2
@@ -17,7 +31,7 @@ if [[ -n ${PC_PYTHON:-} && $PC_PYTHON != /* ]]; then
 fi
 repo=$(git -C "$(dirname "${BASH_SOURCE[0]}")/../.." rev-parse --show-toplevel)
 rev=$(git -C "$repo" rev-parse "${PC_REV:-HEAD}^{commit}")
-git -C "$repo" cat-file -e "$rev:research/pc_adaptive_front/gadi_compare.pbs"
+git -C "$repo" cat-file -e "$rev:$pc_script"
 
 # Preserve valid setuptools_scm package/cache versions in a tag-less fork.
 release_tag=v4.3.1
@@ -32,7 +46,7 @@ git -C "$repo" merge-base --is-ancestor "$release_commit" "$rev"
 run_root=${PC_RUN_ROOT:-/g/data/qp00/${USER:?}/21cmfast_runs}
 mkdir -p "$run_root"
 run_root=$(cd "$run_root" && pwd -P)
-run_dir=$(mktemp -d "$run_root/adaptive_${rev:0:10}_$(date -u +%Y%m%dT%H%M%S)_XXXX")
+run_dir=$(mktemp -d "$run_root/${pc_prefix}_${rev:0:10}_$(date -u +%Y%m%dT%H%M%S)_XXXX")
 exec > >(tee "$run_dir/prepare.log") 2>&1
 trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$run_dir/FAILED_PREPARE"; fi' EXIT
 printf 'Preparing: %s\nCommit: %s\n' "$run_dir" "$rev"
@@ -98,9 +112,13 @@ fi
 "$run_dir/venv/bin/python" -m pip install --upgrade pip setuptools wheel
 "$run_dir/venv/bin/python" -m pip install -e "$run_dir/source" 'pytest>=9'
 "$run_dir/venv/bin/python" -m pip freeze > "$run_dir/python_packages.txt"
-cp "$run_dir/source/research/pc_adaptive_front/gadi_compare.pbs" "$run_dir/submit.pbs"
+cp "$run_dir/source/$pc_script" "$run_dir/submit.pbs"
+if [[ $pc_experiment == large-scale ]]; then
+    cp "${PC_CONFIG:-$run_dir/source/research/pc_large_scale/default.json}" "$run_dir/experiment_config.json"
+fi
 
 export PC_PREPARED_RUN="$run_dir"
+export PC_PREPARED_EXPERIMENT="$pc_experiment"
 "$run_dir/venv/bin/python" - <<'PY'
 import hashlib
 import json
@@ -128,6 +146,8 @@ commit = (run / 'commit.txt').read_text().strip()
 subprocess.run(['git', '-C', str(source), 'diff', '--exit-code', commit, '--'], check=True)
 files = [run / name for name in ('runtime.env', 'python_packages.txt', 'modules.txt', 'submit.pbs', 'commit.txt')]
 files += binaries
+if (run / 'experiment_config.json').exists():
+    files.append(run / 'experiment_config.json')
 version_file = package / '_version.py'
 if version_file.exists():
     files.append(version_file)
@@ -142,6 +162,18 @@ manifest = {
     'fixtures': {'grids': [32, 64], 'box_cMpc': 200.0, 'redshift': 8.0, 'seed': 1234},
     'fixture_note': 'The newly generated L-INTEGRAL 32^3 fixture differs from the earlier published E-INTEGRAL 32^3 fixture.',
 }
+manifest['experiment'] = os.environ['PC_PREPARED_EXPERIMENT']
+if manifest['experiment'] == 'large-scale':
+    sys.path.insert(0, str(source / 'research/pc_large_scale'))
+    from run_comparison import validate_config, task_list
+    config = json.loads((run / 'experiment_config.json').read_text())
+    validate_config(config)
+    manifest.update(
+        scope='Large-volume fixed-redshift PC/ES source-matched comparison, paired seeds and conservative resolution hierarchy; no coupled Qin20 evolution',
+        fixtures=config,
+        fixture_note='All coarse fields are sums of the same native finest-grid counts; 21cmFAST source prescription differs from Choudhury & Paranjape 2018.',
+        transport_tasks=len(task_list(config)),
+    )
 (run / 'run_manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
 digests['run_manifest.json'] = hashlib.sha256((run / 'run_manifest.json').read_bytes()).hexdigest()
 (run / 'prepared.sha256').write_text(''.join(f'{digest}  {name}\n' for name, digest in digests.items()))

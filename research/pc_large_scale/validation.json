@@ -1,0 +1,90 @@
+{
+  "scope": "Local real native small-grid execution of the large-scale PBS body; actual Gadi submission and production 800^3 initial grid not performed",
+  "pbs_body_commit": "18dd7a0c1ef76d66517890b5398d52fe31a535be",
+  "test_summary": "304 passed, 6 warnings, 20 subtests passed in 51.80s",
+  "pbs_completed": true,
+  "pbs_failed": false,
+  "native_threads": 2,
+  "transport_workers": 2,
+  "small_config": {
+    "schema": 1,
+    "box_hMpc": 128.0,
+    "redshift": 8.0,
+    "native_grid": 12,
+    "initial_grid": 36,
+    "grids": [
+      12,
+      6
+    ],
+    "seeds": [
+      8123,
+      8124
+    ],
+    "photon_doses": [
+      0.2,
+      0.5,
+      0.8
+    ],
+    "validation_doses": [
+      0.5,
+      0.8
+    ],
+    "cosmology": {
+      "hlittle": 0.678,
+      "OMm": 0.308,
+      "OMb": 0.0482,
+      "POWER_INDEX": 0.961,
+      "SIGMA_8": 0.829
+    },
+    "min_angles": 24,
+    "max_angles": 12288,
+    "rays_per_surface_cell": 4.0,
+    "horizon_box_fraction": 0.3333333333333333,
+    "mass_match_tolerance": 0.0002,
+    "retained_fraction_tolerance": 0.0001,
+    "convergence_relative_tolerance": 0.05,
+    "k0_band_hMpc_inv": [
+      0.04,
+      0.06
+    ],
+    "spectral_bins": 32
+  },
+  "completed_cases": 16,
+  "all_ledgers_passed": true,
+  "max_global_relative_residual": 3.3856507867760535e-18,
+  "max_PC_mass_match_error": 4.2353746214418564e-05,
+  "max_ES_mass_match_error": 0.0001353557316589038,
+  "unmatched_PC_cases": [],
+  "unmatched_ES_cases": [],
+  "small_box_distance_check_at_Q08": {
+    "task": {
+      "seed": 8123,
+      "grid": 12,
+      "dose": 0.8,
+      "variant": "distance2",
+      "id": 15,
+      "directory": "seed8123_n12_q0.800000_distance2"
+    },
+    "b2_relative_change": 0.08021038660028923,
+    "field_L1_over_emitted": 0.008668852278152053,
+    "same_budget_b2_relative_change": 0.1861014438406281,
+    "Q_mass_change": 2.3094053994032748e-05,
+    "within_requested_b2_tolerance": false
+  },
+  "convergence_note": "Small-box distance test is not converged; it is preserved as a measured failure, independent of photon closure. The large volume includes its own distance/angle/resolution checks.",
+  "resume_check": "16 completed cases verified and reused; earlier same-driver smoke rerun completed in 8.19s without rerunning solvers",
+  "post_PBS_collection_check": "Latest collector rerun; CSV source retention verified per PC model and empty for ES models; 10 analysis tests passed",
+  "environment_substitutions": [
+    "PBS variables supplied locally",
+    "module function replaced by no-op",
+    "Existing tested native binary and Python dependencies reused; fresh Gadi editable build is performed by preparation script"
+  ],
+  "script_syntax": "bash -n passed for shared preparation, large preparation and PBS",
+  "static_checks": "ruff F821,F822,F823 passed",
+  "figures_checked": [
+    "comparison.png",
+    "bias_spectra.png",
+    "morphology.png"
+  ],
+  "driver_sha256": "504fe800da4de73a37d024e723f2793a0a7f1350fa6018d849c950485824a53a"
+}
