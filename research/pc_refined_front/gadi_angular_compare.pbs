@@ -1,0 +1,88 @@
+#!/usr/bin/env bash
+#PBS -N angular_pc_check
+#PBS -P qp00
+#PBS -q hugemem
+#PBS -l ncpus=32
+#PBS -l mem=320GB
+#PBS -l walltime=12:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${RUN_DIR:?Submit with qsub -v RUN_DIR=/prepared/angular/followup}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing CPU allocation}"
+cd "$RUN_DIR"
+test -f PREPARED
+if [[ -f COMPLETED ]]; then echo 'Already completed.'; exit 0; fi
+mkdir .running || { echo 'Active run or stale lock; inspect qstat before removing .running.' >&2; exit 2; }
+exec > "run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; rmdir .running; if (( status != 0 )); then printf "%s\n" "$status" > FAILED; fi' EXIT
+sha256sum -c prepared.sha256
+module --force purge
+source "$RUN_DIR/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export CC=gcc CXX=g++
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+pc_python=$(cat "$RUN_DIR/python_path.txt")
+"$pc_python" - <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import subprocess
+import sys
+import numpy
+import scipy
+import pytest
+run = Path(os.environ['RUN_DIR'])
+m = json.loads((run/'run_manifest.json').read_text())
+if m.get('experiment') != 'angular-front-followup':
+    raise RuntimeError('Wrong experiment')
+if str(Path(sys.executable).absolute()) != m['python'] or (run/'python_path.txt').read_text().strip() != m['python']:
+    raise RuntimeError('Parent Python executable path changed')
+for key, value in dict(python_version=platform.python_version(), numpy_version=numpy.__version__,
+                       scipy_version=scipy.__version__, pytest_version=pytest.__version__).items():
+    if m[key] != value:
+        raise RuntimeError('Runtime changed: '+key)
+compiler = shutil.which('g++')
+if compiler is None or str(Path(compiler).resolve()) != m['compiler'] or hashlib.sha256(Path(compiler).read_bytes()).hexdigest() != m['compiler_sha256']:
+    raise RuntimeError('Compiler changed after preparation')
+if str(Path(sys.executable).resolve()) != m['python_binary'] or hashlib.sha256(Path(sys.executable).resolve().read_bytes()).hexdigest() != m['python_binary_sha256']:
+    raise RuntimeError('Python binary changed after preparation')
+if subprocess.check_output([m['python'], '-m', 'pip', 'freeze'], text=True) != (run/'python_packages.txt').read_text():
+    raise RuntimeError('Parent Python package set changed after preparation')
+for filename, expected in m['parent_files_sha256'].items():
+    if hashlib.sha256(Path(filename).read_bytes()).hexdigest() != expected:
+        raise RuntimeError('Refined parent input changed: '+filename)
+if not 1 <= int(os.environ['PBS_NCPUS']) <= 32:
+    raise RuntimeError('Use 1 to 32 independent workers')
+experiment = json.loads((run/'results/experiment.json').read_text())
+print('Refined parent:', m['parent'], flush=True)
+print('Native parent:', m['native_parent'], flush=True)
+print('Revision:', (run/'commit.txt').read_text().strip(), flush=True)
+print('Compiler:', m['compiler'], m['compiler_version'], flush=True)
+print('Cases:', len(experiment['tasks']), flush=True)
+print('Independent workers:', os.environ['PBS_NCPUS'], flush=True)
+print('Angular multipliers:', experiment['selection']['multipliers'], flush=True)
+print('Contiguous-ray reservation threshold per worker [GiB]:',
+      experiment['selection']['contiguous_ray_bytes']/1024**3, flush=True)
+print('Ray storage policy:', experiment['selection']['contiguous_ray_scope'], flush=True)
+print('Maximum potential packed-ray capacity per case [GiB]:',
+      max(row['potential_packed_ray_bytes'] for row in experiment['angular_preflight'])/1024**3, flush=True)
+print('COMPLETED means valid calculations and parent reproduction; angular convergence is reported separately.', flush=True)
+PY
+cd "$RUN_DIR/source"
+"$pc_python" -m pytest -q research/pc_refined_front --confcutdir=research/pc_refined_front -o "cache_dir=$RUN_DIR/pytest_cache"
+"$pc_python" research/pc_refined_front/angular_followup.py run --root "$RUN_DIR/results" --workers "$PBS_NCPUS"
+cd "$RUN_DIR"
+sha256sum -c prepared.sha256
+test -f results/COMPLETED
+rm -f FAILED
+touch COMPLETED
+printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$RUN_DIR"
