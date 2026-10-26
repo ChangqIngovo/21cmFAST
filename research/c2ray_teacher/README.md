@@ -7,11 +7,15 @@ ionization routine or train a network.
 
 The numerical implementation is pinned to
 [`garrelt/C2-Ray3Dm1D_Helium` at `a363656ff1c3b4b4c7334f398578d8c469154515`](https://github.com/garrelt/C2-Ray3Dm1D_Helium/tree/a363656ff1c3b4b4c7334f398578d8c469154515).
-`upstream_lock.json` verifies the upstream files. `build.py` copies the numerical
-sources byte-for-byte and compiles them with the external `driver.F90`.
-Only grid size, cosmological parameters and helium abundance configuration
-modules are generated. The upstream repository is GPL-3.0 licensed; retain its
-license and attribution when distributing a combined build.
+`upstream_lock.json` verifies the upstream files. The numerical method, native
+expressions and stopping criteria are retained. By default, `build.py` adds
+passive diagnostic calls to verified **build copies**, with no feedback to
+solver variables. The original checkout is untouched. The build records the
+original hashes, inserted patch, diagnostic-module hash and compiled hashes.
+`--no-diagnostics` builds the byte-identical numerical sources as a reference.
+Grid size, cosmological parameters and helium abundance configuration modules
+are generated separately. The upstream repository is GPL-3.0 licensed; retain
+its license and attribution when distributing a combined build.
 
 ## Physical input
 
@@ -72,9 +76,132 @@ The preparation and PBS scripts verify the selected compiled 21cmFAST runtime.
 Geometry and allocation overrides include `C2_DIMENSION`,
 `C2_HIGHRES_DIMENSION`, `C2_BOX_LEN`, `C2_SEED`, `C2_Z_START`, `C2_Z_END`,
 `C2_INTERVALS`, `C2_REFERENCE_Z`, `C2_WORKERS`, `C2_QUEUE`, `C2_MEM`,
-`C2_WALLTIME` and `C2_RUN_ROOT`. The workflow creates a fresh directory under
+`C2_WALLTIME` and `C2_RUN_ROOT`. `C2_HISTORY` copies an existing history into the
+prepared run and pins its hash. `C2_REFINEMENT`, `C2_TIME_SUBSTEPS`, `C2_STRIDE`
+and `C2_BENCHMARK` control the transport calculation. The workflow creates a fresh directory under
 `/g/data/qp00/sz4640/21cmfast_runs/c2ray_teacher_*`; it never overwrites a previous
 result. There is no resume support: prepare a fresh directory after failure.
+
+## Accuracy and volume suite
+
+Run the controlled follow-up with:
+
+```bash
+bash research/c2ray_teacher/gadi_accuracy_prepare.sh --submit
+```
+
+The default `--stage all` prepares all eight cases before submitting any job.
+Jobs then run in an `afterok` dependency chain: one 32-CPU job at a time. Each
+requests 128 GB and 48 hours on `normal`; the walltime is an allocation, not a
+runtime prediction. A failed job prevents dependent cases from starting.
+`--stage validation` or `--stage expanded` selects only the corresponding group.
+
+| Case | L / cMpc | Source grid | RT grid | IC DIM | RT steps |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| `time1` | 50 | 16³ | 16³ | 48 | 30 |
+| `time2` | 50 | 16³ | 16³ | 48 | 60 |
+| `time4` | 50 | 16³ | 16³ | 48 | 120 |
+| `space48_dt2` | 50 | 16³ | 48³ | 48 | 60 |
+| `bridge_L50_N16_DIM128` | 50 | 16³ | 16³ | 128 | 120 |
+| `box_L75_N24_DIM192` | 75 | 24³ | 24³ | 192 | 120 |
+| `box_L100_N32_DIM256` | 100 | 32³ | 32³ | 256 | 120 |
+| `finer_L75_N32_DIM192` | 75 | 32³ | 32³ | 192 | 120 |
+
+All cases cover redshift 20 to 5, with density reference redshift 8 and seed
+1234. Validation reuses the completed fixture at
+`/g/data/qp00/sz4640/21cmfast_runs/c2ray_teacher_3b07aff671_20261026T082902_ApQo/results/native_history.npz`.
+`--history /path/to/native_history.npz` selects another compatible copy. The
+suite requires the pilot's geometry and clock (L50, N16, DIM48, 30 source
+intervals, redshift 20 to 5, density reference redshift 8) and verifies that
+every controlled case uses identical copied history bytes.
+Source interpolation and its integrated photon budget remain unchanged across
+the time-step tests. `space48_dt2` preserves all 4096 source positions and
+subdivides the existing gas cells; it does not create new cosmological density
+structure.
+
+Expanded cases generate new histories with 60 source intervals and two RT
+substeps per interval. Their IC cell width is fixed at 0.390625 cMpc. The first
+three retain RT cell width 3.125 cMpc while changing box size. The last two
+75-cMpc configurations share DIM and seed; their actual high-resolution initial
+density arrays were verified identical in a local native test. The finer
+75-cMpc case reduces the RT cell width to 2.34375 cMpc, with a box 50% larger
+than the pilot. Each run records the IC hash so this check can be repeated.
+
+Different box sizes have different realizations even with the same seed. Their
+comparison measures statistical volume sensitivity, not a paired field error;
+one seed alone does not separate finite-volume bias from sample variance.
+The new histories are also not pure time-step refinements of the old fixture.
+Density contrast remains frozen with cosmological dilution in this suite.
+
+The suite writes `suite_manifest.json` with prepared run directories, exact
+configurations, input hashes, job IDs and dependencies. Each run retains its
+usual `results/` directory and per-step native progress in
+`results/science/native.log`. Results are preserved if a later step fails,
+but partial output is not marked complete.
+
+For cost planning, native N=32 histories contain up to 32768 sources. Compared
+with the pilot, each transport iteration can perform roughly 18–64 times as
+many source-cell evaluations, depending on opacity and subbox expansion. More
+steps multiply this work, while iteration count and thermal work can also
+change. The suite therefore measures N=32 before attempting a dense N=64
+production run.
+
+Compare two completed results directories with:
+
+```bash
+python research/c2ray_teacher/compare.py \
+  --reference /absolute/reference/results \
+  --candidate /absolute/candidate/results \
+  --output /absolute/new/comparison.json --diagnostic-thresholds
+```
+
+The comparison matches saved redshift endpoints. Identical source and gas
+histories receive cell errors and cross-correlations; fine cells are restricted
+using nuclei weights so the ionized atom count is preserved. Different
+histories receive statistical comparisons only. Absolute neutral-fraction
+power is measured after removing its mean, without dividing by the mean.
+Common spectral bins satisfy `k <= 0.5 * min(k_Nyquist)` and retain mode counts.
+For the old 50/16 and new 100/32 grids, `k_Nyquist = 1.005 cMpc^-1`; these runs
+cannot certify power near `k = 1 cMpc^-1`. Exploratory thresholds of 0.005 in
+mean ionized fraction and 5% in temperature/power are project diagnostics, not
+a convergence certificate.
+
+Collect the suite into a fresh analysis directory with:
+
+```bash
+python research/c2ray_teacher/collect.py \
+  --suite /absolute/suite/suite_manifest.json \
+  --output /absolute/new/analysis --diagnostic-thresholds
+```
+
+This verifies completed native outputs and their independent counters, writes
+`history.csv` and `summary.json`, and compares completed pairs. Failed and
+pending cases remain explicit; a partially completed suite is not reported as
+validated. The collector does not submit or resume jobs.
+
+For a separate fixed-density, opaque two-source spatial probe:
+
+```bash
+python research/c2ray_teacher/spatial_probe.py \
+  --upstream /absolute/pinned/C2-Ray3Dm1D_Helium \
+  --output /absolute/new/spatial_probe --refinements 1 3 5 --threads 4
+```
+
+This preserves source positions, luminosities, proper box size and physical
+duration while refining the gas grid. It reports primary-photon accounting
+and ionization changes without assuming monotonic convergence. It is a
+controlled numerical test, not a cosmological training dataset. An apparent
+plateau at optically thick cell sizes alone does not establish convergence.
+
+In the fixed fixture implemented by this probe, the measured
+`(primary + independent outflow) / full-table emission - 1` was approximately
+−2.17%, −9.38%, −9.35% and −6.74% at N=16, 48, 80 and 144 respectively.
+The N=48/80 plateau did not persist at N=144. These are results for this
+opaque two-source problem, not errors measured in the completed cosmological
+pilot. A transparent test and the independent rate-product identity help
+check the counters, but do not establish the accuracy of opaque transport.
+The cause of the remaining global transport-count deficit is not yet
+resolved; no correction is applied to force it to zero.
 
 ## Direct execution and existing histories
 
@@ -127,6 +254,35 @@ Diagnostic schema 2 records these definitions in `summary.json` and the
 secondary-inclusive event estimate above. Only the label and documentation
 changed: existing simulation values remain usable without rerunning RT.
 
+New instrumented runs additionally save
+`science/native_diagnostics/transport_diagnostics.jsonl`. Its final-transport-pass
+counters separate primary H/He absorptions, photoelectron secondary ionizations
+and boundary outflow. Counters reset between nonlinear iterations; source-cell
+visits are counted once even when the source subbox expands. The diagnostic
+module saves pre-transport neutral fractions internally for a consistent
+rate-product check; the report exports that integral and the largest fraction
+changes during the following chemistry update.
+
+The photon-transport residual uses **primary absorptions plus boundary outflow**
+(and LLS absorption if enabled), with nominal and measured spectral-table
+emission budgets reported separately. Secondary ionizations belong to the
+ionization-event budget and are excluded from photon closure. No counter is
+rescaled to force closure. Independent boundary counts and raw native boundary
+statistics are retained separately because the native statistic showed thread
+dependence in tests. Numerical convergence and physical accuracy still require
+the controlled comparisons; an internally consistent diagnostic alone does
+not certify them.
+
+The full spectral table includes a small high-energy tail omitted by the
+native transport frequency cutoff. New initialization telemetry records both
+`sed_transport_photons_over_nominal` (active bands only) and
+`sed_omitted_tail_photons_over_nominal`. Reports additionally compute
+`photon_residual_over_transported_emitted`, keeping the original nominal and
+full-table residuals. Legacy runs without this telemetry receive null values
+for the active-band diagnostic. At the fixed 50000 K spectrum the omitted
+tail is about 9.52e-9 of nominal emission; it cannot explain the percent-level
+opaque-fixture deficits. This changes diagnostics, not emitted source rates.
+
 `COMPLETED` means the adapter, native convergence checks and bounded-state
 checks passed. It does **not** certify spatial, temporal or angular convergence,
 exact global photon closure, or suitability as final training truth.
@@ -144,8 +300,9 @@ Unchanged upstream limitations are explicitly recorded:
 3. Native photon-statistics counters are raw diagnostics, not an independent
    exact H/He/thermal conservation certificate. Temperature-dependent and
    species bookkeeping in that routine need separate interpretation. The
-   current output does not separately count primary photon absorptions and
-   photoelectron secondary ionizations.
+   legacy output does not separately count primary photon absorptions and
+   photoelectron secondary ionizations. Instrumented runs supply these
+   additional transport counters without modifying the chemistry.
 4. Transport uses a quasistatic radiation field; it is not a finite-light-speed
    evolution. The chemistry and temperature implementation is preserved.
 5. Source transport is parallel, but chemistry work and MPI overhead limit

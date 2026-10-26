@@ -9,7 +9,9 @@ for argument in "$@"; do
             echo 'Usage: bash research/c2ray_teacher/gadi_prepare.sh [--submit]'
             echo 'Environment: C2_RUNTIME_PARENT, C2_PYTHON, C2_UPSTREAM_REPO, C2_CACHE_ROOT, C2_RUN_ROOT,'
             echo 'C2_WORKERS, C2_QUEUE, C2_MEM, C2_WALLTIME, C2_DIMENSION, C2_HIGHRES_DIMENSION,'
-            echo 'C2_BOX_LEN, C2_SEED, C2_Z_START, C2_Z_END, C2_INTERVALS, C2_REFERENCE_Z.'
+            echo 'C2_BOX_LEN, C2_SEED, C2_Z_START, C2_Z_END, C2_INTERVALS, C2_REFERENCE_Z,'
+            echo 'C2_HISTORY, C2_REFINEMENT, C2_TIME_SUBSTEPS, C2_STRIDE, C2_BENCHMARK,'
+            echo 'C2_PREPARED_PATH_FILE (optional fresh receipt file).'
             exit 0 ;;
         *) echo "Unknown argument: $argument" >&2; exit 2 ;;
     esac
@@ -107,6 +109,12 @@ def number(name, default):
         raise ValueError(name + ' must be finite.')
     return value
 
+def boolean(name, default):
+    text = os.environ.get(name, str(default)).lower()
+    if text not in ('true', 'false', '1', '0'):
+        raise ValueError(name + ' must be true, false, 1 or 0.')
+    return text in ('true', '1')
+
 config = {
     'dimension': integer('C2_DIMENSION', 16),
     'highres_dimension': integer('C2_HIGHRES_DIMENSION', 48),
@@ -116,12 +124,18 @@ config = {
     'z_end': number('C2_Z_END', 5),
     'intervals': integer('C2_INTERVALS', 30),
     'reference_z': number('C2_REFERENCE_Z', 8),
+    'refinement': integer('C2_REFINEMENT', 1),
+    'time_substeps': integer('C2_TIME_SUBSTEPS', 1),
+    'stride': integer('C2_STRIDE', 1),
+    'benchmark': boolean('C2_BENCHMARK', True),
 }
 if (config['dimension'] < 16 or config['highres_dimension'] < config['dimension']
         or config['box_len'] <= 0):
     raise ValueError('dimension >= 16, highres_dimension >= dimension and positive box length required.')
 if not config['z_start'] > config['z_end'] >= 0 or config['reference_z'] < 0:
     raise ValueError('Descending nonnegative redshifts and nonnegative reference_z required.')
+if config['refinement'] % 2 != 1:
+    raise ValueError('C2_REFINEMENT must be odd to preserve native source centres.')
 queue = os.environ.get('C2_QUEUE', 'normal')
 memory = os.environ.get('C2_MEM', '128GB')
 walltime = os.environ.get('C2_WALLTIME', '24:00:00')
@@ -135,6 +149,23 @@ if not re.fullmatch(r'[0-9]+:[0-5][0-9]:[0-5][0-9]', walltime):
 def digest(path):
     with path.open('rb') as stream:
         return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+reused_history = None
+if os.environ.get('C2_HISTORY'):
+    original = Path(os.environ['C2_HISTORY']).expanduser().resolve(strict=True)
+    if not original.is_file():
+        raise ValueError('C2_HISTORY must name an existing native-history file.')
+    expected = digest(original)
+    (run/'input').mkdir()
+    frozen = run/'input/native_history.npz'
+    shutil.copyfile(original, frozen)
+    if digest(frozen) != expected or digest(original) != expected:
+        raise RuntimeError('C2_HISTORY changed while being copied; prepare a fresh run.')
+    config['history'] = str(frozen)
+    reused_history = {
+        'source': str(original), 'frozen_copy': str(frozen), 'sha256': expected,
+        'geometry': 'Loaded from the frozen history; generation geometry settings are unused.',
+    }
 
 native = Path(py21cmfast.__file__).resolve().parent
 native_files = {
@@ -160,7 +191,7 @@ manifest = {
     'upstream_commit': os.environ['C2_PREPARED_UPSTREAM_REVISION'],
     'upstream_tree': os.environ['C2_PREPARED_UPSTREAM_TREE'],
     'upstream_url': 'https://github.com/garrelt/C2-Ray3Dm1D_Helium',
-    'upstream_algorithms': 'unmodified; adapter and build configuration only',
+    'upstream_algorithms': 'pinned numerical method; read-only diagnostics may instrument build copies',
     'run_directory': str(run),
     'python': os.environ['C2_PREPARED_PYTHON'],
     'runtime_python': sys.executable,
@@ -175,6 +206,7 @@ manifest = {
     'requested_workers': int(os.environ['C2_PREPARED_WORKERS']),
     'queue': queue, 'memory': memory, 'walltime': walltime,
     'scope': 'Prescribed 21cmFAST sources and frozen density contrast; C2-Ray RT teacher pilot.',
+    'reused_history': reused_history,
     'config': config,
 }
 (run/'run_config.json').write_text(json.dumps(config, indent=2) + '\n')
@@ -185,6 +217,9 @@ with (run/'prepared.sha256').open('w') as stream:
             stream.write(digest(path) + '  ' + str(path.relative_to(run)) + '\n')
 PY
 touch "$run/PREPARED"
+if [[ -n ${C2_PREPARED_PATH_FILE:-} ]]; then
+    (set -o noclobber; printf '%s\n' "$run" > "$C2_PREPARED_PATH_FILE")
+fi
 printf 'Run directory: %s\nResults: %s/results\n' "$run" "$run"
 if $submit; then
     qsub -q "${C2_QUEUE:-normal}" \

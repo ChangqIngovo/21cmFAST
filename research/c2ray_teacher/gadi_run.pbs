@@ -90,7 +90,7 @@ for compiler, expected in m['compilers'].items():
 if (run/'results').exists():
     raise RuntimeError('Results already exist; use a fresh prepared run.')
 print('Adapter commit:', m['commit'], flush=True)
-print('Unmodified C2-Ray commit:', m['upstream_commit'], flush=True)
+print('Pinned C2-Ray commit:', m['upstream_commit'], flush=True)
 print('Allocated CPUs:', m['requested_workers'], flush=True)
 print('Scope:', m['scope'], flush=True)
 PY

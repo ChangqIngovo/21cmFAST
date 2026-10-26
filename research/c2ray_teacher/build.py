@@ -1,8 +1,9 @@
-"""Build an unmodified, pinned C2-Ray H+He kernel with an external stream driver.
+"""Build a pinned C2-Ray H+He kernel with optional passive diagnostics.
 
 Only grid size, cosmology and abundance *configuration modules* are generated.
-Every upstream numerical source is compiled byte-for-byte from its locked copy.
-The native counters are diagnostics, not an independently exact thermal ledger.
+Optional guarded insertions count primary and secondary events without feeding
+back into native numerical variables. An uninstrumented reference build remains
+available for equivalence tests.
 """
 
 from __future__ import annotations
@@ -199,6 +200,7 @@ def build_backend(
     h: float,
     mpi: bool = True,
     compiler: str | None = None,
+    diagnostics: bool = True,
 ) -> Path:
     """Compile the pinned kernel and return its external-driver executable.
 
@@ -216,6 +218,9 @@ def build_backend(
         Compile the upstream MPI implementation, with OpenMP enabled in both modes.
     compiler : str, optional
         GNU-compatible Fortran compiler or MPI wrapper executable.
+    diagnostics : bool
+        Add passive primary/secondary counters to verified build copies. False
+        compiles upstream numerical files byte-for-byte as a reference.
     """
     validate_configuration(dimension, helium_number_fraction, omega_m, omega_b, h)
     upstream, output_dir = Path(upstream).resolve(), Path(output_dir).resolve()
@@ -229,6 +234,16 @@ def build_backend(
     native = output_dir / "upstream"
     shutil.copytree(upstream / "code", native / "code")
     shutil.copytree(upstream / "tables", output_dir / "tables")
+    instrumentation = {"enabled": False}
+    if diagnostics:
+        if __package__:
+            from .instrumentation import instrument_sources
+        else:
+            from instrumentation import instrument_sources
+
+        instrumentation = instrument_sources(
+            native / "code", output_dir / "diagnostics.patch"
+        )
     configured = _configured_sources(
         native,
         output_dir / "configuration",
@@ -241,6 +256,11 @@ def build_backend(
     paths = [native / "code" / source for source in SOURCES]
     paths.append(native / "code" / ("mpi.F90" if mpi else "no_mpi.F90"))
     paths += configured
+    if diagnostics:
+        module = output_dir / "transport_diagnostics.F90"
+        shutil.copyfile(HERE / "transport_diagnostics.F90", module)
+        paths.append(module)
+        instrumentation["module_sha256"] = sha256(module)
     driver = output_dir / "driver.F90"
     shutil.copyfile(HERE / "driver.F90", driver)
     paths.append(driver)
@@ -255,6 +275,8 @@ def build_backend(
     ]
     if mpi:
         flags.append("-DMPI")
+    if diagnostics:
+        flags.append("-DC2_DIAGNOSTICS")
     objects = output_dir / "objects"
     objects.mkdir()
     commands = []
@@ -279,12 +301,17 @@ def build_backend(
         )
     runtime = output_dir / "runtime"
     (runtime / "results").mkdir(parents=True)
-    original_hashes = {
+    compiled_hashes = {
         f"code/{source}": sha256(native / "code" / source)
         for source in (*SOURCES, "mpi.F90" if mpi else "no_mpi.F90")
     }
-    if any(value != locked[key] for key, value in original_hashes.items()):
-        raise RuntimeError("Upstream numerical source changed during build")
+    for key, value in compiled_hashes.items():
+        instrumented = instrumentation.get("files", {}).get(key)
+        expected = instrumented["instrumented_sha256"] if instrumented else locked[key]
+        if value != expected:
+            raise RuntimeError("Unexpected upstream source change during build")
+        if instrumented and instrumented["pristine_sha256"] != locked[key]:
+            raise RuntimeError("Instrumentation started from unverified native bytes")
     manifest = {
         "upstream_commit": UPSTREAM_COMMIT,
         "dimension": dimension,
@@ -294,8 +321,12 @@ def build_backend(
         "omega_b": omega_b,
         "h": h,
         "blackbody_temperature_K": 50000,
-        "numerical_sources_unchanged": True,
-        "compiled_upstream_sha256": original_hashes,
+        "numerical_sources_unchanged": not diagnostics,
+        "numerical_algorithm_unchanged": True,
+        "diagnostics_enabled": diagnostics,
+        "diagnostics": instrumentation,
+        "pristine_upstream_sha256": {key: locked[key] for key in compiled_hashes},
+        "compiled_upstream_sha256": compiled_hashes,
         "configuration_sha256": {p.name: sha256(p) for p in configured},
         "driver_sha256": sha256(driver),
         "executable_sha256": sha256(executable),
@@ -351,8 +382,10 @@ def main() -> None:
     parser.add_argument("--h", type=float, required=True)
     parser.add_argument("--serial", action="store_true")
     parser.add_argument("--compiler")
+    parser.add_argument("--no-diagnostics", action="store_true")
     args = vars(parser.parse_args())
     args["mpi"] = not args.pop("serial")
+    args["diagnostics"] = not args.pop("no_diagnostics")
     sys.stdout.write(f"{build_backend(**args)}\n")
 
 

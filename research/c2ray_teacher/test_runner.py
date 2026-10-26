@@ -11,6 +11,7 @@ from research.c2ray_teacher.runner import (
     _native_initialization,
     compare_parallel_outputs,
     parallel_layout,
+    read_transport_diagnostics,
     validate_config,
     validate_output,
 )
@@ -118,6 +119,126 @@ def test_secondary_inclusive_event_estimate_can_exceed_emitted_photons() -> None
     assert definition["rates_and_fractions_are_iteration_staggered"] is True
 
 
+def transport_fixture() -> dict:
+    """Return separately counted photons and secondary ionization events."""
+    return {
+        "schema_version": 1,
+        "step": 1,
+        "time_seconds": 1.0,
+        "dt_seconds": 1.0,
+        "final_transport_iteration": 2,
+        "nominal_emitted_photons": 100.0,
+        "table_emitted_photons": 101.0,
+        "primary_absorptions_by_species": [80.0, 10.0, 1.0],
+        "secondary_ionizations_by_species": [5.0, 2.0, 0.0],
+        "primary_absorptions": 91.0,
+        "secondary_ionizations": 7.0,
+        "boundary_outflow_photons": 10.0,
+        "native_boundary_outflow_photons": 9.0,
+        "lls_loss_photons": 0.0,
+        "transport_rate_product_ionizations": 98.0,
+        "postchemistry_rate_product_ionizations": 96.0,
+        "transport_fraction_max_abs_change": 0.002,
+        "transport_fraction_max_relative_change": 0.01,
+        "recorded_cell_visits": 100,
+    }
+
+
+def test_transport_ledger_keeps_secondary_events_out_of_photon_closure(
+    tmp_path: Path,
+) -> None:
+    """Only primary absorption and outward photons balance source photons."""
+    output, _ = output_fixture()
+    path = tmp_path / "transport.jsonl"
+    path.write_text(json.dumps(transport_fixture()) + "\n")
+    result = read_transport_diagnostics(path, output, 1.01)
+    row = result["steps"][0]
+    assert row["photon_residual_over_table_emitted"] == pytest.approx(0)
+    assert row["photon_residual_over_nominal_emitted"] == pytest.approx(0.01)
+    assert row["secondary_ionizations"] == 7
+    assert row["postchemistry_rate_product_difference"] == -2
+    assert row["boundary_minus_native_outflow_photons"] == 1
+    assert result["cumulative"]["secondary_ionizations"] == 7
+    assert result["photon_conservation_certified"] is False
+    assert row["transported_emitted_photons"] is None
+    assert row["photon_residual_over_transported_emitted"] is None
+    assert result["cumulative"]["transported_emitted_photons"] is None
+
+
+def test_transport_ledger_separates_omitted_spectral_tail(tmp_path: Path) -> None:
+    """All active-band photons can escape while omitted table photons remain explicit."""
+    output, _ = output_fixture()
+    record = transport_fixture()
+    for kind in ("primary_absorptions", "secondary_ionizations"):
+        record[kind] = 0.0
+        record[f"{kind}_by_species"] = [0.0, 0.0, 0.0]
+    record.update(
+        boundary_outflow_photons=100.0,
+        transport_rate_product_ionizations=0.0,
+        postchemistry_rate_product_ionizations=0.0,
+    )
+    path = tmp_path / "transport.jsonl"
+    path.write_text(json.dumps(record) + "\n")
+    result = read_transport_diagnostics(path, output, 1.01, active_spectral_ratio=1.0)
+    for ledger in (result["steps"][0], result["cumulative"]):
+        assert ledger["transported_emitted_photons"] == 100.0
+        assert ledger["photon_residual_over_transported_emitted"] == 0.0
+        assert ledger["photon_residual_over_table_emitted"] == pytest.approx(-1 / 101)
+    assert result["photon_conservation_certified"] is False
+
+
+@pytest.mark.parametrize("ratio", [1.011, 0.0, -1.0, np.nan, True])
+def test_transport_ledger_rejects_invalid_active_band_ratio(
+    tmp_path: Path, ratio: float
+) -> None:
+    """The transported band cannot contain more photons than the full table."""
+    output, _ = output_fixture()
+    with pytest.raises(ValueError, match="active spectral"):
+        read_transport_diagnostics(
+            tmp_path / "unused.jsonl", output, 1.01, active_spectral_ratio=ratio
+        )
+
+
+@pytest.mark.parametrize(
+    ("key", "value"),
+    [
+        ("step", 2),
+        ("dt_seconds", 2.0),
+        ("nominal_emitted_photons", 200.0),
+        ("table_emitted_photons", 100.0),
+        ("primary_absorptions", 90.0),
+        ("transport_rate_product_ionizations", 99.0),
+        ("boundary_outflow_photons", -1.0),
+        ("secondary_ionizations", np.nan),
+    ],
+)
+def test_transport_diagnostics_reject_misaligned_or_corrupt_records(
+    tmp_path: Path, key: str, value: object
+) -> None:
+    """Do not accept stale iterations, wrong units or incomplete counters."""
+    output, _ = output_fixture()
+    record = transport_fixture()
+    record[key] = value
+    path = tmp_path / "transport.jsonl"
+    path.write_text(json.dumps(record) + "\n")
+    with pytest.raises(ValueError, match="Transport"):
+        read_transport_diagnostics(path, output, 1.01)
+
+
+def test_transport_ledger_reports_residual_without_rescaling(tmp_path: Path) -> None:
+    """A measured photon deficit remains visible instead of being projected away."""
+    output, _ = output_fixture()
+    record = transport_fixture()
+    record["boundary_outflow_photons"] = 5.0
+    path = tmp_path / "transport.jsonl"
+    path.write_text(json.dumps(record) + "\n")
+    result = read_transport_diagnostics(path, output, 1.01)
+    assert result["steps"][0]["boundary_outflow_photons"] == 5
+    assert result["steps"][0]["photon_residual_over_table_emitted"] == pytest.approx(
+        -5 / 101
+    )
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [("xHII", 1.01), ("temperature_K", -1.0), ("Gamma_HI_s", np.nan)],
@@ -139,6 +260,28 @@ def test_parallel_comparison_detects_changed_morphology() -> None:
     result = compare_parallel_outputs(reference, candidate)
     assert result["passed"] is False
     assert result["fields"]["xHII"]["maximum_absolute_difference"] == pytest.approx(0.1)
+
+
+def test_parallel_comparison_checks_independent_counters_and_ignores_raw_native() -> (
+    None
+):
+    """Thread-dependent legacy counters cannot replace independent photon counts."""
+    reference, _ = output_fixture()
+    candidate, _ = output_fixture()
+    reference["transport_diagnostics"] = {"steps": [transport_fixture()]}
+    candidate["transport_diagnostics"] = {"steps": [transport_fixture()]}
+    candidate["transport_diagnostics"]["steps"][0][
+        "native_boundary_outflow_photons"
+    ] *= 10
+    assert compare_parallel_outputs(reference, candidate)["passed"] is True
+    candidate["transport_diagnostics"]["steps"][0]["boundary_outflow_photons"] += 1e-3
+    result = compare_parallel_outputs(reference, candidate)
+    assert result["passed"] is False
+    assert result["transport_counters"]["available"] is True
+    assert (
+        result["transport_counters"]["fields"]["boundary_outflow_photons"]["passed"]
+        is False
+    )
 
 
 @pytest.mark.parametrize(("difference", "passed"), [(5e-10, True), (2e-9, False)])
@@ -254,6 +397,31 @@ def test_native_initialization_retains_measured_spectral_normalization(
         _native_initialization(path)["sed_table_photons_over_nominal"]
         == 1.0153572221882665
     )
+    assert _native_initialization(path)["sed_transport_photons_over_nominal"] is None
+    assert _native_initialization(path)["sed_omitted_tail_photons_over_nominal"] is None
+
+
+@pytest.mark.parametrize(
+    ("active", "tail", "valid"),
+    [(1.0, 0.01, True), (1.02, -0.01, False), (1.0, 0.02, False), (1.0, None, False)],
+)
+def test_native_initialization_checks_transported_and_omitted_bands(
+    tmp_path: Path, active: float, tail: float | None, valid: bool
+) -> None:
+    """Preserve a measured tail and reject contradictory band normalizations."""
+    path = tmp_path / "native.log"
+    record = {
+        "stage": "native_initialized",
+        "sed_table_photons_over_nominal": 1.01,
+        "sed_transport_photons_over_nominal": active,
+        "sed_omitted_tail_photons_over_nominal": tail,
+    }
+    path.write_text(json.dumps(record) + "\n")
+    if valid:
+        assert _native_initialization(path) == record
+    else:
+        with pytest.raises(RuntimeError, match="spectral band"):
+            _native_initialization(path)
 
 
 @pytest.mark.parametrize("ratios", [[], [1.0, 1.0], [np.nan], [-1.0], [True]])

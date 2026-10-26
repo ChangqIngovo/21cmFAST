@@ -3,6 +3,9 @@ program c2ray_teacher_driver
   use iso_fortran_env, only: int32, real64, error_unit
   use ieee_arithmetic, only: ieee_is_finite
   use precision, only: dp
+#ifdef C2_DIAGNOSTICS
+  use transport_diagnostics, only: diag_write_step
+#endif
   use sizes, only: mesh
   use my_mpi
   use clocks, only: setup_clocks
@@ -12,7 +15,7 @@ program c2ray_teacher_driver
   use cgsconstants, only: ini_rec_colion_factors
   use cosmology_parameters, only: H0,Omega0
   use cosmology, only: zred,Hz,zred_t0,t0
-  use radiation_tables, only: rad_ini,bb_photo_thick_table
+  use radiation_tables, only: rad_ini,bb_photo_thick_table,bb_FreqBnd_UpperLimit
   use radiation_sed_parameters, only: S_star
   use radiative_cooling, only: setup_cool
   use sourceprops, only: NumSrc,srcpos,NormFlux,srcSeries
@@ -25,8 +28,11 @@ program c2ray_teacher_driver
   character(len=8) :: magic
   integer(int32) :: header(4)
   integer :: input_unit,output_unit,step,i,status,log_read_unit,converged_count,error_flag
+#ifdef C2_DIAGNOSTICS
+  integer :: diagnostics_unit
+#endif
   integer(kind=8) :: log_position=1
-  real(dp) :: initial(6),step_info(3),dt,sim_time,box_cm,metadata(14),sed_ratio
+  real(dp) :: initial(6),step_info(3),dt,sim_time,box_cm,metadata(14),sed_ratio,sed_transport_ratio
   real(dp),allocatable :: temperature_output(:,:,:)
 
   call setup_clocks()
@@ -86,11 +92,19 @@ program c2ray_teacher_driver
   if(rank==0) then
     ! A diagnostic only: integration consistency of untouched upstream SED tables.
     sed_ratio=sum(bb_photo_thick_table(0,:))/S_star
+    sed_transport_ratio=sum(bb_photo_thick_table(0,1:bb_FreqBnd_UpperLimit))/S_star
     open(newunit=output_unit,file=trim(output_path),status='new',access='stream', &
          form='unformatted',action='write',convert='little_endian',iostat=status)
     if(status/=0) call fail('Output must be a fresh writable path')
     write(output_unit) 'C2RTOUT1',int([mesh(1),header(2),13,14],int32)
-    write(*,'(A,ES24.16,A)') '{"stage":"native_initialized","sed_table_photons_over_nominal":',sed_ratio,'}'
+#ifdef C2_DIAGNOSTICS
+    open(newunit=diagnostics_unit,file='results/transport_diagnostics.jsonl',status='new',action='write',iostat=status)
+    if(status/=0) call fail('Transport diagnostics require a fresh writable path')
+#endif
+    write(*,'(A,ES24.16,A)',advance='no') &
+        '{"stage":"native_initialized","sed_table_photons_over_nominal":',sed_ratio,','
+    write(*,'(A,ES24.16,A)',advance='no') '"sed_transport_photons_over_nominal":',sed_transport_ratio,','
+    write(*,'(A,ES24.16,A)') '"sed_omitted_tail_photons_over_nominal":',sed_ratio-sed_transport_ratio,'}'
     flush(6)
   endif
   sim_time=0.0_dp
@@ -146,6 +160,10 @@ program c2ray_teacher_driver
       metadata=[sim_time,dt,zred,box_cm,sum(NormFlux(1:NumSrc))*S_star*dt, &
                 total_ion,totrec,totcollisions,recomions, &
                 sum(photon_loss)*dt*real(product(mesh),dp),LLS_loss*dt,dh0,dhe0,dhe2]
+#ifdef C2_DIAGNOSTICS
+      call diag_write_step(diagnostics_unit,step,sim_time,dt,metadata(5),sed_ratio,metadata(10),metadata(11), &
+           ndens,xh_av,xhe_av,phih_grid,phihe_grid,vol)
+#endif
       write(output_unit) metadata,ndens,xh(:,:,:,1),xhe(:,:,:,1),xhe(:,:,:,2),temperature_output, &
            xh_av(:,:,:,0),xhe_av(:,:,:,0),xhe_av(:,:,:,1),phih_grid,phihe_grid(:,:,:,0), &
            phihe_grid(:,:,:,1),phiheat,xhe_av(:,:,:,2)
@@ -163,6 +181,9 @@ program c2ray_teacher_driver
     close(output_unit)
     close(timefile)
     close(90)
+#ifdef C2_DIAGNOSTICS
+    close(diagnostics_unit)
+#endif
   endif
   call mpi_end()
 contains

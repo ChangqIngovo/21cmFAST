@@ -266,6 +266,51 @@ def validate_output(output: dict, manifest: dict) -> dict:
     }
 
 
+def _compare_transport_counters(
+    reference: dict, candidate: dict, tolerance: float
+) -> dict:
+    left = reference.get("transport_diagnostics")
+    right = candidate.get("transport_diagnostics")
+    if left is None and right is None:
+        return {"available": False, "reason": "Neither output has independent counters"}
+    if left is None or right is None or len(left["steps"]) != len(right["steps"]):
+        raise ValueError(
+            "Parallel comparison needs matching independent counter outputs"
+        )
+    budgets = np.asarray([row["nominal_emitted_photons"] for row in left["steps"]])
+    scales = np.maximum(budgets, 1e-100)
+    fields = {}
+    for name in (
+        "primary_absorptions_by_species",
+        "secondary_ionizations_by_species",
+        "primary_absorptions",
+        "secondary_ionizations",
+        "boundary_outflow_photons",
+        "lls_loss_photons",
+    ):
+        a = np.asarray([row[name] for row in left["steps"]])
+        b = np.asarray([row[name] for row in right["steps"]])
+        if a.shape != b.shape or not np.isfinite(a).all() or not np.isfinite(b).all():
+            raise ValueError(
+                "Parallel counter comparison needs finite equal-shape counts"
+            )
+        difference = np.abs(a - b)
+        scaled = difference / scales.reshape((len(scales),) + (1,) * (a.ndim - 1))
+        maximum = float(np.max(scaled))
+        fields[name] = {
+            "maximum_absolute_difference": float(np.max(difference)),
+            "maximum_difference_over_nominal_emitted": maximum,
+            "passed": maximum <= tolerance,
+        }
+    return {
+        "available": True,
+        "passed": all(row["passed"] for row in fields.values()),
+        "relative_to_nominal_emission_tolerance": tolerance,
+        "excluded": "Original native boundary counter; independently tallied boundary flux is checked",
+        "fields": fields,
+    }
+
+
 def compare_parallel_outputs(
     reference: dict, candidate: dict, tolerance: float = 1e-8
 ) -> dict:
@@ -296,10 +341,13 @@ def compare_parallel_outputs(
             "absolute_tolerance": absolute_tolerance,
             "passed": difference <= absolute_tolerance + tolerance * scale,
         }
+    transport = _compare_transport_counters(reference, candidate, tolerance)
     return {
-        "passed": all(row["passed"] for row in diagnostics.values()),
+        "passed": all(row["passed"] for row in diagnostics.values())
+        and transport.get("passed", True),
         "relative_tolerance": tolerance,
         "fields": diagnostics,
+        "transport_counters": transport,
     }
 
 
@@ -309,6 +357,218 @@ def _write_json(path: Path, value: dict) -> None:
         json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n"
     )
     temporary.replace(path)
+
+
+def _transport_timing(
+    record: dict, native: dict, index: int, spectral_ratio: float
+) -> dict:
+    if not isinstance(record, dict) or record.get("schema_version") != 1:
+        raise ValueError("Transport diagnostic schema is unsupported")
+    if type(record.get("step")) is not int or record["step"] != index + 1:
+        raise ValueError("Transport diagnostic step index differs from native output")
+    for name in ("final_transport_iteration", "recorded_cell_visits"):
+        if type(record.get(name)) is not int or record[name] < (
+            2 if name.startswith("final") else 0
+        ):
+            raise ValueError(f"Transport diagnostic has invalid {name}")
+    expected = {
+        "time_seconds": native["time_seconds"],
+        "dt_seconds": native["dt_seconds"],
+        "nominal_emitted_photons": native["emitted_photons"],
+        "table_emitted_photons": native["emitted_photons"] * spectral_ratio,
+    }
+    for name, value in expected.items():
+        measured = record.get(name)
+        if (
+            isinstance(measured, bool)
+            or not isinstance(measured, (float, int))
+            or not np.isfinite(measured)
+            or not np.isclose(measured, value, rtol=2e-12, atol=1e-12)
+        ):
+            raise ValueError(
+                f"Transport diagnostic disagrees with native output: {name}"
+            )
+    return expected
+
+
+def read_transport_diagnostics(
+    path: Path,
+    output: dict,
+    spectral_ratio: float,
+    *,
+    active_spectral_ratio: float | None = None,
+) -> dict:
+    """Read independent final-pass counters without imposing photon closure.
+
+    Parameters
+    ----------
+    path : Path
+        JSON-lines sidecar written by read-only native instrumentation.
+    output : dict
+        Decoded native binary containing the corresponding step clock/budget.
+    spectral_ratio : float
+        Measured upstream table photons divided by nominal source photons.
+    active_spectral_ratio : float or None
+        Measured photons in the native transport loop's frequency band divided
+        by nominal source photons. Absent legacy telemetry remains unavailable;
+        the full-table normalization is never substituted for this measurement.
+    """
+    if not np.isfinite(spectral_ratio) or spectral_ratio <= 0:
+        raise ValueError("Transport spectral ratio must be finite and positive")
+    if active_spectral_ratio is not None and (
+        isinstance(active_spectral_ratio, bool)
+        or not isinstance(active_spectral_ratio, (int, float))
+        or not np.isfinite(active_spectral_ratio)
+        or not 0 < active_spectral_ratio <= spectral_ratio
+    ):
+        raise ValueError(
+            "Transport active spectral ratio must be positive and no larger than the full table"
+        )
+    try:
+        records = [
+            json.loads(line) for line in path.read_text().splitlines() if line.strip()
+        ]
+    except (OSError, json.JSONDecodeError) as exc:
+        raise ValueError("Transport diagnostic file is missing or invalid") from exc
+    if len(records) != len(output["steps"]):
+        raise ValueError("Transport diagnostic step count differs from native output")
+    rows = []
+    counts = (
+        "primary_absorptions",
+        "secondary_ionizations",
+        "boundary_outflow_photons",
+        "native_boundary_outflow_photons",
+        "lls_loss_photons",
+        "transport_rate_product_ionizations",
+        "postchemistry_rate_product_ionizations",
+    )
+    for index, (record, native) in enumerate(
+        zip(records, output["steps"], strict=True)
+    ):
+        expected = _transport_timing(record, native, index, spectral_ratio)
+        scale = max(expected["table_emitted_photons"], 1e-100)
+        for name in (
+            *counts,
+            "transport_fraction_max_abs_change",
+            "transport_fraction_max_relative_change",
+        ):
+            value = record.get(name)
+            if (
+                isinstance(value, bool)
+                or not isinstance(value, (int, float))
+                or not np.isfinite(value)
+            ):
+                raise ValueError(
+                    f"Transport diagnostic has nonfinite or missing {name}"
+                )
+            floor = -1e-12 * scale if name in counts else 0
+            if value < floor:
+                raise ValueError(f"Transport diagnostic has negative {name}")
+        for kind, total in (
+            ("primary_absorptions", "primary_absorptions"),
+            ("secondary_ionizations", "secondary_ionizations"),
+        ):
+            values = np.asarray(record.get(f"{kind}_by_species"), dtype=float)
+            if (
+                values.shape != (3,)
+                or not np.isfinite(values).all()
+                or np.min(values) < -1e-12 * scale
+            ):
+                raise ValueError(
+                    f"Transport diagnostic has invalid {kind} species counts"
+                )
+            if abs(float(values.sum()) - record[total]) > 2e-10 * scale:
+                raise ValueError(
+                    f"Transport diagnostic {kind} species counts disagree with total"
+                )
+        direct_events = record["primary_absorptions"] + record["secondary_ionizations"]
+        if abs(
+            record["transport_rate_product_ionizations"] - direct_events
+        ) > 2e-9 * max(scale, abs(direct_events)):
+            raise ValueError(
+                "Transport direct counters disagree with the pre-chemistry rate product"
+            )
+        for sidecar, key in (
+            ("native_boundary_outflow_photons", "native_photon_loss"),
+            ("lls_loss_photons", "native_LLS_loss"),
+        ):
+            if key in native and abs(record[sidecar] - native[key]) > 2e-10 * scale:
+                raise ValueError(f"Transport {sidecar} differs from native diagnostic")
+        photon_accounted = (
+            record["primary_absorptions"]
+            + record["boundary_outflow_photons"]
+            + record["lls_loss_photons"]
+        )
+        row = dict(record)
+        transported_emitted = (
+            expected["nominal_emitted_photons"] * active_spectral_ratio
+            if active_spectral_ratio is not None
+            else None
+        )
+        row.update(
+            photon_accounted=photon_accounted,
+            transported_emitted_photons=transported_emitted,
+            photon_residual_over_transported_emitted=(
+                photon_accounted / transported_emitted - 1
+                if transported_emitted
+                else None
+            ),
+            photon_residual_over_nominal_emitted=(
+                photon_accounted / expected["nominal_emitted_photons"] - 1
+            )
+            if expected["nominal_emitted_photons"]
+            else None,
+            photon_residual_over_table_emitted=(
+                photon_accounted / expected["table_emitted_photons"] - 1
+            )
+            if expected["table_emitted_photons"]
+            else None,
+            postchemistry_rate_product_difference=record[
+                "postchemistry_rate_product_ionizations"
+            ]
+            - direct_events,
+            boundary_minus_native_outflow_photons=record["boundary_outflow_photons"]
+            - record["native_boundary_outflow_photons"],
+        )
+        rows.append(row)
+    cumulative = {
+        name: float(sum(row[name] for row in rows))
+        for name in (
+            *counts,
+            "nominal_emitted_photons",
+            "table_emitted_photons",
+            "photon_accounted",
+        )
+    }
+    for budget in ("nominal", "table"):
+        total = cumulative[f"{budget}_emitted_photons"]
+        cumulative[f"photon_residual_over_{budget}_emitted"] = (
+            cumulative["photon_accounted"] / total - 1 if total else None
+        )
+        cumulative[f"boundary_outflow_over_{budget}_emitted"] = (
+            cumulative["boundary_outflow_photons"] / total if total else None
+        )
+    transported_total = (
+        sum(row["transported_emitted_photons"] for row in rows)
+        if active_spectral_ratio is not None
+        else None
+    )
+    cumulative["transported_emitted_photons"] = transported_total
+    cumulative["photon_residual_over_transported_emitted"] = (
+        cumulative["photon_accounted"] / transported_total - 1
+        if transported_total
+        else None
+    )
+    return {
+        "schema_version": 1,
+        "counter_integrity_passed": True,
+        "primary_photon_absorption_count_available": True,
+        "photon_conservation_certified": False,
+        "scope": "Direct primary absorption and secondary-event tallies from the final converged transport pass; secondary events are excluded from photon closure",
+        "normalization": "Nominal and full spectral-table emission are reported; measured transport-band emission is separate when available. No source renormalization or residual correction is applied",
+        "steps": rows,
+        "cumulative": cumulative,
+    }
 
 
 def _build(upstream: Path, destination: Path, manifest: dict) -> Path:
@@ -381,7 +641,17 @@ def _launch(
     _check_native_logs(destination)
     initialization = _native_initialization(destination / "native.log")
     LOGGER.info("native_complete %s seconds=%.3f", destination.name, elapsed)
-    return read_output(output), {
+    state = read_output(output)
+    build_manifest = json.loads((build_dir / "build_manifest.json").read_text())
+    diagnostic_path = destination / "native_diagnostics" / "transport_diagnostics.jsonl"
+    if build_manifest.get("diagnostics_enabled", False) or diagnostic_path.exists():
+        state["transport_diagnostics"] = read_transport_diagnostics(
+            diagnostic_path,
+            state,
+            initialization["sed_table_photons_over_nominal"],
+            active_spectral_ratio=initialization["sed_transport_photons_over_nominal"],
+        )
+    return state, {
         "workers": workers,
         "mpi_ranks": ranks,
         "omp_threads": threads,
@@ -389,6 +659,12 @@ def _launch(
         "command": command,
         "sed_table_photons_over_nominal": initialization[
             "sed_table_photons_over_nominal"
+        ],
+        "sed_transport_photons_over_nominal": initialization[
+            "sed_transport_photons_over_nominal"
+        ],
+        "sed_omitted_tail_photons_over_nominal": initialization[
+            "sed_omitted_tail_photons_over_nominal"
         ],
         "timing_scope": "MPI startup, table loading and native evolution; excludes compilation and input preparation",
     }
@@ -417,7 +693,26 @@ def _native_initialization(path: Path) -> dict:
         raise RuntimeError(
             "Native spectral table normalization must be a positive finite number"
         )
-    return records[0]
+    record = records[0]
+    active = record.get("sed_transport_photons_over_nominal")
+    tail = record.get("sed_omitted_tail_photons_over_nominal")
+    if (active is not None or tail is not None) and (
+        any(
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not np.isfinite(value)
+            for value in (active, tail)
+        )
+        or not 0 < active <= ratio
+        or tail < 0
+        or not np.isclose(active + tail, ratio, rtol=2e-12, atol=1e-15)
+    ):
+        raise RuntimeError(
+            "Native spectral band normalizations are invalid or inconsistent"
+        )
+    record["sed_transport_photons_over_nominal"] = active
+    record["sed_omitted_tail_photons_over_nominal"] = tail
+    return record
 
 
 def _check_native_logs(destination: Path) -> None:
@@ -492,6 +787,7 @@ def _benchmarks(science: dict, output: Path, upstream: Path, workers: int) -> di
             | {
                 "state_checks_passed": checks["state_checks_passed"],
                 "comparison_to_one_cpu": comparison,
+                "transport_diagnostics": state.get("transport_diagnostics"),
             }
         )
         results["passed"] &= comparison["passed"]
@@ -564,6 +860,17 @@ def run(config: dict, output: Path, upstream: Path, workers: int = 32) -> dict:
         "thermal",
     )
     manifest = prepare_history(history, binary, **{key: config[key] for key in keys})
+    manifest["native_history_provenance"] = {
+        key: history["metadata"].get(key)
+        for key in (
+            "initial_hires_density_sha256",
+            "random_seed",
+            "dimension",
+            "highres_dimension",
+            "box_len_cMpc",
+            "reference_redshift",
+        )
+    }
     _write_json(output / "input_manifest.json", manifest)
     benchmarks = (
         _benchmarks(history, output, upstream, workers)
@@ -579,6 +886,10 @@ def run(config: dict, output: Path, upstream: Path, workers: int = 32) -> dict:
     executable = _build(upstream, output / "build_science", manifest)
     state, timing = _launch(executable, binary, output / "science", workers)
     validation = validate_output(state, manifest)
+    transport = state.get("transport_diagnostics")
+    if transport is not None:
+        validation["primary_photon_absorption_count_available"] = True
+        validation["transport_diagnostics"] = transport
     np.savez_compressed(
         output / "states.npz",
         **state["fields"],
@@ -591,6 +902,7 @@ def run(config: dict, output: Path, upstream: Path, workers: int = 32) -> dict:
                         "diagnostic_schema_version"
                     ],
                     "diagnostic_definitions": validation["diagnostic_definitions"],
+                    "transport_diagnostics": transport,
                 }
             )
         ),
