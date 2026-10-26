@@ -93,7 +93,29 @@ def test_diagnostics_measure_atoms_and_do_not_certify_photon_closure() -> None:
     assert result["photon_conservation_certified"] is False
     assert result["history"][0]["xHI_mass"] == pytest.approx(0.8)
     assert result["history"][0]["total_nuclei"] == pytest.approx(4096.0)
-    assert result["history"][0]["photoabsorptions_time_average_estimate"] > 0
+    row = result["history"][0]
+    assert row["radiation_ionizations_time_average_estimate"] > 0
+    assert "photoabsorptions_time_average_estimate" not in row
+    assert result["primary_photon_absorption_count_available"] is False
+
+
+def test_secondary_inclusive_event_estimate_can_exceed_emitted_photons() -> None:
+    """Effective radiation rates count events, not individual absorbed photons."""
+    output, manifest = output_fixture()
+    output["fields"]["Gamma_HI_s"].fill(0.03)
+    result = validate_output(output, manifest)
+    estimate = result["history"][0]["radiation_ionizations_time_average_estimate"]
+    expected = 4096 * (0.92 * 0.9 * 0.03 + 0.08 * 0.9 * 0.002 + 0.08 * 0.08 * 0.001)
+    assert estimate == pytest.approx(expected, rel=1e-12)
+    assert estimate > manifest["steps"][0]["emitted_photons"]
+    assert result["state_checks_passed"] is True
+    assert result["photon_conservation_certified"] is False
+    definition = result["diagnostic_definitions"][
+        "radiation_ionizations_time_average_estimate"
+    ]
+    assert definition["includes_secondary_ionizations"] is True
+    assert definition["is_primary_photon_absorption_count"] is False
+    assert definition["rates_and_fractions_are_iteration_staggered"] is True
 
 
 @pytest.mark.parametrize(

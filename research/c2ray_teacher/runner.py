@@ -189,11 +189,13 @@ def _state_diagnostic(fields: dict, index: int, meta: dict, manifest: dict) -> d
     if not np.isclose(nuclei, manifest["initial_total_nuclei"], rtol=2e-12, atol=0):
         raise ValueError("Native total nuclei changed under cosmological dilution")
     he = manifest["helium_number_fraction"]
-    absorption = (
+    ionization_rate = (
         (1 - he) * fields["xHI_time_average"][index] * fields["Gamma_HI_s"][index]
     )
-    absorption += he * fields["xHeI_time_average"][index] * fields["Gamma_HeI_s"][index]
-    absorption += (
+    ionization_rate += (
+        he * fields["xHeI_time_average"][index] * fields["Gamma_HeI_s"][index]
+    )
+    ionization_rate += (
         he * fields["xHeII_time_average"][index] * fields["Gamma_HeII_s"][index]
     )
     neutral = 1 - fields["xHII"][index]
@@ -204,8 +206,8 @@ def _state_diagnostic(fields: dict, index: int, meta: dict, manifest: dict) -> d
         "xHI_volume": float(neutral.mean()),
         "temperature_volume_mean_K": float(fields["temperature_K"][index].mean()),
         "total_nuclei": nuclei,
-        "photoabsorptions_time_average_estimate": float(
-            np.sum(density * absorption) * cell_volume * meta["dt_seconds"]
+        "radiation_ionizations_time_average_estimate": float(
+            np.sum(density * ionization_rate) * cell_volume * meta["dt_seconds"]
         ),
         "native_diagnostics": {
             k: v for k, v in meta.items() if k.startswith("native_")
@@ -233,13 +235,28 @@ def validate_output(output: dict, manifest: dict) -> dict:
         _check_metadata(meta, expected, elapsed)
         history.append(_state_diagnostic(output["fields"], index, meta, manifest))
     return {
+        "diagnostic_schema_version": 2,
         "state_checks_passed": True,
         "photon_conservation_certified": False,
+        "primary_photon_absorption_count_available": False,
         "spatial_convergence_certified": False,
         "temporal_convergence_certified": False,
+        "diagnostic_definitions": {
+            "radiation_ionizations_time_average_estimate": {
+                "quantity": "Radiation-driven primary plus secondary ionization events per transport step",
+                "includes_secondary_ionizations": True,
+                "is_primary_photon_absorption_count": False,
+                "rates_and_fractions_are_iteration_staggered": True,
+                "time_sampling": "Post-chemistry time-averaged fractions multiplied by effective rates from the preceding transport pass",
+            },
+            "Gamma_HI_s": "Effective HI ionization rate per neutral H atom, including photoelectron secondary ionizations, in s^-1",
+            "Gamma_HeI_s": "Effective HeI ionization rate per neutral He atom, including photoelectron secondary ionizations, in s^-1",
+            "Gamma_HeII_s": "Primary HeII photoionization rate per HeII ion in s^-1; the native secondary routine adds only HI and HeI ionizations",
+        },
         "history": history,
         "limitations": [
-            "Native time-averaged rate products are absorption estimates, not an independent integrated ledger.",
+            "Native effective radiation rates include secondary ionizations; their time-averaged products estimate ionization events, not primary photon absorptions.",
+            "Exported average fractions follow the chemistry update while exported rates come from the preceding transport pass; the product is iteration-staggered and is not an exact time integral.",
             "Upstream thermal photonstatistics use global coefficient diagnostics; raw counts do not certify photon closure.",
             "The original 50000 K spectral tables have an approximately 1.5 percent source-normalization mismatch.",
             "Quasistatic transport: finite light-travel time and a carried escaped-photon background are absent.",
@@ -566,7 +583,16 @@ def run(config: dict, output: Path, upstream: Path, workers: int = 32) -> dict:
         output / "states.npz",
         **state["fields"],
         metadata=np.asarray(
-            json.dumps({"steps": state["steps"], "input_manifest": manifest})
+            json.dumps(
+                {
+                    "steps": state["steps"],
+                    "input_manifest": manifest,
+                    "diagnostic_schema_version": validation[
+                        "diagnostic_schema_version"
+                    ],
+                    "diagnostic_definitions": validation["diagnostic_definitions"],
+                }
+            )
         ),
     )
     summary = {

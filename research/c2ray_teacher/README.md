@@ -110,6 +110,23 @@ fractions, temperature, proper density, time-averaged fractions and species
 photoionization rates. It is sufficient to inspect local evolution rather than
 only a global neutral fraction.
 
+`radiation_ionizations_time_average_estimate` estimates radiation-driven
+**ionization events**, including secondary ionizations from photoelectrons.
+The unchanged upstream adds these secondary contributions to the exported
+`Gamma_HI_s` and `Gamma_HeI_s`; `Gamma_HeII_s` contains primary photoionizations.
+An event count above the emitted photon count is therefore not evidence of
+photon creation. In addition, the exported time-averaged fractions follow the
+global chemistry update, whereas the effective rates come from the preceding
+transport pass. Their product is an iteration-staggered estimate, not an exact
+time integral or a measured primary-photon absorption count. It must not be
+added to the escaped-photon diagnostic to assert photon closure.
+
+Diagnostic schema 2 records these definitions in `summary.json` and the
+`states.npz` metadata. Earlier outputs called the identical value
+`photoabsorptions_time_average_estimate`; interpret that legacy field as the
+secondary-inclusive event estimate above. Only the label and documentation
+changed: existing simulation values remain usable without rerunning RT.
+
 `COMPLETED` means the adapter, native convergence checks and bounded-state
 checks passed. It does **not** certify spatial, temporal or angular convergence,
 exact global photon closure, or suitability as final training truth.
@@ -126,7 +143,9 @@ Unchanged upstream limitations are explicitly recorded:
    This is not a closed, periodically recycled photon box.
 3. Native photon-statistics counters are raw diagnostics, not an independent
    exact H/He/thermal conservation certificate. Temperature-dependent and
-   species bookkeeping in that routine need separate interpretation.
+   species bookkeeping in that routine need separate interpretation. The
+   current output does not separately count primary photon absorptions and
+   photoelectron secondary ionizations.
 4. Transport uses a quasistatic radiation field; it is not a finite-light-speed
    evolution. The chemistry and temperature implementation is preserved.
 5. Source transport is parallel, but chemistry work and MPI overhead limit
