@@ -1,0 +1,105 @@
+#!/usr/bin/env bash
+#PBS -N c2ray_teacher
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=32
+#PBS -l mem=128GB
+#PBS -l walltime=24:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${RUN_DIR:?Submit with qsub -v RUN_DIR=/prepared/c2ray/run}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing allocated CPU count}"
+cd "$RUN_DIR"
+test -f PREPARED
+if [[ -f COMPLETED ]]; then echo 'Already completed.'; exit 0; fi
+mkdir .running || { echo 'Run already started; use a fresh prepared directory.' >&2; exit 2; }
+exec > "run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; rmdir "$RUN_DIR/.running" || true; if (( status != 0 )); then printf "%s\n" "$status" > "$RUN_DIR/FAILED"; fi' EXIT
+printf 'Job: %s\nRun: %s\nStart: %s\n' "$PBS_JOBID" "$RUN_DIR" "$(date)"
+sha256sum --quiet -c prepared.sha256
+module --force purge
+source "$RUN_DIR/runtime.env"
+module load "${PC_MODULES[@]}"
+module load gcc/12.2.0 openmpi/4.1.4
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export CC=gcc CXX=g++ FC=gfortran MPIFC=mpifort
+export OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export OMP_NUM_THREADS=1 OMP_PROC_BIND=spread OMP_PLACES=cores
+c2_python=$(cat "$RUN_DIR/python_path.txt")
+"$c2_python" - <<'PY'
+import hashlib
+import json
+import os
+from pathlib import Path
+import platform
+import shutil
+import subprocess
+import sys
+
+import h5py
+import numpy
+import py21cmfast
+import scipy
+
+run = Path(os.environ['RUN_DIR'])
+m = json.loads((run/'run_manifest.json').read_text())
+if m.get('schema_version') != 1 or m.get('experiment') != 'c2ray-native-teacher':
+    raise RuntimeError('Wrong preparation manifest.')
+if str(run) != m['run_directory']:
+    raise RuntimeError('Prepared run moved; prepare a fresh directory.')
+if int(os.environ['PBS_NCPUS']) != m['requested_workers']:
+    raise RuntimeError('PBS allocation differs from prepared worker count.')
+if sys.executable != m['runtime_python'] or platform.python_version() != m['python_version']:
+    raise RuntimeError('Prepared Python runtime changed.')
+versions = {
+    'numpy': numpy.__version__, 'scipy': scipy.__version__,
+    'h5py': h5py.__version__, 'py21cmfast': py21cmfast.__version__,
+}
+if versions != m['package_versions']:
+    raise RuntimeError('Prepared Python packages changed.')
+
+def digest(path):
+    with path.open('rb') as stream:
+        return hashlib.file_digest(stream, 'sha256').hexdigest()
+
+native = Path(py21cmfast.__file__).resolve().parent
+native_files = {
+    str(path.relative_to(native)): digest(path)
+    for path in sorted(native.rglob('*'))
+    if path.is_file() and '__pycache__' not in path.parts
+    and path.suffix not in ('.pyc', '.pyo')
+}
+if str(native) != m['native_package'] or native_files != m['native_files_sha256']:
+    raise RuntimeError('Prepared native 21cmFAST package changed.')
+for compiler, expected in m['compilers'].items():
+    found = shutil.which(compiler)
+    if found is None:
+        raise RuntimeError('Missing compiler: ' + compiler)
+    path = Path(found).resolve()
+    actual = {
+        'path': str(path), 'sha256': digest(path),
+        'version': subprocess.check_output([compiler, '--version'], text=True),
+    }
+    if actual != expected:
+        raise RuntimeError('Prepared compiler changed: ' + compiler)
+if (run/'results').exists():
+    raise RuntimeError('Results already exist; use a fresh prepared run.')
+print('Adapter commit:', m['commit'], flush=True)
+print('Unmodified C2-Ray commit:', m['upstream_commit'], flush=True)
+print('Allocated CPUs:', m['requested_workers'], flush=True)
+print('Scope:', m['scope'], flush=True)
+PY
+
+cd "$RUN_DIR/source"
+"$c2_python" research/c2ray_teacher/runner.py \
+    --config "$RUN_DIR/run_config.json" --output "$RUN_DIR/results" \
+    --upstream "$RUN_DIR/upstream" --workers "$PBS_NCPUS"
+cd "$RUN_DIR"
+test -f results/COMPLETED
+touch COMPLETED
+printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$RUN_DIR"
