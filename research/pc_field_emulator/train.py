@@ -27,12 +27,24 @@ import numpy as np
 import scipy
 
 if __package__:
-    from .data import Sample, discover_samples, load_sample, split_samples
+    from .data import (
+        Sample,
+        UnresolvedPhotonBudgetError,
+        discover_samples,
+        load_sample,
+        split_samples,
+    )
     from .evaluation import evaluate_fields, plot_comparison
     from .features import build_features
     from .model import MLPModel, project_global_budget, train
 else:
-    from data import Sample, discover_samples, load_sample, split_samples
+    from data import (
+        Sample,
+        UnresolvedPhotonBudgetError,
+        discover_samples,
+        load_sample,
+        split_samples,
+    )
     from evaluation import evaluate_fields, plot_comparison
     from features import build_features
     from model import MLPModel, project_global_budget, train
@@ -131,6 +143,103 @@ def _prepare_arrays(
         destination / f"y_{name}.npy", np.concatenate(target_rows), allow_pickle=False
     )
     return feature_names
+
+
+def _coverage(samples: list[Sample]) -> dict:
+    return {
+        "count": len(samples),
+        "seeds": sorted({sample.seed for sample in samples}),
+        "redshift_range": (
+            [
+                min(sample.redshift for sample in samples),
+                max(sample.redshift for sample in samples),
+            ]
+            if samples
+            else None
+        ),
+        "Q_mass_range": (
+            [
+                min(sample.q_mass for sample in samples),
+                max(sample.q_mass for sample in samples),
+            ]
+            if samples
+            else None
+        ),
+    }
+
+
+def _qualify_splits(splits: dict, output: Path) -> tuple[dict, dict]:
+    """Audit before fitting and exclude only a known projection incompatibility."""
+    qualified = {"strategy": splits["strategy"]}
+    report = {
+        "policy": "Exclude only audited UnresolvedPhotonBudgetError checkpoints",
+        "unresolved_fraction_tolerance": 1e-7,
+        "eligible": [],
+        "excluded": [],
+        "coverage": {},
+        "seed_roles_reassigned": False,
+        "evaluation_scope": "Only snapshots compatible with the emitted-budget projection; see excluded epochs and per-seed coverage",
+    }
+    for name in ("train", "validation", "test"):
+        accepted = []
+        for sample in splits[name]:
+            record = {
+                "split": name,
+                "seed": sample.seed,
+                "node_index": sample.node_index,
+                "redshift": sample.redshift,
+                "Q_mass": sample.q_mass,
+                "checkpoint": str(sample.checkpoint_path),
+                "checkpoint_sha256": sample.checkpoint_sha256,
+            }
+            # Corrupt files, failed count ledgers and all other errors remain fatal.
+            try:
+                fields = load_sample(sample)
+            except UnresolvedPhotonBudgetError as error:
+                record["diagnostics"] = error.diagnostics
+                report["excluded"].append(record)
+                _log("sample_excluded", **record)
+            else:
+                record["ledger"] = fields["ledger"]
+                report["eligible"].append(record)
+                accepted.append(sample)
+                del fields
+        qualified[name] = accepted
+        requested = splits[name]
+        per_seed = {}
+        for seed in sorted({sample.seed for sample in requested}):
+            before = [sample for sample in requested if sample.seed == seed]
+            after = [sample for sample in accepted if sample.seed == seed]
+            per_seed[str(seed)] = {
+                "requested": _coverage(before),
+                "accepted": _coverage(after),
+                "excluded_count": len(before) - len(after),
+            }
+        report["coverage"][name] = {
+            "requested": _coverage(requested),
+            "accepted": _coverage(accepted),
+            "excluded_count": len(requested) - len(accepted),
+            "by_seed": per_seed,
+        }
+    report["excluded_count"] = len(report["excluded"])
+    report["eligible_count"] = len(report["eligible"])
+    report["empty_splits"] = [
+        name for name in ("train", "validation", "test") if not qualified[name]
+    ]
+    _write_json(output / "preflight.json", report)
+    if report["empty_splits"]:
+        raise ValueError(
+            "No budget-compatible snapshots in original split(s): "
+            + ", ".join(report["empty_splits"])
+            + "; inspect preflight.json. Seed roles were not reassigned."
+        )
+    _log(
+        "preflight_complete",
+        eligible_count=report["eligible_count"],
+        excluded_count=report["excluded_count"],
+        coverage=report["coverage"],
+    )
+    return qualified, report
 
 
 def _fit_trial(task: dict) -> dict:
@@ -365,8 +474,9 @@ def run_experiment(
     selected = _select_samples(
         samples, q_min=q_min, q_max=q_max, maximum=max_snapshots_per_seed
     )
-    splits = split_samples(selected)
+    initial_splits = split_samples(selected)
     output.mkdir(parents=True)
+    splits, preflight = _qualify_splits(initial_splits, output)
     arrays = output / "training_arrays"
     arrays.mkdir()
     manifest = {
@@ -382,6 +492,7 @@ def run_experiment(
             "max_snapshots_per_seed": max_snapshots_per_seed,
         },
         "split_strategy": splits["strategy"],
+        "sample_eligibility": preflight,
         "splits": {
             name: [asdict(row) for row in splits[name]]
             for name in ("train", "validation", "test")
@@ -451,12 +562,14 @@ def run_experiment(
     _write_json(output / "model_selection.json", {"trials": trials, "selected": chosen})
     shutil.copyfile(chosen["model"], output / "model.npz")
     model = MLPModel.load(output / "model.npz")
-    # Test targets do not enter preprocessing, fitting, early stopping or selection.
+    # Audited test targets do not enter features, scaling, fitting or model selection.
     reports = _evaluate_test(model, splits["test"], output / "test")
     _write_metrics(output / "test_metrics.csv", reports)
     summary = {
         "scope": manifest["scope"],
         "split_strategy": splits["strategy"],
+        "sample_eligibility": preflight,
+        "evaluation_scope": preflight["evaluation_scope"],
         "snapshot_counts": {
             name: len(splits[name]) for name in ("train", "validation", "test")
         },

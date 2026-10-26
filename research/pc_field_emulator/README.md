@@ -26,6 +26,18 @@ coarse output grid, without reconstructing the teacher's fine subcells.
 - Samples come from recorded durable checkpoints. The source outputs remain
   read-only. Target fields are not features, normalization inputs or photon
   budgets.
+- Before fitting, all selected train/validation/test checkpoints undergo the
+  same independent integrity and photon-accounting checks. Audited snapshots
+  with unabsorbed photons above the existing `1e-7` emitted-photon fraction
+  tolerance while neutral gas remains are excluded from this pilot. A conserved
+  teacher ledger can include retained photons; assigning all emission to ions
+  would give the wrong target. The tolerance is unchanged, and teacher absorbed
+  counts are never substituted as prediction inputs.
+- `preflight.json` records every exclusion, its actual photon counts, and redshift
+  and ionization coverage for each original split and seed. Original seed roles
+  remain fixed. An empty split or any corrupt checkpoint still stops the job.
+  Reported accuracy therefore applies to the qualified subset, including its
+  documented late-time exclusions, rather than the complete original history.
 - Each test field is evaluated before and after a global photon-budget
   projection. The latter uses input emitted counts and gas capacity; it does
   not enforce source-by-source or directional conservation.
@@ -77,6 +89,7 @@ figures together so accuracy is tied to the actual training inputs.
 The main outputs are:
 
 - `dataset_manifest.json`: exact checkpoint hashes and train/validation/test seeds.
+- `preflight.json`: eligible/excluded snapshots, photon diagnostics and epoch coverage.
 - `model.npz` and `features.json`: selected network, standardizer and input schema.
 - `trials/seed*/history.json`: training and validation losses for every epoch.
 - `model_selection.json`: validation-only choice across the four initializations.

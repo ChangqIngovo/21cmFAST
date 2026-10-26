@@ -18,6 +18,35 @@ from typing import Any
 import numpy as np
 
 
+class UnresolvedPhotonBudgetError(ValueError):
+    """Identify an audited checkpoint outside the emitted-budget approximation.
+
+    A conserved photon ledger can include photons that remain unabsorbed while
+    neutral gas is present. Such a field cannot use the total emitted count as
+    its ionized-atom target. This exception is separate from integrity failures
+    so a training preflight can record and exclude only this incompatible case.
+
+    Parameters
+    ----------
+    diagnostics : dict
+        Independently verified counts, checkpoint coordinates and the error
+        introduced by assigning all emitted photons to ionization. These values
+        are eligibility diagnostics, not inputs to the learned model.
+    """
+
+    def __init__(self, diagnostics: dict[str, Any]) -> None:
+        """Store the audited incompatibility without changing its photon counts."""
+        self.diagnostics = dict(diagnostics)
+        super().__init__(
+            "Significant escaped/retained photons while gas remains neutral; "
+            "emitted-budget projection is invalid "
+            f"(seed={diagnostics['seed']}, node={diagnostics['node_index']}, "
+            f"z={diagnostics['redshift']:g}, "
+            f"unresolved_fraction={diagnostics['unresolved_fraction']:.9g}, "
+            f"tolerance={diagnostics['unresolved_tolerance']:.9g})"
+        )
+
+
 @dataclass(frozen=True)
 class Sample:
     """One committed output and the identities required to load it safely.
@@ -359,6 +388,15 @@ def load_sample(
         ``budget`` is ``min(sum(photons), sum(capacity))``; it never uses labels.
         After the raw ledger and bounds pass, numerical fraction overshoot is
         clipped only in ``xHII`` and reported as ``maximum_target_bound_roundoff``.
+
+    Raises
+    ------
+    UnresolvedPhotonBudgetError
+        The independently validated ledger has an unresolved radiation fraction
+        above the stated tolerance while neutral gas remains. Diagnostics are
+        attached to the exception; this condition does not mean photon loss.
+    ValueError
+        A checkpoint fails identity, field, ledger or summary validation.
     """
     if not (0 < ledger_tolerance < 1 and 0 <= unresolved_tolerance < 1):
         raise ValueError("Invalid photon audit tolerances")
@@ -455,8 +493,31 @@ def load_sample(
         )
     radiation_fraction = float((total_escaped + total_retained) / scale)
     if q_mass < 1 - ledger_tolerance and radiation_fraction > unresolved_tolerance:
-        raise ValueError(
-            "Significant escaped/retained photons while gas remains neutral; emitted-budget projection is invalid"
+        projected_budget = min(total_emitted, total_capacity)
+        raise UnresolvedPhotonBudgetError(
+            {
+                "reason": "unresolved_radiation_before_saturation",
+                "seed": sample.seed,
+                "node_index": sample.node_index,
+                "redshift": sample.redshift,
+                "Q_mass": q_mass,
+                "emitted": float(total_emitted),
+                "ionized": float(total_ionized),
+                "atom_capacity": float(total_capacity),
+                "escaped": float(total_escaped),
+                "retained": float(total_retained),
+                "unresolved_fraction": radiation_fraction,
+                "unresolved_tolerance": unresolved_tolerance,
+                "projected_budget": float(projected_budget),
+                "projected_minus_teacher_count": float(
+                    projected_budget - total_ionized
+                ),
+                "projected_minus_teacher_Q_mass": float(
+                    (projected_budget - total_ionized) / total_capacity
+                ),
+                "relative_grid_residual": grid_error,
+                "maximum_source_relative_residual": source_error,
+            }
         )
     target_roundoff = float(
         max(np.max(np.maximum(-xhii, 0)), np.max(np.maximum(xhii - 1, 0)))

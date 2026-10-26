@@ -12,9 +12,19 @@ import numpy as np
 import pytest
 
 try:
-    from .data import discover_samples, load_sample, split_samples
+    from .data import (
+        UnresolvedPhotonBudgetError,
+        discover_samples,
+        load_sample,
+        split_samples,
+    )
 except ImportError:
-    from data import discover_samples, load_sample, split_samples
+    from data import (
+        UnresolvedPhotonBudgetError,
+        discover_samples,
+        load_sample,
+        split_samples,
+    )
 
 
 def digest(path: Path) -> str:
@@ -35,6 +45,7 @@ def make_case(
     *,
     production: bool = False,
     retained: float = 0.0,
+    retained_from_node: int = 0,
     complete: bool = True,
 ) -> Path:
     """Write a small real-schema history/checkpoint case for reader tests."""
@@ -88,11 +99,12 @@ def make_case(
     identity_sha = hashlib.sha256(canonical(identity)).hexdigest()
     rows = []
     for node in range(7):
+        retained_here = retained if node >= retained_from_node else 0.0
         ionized = capacity * (node / 10.0)
         photons = np.zeros_like(capacity, dtype=np.longdouble)
-        photons.flat[-1] = ionized.sum(dtype=np.longdouble) + retained
+        photons.flat[-1] = ionized.sum(dtype=np.longdouble) + retained_here
         remaining = np.zeros_like(photons)
-        remaining.flat[-1] = retained
+        remaining.flat[-1] = retained_here
         path = case / "checkpoints" / f"node_{node:05d}.npz"
         np.savez_compressed(
             path,
@@ -123,7 +135,7 @@ def make_case(
                     "emitted": float(photons.sum()),
                     "ionized": float(ionized.sum()),
                     "escaped": 0.0,
-                    "retained": retained,
+                    "retained": retained_here,
                 },
             }
         )
@@ -261,7 +273,7 @@ class DataTests(unittest.TestCase):
         """Check conservation even when every provenance digest matches."""
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            case = make_case(root)
+            case = make_case(root, retained=0.2)
             report = json.loads((case / "summary.json").read_text())
             path = Path(report["checkpoints"][3]["path"])
             with np.load(path, allow_pickle=False) as archive:
@@ -274,8 +286,9 @@ class DataTests(unittest.TestCase):
             receipt["summary_sha256"] = digest(case / "summary.json")
             receipt["checkpoint_sha256"][str(path.relative_to(case))] = digest(path)
             (case / "receipt.json").write_text(json.dumps(receipt))
-            with pytest.raises(ValueError, match="Independent source/grid"):
+            with pytest.raises(ValueError, match="Independent source/grid") as error:
                 load_sample(discover_samples(root)[3])
+            assert not isinstance(error.value, UnresolvedPhotonBudgetError)
 
     def test_native_fixture_changed_after_discovery_is_rejected(self) -> None:
         """Reject native-history mutation after its identity was recorded."""
@@ -331,13 +344,56 @@ class DataTests(unittest.TestCase):
                 load_sample(discover_samples(root)[3])
 
     def test_unresolved_retained_photons_are_rejected_before_projection(self) -> None:
-        """Reject unresolved radiation before applying absorbed budgets."""
+        """Distinguish valid radiation ledgers from usable emitted-count targets."""
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             make_case(root, retained=0.2)
             samples = discover_samples(root)
-            with pytest.raises(ValueError, match=r"retained|escaped"):
+            with pytest.raises(
+                UnresolvedPhotonBudgetError, match=r"retained|escaped"
+            ) as error:
                 load_sample(samples[3])
+            audit = error.value.diagnostics
+            assert audit["seed"] == 10
+            assert audit["node_index"] == 3
+            assert audit["redshift"] == 9.0
+            assert audit["reason"] == "unresolved_radiation_before_saturation"
+            assert audit["unresolved_tolerance"] == 1e-7
+            np.testing.assert_allclose(
+                [
+                    audit["emitted"],
+                    audit["ionized"],
+                    audit["retained"],
+                    audit["atom_capacity"],
+                    audit["Q_mass"],
+                ],
+                [2.9, 2.7, 0.2, 9.0, 0.3],
+                rtol=0,
+                atol=1e-15,
+            )
+            np.testing.assert_allclose(
+                [
+                    audit["unresolved_fraction"],
+                    audit["projected_budget"],
+                    audit["projected_minus_teacher_count"],
+                    audit["projected_minus_teacher_Q_mass"],
+                ],
+                [0.2 / 2.9, 2.9, 0.2, 0.2 / 9.0],
+                rtol=1e-15,
+                atol=1e-16,
+            )
+            assert audit["relative_grid_residual"] < 2e-15
+            assert audit["maximum_source_relative_residual"] < 2e-15
+            json.dumps(audit, allow_nan=False)
+
+    def test_tiny_retained_tail_remains_eligible_under_original_tolerance(self) -> None:
+        """Retain the existing radiation-tail allowance without broadening it."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            make_case(root, retained=1e-8)
+            loaded = load_sample(discover_samples(root)[3])
+            assert loaded["ledger"]["unresolved_fraction"] < 1e-7
+            np.testing.assert_allclose(loaded["budget"], 2.7 + 1e-8, rtol=0, atol=1e-15)
 
     def test_four_seed_split_is_disjoint_even_at_matching_times(self) -> None:
         """Keep entire realizations within one dataset partition."""

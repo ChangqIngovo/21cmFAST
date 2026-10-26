@@ -12,6 +12,7 @@ import numpy as np
 
 from research.pc_evolution.evolution import run_history
 from research.pc_evolution.native_history import ARRAY_KEYS, array_hash
+from research.pc_field_emulator.test_data import make_case
 from research.pc_field_emulator.train import run_experiment
 
 
@@ -109,6 +110,53 @@ class ProducerIntegrationTests(unittest.TestCase):
                 assert abs(sample["metrics"]["projected"]["delta_Q_mass"]) < 1e-10
                 assert "ratio_baseline" in sample["spectra"]
             assert len(list((output / "test").glob("*.png"))) == 2
+            assert before == {path: _digest(path) for path in before}
+
+    def test_late_retained_snapshots_are_reported_and_training_finishes(self) -> None:
+        """Exclude valid retained-budget cases before fitting any split."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inputs = root / "teacher"
+            for seed in (10, 20, 30, 40):
+                make_case(
+                    inputs,
+                    seed=seed,
+                    retained=0.01 if seed in (20, 40) else 0.0,
+                    retained_from_node=6,
+                )
+            before = {
+                path: _digest(path) for path in inputs.rglob("*") if path.is_file()
+            }
+            output = root / "emulator"
+            report = run_experiment(
+                [inputs],
+                output,
+                workers=1,
+                model_seeds=(11,),
+                epochs=2,
+                hidden=(4,),
+                samples_per_snapshot=8,
+                batch_size=8,
+            )
+            assert (output / "COMPLETED").is_file()
+            assert report["snapshot_counts"] == {
+                "train": 11,
+                "validation": 6,
+                "test": 5,
+            }
+            eligibility = report["sample_eligibility"]
+            assert {
+                (row["seed"], row["node_index"]) for row in eligibility["excluded"]
+            } == {(20, 6), (40, 6)}
+            assert eligibility["coverage"]["test"]["accepted"]["Q_mass_range"] == [
+                0.1,
+                0.5,
+            ]
+            assert {row["seed"] for row in report["test"]} == {40}
+            assert 6 not in {row["node_index"] for row in report["test"]}
+            with np.load(output / "model.npz", allow_pickle=False) as model:
+                metadata = json.loads(str(model["metadata_json"].item()))
+            assert metadata["training_samples"] == 11 * 8
             assert before == {path: _digest(path) for path in before}
 
 
