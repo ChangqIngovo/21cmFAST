@@ -1,0 +1,394 @@
+{
+  "passed": true,
+  "repetitions": 1,
+  "scope": "Identical static-density, eight-source input at each CPU count; local process/thread correctness test, host allocation limited to 8 physical CPUs; not a 32-core speed benchmark",
+  "runs": [
+    {
+      "workers": 1,
+      "mpi_ranks": 1,
+      "omp_threads": 1,
+      "state_checks_passed": true,
+      "comparison_to_one_cpu": {
+        "fields": {
+          "Gamma_HI_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "Gamma_HeII_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "Gamma_HeI_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "density_total_cm3": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "photoheating_native": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "temperature_K": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHI_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHeII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHeIII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHeIII_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHeII_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHeI_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          }
+        },
+        "passed": true,
+        "relative_tolerance": 1e-08,
+        "transport_counters": {
+          "available": true,
+          "excluded": "Original native boundary counter; independently tallied boundary flux is checked",
+          "fields": {
+            "boundary_outflow_photons": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            },
+            "lls_loss_photons": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            },
+            "primary_absorptions": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            },
+            "primary_absorptions_by_species": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            },
+            "secondary_ionizations": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            },
+            "secondary_ionizations_by_species": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            }
+          },
+          "passed": true,
+          "relative_to_nominal_emission_tolerance": 1e-08
+        }
+      },
+      "photon_residual_over_transported_emitted": 7.549516567451064e-15
+    },
+    {
+      "workers": 8,
+      "mpi_ranks": 1,
+      "omp_threads": 8,
+      "state_checks_passed": true,
+      "comparison_to_one_cpu": {
+        "fields": {
+          "Gamma_HI_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 1.6155871338926322e-27,
+            "maximum_normalized_difference": 1.1008687648229166e-15,
+            "passed": true
+          },
+          "Gamma_HeII_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 1.2996175264725068e-30,
+            "maximum_normalized_difference": 1.8221230407425855e-15,
+            "passed": true
+          },
+          "Gamma_HeI_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 2.0194839173657902e-27,
+            "maximum_normalized_difference": 3.0133187863304392e-15,
+            "passed": true
+          },
+          "density_total_cm3": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "photoheating_native": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 2.5111268480700722e-42,
+            "maximum_normalized_difference": 2.9012899129339763e-15,
+            "passed": true
+          },
+          "temperature_K": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 3.3306690738754696e-16,
+            "maximum_normalized_difference": 3.5062704999252794e-16,
+            "passed": true
+          },
+          "xHI_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 4.440892098500626e-16,
+            "maximum_normalized_difference": 4.440911745677906e-16,
+            "passed": true
+          },
+          "xHeII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 2.0095036745715333e-14,
+            "maximum_normalized_difference": 2.6989527271577127e-14,
+            "passed": true
+          },
+          "xHeIII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 4.440892098500626e-16,
+            "maximum_normalized_difference": 6.711655464382814e-13,
+            "passed": true
+          },
+          "xHeIII_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 6.661338147750939e-16,
+            "maximum_normalized_difference": 2.7382673331734943e-12,
+            "passed": true
+          },
+          "xHeII_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 1.2101430968414206e-14,
+            "maximum_normalized_difference": 2.6611089115776245e-14,
+            "passed": true
+          },
+          "xHeI_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 1.2212453270876722e-14,
+            "maximum_normalized_difference": 1.2212767680712363e-14,
+            "passed": true
+          }
+        },
+        "passed": true,
+        "relative_tolerance": 1e-08,
+        "transport_counters": {
+          "available": true,
+          "excluded": "Original native boundary counter; independently tallied boundary flux is checked",
+          "fields": {
+            "boundary_outflow_photons": {
+              "maximum_absolute_difference": 8.92029807941225e+43,
+              "maximum_difference_over_nominal_emitted": 2.361932453107558e-19,
+              "passed": true
+            },
+            "lls_loss_photons": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            },
+            "primary_absorptions": {
+              "maximum_absolute_difference": 2.1922524559963544e+48,
+              "maximum_difference_over_nominal_emitted": 5.804685196757134e-15,
+              "passed": true
+            },
+            "primary_absorptions_by_species": {
+              "maximum_absolute_difference": 3.19703483166135e+48,
+              "maximum_difference_over_nominal_emitted": 8.465165911937487e-15,
+              "passed": true
+            },
+            "secondary_ionizations": {
+              "maximum_absolute_difference": 5.102410501423807e+46,
+              "maximum_difference_over_nominal_emitted": 1.351025363177523e-16,
+              "passed": true
+            },
+            "secondary_ionizations_by_species": {
+              "maximum_absolute_difference": 4.834801559041439e+46,
+              "maximum_difference_over_nominal_emitted": 1.2801673895842963e-16,
+              "passed": true
+            }
+          },
+          "passed": true,
+          "relative_to_nominal_emission_tolerance": 1e-08
+        }
+      },
+      "photon_residual_over_transported_emitted": 1.7763568394002505e-15
+    },
+    {
+      "workers": 32,
+      "mpi_ranks": 4,
+      "omp_threads": 8,
+      "state_checks_passed": true,
+      "comparison_to_one_cpu": {
+        "fields": {
+          "Gamma_HI_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 1.8175355256292112e-27,
+            "maximum_normalized_difference": 1.2384773604257812e-15,
+            "passed": true
+          },
+          "Gamma_HeII_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 1.7618407131254434e-30,
+            "maximum_normalized_difference": 2.4701810279657932e-15,
+            "passed": true
+          },
+          "Gamma_HeI_s": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 9.087677628146056e-28,
+            "maximum_normalized_difference": 1.3559934538486977e-15,
+            "passed": true
+          },
+          "density_total_cm3": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "photoheating_native": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 3.946056475538685e-42,
+            "maximum_normalized_difference": 4.559169863181963e-15,
+            "passed": true
+          },
+          "temperature_K": {
+            "absolute_tolerance": 0.0,
+            "maximum_absolute_difference": 0.0,
+            "maximum_normalized_difference": 0.0,
+            "passed": true
+          },
+          "xHII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 2.220446049250313e-16,
+            "maximum_normalized_difference": 2.3375136666168526e-16,
+            "passed": true
+          },
+          "xHI_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 4.440892098500626e-16,
+            "maximum_normalized_difference": 4.440911745677906e-16,
+            "passed": true
+          },
+          "xHeII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 1.9761969838327786e-14,
+            "maximum_normalized_difference": 2.654218704055651e-14,
+            "passed": true
+          },
+          "xHeIII": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 4.996003610813204e-16,
+            "maximum_normalized_difference": 7.550612397430666e-13,
+            "passed": true
+          },
+          "xHeIII_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 6.661338147750939e-16,
+            "maximum_normalized_difference": 2.7382673331734943e-12,
+            "passed": true
+          },
+          "xHeII_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 1.1934897514720433e-14,
+            "maximum_normalized_difference": 2.6244881467394e-14,
+            "passed": true
+          },
+          "xHeI_time_average": {
+            "absolute_tolerance": 1e-09,
+            "maximum_absolute_difference": 1.199040866595169e-14,
+            "maximum_normalized_difference": 1.1990717359244866e-14,
+            "passed": true
+          }
+        },
+        "passed": true,
+        "relative_tolerance": 1e-08,
+        "transport_counters": {
+          "available": true,
+          "excluded": "Original native boundary counter; independently tallied boundary flux is checked",
+          "fields": {
+            "boundary_outflow_photons": {
+              "maximum_absolute_difference": 6.690223559559187e+43,
+              "maximum_difference_over_nominal_emitted": 1.7714493398306684e-19,
+              "passed": true
+            },
+            "lls_loss_photons": {
+              "maximum_absolute_difference": 0.0,
+              "maximum_difference_over_nominal_emitted": 0.0,
+              "passed": true
+            },
+            "primary_absorptions": {
+              "maximum_absolute_difference": 2.6489717176622615e+48,
+              "maximum_difference_over_nominal_emitted": 7.013994612748204e-15,
+              "passed": true
+            },
+            "primary_absorptions_by_species": {
+              "maximum_absolute_difference": 3.562410240994076e+48,
+              "maximum_difference_over_nominal_emitted": 9.432613444730343e-15,
+              "passed": true
+            },
+            "secondary_ionizations": {
+              "maximum_absolute_difference": 4.816960962882615e+46,
+              "maximum_difference_over_nominal_emitted": 1.2754435246780812e-16,
+              "passed": true
+            },
+            "secondary_ionizations_by_species": {
+              "maximum_absolute_difference": 4.549352020500247e+46,
+              "maximum_difference_over_nominal_emitted": 1.2045855510848546e-16,
+              "passed": true
+            }
+          },
+          "passed": true,
+          "relative_to_nominal_emission_tolerance": 1e-08
+        }
+      },
+      "photon_residual_over_transported_emitted": 6.661338147750939e-16
+    }
+  ]
+}

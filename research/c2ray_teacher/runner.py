@@ -1,4 +1,4 @@
-"""Run the unchanged C2RayHHe backend on physical native 21cmFAST histories."""
+"""Run native or corrected C2RayHHe transport on physical 21cmFAST histories."""
 
 from __future__ import annotations
 
@@ -52,6 +52,8 @@ DEFAULT_CONFIG = {
     "initial_xheiii": 1e-12,
     "thermal": True,
     "benchmark": True,
+    "transport": "native",
+    "angular_order": 16,
 }
 
 
@@ -79,6 +81,7 @@ def _validate_numbers(config: dict) -> None:
         "refinement",
         "stride",
         "time_substeps",
+        "angular_order",
     )
     for name in integers:
         if type(config[name]) is not int or config[name] < 1:
@@ -125,6 +128,8 @@ def validate_config(updates: dict) -> dict:
         raise ValueError(f"Unknown configuration keys: {sorted(unknown)}")
     config = DEFAULT_CONFIG | updates
     _validate_numbers(config)
+    if config["transport"] not in ("native", "conservative_rays"):
+        raise ValueError("transport must be native or conservative_rays")
     if config["dimension"] < 16 or config["highres_dimension"] < config["dimension"]:
         raise ValueError("dimension >= 16 and highres_dimension >= dimension required")
     if config["refinement"] % 2 == 0:
@@ -582,6 +587,8 @@ def _build(upstream: Path, destination: Path, manifest: dict) -> Path:
         h=manifest["h"],
         mpi=True,
         compiler=os.environ.get("MPIFC"),
+        transport=manifest.get("transport", "native"),
+        angular_order=manifest.get("angular_order", 16),
     )
 
 
@@ -761,11 +768,20 @@ def _benchmark_history(science: dict) -> dict:
     return history
 
 
-def _benchmarks(science: dict, output: Path, upstream: Path, workers: int) -> dict:
+def _benchmarks(
+    science: dict,
+    output: Path,
+    upstream: Path,
+    workers: int,
+    *,
+    transport: str = "native",
+    angular_order: int = 16,
+) -> dict:
     binary = output / "benchmark_input.bin"
     manifest = prepare_history(
         _benchmark_history(science), binary, thermal=True, initial_temperature=1e4
     )
+    manifest.update(transport=transport, angular_order=angular_order)
     _write_json(output / "benchmark_input_manifest.json", manifest)
     executable = _build(upstream, output / "build_benchmark", manifest)
     results = {
@@ -860,6 +876,9 @@ def run(config: dict, output: Path, upstream: Path, workers: int = 32) -> dict:
         "thermal",
     )
     manifest = prepare_history(history, binary, **{key: config[key] for key in keys})
+    manifest.update(
+        transport=config["transport"], angular_order=config["angular_order"]
+    )
     manifest["native_history_provenance"] = {
         key: history["metadata"].get(key)
         for key in (
@@ -873,7 +892,14 @@ def run(config: dict, output: Path, upstream: Path, workers: int = 32) -> dict:
     }
     _write_json(output / "input_manifest.json", manifest)
     benchmarks = (
-        _benchmarks(history, output, upstream, workers)
+        _benchmarks(
+            history,
+            output,
+            upstream,
+            workers,
+            transport=config["transport"],
+            angular_order=config["angular_order"],
+        )
         if config["benchmark"]
         else {"skipped": True}
     )

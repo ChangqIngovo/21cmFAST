@@ -11,7 +11,7 @@ for argument in "$@"; do
             echo 'C2_WORKERS, C2_QUEUE, C2_MEM, C2_WALLTIME, C2_DIMENSION, C2_HIGHRES_DIMENSION,'
             echo 'C2_BOX_LEN, C2_SEED, C2_Z_START, C2_Z_END, C2_INTERVALS, C2_REFERENCE_Z,'
             echo 'C2_HISTORY, C2_REFINEMENT, C2_TIME_SUBSTEPS, C2_STRIDE, C2_BENCHMARK,'
-            echo 'C2_PREPARED_PATH_FILE (optional fresh receipt file).'
+            echo 'C2_TRANSPORT, C2_ANGULAR_ORDER, C2_PREPARED_PATH_FILE (optional fresh receipt file).'
             exit 0 ;;
         *) echo "Unknown argument: $argument" >&2; exit 2 ;;
     esac
@@ -128,6 +128,8 @@ config = {
     'time_substeps': integer('C2_TIME_SUBSTEPS', 1),
     'stride': integer('C2_STRIDE', 1),
     'benchmark': boolean('C2_BENCHMARK', True),
+    'transport': os.environ.get('C2_TRANSPORT', 'native'),
+    'angular_order': integer('C2_ANGULAR_ORDER', 16),
 }
 if (config['dimension'] < 16 or config['highres_dimension'] < config['dimension']
         or config['box_len'] <= 0):
@@ -136,6 +138,8 @@ if not config['z_start'] > config['z_end'] >= 0 or config['reference_z'] < 0:
     raise ValueError('Descending nonnegative redshifts and nonnegative reference_z required.')
 if config['refinement'] % 2 != 1:
     raise ValueError('C2_REFINEMENT must be odd to preserve native source centres.')
+if config['transport'] not in ('native', 'conservative_rays'):
+    raise ValueError('C2_TRANSPORT must be native or conservative_rays.')
 queue = os.environ.get('C2_QUEUE', 'normal')
 memory = os.environ.get('C2_MEM', '128GB')
 walltime = os.environ.get('C2_WALLTIME', '24:00:00')
@@ -191,7 +195,7 @@ manifest = {
     'upstream_commit': os.environ['C2_PREPARED_UPSTREAM_REVISION'],
     'upstream_tree': os.environ['C2_PREPARED_UPSTREAM_TREE'],
     'upstream_url': 'https://github.com/garrelt/C2-Ray3Dm1D_Helium',
-    'upstream_algorithms': 'pinned numerical method; read-only diagnostics may instrument build copies',
+    'upstream_algorithms': 'pinned native chemistry; configured transport and exact build patches recorded in results',
     'run_directory': str(run),
     'python': os.environ['C2_PREPARED_PYTHON'],
     'runtime_python': sys.executable,

@@ -92,7 +92,11 @@ SOURCES = (
 
 def sha256(path: Path) -> str:
     """Return a file's SHA-256 digest."""
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    digest = hashlib.sha256()
+    with Path(path).open("rb") as stream:
+        for block in iter(lambda: stream.read(1024 * 1024), b""):
+            digest.update(block)
+    return digest.hexdigest()
 
 
 def validate_configuration(
@@ -201,6 +205,8 @@ def build_backend(
     mpi: bool = True,
     compiler: str | None = None,
     diagnostics: bool = True,
+    transport: str = "native",
+    angular_order: int = 16,
 ) -> Path:
     """Compile the pinned kernel and return its external-driver executable.
 
@@ -220,9 +226,18 @@ def build_backend(
         GNU-compatible Fortran compiler or MPI wrapper executable.
     diagnostics : bool
         Add passive primary/secondary counters to verified build copies. False
-        compiles upstream numerical files byte-for-byte as a reference.
+        with native transport compiles upstream numerical files byte-for-byte.
+    transport : str
+        Native short characteristics or opt-in ``conservative_rays`` transport.
+        The latter changes spatial transport while retaining native chemistry.
+    angular_order : int
+        Pixels per side of six angular cube faces for conservative rays.
     """
     validate_configuration(dimension, helium_number_fraction, omega_m, omega_b, h)
+    if transport not in ("native", "conservative_rays"):
+        raise ValueError("Unknown transport discretization")
+    if type(angular_order) is not int or angular_order < 1:
+        raise ValueError("angular_order must be a positive integer")
     upstream, output_dir = Path(upstream).resolve(), Path(output_dir).resolve()
     locked = verify_upstream(upstream)
     compiler = compiler or shutil.which("mpifort" if mpi else "gfortran")
@@ -244,6 +259,15 @@ def build_backend(
         instrumentation = instrument_sources(
             native / "code", output_dir / "diagnostics.patch"
         )
+    numerical_patch = {}
+    if transport == "conservative_rays":
+        if __package__:
+            from .conservative import patch_transport
+        else:
+            from conservative import patch_transport
+        numerical_patch = patch_transport(
+            native / "code", output_dir / "transport.patch"
+        )
     configured = _configured_sources(
         native,
         output_dir / "configuration",
@@ -261,6 +285,15 @@ def build_backend(
         shutil.copyfile(HERE / "transport_diagnostics.F90", module)
         paths.append(module)
         instrumentation["module_sha256"] = sha256(module)
+    if transport == "conservative_rays":
+        module = output_dir / "conservative_transport.F90"
+        shutil.copyfile(HERE / "conservative_transport.F90", module)
+        paths.append(module)
+        numerical_patch["module_sha256"] = sha256(module)
+        stable_module = output_dir / "stable_time_average.f90"
+        shutil.copyfile(HERE / "stable_time_average.f90", stable_module)
+        paths.append(stable_module)
+        numerical_patch["time_average_module_sha256"] = sha256(stable_module)
     driver = output_dir / "driver.F90"
     shutil.copyfile(HERE / "driver.F90", driver)
     paths.append(driver)
@@ -277,6 +310,8 @@ def build_backend(
         flags.append("-DMPI")
     if diagnostics:
         flags.append("-DC2_DIAGNOSTICS")
+    if transport == "conservative_rays":
+        flags.append(f"-DC2_RAY_ORDER={angular_order}")
     objects = output_dir / "objects"
     objects.mkdir()
     commands = []
@@ -308,6 +343,11 @@ def build_backend(
     for key, value in compiled_hashes.items():
         instrumented = instrumentation.get("files", {}).get(key)
         expected = instrumented["instrumented_sha256"] if instrumented else locked[key]
+        corrected = numerical_patch.get("files", {}).get(key)
+        if corrected:
+            if corrected["before_sha256"] != expected:
+                raise RuntimeError("Numerical patch started from unverified bytes")
+            expected = corrected["after_sha256"]
         if value != expected:
             raise RuntimeError("Unexpected upstream source change during build")
         if instrumented and instrumented["pristine_sha256"] != locked[key]:
@@ -321,8 +361,11 @@ def build_backend(
         "omega_b": omega_b,
         "h": h,
         "blackbody_temperature_K": 50000,
-        "numerical_sources_unchanged": not diagnostics,
-        "numerical_algorithm_unchanged": True,
+        "numerical_sources_unchanged": not diagnostics and transport == "native",
+        "numerical_algorithm_unchanged": transport == "native",
+        "transport": transport,
+        "angular_order": angular_order if transport == "conservative_rays" else None,
+        "transport_patch": numerical_patch,
         "diagnostics_enabled": diagnostics,
         "diagnostics": instrumentation,
         "pristine_upstream_sha256": {key: locked[key] for key in compiled_hashes},
@@ -348,7 +391,11 @@ def read_output(path: Path) -> dict:
     with path.open("rb") as stream:
         if stream.read(8) != b"C2RTOUT1":
             raise ValueError("Unsupported C2-Ray output magic")
-        n, steps, fields, metadata = np.fromfile(stream, dtype="<i4", count=4)
+        header = np.fromfile(stream, dtype="<i4", count=4)
+    if len(header) != 4:
+        raise ValueError("Truncated C2-Ray output header")
+    # File offsets may exceed 2 GiB even when every header integer is int32.
+    n, steps, fields, metadata = map(int, header)
     if fields != len(FIELD_NAMES) or metadata != len(META_NAMES) or n < 1 or steps < 1:
         raise ValueError("Unsupported C2-Ray output header")
     step_values = metadata + fields * n**3
@@ -383,6 +430,10 @@ def main() -> None:
     parser.add_argument("--serial", action="store_true")
     parser.add_argument("--compiler")
     parser.add_argument("--no-diagnostics", action="store_true")
+    parser.add_argument(
+        "--transport", choices=("native", "conservative_rays"), default="native"
+    )
+    parser.add_argument("--angular-order", type=int, default=16)
     args = vars(parser.parse_args())
     args["mpi"] = not args.pop("serial")
     args["diagnostics"] = not args.pop("no_diagnostics")

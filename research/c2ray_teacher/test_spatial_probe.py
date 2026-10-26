@@ -1,8 +1,12 @@
 """Check that spatial probes keep the physical problem fixed."""
 
+from pathlib import Path
+from types import SimpleNamespace
+
 import numpy as np
 import pytest
 
+from research.c2ray_teacher import spatial_probe
 from research.c2ray_teacher.spatial_probe import (
     BASE_DIMENSION,
     BASE_POSITIONS,
@@ -28,3 +32,16 @@ def test_invalid_refinement_is_rejected(factors: list) -> None:
     """Reject shifts, duplicate cases and malformed refinement requests."""
     with pytest.raises(ValueError, match="refinements"):
         validate_refinements(factors)
+
+
+def test_insufficient_storage_fails_before_writing_inputs(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Reject an undersized destination before generating the large fixture."""
+    monkeypatch.setattr(
+        spatial_probe.shutil, "disk_usage", lambda path: SimpleNamespace(free=1)
+    )
+    output = tmp_path / "probe"
+    with pytest.raises(OSError, match="needs at least"):
+        spatial_probe.run_probe(tmp_path / "upstream", output, [17])
+    assert not (output / "q17").exists()

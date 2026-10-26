@@ -36,3 +36,18 @@ def test_output_contract_and_truncation(tmp_path: Path):
     path.write_bytes(path.read_bytes()[:-1])
     with pytest.raises(ValueError, match="size"):
         read_output(path)
+
+
+def test_large_output_offsets_do_not_overflow_int32(tmp_path: Path) -> None:
+    """A sparse >2 GiB fixture exercises offsets without writing dense data."""
+    path = tmp_path / "large.bin"
+    n, steps = 272, 2
+    expected = 24 + 8 * steps * (len(META_NAMES) + len(FIELD_NAMES) * n**3)
+    with path.open("wb") as stream:
+        stream.write(b"C2RTOUT1")
+        stream.write(struct.pack("<4i", n, steps, len(FIELD_NAMES), len(META_NAMES)))
+        stream.truncate(expected)
+        stream.seek(expected - 8)
+        stream.write(struct.pack("<d", 0.125))
+    result = read_output(path)
+    assert result["fields"][FIELD_NAMES[-1]][-1, -1, -1, -1] == 0.125

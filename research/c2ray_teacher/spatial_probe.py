@@ -11,6 +11,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import struct
 import subprocess
 import sys
@@ -164,6 +165,8 @@ def run_probe(
     refinements: list[int],
     threads: int = 4,
     compiler: str | None = None,
+    transport: str = "native",
+    angular_order: int = 16,
 ) -> dict:
     """Build and run a fixed physical problem at several mesh resolutions.
 
@@ -179,6 +182,10 @@ def run_probe(
         OpenMP threads for each native executable, without MPI processes.
     compiler : str, optional
         GNU Fortran compiler path; otherwise resolved from the environment.
+    transport : str
+        Native short characteristics or opt-in conservative rays.
+    angular_order : int
+        Angular pixels per side of each cube face in the ray mode.
     """
     refinements = validate_refinements(refinements)
     if type(threads) is not int or not 1 <= threads <= 32:
@@ -191,9 +198,20 @@ def run_probe(
         "configuration": CONFIGURATION,
         "threads": threads,
         "refinements": refinements,
+        "transport": transport,
+        "angular_order": angular_order if transport == "conservative_rays" else None,
         "cases": [],
     }
     for q in refinements:
+        # Three input density grids and 13 output fields for each of two steps.
+        # Include build files and a margin before allocating a high-resolution case.
+        required = (29 * 8 * (BASE_DIMENSION * q) ** 3 * 11) // 10 + 16 * 1024**2
+        available = shutil.disk_usage(output).free
+        if available < required:
+            raise OSError(
+                f"Spatial probe q={q} needs at least {required} free bytes; "
+                f"only {available} available at {output}"
+            )
         case = output / f"q{q}"
         case.mkdir()
         fixture = _write_input(case / "input.bin", q)
@@ -209,6 +227,8 @@ def run_probe(
             mpi=False,
             compiler=compiler,
             diagnostics=True,
+            transport=transport,
+            angular_order=angular_order,
         )
         started = time.perf_counter()
         with (case / "native.log").open("w") as stream:
@@ -239,6 +259,10 @@ def main() -> None:
     parser.add_argument("--refinements", type=int, nargs="+", default=[1, 3, 5])
     parser.add_argument("--threads", type=int, default=4)
     parser.add_argument("--compiler")
+    parser.add_argument(
+        "--transport", choices=("native", "conservative_rays"), default="native"
+    )
+    parser.add_argument("--angular-order", type=int, default=16)
     run_probe(**vars(parser.parse_args()))
 
 

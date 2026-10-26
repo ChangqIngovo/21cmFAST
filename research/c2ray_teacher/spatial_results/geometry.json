@@ -1,0 +1,61 @@
+{
+  "scope": "Analytic incoming columns, uniform monochromatic medium; no chemistry or short-characteristic interpolation",
+  "cases": [
+    {
+      "cell_optical_depth": 16.0,
+      "native_geometry_residual": -0.0001710529707208419,
+      "exact_source_cell_only_residual": 6.309659895764597e-05,
+      "unabsorbed_tail_upper_bound": 1.3838965267367376e-87,
+      "reference": "Unit absorption in an infinite uniform medium",
+      "columns": "Analytic, no short-characteristic interpolation"
+    },
+    {
+      "cell_optical_depth": 8.0,
+      "native_geometry_residual": -0.008272652861382346,
+      "exact_source_cell_only_residual": 0.0011301181888359046,
+      "unabsorbed_tail_upper_bound": 3.720075976020836e-44,
+      "reference": "Unit absorption in an infinite uniform medium",
+      "columns": "Analytic, no short-characteristic interpolation"
+    },
+    {
+      "cell_optical_depth": 4.0,
+      "native_geometry_residual": -0.04726834901991939,
+      "exact_source_cell_only_residual": -0.002779440612444617,
+      "unabsorbed_tail_upper_bound": 1.9287498479639178e-22,
+      "reference": "Unit absorption in an infinite uniform medium",
+      "columns": "Analytic, no short-characteristic interpolation"
+    },
+    {
+      "cell_optical_depth": 2.0,
+      "native_geometry_residual": -0.09031952768608109,
+      "exact_source_cell_only_residual": -0.020641771334516834,
+      "unabsorbed_tail_upper_bound": 1.3887943864964021e-11,
+      "reference": "Unit absorption in an infinite uniform medium",
+      "columns": "Analytic, no short-characteristic interpolation"
+    },
+    {
+      "cell_optical_depth": 1.0,
+      "native_geometry_residual": -0.09495844045203272,
+      "exact_source_cell_only_residual": -0.03297661245464856,
+      "unabsorbed_tail_upper_bound": 9.237449661970594e-09,
+      "reference": "Unit absorption in an infinite uniform medium",
+      "columns": "Analytic, no short-characteristic interpolation"
+    },
+    {
+      "cell_optical_depth": 0.5,
+      "native_geometry_residual": -0.07031804393890739,
+      "exact_source_cell_only_residual": -0.028923692152779124,
+      "unabsorbed_tail_upper_bound": 1.186112015134383e-08,
+      "reference": "Unit absorption in an infinite uniform medium",
+      "columns": "Analytic, no short-characteristic interpolation"
+    },
+    {
+      "cell_optical_depth": 0.25,
+      "native_geometry_residual": -0.0429184033004435,
+      "exact_source_cell_only_residual": -0.018989580457597133,
+      "unabsorbed_tail_upper_bound": 1.3440409951135022e-08,
+      "reference": "Unit absorption in an infinite uniform medium",
+      "columns": "Analytic, no short-characteristic interpolation"
+    }
+  ]
+}

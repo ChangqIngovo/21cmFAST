@@ -241,6 +241,8 @@ class GadiWorkflowTests(unittest.TestCase):
             C2_TIME_SUBSTEPS="4",
             C2_STRIDE="2",
             C2_BENCHMARK="false",
+            C2_TRANSPORT="conservative_rays",
+            C2_ANGULAR_ORDER="64",
             C2_PREPARED_PATH_FILE=str(receipt),
         )
         result = self._prepare()
@@ -255,6 +257,8 @@ class GadiWorkflowTests(unittest.TestCase):
         assert config["time_substeps"] == 4
         assert config["stride"] == 2
         assert config["benchmark"] is False
+        assert config["transport"] == "conservative_rays"
+        assert config["angular_order"] == 64
         assert manifest["reused_history"]["source"] == str(history)
         assert "input/native_history.npz" in (run / "prepared.sha256").read_text()
         assert receipt.read_text().strip() == str(run)
@@ -280,6 +284,8 @@ class GadiWorkflowTests(unittest.TestCase):
             ("C2_TIME_SUBSTEPS", "0"),
             ("C2_STRIDE", "1.5"),
             ("C2_BENCHMARK", "maybe"),
+            ("C2_TRANSPORT", "renormalize"),
+            ("C2_ANGULAR_ORDER", "0"),
             ("C2_HISTORY", str(self.root / "missing.npz")),
         ):
             with self.subTest(name=name):

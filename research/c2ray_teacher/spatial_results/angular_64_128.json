@@ -1,0 +1,106 @@
+{
+  "scope": "Fixed physical two-source fixture; target-grid convergence and unfiltered front differences reported separately",
+  "target_dimension": 16,
+  "reference": "/workspace/scratch/40b418003e4a/c2ray_spatial_final64_rerun/q17",
+  "candidate": "/tmp/c2ray_spatial_final128_n272/q17",
+  "reference_dimension": 272,
+  "candidate_dimension": 272,
+  "reference_angular_order": 64,
+  "candidate_angular_order": 128,
+  "reference_provenance": {
+    "input_sha256": "cf9eb6e6178a987ec990df9f0a2eb354ae2d12913746a21ee09e2dde6459db31",
+    "build_manifest_sha256": "bf5887f5c9392f22a7714d63cead7b9a468d6a216d6446bc24b93fc619413502",
+    "upstream_commit": "a363656ff1c3b4b4c7334f398578d8c469154515",
+    "transport": "conservative_rays",
+    "angular_order": 64,
+    "numerical_algorithm_unchanged": false,
+    "transport_patch": {
+      "files": {
+        "code/doric.f90": {
+          "before_sha256": "75217868a08ba1552da19c6188630fe087d7a6947b56c28f3c055566c6b093d2",
+          "after_sha256": "2017dd3291a75a0abb8f1a0d3b50433c12c610de088b0c5c9a632da73782fbf7"
+        },
+        "code/files_for_3D/evolve_source.F90": {
+          "before_sha256": "40b7bdfb45853f564995cf02b033bfec4e931a7e80749a66d41da811d51326a6",
+          "after_sha256": "9c8da7055c860919c4c51bf80aa9611918770fd250f90e38a5422f30faf453c2"
+        },
+        "code/radiation_photoionrates.f90": {
+          "before_sha256": "76207e9296142f7616c615ac6fba736f3eb7fb1eedf471bc9a6b1ba405b95458",
+          "after_sha256": "3e57508374212ea89cf00283fab3f739d839cad53a85fac6a1883eff2a010462"
+        }
+      },
+      "patch_sha256": "54dc946492a998c50cce629f62ef110ffa1a18671ef1e7d98da80a53321c98a5",
+      "scope": "Continuous cube-face rays with exact solid angles and shared spectral-table endpoints; native H/He equations retained with stable evaluation of analytic eigenmode time averages",
+      "module_sha256": "a99eb27702e276d64fae3147c8468809ddb5c64e2a8dd350804db454b4763ab8",
+      "time_average_module_sha256": "b166e29ba2886b50f3e0e9bde09aa642b1aa3e093bf17893b236dc483d7986b9"
+    },
+    "executable_sha256": "b1562eca902ef0d259f6407735f63b35ecda70a261ccdb146ed56015abd99760",
+    "driver_sha256": "3dd0bda7d2b6e589b85dd3b7c59633c4b9b9825960ee9a2e7b1c2bd59d9b94b4"
+  },
+  "candidate_provenance": {
+    "input_sha256": "cf9eb6e6178a987ec990df9f0a2eb354ae2d12913746a21ee09e2dde6459db31",
+    "build_manifest_sha256": "62dc6eb4243ce9b336a4c335a54515616ebf39fca43602d7c6cff2f683cbafd9",
+    "upstream_commit": "a363656ff1c3b4b4c7334f398578d8c469154515",
+    "transport": "conservative_rays",
+    "angular_order": 128,
+    "numerical_algorithm_unchanged": false,
+    "transport_patch": {
+      "files": {
+        "code/doric.f90": {
+          "before_sha256": "75217868a08ba1552da19c6188630fe087d7a6947b56c28f3c055566c6b093d2",
+          "after_sha256": "2017dd3291a75a0abb8f1a0d3b50433c12c610de088b0c5c9a632da73782fbf7"
+        },
+        "code/files_for_3D/evolve_source.F90": {
+          "before_sha256": "40b7bdfb45853f564995cf02b033bfec4e931a7e80749a66d41da811d51326a6",
+          "after_sha256": "9c8da7055c860919c4c51bf80aa9611918770fd250f90e38a5422f30faf453c2"
+        },
+        "code/radiation_photoionrates.f90": {
+          "before_sha256": "76207e9296142f7616c615ac6fba736f3eb7fb1eedf471bc9a6b1ba405b95458",
+          "after_sha256": "3e57508374212ea89cf00283fab3f739d839cad53a85fac6a1883eff2a010462"
+        }
+      },
+      "patch_sha256": "54dc946492a998c50cce629f62ef110ffa1a18671ef1e7d98da80a53321c98a5",
+      "scope": "Continuous cube-face rays with exact solid angles and shared spectral-table endpoints; native H/He equations retained with stable evaluation of analytic eigenmode time averages",
+      "module_sha256": "a99eb27702e276d64fae3147c8468809ddb5c64e2a8dd350804db454b4763ab8",
+      "time_average_module_sha256": "b166e29ba2886b50f3e0e9bde09aa642b1aa3e093bf17893b236dc483d7986b9"
+    },
+    "executable_sha256": "9f4a1402249ecfdb034e2ffeaaab18b463f9cfa060aaa2a564f008d6d93b4c1d",
+    "driver_sha256": "3dd0bda7d2b6e589b85dd3b7c59633c4b9b9825960ee9a2e7b1c2bd59d9b94b4"
+  },
+  "reference_output_sha256": "8470ed127d5f980eb34ac4344cb7460d24c8c0359dbd761d7df7825e96733bdd",
+  "candidate_output_sha256": "3b0339f054a84de79cb2c4a41716ed39d5a60b990ed4447b6df6428f1ac5afa4",
+  "reference_photon_residual": 1.1857181902996672e-13,
+  "candidate_photon_residual": -5.828670879282072e-14,
+  "target_thresholds": {
+    "ionized_L1": 0.01,
+    "ionized_mean": 0.005,
+    "thermal_L1": 0.05,
+    "low_k_band_power": 0.01
+  },
+  "target_diagnostics_passed": true,
+  "universal_convergence_certified": false,
+  "steps": [
+    {
+      "step": 1,
+      "target_xHII_L1_over_ionized_increment": 2.6469972663341007e-05,
+      "target_xHII_mean_relative_change": 2.4302712915268613e-06,
+      "target_temperature_L1_over_thermal_change": 8.99120580950058e-05,
+      "target_low_k_power_relative_change": 5.46634412368352e-06,
+      "target_low_k_definition": "Summed neutral-fraction fluctuation power, 0 < k <= half target-grid Nyquist",
+      "unfiltered_RT_grid_dimension": 272,
+      "unfiltered_RT_xHII_L1_over_ionized_increment": 0.014709477081040319,
+      "target_diagnostic_passed": true
+    },
+    {
+      "step": 2,
+      "target_xHII_L1_over_ionized_increment": 2.6470265016821848e-05,
+      "target_xHII_mean_relative_change": 2.430769318287501e-06,
+      "target_temperature_L1_over_thermal_change": 8.970437978224845e-05,
+      "target_low_k_power_relative_change": 5.4671801649197604e-06,
+      "target_low_k_definition": "Summed neutral-fraction fluctuation power, 0 < k <= half target-grid Nyquist",
+      "unfiltered_RT_grid_dimension": 272,
+      "unfiltered_RT_xHII_L1_over_ionized_increment": 0.014709717791295625,
+      "target_diagnostic_passed": true
+    }
+  ]
+}
