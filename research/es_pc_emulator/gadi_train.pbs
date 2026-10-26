@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+#PBS -N es_c2_train
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=8
+#PBS -l mem=32GB
+#PBS -l walltime=04:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${DATASET_RUN:?Submit with qsub -v DATASET_RUN=/completed/dataset/run}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing CPU allocation}"
+DATASET_RUN=$(realpath "$DATASET_RUN")
+test -f "$DATASET_RUN/COMPLETED"
+test -f "$DATASET_RUN/results/dataset_manifest.json"
+test -x "$DATASET_RUN/venv/bin/python"
+cd "$DATASET_RUN"
+sha256sum --quiet -c prepared.sha256
+mkdir -p training_runs
+TRAIN_RUN=$(mktemp -d "$DATASET_RUN/training_runs/run_XXXXXX")
+export TRAIN_RUN DATASET_RUN
+exec > "$TRAIN_RUN/run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; if ((status != 0)); then printf "%s\n" "$status" > "$TRAIN_RUN/FAILED"; fi' EXIT
+module --force purge
+source "$DATASET_RUN/runtime.env"
+module load "${PC_MODULES[@]}"
+module load gcc/12.2.0 openmpi/4.1.4
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS="$PBS_NCPUS" OPENBLAS_NUM_THREADS="$PBS_NCPUS"
+export MKL_NUM_THREADS="$PBS_NCPUS" NUMEXPR_NUM_THREADS=1
+cd "$DATASET_RUN/source"
+"$DATASET_RUN/venv/bin/python" - <<'PY'
+import json
+import os
+from pathlib import Path
+from research.es_pc_emulator.generate import runtime_fingerprint
+
+run = Path(os.environ['DATASET_RUN'])
+prepared = json.loads((run/'run_manifest.json').read_text())
+if runtime_fingerprint() != prepared['runtime']:
+    raise RuntimeError('Prepared dataset runtime changed; prepare a fresh experiment.')
+manifest = run/'results/dataset_manifest.json'
+import hashlib
+record = {'dataset': str(manifest), 'dataset_sha256': hashlib.sha256(manifest.read_bytes()).hexdigest(),
+          'source_commit': prepared['commit'], 'pbs_jobid': os.environ['PBS_JOBID'],
+          'cpus': int(os.environ['PBS_NCPUS'])}
+(Path(os.environ['TRAIN_RUN'])/'training_manifest.json').write_text(json.dumps(record, indent=2)+'\n')
+print('Training directory:', os.environ['TRAIN_RUN'], flush=True)
+PY
+teacher_quality=()
+if [[ ${ALLOW_UNCONVERGED_TEACHER:-0} == 1 ]]; then
+    teacher_quality=(--allow-unconverged-teacher)
+elif [[ ${ALLOW_UNCONVERGED_TEACHER:-0} != 0 ]]; then
+    echo 'ALLOW_UNCONVERGED_TEACHER must be 0 or 1.' >&2
+    exit 2
+fi
+"$DATASET_RUN/venv/bin/python" -m research.es_pc_emulator.train \
+    --dataset "$DATASET_RUN/results/dataset_manifest.json" \
+    --output "$TRAIN_RUN/results" \
+    --feature-sets es es-density es-density-source \
+    --model-seeds 11 23 47 83 --epochs 200 \
+    --samples-per-snapshot 8192 --snapshots-per-history 24 "${teacher_quality[@]}"
+test -f "$TRAIN_RUN/results/COMPLETED"
+touch "$TRAIN_RUN/COMPLETED"
+printf 'Training finished: %s\n' "$TRAIN_RUN/results"

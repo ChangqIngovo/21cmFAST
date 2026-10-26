@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "teacher": {
+    "dimension": 16,
+    "highres_dimension": 48,
+    "box_len": 50.0,
+    "z_start": 20.0,
+    "z_end": 5.0,
+    "intervals": 30,
+    "reference_z": 8.0,
+    "refinement": 3,
+    "time_substeps": 2,
+    "stride": 1,
+    "transport": "conservative_rays",
+    "angular_order": 32
+  },
+  "splits": {
+    "train": [1234, 2345],
+    "validation": [3456],
+    "test": [4567]
+  }
+}

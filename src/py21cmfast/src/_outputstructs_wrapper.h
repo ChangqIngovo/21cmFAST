@@ -144,6 +144,7 @@ typedef struct IonizedBox {
     float *neutral_fraction;
     float *ionisation_rate_G12;
     float *mean_free_path;
+    float *es_crossing_radius;
     float *z_reion;
     float *cumulative_recombinations;
     float *kinetic_temperature;

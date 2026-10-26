@@ -743,6 +743,10 @@ class MatterOptions(InputStruct):
     MINIMIZE_MEMORY
         If set, the code will run in a mode that minimizes memory usage, at the expense
         of some CPU/disk-IO. Good for large boxes / small computers.
+    STORE_ES_RADIUS
+        Store the largest native excursion-set crossing radius in cMpc as a
+        diagnostic, including when recombinations are disabled. This allocates
+        one additional float32 grid and does not change the ionization rule.
     SAMPLE_METHOD
         The sampling method to use in the halo sampler when calculating progenitor populations:
 
@@ -827,6 +831,7 @@ class MatterOptions(InputStruct):
         "no-interpolation", "sigma-interpolation", "hmf-interpolation"
     ] = choice_field(default="hmf-interpolation")
     MINIMIZE_MEMORY: bool = field(default=False, converter=bool)
+    STORE_ES_RADIUS: bool = field(default=False, converter=bool)
     KEEP_3D_VELOCITIES: bool = field(default=False, converter=bool)
     SAMPLE_METHOD: Literal[
         "MASS-LIMITED", "NUMBER-LIMITED", "PARTITION", "BINARY-SPLIT"

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+#PBS -N es_pc_dataset
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=32
+#PBS -l mem=128GB
+#PBS -l walltime=48:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${RUN_DIR:?Submit with qsub -v RUN_DIR=/prepared/es_pc_dataset}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing CPU allocation}"
+cd "$RUN_DIR"
+test -f PREPARED
+if [[ -f COMPLETED ]]; then echo 'Already completed.'; exit 0; fi
+mkdir .running || { echo 'Run lock exists. Confirm the preceding job has stopped before removing its stale .running directory.' >&2; exit 2; }
+exec > "run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; rmdir "$RUN_DIR/.running" || true; if (( status != 0 )); then printf "%s\n" "$status" > "$RUN_DIR/FAILED"; fi' EXIT
+trap 'exit 143' TERM
+trap 'exit 130' INT
+trap 'exit 129' HUP
+sha256sum --quiet -c prepared.sha256
+module --force purge
+source "$RUN_DIR/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export CC=gcc CXX=g++ FC=gfortran MPIFC=mpifort
+export OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export OMP_NUM_THREADS=1 OMP_PROC_BIND=spread OMP_PLACES=cores
+cd "$RUN_DIR/source"
+"$RUN_DIR/venv/bin/python" - <<'PY'
+import os
+from pathlib import Path
+
+from research.es_pc_emulator.generate import verify_prepared
+from research.pc_evolution.native_history import require_es_radius_capability
+
+verify_prepared(Path(os.environ['RUN_DIR']), int(os.environ['PBS_NCPUS']))
+require_es_radius_capability()
+PY
+resume=()
+if [[ -d $RUN_DIR/results ]]; then resume=(--resume); fi
+"$RUN_DIR/venv/bin/python" -m research.es_pc_emulator.generate \
+    --config "$RUN_DIR/dataset_config.json" --output "$RUN_DIR/results" \
+    --upstream "$RUN_DIR/upstream" --workers "$PBS_NCPUS" "${resume[@]}"
+test -f "$RUN_DIR/results/COMPLETED"
+rm -f "$RUN_DIR/FAILED"
+touch "$RUN_DIR/COMPLETED"
+printf 'Dataset ready: %s/results/dataset_manifest.json\n' "$RUN_DIR"

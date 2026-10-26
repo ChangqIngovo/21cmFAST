@@ -2074,6 +2074,7 @@ class IonizedBox(OutputStructZ):
     _ionisation_rate_G12 = _arrayfield()
     _z_reion = _arrayfield()
     _mean_free_path = _arrayfield(optional=True)
+    _es_crossing_radius = _arrayfield(optional=True)
     _cumulative_recombinations = _arrayfield(optional=True)
     _kinetic_temperature = _arrayfield(optional=True)
     _nion_conditional_filtered_acg = _arrayfield(optional=True)
@@ -2155,6 +2156,9 @@ class IonizedBox(OutputStructZ):
             "ionisation_rate_G12": Array(shape, dtype=np.float32),
             "z_reion": Array(shape, dtype=np.float32),
         }
+
+        if inputs.matter_options.STORE_ES_RADIUS:
+            out["es_crossing_radius"] = Array(shape, dtype=np.float32)
 
         if not inputs.matter_options.MINIMIZE_MEMORY:
             out["kinetic_temperature"] = Array(shape, dtype=np.float32)

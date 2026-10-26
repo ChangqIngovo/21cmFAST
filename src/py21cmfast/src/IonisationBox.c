@@ -1514,6 +1514,14 @@ void find_ionised_regions(IonizedBox *box, IonizedBox *previous_ionize_box,
                     // check if fully ionized!
                     if ((curr_nion_acg + curr_nion_mcg >
                          (1. - xHII_from_xrays) * (1.0 + rec))) {  // IONIZED!!
+                        /* Passive largest-crossing diagnostic. Radii are visited
+                         * from largest to smallest; a crossed centre is set to
+                         * zero below, so later radii cannot overwrite this value.
+                         * The legacy mean_free_path and Gamma paths are unchanged. */
+                        if (matter_options_global->STORE_ES_RADIUS &&
+                            box->neutral_fraction[index_r] > FRACT_FLOAT_ERR) {
+                            box->es_crossing_radius[index_r] = rspec.R;
+                        }
                         // if this is the first crossing of the ionization barrier for this cell
                         // (largest R), record the gamma this assumes photon-starved growth of HII
                         // regions...  breaks down post EoR
@@ -1752,6 +1760,19 @@ int ComputeIonizedBox(float redshift, float prev_redshift, PerturbedField *pertu
     box->pc_evaluations = box->pc_status = 0;
 
     Try {  // This Try brackets the whole function, so we don't indent.
+        if (matter_options_global->STORE_ES_RADIUS) {
+            if (astro_options_global->PHOTON_CONS_TYPE != PHOTON_CONS_NONE ||
+                astro_options_global->IONISE_ENTIRE_SPHERE ||
+                simulation_options_global->HII_DIM <= 1 || HII_D_PARA <= 1 ||
+                box->es_crossing_radius == NULL) {
+                LOG_ERROR("STORE_ES_RADIUS requires native centre-cell ES on a 3D grid and an allocated diagnostic output");
+                Throw(ValueError);
+            }
+            /* C callers may reuse output storage; no-crossing cells must not
+             * retain a radius from a previous calculation. */
+            for (index_huge j = 0; j < HII_TOT_NUM_PIXELS; ++j)
+                box->es_crossing_radius[j] = 0.f;
+        }
         if (astro_options_global->PHOTON_CONS_TYPE == PHOTON_CONS_GLOBAL_BUDGET &&
             (matter_options_global->SOURCE_MODEL != SOURCE_MODEL_E_INTEGRAL ||
              astro_options_global->IONISE_ENTIRE_SPHERE || astro_options_global->USE_EXP_FILTER ||

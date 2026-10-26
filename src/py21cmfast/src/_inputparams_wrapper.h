@@ -72,6 +72,7 @@ typedef struct MatterOptions {
     bool USE_FFTW_WISDOM;
     bool PERTURB_ON_HIGH_RES;
     bool MINIMIZE_MEMORY;
+    bool STORE_ES_RADIUS;
     bool KEEP_3D_VELOCITIES;
     bool DEXM_OPTIMIZE;
     bool SMOOTH_EVOLVED_DENSITY_FIELD;

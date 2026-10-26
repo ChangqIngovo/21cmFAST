@@ -32,6 +32,67 @@ ARRAY_KEYS = ("redshifts", "times_seconds", "rates", "capacity", "native_xhi")
 SCHEMA_VERSION = 1
 
 
+def require_es_radius_capability():
+    """Reject a stale compiled runtime before exporting ES-radius features."""
+    from py21cmfast import c_21cmfast
+
+    ffi = c_21cmfast.ffi
+    required = (("MatterOptions", "STORE_ES_RADIUS"),
+                ("IonizedBox", "es_crossing_radius"))
+    for kind, name in required:
+        if name not in dict(ffi.typeof(kind).fields):
+            raise RuntimeError(
+                "Native ES-radius diagnostic is unavailable; rebuild this checkout's "
+                "compiled py21cmfast extension before generating training pairs")
+
+
+def write_es_features(path, history, radius, density):
+    """Write a separate, hashed native ES feature archive without changing history schema.
+
+    The radius is the native largest crossing scale in cMpc, zero when no full
+    crossing occurs. Native ES density and its cumulative-source convention
+    differ from the prescribed C2-Ray history; these are contextual emulator
+    inputs rather than an isolated photon-loss control.
+    """
+    validate_history(history)
+    radius, density = np.asarray(radius), np.asarray(density)
+    shape = history["native_xhi"].shape
+    if (radius.shape != shape or density.shape != shape
+            or not np.isfinite(radius).all() or (radius < 0).any()
+            or not np.isfinite(density).all() or (density <= 0).any()):
+        raise ValueError("ES radius and density must be finite matching nonnegative/positive fields")
+    if np.any((radius > 0) & (history["native_xhi"] > 1e-6)):
+        raise ValueError("An ES crossing radius requires a fully ionized native centre")
+    meta = history["metadata"]
+    arrays = {"redshifts": history["redshifts"], "times_seconds": history["times_seconds"],
+              "xhi_es": history["native_xhi"], "radius_es_cMpc": radius, "density_es": density}
+    metadata = {
+        "schema_version": 1,
+        "kind": "native-es-emulator-features",
+        "radius_definition": "largest native centre-cell ES crossing; zero when no full crossing",
+        "radius_units": "cMpc",
+        "diagnostic_capability": "STORE_ES_RADIUS/es_crossing_radius",
+        "random_seed": meta["random_seed"],
+        "initial_hires_density_sha256": meta["initial_hires_density_sha256"],
+        "box_len_cMpc": meta["box_len_cMpc"],
+        "history_array_sha256": meta["array_sha256"],
+        "native_extension_sha256": meta["native_extension_sha256"],
+        "contextual_native_ES": meta["contextual_native_ES"],
+        "array_sha256": {key: array_hash(value) for key, value in arrays.items()},
+    }
+    path = Path(path)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as stream:
+            np.savez_compressed(stream, **arrays, metadata=np.asarray(json.dumps(metadata, sort_keys=True)))
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.link(temporary, path)
+    finally:
+        Path(temporary).unlink()
+
+
 def array_hash(array):
     """Hash the exact contiguous numeric payload, without pickle or metadata."""
     return hashlib.sha256(np.ascontiguousarray(array).tobytes()).hexdigest()
@@ -190,7 +251,7 @@ def _positive_integer(value, name, minimum=1):
 
 def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed=1234,
                          z_start=25., z_end=5., intervals=320, reference_z=8.,
-                         highres_dimension=None):
+                         highres_dimension=None, es_output=None):
     """Generate and save native endpoint rates and one explicit frozen gas grid.
 
     ``intervals + 1`` endpoints are uniformly spaced in redshift; their physical
@@ -211,6 +272,11 @@ def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed
     output = Path(output)
     if os.path.lexists(output):
         raise FileExistsError(f"Use a fresh history output: {output}")
+    if es_output is not None:
+        es_output = Path(es_output)
+        if es_output.resolve() == output.resolve() or os.path.lexists(es_output):
+            raise FileExistsError(f"Use a distinct fresh ES feature output: {es_output}")
+        require_es_radius_capability()
     output.parent.mkdir(parents=True, exist_ok=True)
 
     native_dir = str(ROOT / "research/pc_reconsidered")
@@ -226,6 +292,9 @@ def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed
     inputs, differences = prepare_native(dimension=dimension, box_len=box_len,
                                          threads=threads, random_seed=seed,
                                          highres_dimension=highres_dimension)
+    if es_output is not None:
+        inputs = inputs.evolve_input_structs(STORE_ES_RADIUS=True)
+        differences["matter_options.STORE_ES_RADIUS"] = {"before": False, "after": True}
     if inputs.astro_options.HALO_SCALING_RELATIONS_MEDIAN:
         raise ValueError("Native rate conversion requires the mean-scaling integral convention")
     cosmo = {key: float(getattr(inputs.cosmo_params, key))
@@ -242,6 +311,8 @@ def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed
         interval_errors.append(error)
     rates = np.empty((len(redshifts), dimension, dimension, dimension), dtype=np.float64)
     native_xhi = np.empty(rates.shape, dtype=np.float32)
+    radius = np.empty(rates.shape, dtype=np.float32) if es_output is not None else None
+    native_density = np.empty(rates.shape, dtype=np.float64) if es_output is not None else None
     endpoint_index = {float(z): i for i, z in enumerate(redshifts)}
     generated = sorted(set(endpoint_index) | {float(reference_z)}, reverse=True)
     provenance = [None] * len(redshifts)
@@ -263,6 +334,9 @@ def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed
                 i = endpoint_index[z]
                 rates[i] = rate_from_nion(extracted.source, z, t_star=t_star, cosmo=cosmo)
                 native_xhi[i] = coeval.ionized_box.get("neutral_fraction")
+                if es_output is not None:
+                    radius[i] = coeval.ionized_box.get("es_crossing_radius")
+                    native_density[i] = extracted.capacity
                 provenance[i] = {
                     "redshift": z, "native_n_ion_sha256_float64": array_hash(extracted.source),
                     "native_density_capacity_sha256_float64": array_hash(extracted.capacity),
@@ -345,12 +419,16 @@ def build_native_history(*, output, dimension=32, box_len=200., threads=32, seed
                   capacity=capacity, native_xhi=native_xhi, metadata=metadata)
     metadata["array_sha256"] = {key: array_hash(result[key]) for key in ARRAY_KEYS}
     _write_fresh_history(output, result)
+    if es_output is not None:
+        write_es_features(es_output, result, radius, native_density)
     return result
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--es-output", type=Path, default=None,
+                        help="Optional separate native ES xHI/crossing-radius feature archive")
     parser.add_argument("--dimension", type=int, default=32)
     parser.add_argument("--highres-dimension", type=int, default=None,
                         help="Native IC DIM; defaults to 3 * dimension")

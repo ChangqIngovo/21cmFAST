@@ -9,6 +9,7 @@ available for equivalence tests.
 from __future__ import annotations
 
 import argparse
+import difflib
 import hashlib
 import json
 import re
@@ -119,6 +120,48 @@ def verify_upstream(upstream: Path) -> dict[str, str]:
         if not path.is_file() or sha256(path) != expected:
             raise ValueError(f"Pinned C2-Ray upstream mismatch: {relative}")
     return lock["files"]
+
+
+def _patch_log_format(code: Path, destination: Path) -> dict:
+    """Fix one malformed upstream FORMAT in corrected build copies only.
+
+    Recent libgfortran rejects the missing comma before ``(ES12.5)``.  This
+    changes a log descriptor, not source luminosities or numerical equations.
+    The native reference mode deliberately retains its original source bytes.
+    """
+    relative = "code/radiation_sed_parameters.f90"
+    path = code / "radiation_sed_parameters.f90"
+    before = "'(A,A,A(ES12.5),A//)'"
+    after = "'(A,A,A,(ES12.5),A//)'"
+    original = path.read_text()
+    if original.count(before) != 1:
+        raise ValueError("Native logging FORMAT anchor is not unique")
+    updated = original.replace(before, after, 1)
+    path.write_text(updated)
+    destination.write_text("".join(difflib.unified_diff(
+        original.splitlines(True), updated.splitlines(True),
+        fromfile=f"a/{relative}", tofile=f"b/{relative}",
+    )))
+    return {
+        "enabled": True,
+        "scope": "Logging-only missing-comma FORMAT portability correction",
+        "files": {relative: {
+            "before_sha256": hashlib.sha256(original.encode()).hexdigest(),
+            "after_sha256": hashlib.sha256(updated.encode()).hexdigest(),
+        }},
+        "patch_sha256": sha256(destination),
+        "numerical_expressions_changed": False,
+    }
+
+
+def _patched_hash(patch: dict, key: str, expected: str, label: str) -> str:
+    """Follow one audited build-copy edit from its verified input hash."""
+    change = patch.get("files", {}).get(key)
+    if change is None:
+        return expected
+    if change["before_sha256"] != expected:
+        raise RuntimeError(f"{label} patch started from unverified bytes")
+    return change["after_sha256"]
 
 
 def _configured_sources(
@@ -260,6 +303,7 @@ def build_backend(
             native / "code", output_dir / "diagnostics.patch"
         )
     numerical_patch = {}
+    logging_patch = {"enabled": False}
     if transport == "conservative_rays":
         if __package__:
             from .conservative import patch_transport
@@ -267,6 +311,9 @@ def build_backend(
             from conservative import patch_transport
         numerical_patch = patch_transport(
             native / "code", output_dir / "transport.patch"
+        )
+        logging_patch = _patch_log_format(
+            native / "code", output_dir / "logging_format.patch"
         )
     configured = _configured_sources(
         native,
@@ -343,11 +390,8 @@ def build_backend(
     for key, value in compiled_hashes.items():
         instrumented = instrumentation.get("files", {}).get(key)
         expected = instrumented["instrumented_sha256"] if instrumented else locked[key]
-        corrected = numerical_patch.get("files", {}).get(key)
-        if corrected:
-            if corrected["before_sha256"] != expected:
-                raise RuntimeError("Numerical patch started from unverified bytes")
-            expected = corrected["after_sha256"]
+        expected = _patched_hash(logging_patch, key, expected, "Logging")
+        expected = _patched_hash(numerical_patch, key, expected, "Numerical")
         if value != expected:
             raise RuntimeError("Unexpected upstream source change during build")
         if instrumented and instrumented["pristine_sha256"] != locked[key]:
@@ -366,6 +410,7 @@ def build_backend(
         "transport": transport,
         "angular_order": angular_order if transport == "conservative_rays" else None,
         "transport_patch": numerical_patch,
+        "logging_format_patch": logging_patch,
         "diagnostics_enabled": diagnostics,
         "diagnostics": instrumentation,
         "pristine_upstream_sha256": {key: locked[key] for key in compiled_hashes},

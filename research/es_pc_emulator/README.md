@@ -1,0 +1,174 @@
+# Native ES to C2-Ray field correction
+
+This experiment pairs the native three-dimensional ES neutral-fraction field
+and its largest crossing radius with C2-Ray hydrogen neutral-fraction labels.
+Its purpose is to learn the error of an existing fast model, rather than to
+learn a radiative-transfer map without an ES prior.
+
+The new `STORE_ES_RADIUS` option is **off by default**. Enabling it records a
+dedicated `es_crossing_radius` diagnostic at the first crossing in the native
+largest-to-smallest radius scan. It does not reinterpret `mean_free_path`,
+which is not allocated by the restricted no-recombination source workflow.
+The ordinary native ionization, source and feedback equations are unchanged.
+Dataset preparation rebuilds a fresh native runtime with this diagnostic;
+the older runtime used by already running simulations is not modified.
+
+## What is learned
+
+The native ES inputs are genuine native outputs. However, those coevals use
+the native cumulative `n_ion` proxy and evolving native gas density, whereas
+the RT teacher integrates explicitly prescribed source rates and freezes the
+density contrast at its reference redshift. Both come from the same initial
+conditions and source prescription, and these differences are recorded. This
+is **ES-to-C2-Ray emulation**, not an experiment attributing every difference
+to photon non-conservation alone. C2-Ray also evolves H/He chemistry and
+temperature; this first emulator predicts hydrogen fractions only.
+
+Every sample provides `xhi_es`, `radius_es_cMpc`, reference-gas `density`,
+integrated input-source `photons`, and target `xhi_c2ray`. Lengths are cMpc;
+density and photons retain the history's compatible mean-nuclei-per-cell
+normalization. RT labels are conservatively restricted to the original source
+grid with nuclei weights. The code never silently interpolates label times.
+
+There are three comparable input arms:
+
+| Arm | Inference inputs |
+| --- | --- |
+| `es` | Native ES xHI, crossing-radius fields, redshift, cell width |
+| `es-density` | Above plus reference-gas density |
+| `es-density-source` | Above plus cumulative emitted photons and photons/atom |
+
+All arms use directional periodic 3-by-3-by-3 patches and Gaussian context
+at fixed comoving widths 6.25, 12.5, 25 and 50 cMpc. This is a portable NumPy
+MLP baseline with two 32-node hidden layers, not a full 3D CNN. Physical widths
+and cell width remain explicit when grid size changes. Targets, absorbed
+photons and teacher-derived budget corrections are never inference features.
+
+The default model predicts a bounded residual around native ES xHII, initialized
+at zero correction. It can create or remove ionization, including in cells
+where ES is exactly neutral or ionized. `--output-mode direct` is a separate
+control. Fitting standardization uses training samples only. All ablation arms
+sample identical cells. Independent neural initializations and input arms are
+selected by weighted validation MSE; held-out test data never select a model.
+
+## Generate a dataset on Gadi
+
+From a committed `Photon_conserving` checkout:
+
+```bash
+bash research/es_pc_emulator/gadi_prepare.sh --submit
+```
+
+Preparation makes an isolated native build, freezes the source commit, upstream
+C2-Ray sources, runtime/compiler hashes and explicit configuration. The PBS
+job generates the prescribed source histories, runs actual native C2-Ray smoke
+and CPU-consistency checks, evolves the teacher, and exports audited pairs.
+It uses the existing runtime modules/dependencies as a starting point and never
+installs packages on a compute node. It requests 32 CPUs, 128 GB and 48 hours
+in `normal`. These are requested resources, not a measured runtime forecast.
+
+The default configuration uses 50 cMpc, a 16-cubed source/output mesh, native
+IC DIM=48, redshift 20 to 5 with 30 source intervals, density reference z=8,
+RT refinement 3, two RT substeps and angular order 32 (6144 rays per source).
+The independent seed split is:
+
+| Split | Initial-condition seeds |
+| --- | --- |
+| Train | 1234, 2345 |
+| Validation | 3456 |
+| Test | 4567 |
+
+All times and geometries sharing a seed or IC fingerprint must stay in one
+split. The existing four C2-Ray convergence jobs share one history and cannot
+be reused as four independent realizations. Those old histories also lack the
+new ES radius diagnostic, so the dataset generator creates new sidecars.
+
+Use `--config /absolute/config.json` to override the teacher geometry and seed
+lists. Unknown keys, duplicate seeds and missing split coverage fail before
+science generation. The full defaults are in `default_dataset.json`.
+
+After an interrupted dataset job has stopped, resubmit its same prepared PBS
+file with the original resource request. It automatically uses `--resume`.
+Completed seeds are rehashed and reaudited before reuse; the interrupted seed
+starts a new attempt directory, preserving the partial output. Configuration,
+source, runtime or completed-output changes reject continuation. An MPI/chemistry
+interval is not checkpointed midway, so an incomplete seed is recomputed.
+After a hard scheduler kill, a stale `RUN_DIR/.running` lock may remain. Confirm
+that the preceding PBS job has stopped before removing only that lock and
+resubmitting; never remove the lock of an active job.
+
+Results include per-seed source histories, native ES sidecars, native C2-Ray
+binary states and transport diagnostics, per-snapshot pairs, and
+`results/dataset_manifest.json`. Completion requires independent integrity,
+field bounds, primary-absorption/outflow accounting and source/IC matching.
+`COMPLETED` certifies successful execution and audits, not spatial, angular or
+time convergence. The four controlled convergence cases and a separate angular
+refinement remain necessary before interpreting these labels as science-grade
+truth. The emitted spectra's measured normalization is retained without hidden
+rescaling. Primary absorption, secondary ionization and boundary outflow are
+not conflated.
+
+## Train after the dataset completes
+
+The dataset preparation prints `Run directory`. Set that exact path below:
+
+```bash
+DATASET_RUN=/g/data/qp00/sz4640/21cmfast_runs/es_c2_dataset_REPLACE_ME
+qsub -v DATASET_RUN="$DATASET_RUN" \
+  "$DATASET_RUN/source/research/es_pc_emulator/gadi_train.pbs"
+```
+
+This trains all three input arms and four model seeds in the dataset's frozen
+runtime. The separate training request is 8 CPUs, 32 GB and four hours on
+`normal`. Results go to a fresh directory in `DATASET_RUN/training_runs`.
+Check `model_selection.json`, independent-test field/front/island errors,
+physical saturated-spin 21-cm power spectra, Fourier cross-correlations and
+baseline ES metrics. Full test prediction cubes and fitted models are saved.
+
+The trainer refuses uncertified teacher convergence by default. The current
+generator deliberately marks its labels `convergence_certified=false`: primary
+photon closure is not a spatial/temporal convergence certificate. To test the
+learning pipeline before the independent convergence studies finish, an
+explicit exploratory opt-in is available:
+
+```bash
+qsub -v DATASET_RUN="$DATASET_RUN",ALLOW_UNCONVERGED_TEACHER=1 \
+  "$DATASET_RUN/source/research/es_pc_emulator/gadi_train.pbs"
+```
+
+Such models and their summaries retain the uncertified label status. This
+opt-in is not a statement that convergence has passed.
+
+For local or custom runs:
+
+```bash
+python -m research.es_pc_emulator.generate \
+  --config research/es_pc_emulator/default_dataset.json \
+  --output /absolute/fresh/dataset --upstream /absolute/pinned/C2-Ray --workers 32
+python -m research.es_pc_emulator.train \
+  --dataset /absolute/fresh/dataset/dataset_manifest.json \
+  --output /absolute/fresh/training --feature-sets es es-density es-density-source
+```
+
+The model is a coeval field emulator, not an autoregressive radiation solver.
+No global one-photon-per-HII projection is applied: it is physically invalid
+for the H/He, recombination and secondary-ionization teacher. Ionized-stock
+errors relative to C2-Ray are reported under that name. Strict local or
+per-source photon conservation of neural predictions is not claimed.
+
+## Validation
+
+```bash
+python -m pytest -q research/es_pc_emulator --confcutdir=research/es_pc_emulator
+python -m pytest -q research/pc_evolution research/c2ray_teacher research/pc_field_emulator \
+  --confcutdir=research
+bash -n research/es_pc_emulator/gadi_prepare.sh
+bash -n research/es_pc_emulator/gadi_dataset.pbs
+bash -n research/es_pc_emulator/gadi_train.pbs
+```
+
+Tests cover source/clock/grid pairing, conservative projection, tampered
+payloads, leakage between independent seeds, directional inference features,
+input ablations, held-out learning, model serialization, workflow failures and
+Gadi preparation contracts. The real native integration run is recorded
+separately; synthetic tests alone are not a native transport validation.

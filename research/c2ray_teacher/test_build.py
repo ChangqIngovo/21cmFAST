@@ -9,9 +9,27 @@ import pytest
 from research.c2ray_teacher.build import (
     FIELD_NAMES,
     META_NAMES,
+    _patch_log_format,
     read_output,
     validate_configuration,
 )
+
+
+def test_logging_format_patch_is_guarded_and_only_changes_descriptor(tmp_path):
+    """A malformed log FORMAT must not prevent genuine transport execution."""
+    code = tmp_path / "code"
+    code.mkdir()
+    source = code / "radiation_sed_parameters.f90"
+    original = "write(logf,'(A,A,A(ES12.5),A//)') label, value\n"
+    source.write_text(original)
+    record = _patch_log_format(code, tmp_path / "logging.patch")
+    assert source.read_text() == original.replace("A(ES12.5)", "A,(ES12.5)")
+    assert record["numerical_expressions_changed"] is False
+    hashes = record["files"]["code/radiation_sed_parameters.f90"]
+    assert hashes["before_sha256"] != hashes["after_sha256"]
+    assert "-write" in (tmp_path / "logging.patch").read_text()
+    with pytest.raises(ValueError, match="anchor"):
+        _patch_log_format(code, tmp_path / "again.patch")
 
 
 def test_grid_rejects_upstream_zero_convergence_threshold():
