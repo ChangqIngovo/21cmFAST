@@ -31,22 +31,30 @@ if __package__:
         Sample,
         UnresolvedPhotonBudgetError,
         discover_samples,
+        history_key,
         load_sample,
+        sample_key,
+        sample_stem,
         split_samples,
+        validate_physics,
     )
     from .evaluation import evaluate_fields, plot_comparison
-    from .features import build_features
+    from .features import build_features, physics_baseline
     from .model import MLPModel, project_global_budget, train
 else:
     from data import (
         Sample,
         UnresolvedPhotonBudgetError,
         discover_samples,
+        history_key,
         load_sample,
+        sample_key,
+        sample_stem,
         split_samples,
+        validate_physics,
     )
     from evaluation import evaluate_fields, plot_comparison
-    from features import build_features
+    from features import build_features, physics_baseline
     from model import MLPModel, project_global_budget, train
 
 LOGGER = logging.getLogger(__name__)
@@ -87,6 +95,40 @@ def _validate_destination(output: Path, inputs: list[Path]) -> None:
             raise ValueError("Training output must be outside every simulation input")
 
 
+def _load_inventory(
+    path: Path, roots: list[Path], subcells: int, angles: int, stride: int
+) -> list[Sample]:
+    """Load a frozen preparation inventory without rediscovering active runs."""
+    manifest = json.loads(path.read_text())
+    if manifest.get("schema") != 1:
+        raise ValueError("Unsupported frozen sample manifest schema")
+    if sorted(Path(p).resolve() for p in manifest["input_roots"]) != sorted(roots):
+        raise ValueError(
+            "Frozen sample manifest input roots differ from requested roots"
+        )
+    arm = {"subcells": subcells, "angles": angles, "stride": stride}
+    if manifest.get("teacher_arm") != arm:
+        raise ValueError("Frozen sample manifest teacher arm differs from request")
+    samples = []
+    for record in manifest["samples"]:
+        record = dict(record)
+        for name in ("fixture_path", "checkpoint_path"):
+            record[name] = Path(record[name]).resolve()
+            if not any(record[name].is_relative_to(root) for root in roots):
+                raise ValueError("Frozen checkpoint lies outside requested input roots")
+        sample = Sample(**record)
+        if (sample.subcells, sample.angles, sample.stride) != (
+            subcells,
+            angles,
+            stride,
+        ):
+            raise ValueError("Frozen sample numerical arm differs from request")
+        samples.append(sample)
+    if not samples:
+        raise ValueError("Frozen sample inventory is empty")
+    return samples
+
+
 def _select_samples(
     samples: list[Sample], *, q_min: float, q_max: float, maximum: int
 ) -> list[Sample]:
@@ -95,12 +137,12 @@ def _select_samples(
             "Require 0 <= q_min < q_max <= 1 and a positive snapshot limit"
         )
     selected = []
-    for seed in sorted({row.seed for row in samples}):
+    for key in sorted({history_key(row) for row in samples}):
         eligible = sorted(
             [
                 row
                 for row in samples
-                if row.seed == seed and q_min <= row.q_mass <= q_max
+                if history_key(row) == key and q_min <= row.q_mass <= q_max
             ],
             key=lambda row: row.node_index,
         )
@@ -116,14 +158,27 @@ def _select_samples(
 
 
 def _prepare_arrays(
-    samples: list[Sample], destination: Path, name: str, *, count: int, seed: int
+    samples: list[Sample],
+    destination: Path,
+    name: str,
+    *,
+    count: int,
+    seed: int,
+    radii_cmpc: tuple[float, ...] | None = None,
+    front_weight: float = 1.0,
+    neutral_weight: float = 1.0,
 ) -> list[str]:
     rng = np.random.default_rng(seed)
     feature_rows, target_rows, feature_names = [], [], None
+    baseline_rows, scale_rows, weight_rows = [], [], []
     for sample in samples:
         fields = load_sample(sample)
         features, names = build_features(
-            fields["capacity"], fields["photons"], fields["redshift"], fields["box_len"]
+            fields["capacity"],
+            fields["photons"],
+            fields["redshift"],
+            fields["box_len"],
+            radii_cMpc=radii_cmpc,
         )
         if feature_names is not None and names != feature_names:
             raise ValueError("Training feature definitions changed between snapshots")
@@ -133,7 +188,21 @@ def _prepare_arrays(
         )
         feature_rows.append(features[indices])
         target_rows.append(fields["xHII"].reshape(-1)[indices])
-        _log("sample_prepared", split=name, seed=sample.seed, node=sample.node_index)
+        local, scale = physics_baseline(fields["capacity"], fields["photons"])
+        baseline_rows.append(local.reshape(-1)[indices])
+        scale_rows.append(np.full(len(indices), scale))
+        weights = _training_weights(
+            fields["xHII"], fields["capacity"], front_weight, neutral_weight
+        )
+        weight_rows.append(weights.reshape(-1)[indices])
+        _log(
+            "sample_prepared",
+            split=name,
+            seed=sample.seed,
+            node=sample.node_index,
+            dimension=sample.dimension,
+            box_len_cMpc=sample.box_len,
+        )
     if not feature_rows:
         raise ValueError(f"Empty {name} sample split")
     np.save(
@@ -142,13 +211,52 @@ def _prepare_arrays(
     np.save(
         destination / f"y_{name}.npy", np.concatenate(target_rows), allow_pickle=False
     )
+    for prefix, rows in (
+        ("baseline", baseline_rows),
+        ("scale", scale_rows),
+        ("weight", weight_rows),
+    ):
+        np.save(
+            destination / f"{prefix}_{name}.npy",
+            np.concatenate(rows),
+            allow_pickle=False,
+        )
     return feature_names
+
+
+def _training_weights(
+    target: np.ndarray, capacity: np.ndarray, front_weight: float, neutral_weight: float
+) -> np.ndarray:
+    """Emphasize target fronts and late neutral cells in the training objective."""
+    if any(
+        not np.isfinite(value) or value < 1 for value in (front_weight, neutral_weight)
+    ):
+        raise ValueError("Front and neutral weights must be finite and at least one")
+    ionized = target >= 0.5
+    front = np.zeros(target.shape, dtype=bool)
+    for axis in range(3):
+        for offset in (-1, 1):
+            front |= ionized != np.roll(ionized, offset, axis=axis)
+    weights = np.ones(target.shape)
+    weights[front] += front_weight - 1
+    if np.sum(capacity * target) >= 0.5 * np.sum(capacity):
+        weights[~ionized] += neutral_weight - 1
+    return weights
 
 
 def _coverage(samples: list[Sample]) -> dict:
     return {
         "count": len(samples),
         "seeds": sorted({sample.seed for sample in samples}),
+        "geometries": [
+            {
+                "dimension": n,
+                "box_len_cMpc": length,
+                "cell_width_cMpc": length / n,
+                "count": sum(s.dimension == n and s.box_len == length for s in samples),
+            }
+            for n, length in sorted({(s.dimension, s.box_len) for s in samples})
+        ],
         "redshift_range": (
             [
                 min(sample.redshift for sample in samples),
@@ -191,6 +299,8 @@ def _qualify_splits(splits: dict, output: Path) -> tuple[dict, dict]:
                 "Q_mass": sample.q_mass,
                 "checkpoint": str(sample.checkpoint_path),
                 "checkpoint_sha256": sample.checkpoint_sha256,
+                "dimension": sample.dimension,
+                "box_len_cMpc": sample.box_len,
             }
             # Corrupt files, failed count ledgers and all other errors remain fatal.
             try:
@@ -251,6 +361,25 @@ def _fit_trial(task: dict) -> dict:
         for name in ("x_train", "y_train", "x_validation", "y_validation")
     ]
     start = time.perf_counter()
+    controls = {
+        name: np.load(
+            arrays / f"{prefix}_{split}.npy", mmap_mode="r", allow_pickle=False
+        )
+        for name, prefix, split in (
+            ("baseline_train", "baseline", "train"),
+            ("baseline_validation", "baseline", "validation"),
+            ("residual_scale_train", "scale", "train"),
+            ("residual_scale_validation", "scale", "validation"),
+            ("sample_weight_train", "weight", "train"),
+            ("sample_weight_validation", "weight", "validation"),
+        )
+    }
+    if task["model_mode"] != "residual":
+        controls = {
+            name: value
+            for name, value in controls.items()
+            if name.startswith("sample_weight")
+        }
 
     def record_epoch(record: dict) -> None:
         _write_json(output / "progress.json", record)
@@ -265,17 +394,39 @@ def _fit_trial(task: dict) -> dict:
         batch_size=task["batch_size"],
         patience=task["patience"],
         on_epoch=record_epoch,
+        **controls,
     )
+    model.metadata["feature_config"] = {"radii_cMpc": task["radii_cmpc"]}
+    model.metadata["loss_config"] = {
+        "front_weight": task["front_weight"],
+        "late_neutral_weight": task["neutral_weight"],
+    }
     seconds = time.perf_counter() - start
     path = output / "model.npz"
     model.save(path)
+    losses = {}
+    for split, x, y in (
+        ("train", inputs[0], inputs[1]),
+        ("validation", inputs[2], inputs[3]),
+    ):
+        kwargs = {}
+        if task["model_mode"] == "residual":
+            kwargs = {
+                "baseline": controls[f"baseline_{split}"],
+                "residual_scale": controls[f"residual_scale_{split}"],
+            }
+        error = (model.predict(x, **kwargs) - y) ** 2
+        label = "training" if split == "train" else "validation"
+        losses[f"{label}_mse"] = float(np.mean(error))
+        losses[f"{label}_loss"] = float(
+            np.average(error, weights=controls[f"sample_weight_{split}"])
+        )
     result = {
         "seed": task["seed"],
         "model": str(path),
         "training_seconds": seconds,
         "epochs_run": len(history),
-        "training_mse": float(np.mean((model.predict(inputs[0]) - inputs[1]) ** 2)),
-        "validation_mse": float(np.mean((model.predict(inputs[2]) - inputs[3]) ** 2)),
+        **losses,
     }
     _write_json(output / "history.json", history)
     _write_json(output / "summary.json", result)
@@ -283,23 +434,42 @@ def _fit_trial(task: dict) -> dict:
 
 
 def _choose_trial(trials: list[dict]) -> dict:
-    if not trials or any(not np.isfinite(row["validation_mse"]) for row in trials):
+    if not trials or any(
+        not np.isfinite(row.get("validation_loss", row["validation_mse"]))
+        for row in trials
+    ):
         raise ValueError("All training trials must return finite validation losses")
-    return min(trials, key=lambda row: (row["validation_mse"], row["seed"]))
+    return min(
+        trials,
+        key=lambda row: (
+            row.get("validation_loss", row["validation_mse"]),
+            row["seed"],
+        ),
+    )
 
 
 def _infer_sample(model: MLPModel, fields: dict) -> tuple[dict, dict]:
     start = time.perf_counter()
     features, _ = build_features(
-        fields["capacity"], fields["photons"], fields["redshift"], fields["box_len"]
+        fields["capacity"],
+        fields["photons"],
+        fields["redshift"],
+        fields["box_len"],
+        radii_cMpc=model.metadata.get("feature_config", {}).get("radii_cMpc"),
     )
+    local, scale = physics_baseline(fields["capacity"], fields["photons"])
     after_features = time.perf_counter()
-    raw = model.predict(features).reshape(fields["capacity"].shape)
+    kwargs = {}
+    if model.output_mode == "residual":
+        kwargs = {
+            "baseline": local.ravel(),
+            "residual_scale": np.full(local.size, scale),
+        }
+    raw = model.predict(features, **kwargs).reshape(fields["capacity"].shape)
     after_network = time.perf_counter()
     projected, audit = project_global_budget(raw, fields["capacity"], fields["budget"])
     after_projection = time.perf_counter()
     # A simple source-local baseline receives the identical INPUT photon budget.
-    local = np.clip(fields["photons"] / fields["capacity"], 0.0, 1.0)
     baseline, baseline_audit = project_global_budget(
         local, fields["capacity"], fields["budget"]
     )
@@ -316,11 +486,17 @@ def _infer_sample(model: MLPModel, fields: dict) -> tuple[dict, dict]:
     return predicted, diagnostic
 
 
-def _evaluate_test(model: MLPModel, samples: list[Sample], output: Path) -> list[dict]:
+def _evaluate_test(
+    model: MLPModel,
+    samples: list[Sample],
+    output: Path,
+    *,
+    evaluation_role: str = "held_out",
+) -> list[dict]:
     reports = []
     output.mkdir()
     for sample in samples:
-        stem = f"seed{sample.seed}_node{sample.node_index:05d}"
+        stem = sample_stem(sample)
         fields = load_sample(sample)
         predicted, timing = _infer_sample(model, fields)
         report = evaluate_fields(
@@ -340,6 +516,9 @@ def _evaluate_test(model: MLPModel, samples: list[Sample], output: Path) -> list
             teacher_checkpoint_sha256=sample.checkpoint_sha256,
             input_ledger=fields["ledger"],
             timing=timing,
+            dimension=sample.dimension,
+            cell_width_cMpc=sample.box_len / sample.dimension,
+            evaluation_role=evaluation_role,
         )
         _write_json(output / f"{stem}.json", report)
         np.savez_compressed(
@@ -363,12 +542,48 @@ def _evaluate_test(model: MLPModel, samples: list[Sample], output: Path) -> list
         )
         reports.append(report)
         _log(
-            "held_out_evaluated",
+            f"{evaluation_role}_evaluated",
             seed=sample.seed,
             node=sample.node_index,
             seconds=timing["emulator_compute_seconds"],
+            dimension=sample.dimension,
+            box_len_cMpc=sample.box_len,
         )
     return reports
+
+
+def _geometry_coverage(splits: dict) -> list[dict]:
+    """Report which geometries actually have independent validation/test data."""
+    samples = [s for name in ("train", "validation", "test") for s in splits[name]]
+    report = []
+    for n, length in sorted({(s.dimension, s.box_len) for s in samples}):
+        item = {"dimension": n, "box_len_cMpc": length, "cell_width_cMpc": length / n}
+        for name in ("train", "validation", "test"):
+            matched = [
+                s for s in splits[name] if (s.dimension, s.box_len) == (n, length)
+            ]
+            item[name] = {
+                "count": len(matched),
+                "seeds": sorted({s.seed for s in matched}),
+            }
+        item["independent_test_available"] = bool(item["test"]["count"]) and splits[
+            "strategy"
+        ] in ("independent_seed_holdout", "heldout_test_seed_with_temporal_validation")
+        report.append(item)
+    return report
+
+
+def _reconstruction_samples(samples: list[Sample]) -> list[Sample]:
+    """Choose three training epochs per geometry for explicitly in-sample plots."""
+    selected = []
+    for geometry in sorted({(s.dimension, s.box_len) for s in samples}):
+        rows = sorted(
+            [s for s in samples if (s.dimension, s.box_len) == geometry],
+            key=lambda s: (s.q_mass, s.seed, s.node_index),
+        )
+        indices = np.linspace(0, len(rows) - 1, min(3, len(rows)), dtype=int)
+        selected.extend(rows[i] for i in indices)
+    return selected
 
 
 def _write_metrics(path: Path, reports: list[dict]) -> None:
@@ -380,6 +595,9 @@ def _write_metrics(path: Path, reports: list[dict]) -> None:
                 "node": report["node_index"],
                 "redshift": report["redshift"],
                 "method": method,
+                "dimension": report["dimension"],
+                "box_len_cMpc": report["box_len_cMpc"],
+                "evaluation_role": report["evaluation_role"],
             }
             row.update(
                 {
@@ -414,6 +632,11 @@ def run_experiment(
     hidden: tuple[int, ...] = (32, 32),
     batch_size: int = 2048,
     patience: int = 12,
+    model_mode: str = "sigmoid",
+    radii_cmpc: tuple[float, ...] | None = None,
+    front_weight: float = 1.0,
+    neutral_weight: float = 1.0,
+    sample_manifest: Path | None = None,
 ) -> dict:
     """Fit on training seeds, select on validation, then evaluate held-out fields.
 
@@ -439,6 +662,19 @@ def run_experiment(
         Neural hidden-layer widths.
     batch_size, patience : int
         Optimizer batch size and validation stopping patience.
+    model_mode : str
+        Legacy direct ``sigmoid`` or bounded ``residual`` about the local source
+        estimate. Residual output starts at the physical baseline.
+    radii_cmpc : tuple of float or None
+        Fixed physical Gaussian smoothing scales shared across geometries.
+        Mixed grids require these scales; None preserves legacy cell radii.
+    front_weight, neutral_weight : float
+        Loss emphasis above one for front cells and neutral cells once the
+        target mass-ionized fraction exceeds one half. Targets determine loss
+        weights only for training/validation, never inference features.
+    sample_manifest : Path or None
+        Optional frozen, producer-audited inventory created at job preparation.
+        Later checkpoints in active runs are not discovered when provided.
 
     Returns
     -------
@@ -455,34 +691,76 @@ def run_experiment(
         )
     if len(set(model_seeds)) != len(model_seeds):
         raise ValueError("Model initialization seeds must be unique")
-    samples = [
-        sample
-        for root in roots
-        for sample in discover_samples(
-            root, subcells=subcells, angles=angles, stride=stride
-        )
-    ]
-    keys = [(sample.seed, sample.node_index) for sample in samples]
+    if model_mode not in ("sigmoid", "residual"):
+        raise ValueError("Model mode must be sigmoid or residual")
+    if any(not np.isfinite(w) or w < 1 for w in (front_weight, neutral_weight)):
+        raise ValueError("Front and neutral weights must be finite and at least one")
+    if radii_cmpc is not None:
+        radii_cmpc = tuple(float(r) for r in radii_cmpc)
+        if (
+            not radii_cmpc
+            or len(set(radii_cmpc)) != len(radii_cmpc)
+            or any(not np.isfinite(r) or r <= 0 for r in radii_cmpc)
+        ):
+            raise ValueError(
+                "Physical Gaussian radii must be unique, positive and finite"
+            )
+    samples = (
+        _load_inventory(Path(sample_manifest), roots, subcells, angles, stride)
+        if sample_manifest is not None
+        else [
+            sample
+            for root in roots
+            for sample in discover_samples(
+                root, subcells=subcells, angles=angles, stride=stride
+            )
+        ]
+    )
+    keys = [sample_key(sample) for sample in samples]
     if len(keys) != len(set(keys)):
-        raise ValueError(
-            "Duplicate seed/node histories across inputs; select one history per seed"
-        )
-    if len({(sample.dimension, sample.box_len) for sample in samples}) != 1:
-        raise ValueError(
-            "First experiment requires a common physical box and coarse resolution"
-        )
+        raise ValueError("Duplicate seed/geometry/node histories across inputs")
+    if (
+        len({(sample.dimension, sample.box_len) for sample in samples}) > 1
+        and radii_cmpc is None
+    ):
+        raise ValueError("Mixed geometries require fixed physical --radii-cmpc")
+    physics = validate_physics(samples)
     selected = _select_samples(
         samples, q_min=q_min, q_max=q_max, maximum=max_snapshots_per_seed
     )
     initial_splits = split_samples(selected)
     output.mkdir(parents=True)
     splits, preflight = _qualify_splits(initial_splits, output)
+    geometry_coverage = _geometry_coverage(splits)
+    requested_geometries = {(s.dimension, s.box_len) for s in samples}
+    accepted_geometries = {
+        (row["dimension"], row["box_len_cMpc"]) for row in geometry_coverage
+    }
+    if requested_geometries != accepted_geometries:
+        raise ValueError(
+            "No eligible snapshots remain for requested geometries "
+            f"{sorted(requested_geometries - accepted_geometries)}; inspect preflight.json"
+        )
     arrays = output / "training_arrays"
     arrays.mkdir()
     manifest = {
-        "schema": 1,
+        "schema": 2,
         "scope": "Coeval coarse-field emulator of the existing fixed-gas PC teacher",
         "input_roots": roots,
+        "physics_compatibility": physics,
+        "frozen_inventory": {
+            "path": str(sample_manifest),
+            "sha256": _digest(Path(sample_manifest)),
+        }
+        if sample_manifest is not None
+        else None,
+        "geometry_coverage": geometry_coverage,
+        "model_mode": model_mode,
+        "feature_config": {"radii_cMpc": radii_cmpc},
+        "loss_config": {
+            "front_weight": front_weight,
+            "late_neutral_weight": neutral_weight,
+        },
         "selection": {
             "subcells": subcells,
             "angles": angles,
@@ -490,6 +768,7 @@ def run_experiment(
             "q_min": q_min,
             "q_max": q_max,
             "max_snapshots_per_seed": max_snapshots_per_seed,
+            "snapshot_limit_scope": "per seed, geometry and capacity history",
         },
         "split_strategy": splits["strategy"],
         "sample_eligibility": preflight,
@@ -522,7 +801,14 @@ def run_experiment(
     }
     _write_json(output / "dataset_manifest.json", manifest)
     feature_names = _prepare_arrays(
-        splits["train"], arrays, "train", count=samples_per_snapshot, seed=sample_seed
+        splits["train"],
+        arrays,
+        "train",
+        count=samples_per_snapshot,
+        seed=sample_seed,
+        radii_cmpc=radii_cmpc,
+        front_weight=front_weight,
+        neutral_weight=neutral_weight,
     )
     validation_names = _prepare_arrays(
         splits["validation"],
@@ -530,6 +816,9 @@ def run_experiment(
         "validation",
         count=samples_per_snapshot,
         seed=sample_seed + 1,
+        radii_cmpc=radii_cmpc,
+        front_weight=front_weight,
+        neutral_weight=neutral_weight,
     )
     if validation_names != feature_names:
         raise ValueError("Train/validation feature schemas differ")
@@ -545,6 +834,10 @@ def run_experiment(
             "epochs": epochs,
             "batch_size": batch_size,
             "patience": patience,
+            "model_mode": model_mode,
+            "radii_cmpc": radii_cmpc,
+            "front_weight": front_weight,
+            "neutral_weight": neutral_weight,
         }
         for seed in model_seeds
     ]
@@ -565,8 +858,21 @@ def run_experiment(
     # Audited test targets do not enter features, scaling, fitting or model selection.
     reports = _evaluate_test(model, splits["test"], output / "test")
     _write_metrics(output / "test_metrics.csv", reports)
+    reconstruction = []
+    if model_mode == "residual" or len(geometry_coverage) > 1:
+        reconstruction = _evaluate_test(
+            model,
+            _reconstruction_samples(splits["train"]),
+            output / "training_reconstruction",
+            evaluation_role="training_reconstruction",
+        )
+        _write_metrics(output / "training_reconstruction_metrics.csv", reconstruction)
     summary = {
         "scope": manifest["scope"],
+        "model_mode": model_mode,
+        "geometry_coverage": geometry_coverage,
+        "feature_config": manifest["feature_config"],
+        "loss_config": manifest["loss_config"],
         "split_strategy": splits["strategy"],
         "sample_eligibility": preflight,
         "evaluation_scope": preflight["evaluation_scope"],
@@ -579,6 +885,8 @@ def run_experiment(
         "total_seconds": time.perf_counter() - start,
         "feature_names": feature_names,
         "test": reports,
+        "training_reconstruction": reconstruction,
+        "training_reconstruction_scope": "In-sample fields; not independent high-resolution accuracy",
         "global_projection_target": manifest["global_projection_target"],
         "conservation_scope": manifest["conservation_scope"],
         "history_scope": manifest["history_scope"],
@@ -615,6 +923,15 @@ def main() -> None:
     parser.add_argument("--hidden", type=int, nargs="+", default=[32, 32])
     parser.add_argument("--batch-size", type=int, default=2048)
     parser.add_argument("--patience", type=int, default=12)
+    parser.add_argument(
+        "--model-mode", choices=("sigmoid", "residual"), default="residual"
+    )
+    parser.add_argument(
+        "--radii-cmpc", type=float, nargs="+", default=[6.25, 12.5, 25.0, 50.0]
+    )
+    parser.add_argument("--front-weight", type=float, default=4.0)
+    parser.add_argument("--neutral-weight", type=float, default=2.0)
+    parser.add_argument("--sample-manifest", type=Path)
     args = vars(parser.parse_args())
     args["input_roots"] = args.pop("input")
     args["model_seeds"] = tuple(args["model_seeds"])

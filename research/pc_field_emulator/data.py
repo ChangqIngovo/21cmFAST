@@ -94,6 +94,64 @@ class Sample:
     identity_sha256: str | None = None
 
 
+def history_key(sample: Sample) -> tuple[int, float, int, str]:
+    """Identify one fixed-capacity history independently of its storage path.
+
+    Parameters
+    ----------
+    sample : Sample
+        A discovered checkpoint with explicit geometry and capacity provenance.
+
+    Returns
+    -------
+    tuple
+        Initial-condition seed, comoving box length, coarse dimension and the
+        producer's capacity hash. A seed may identify several grid geometries.
+    """
+    return sample.seed, sample.box_len, sample.dimension, sample.capacity_sha256
+
+
+def sample_key(sample: Sample) -> tuple[int, float, int, int]:
+    """Return coordinates used to reject duplicate samples across input paths.
+
+    Parameters
+    ----------
+    sample : Sample
+        A discovered checkpoint.
+
+    Returns
+    -------
+    tuple
+        Seed, box length, coarse dimension and source node. Capacity hashes are
+        deliberately excluded: a changed realization at the same coordinates
+        must not evade duplicate protection by supplying another fixture.
+    """
+    return sample.seed, sample.box_len, sample.dimension, sample.node_index
+
+
+def sample_stem(sample: Sample) -> str:
+    """Build a portable output name including geometry and history identity.
+
+    Parameters
+    ----------
+    sample : Sample
+        A discovered checkpoint.
+
+    Returns
+    -------
+    str
+        A filename stem containing the seed, box, grid, history digest and node.
+        The digest retains full-precision box length in its input.
+    """
+    identity = hashlib.sha256(_canonical({"history": history_key(sample)})).hexdigest()[
+        :16
+    ]
+    return (
+        f"seed{sample.seed}_L{sample.box_len:.12g}_n{sample.dimension}_"
+        f"{identity}_node{sample.node_index:05d}"
+    )
+
+
 def _canonical(value: dict) -> bytes:
     return json.dumps(
         value, sort_keys=True, separators=(",", ":"), allow_nan=False
@@ -191,6 +249,133 @@ def _fixture(path: Path, size: int, mtime_ns: int) -> dict:
 def _load_fixture(path: Path) -> dict:
     stat = path.stat()
     return _fixture(path, stat.st_size, stat.st_mtime_ns)
+
+
+def _physics_settings(metadata: dict) -> dict:
+    keys = (
+        "schema_version",
+        "density_evolution",
+        "reference_redshift",
+        "rates_definition",
+        "rate_units",
+        "capacity_definition",
+        "capacity_units",
+        "density_weighting_applied_to_n_ion",
+        "local_cumulative_n_ion_differenced",
+        "native_n_ion_is_a_rate",
+        "source_components",
+        "t_STAR",
+        "rate_clock",
+        "time_clock",
+        "time_origin",
+        "redshift_start",
+        "cosmology_for_clocks",
+    )
+    settings = {key: metadata.get(key) for key in keys}
+    settings["source_model"] = metadata.get("source_model", "L-INTEGRAL")
+    # Copy only JSON values: the cached fixture metadata remains unchanged.
+    inputs = json.loads(json.dumps(metadata.get("inputs", {})))
+    for key in ("random_seed", "node_redshifts"):
+        inputs.pop(key, None)
+    geometry_runtime = {
+        "HII_DIM",
+        "DIM",
+        "HIRES_TO_LOWRES_FACTOR",
+        "LOWRES_CELL_SIZE_MPC",
+        "BOX_LEN",
+        "N_THREADS",
+        "USE_FFTW_WISDOM",
+    }
+    simulation = inputs.get("simulation_options", {})
+    inputs["simulation_options"] = {
+        key: value for key, value in simulation.items() if key not in geometry_runtime
+    }
+    settings["inputs"] = inputs
+    return settings
+
+
+def validate_physics(samples: list[Sample]) -> dict[str, Any]:
+    """Require common physical settings while allowing geometry and IC changes.
+
+    Parameters
+    ----------
+    samples : list of Sample
+        Discovered or pinned checkpoints from one or more existing runs.
+
+    Returns
+    -------
+    dict
+        Canonical physical ``settings``, their ``sha256`` and per-fixture
+        ``histories`` provenance. Source/atom units, gas reference redshift,
+        source start, cosmology and astrophysics must match. Geometry, seed,
+        source sampling coordinates and threading may differ. Missing settings
+        remain explicit nulls and do not match a supplied physical setting.
+
+    Raises
+    ------
+    ValueError
+        Physical settings differ, a fixture changed after discovery, or two
+        source histories claim the same seed and geometry with different arrays.
+    """
+    if not samples:
+        raise ValueError("Cannot validate an empty dataset")
+    settings, serialized = None, None
+    visited: set[Path] = set()
+    observed: dict[tuple[int, float, int], bytes] = {}
+    histories = []
+    for sample in samples:
+        if sample.fixture_path in visited:
+            continue
+        visited.add(sample.fixture_path)
+        stat = sample.fixture_path.stat()
+        if (stat.st_size, stat.st_mtime_ns) != (
+            sample.fixture_size,
+            sample.fixture_mtime_ns,
+        ):
+            raise ValueError("Native fixture changed after discovery")
+        fixture = _load_fixture(sample.fixture_path)
+        metadata = fixture["metadata"]
+        if (
+            metadata["random_seed"] != sample.seed
+            or metadata["dimension"] != sample.dimension
+            or metadata["box_len_cMpc"] != sample.box_len
+            or metadata["array_sha256"]["capacity"] != sample.capacity_sha256
+        ):
+            raise ValueError("Sample geometry/identity disagrees with native fixture")
+        candidate = _physics_settings(metadata)
+        payload = _canonical(candidate)
+        if serialized is None:
+            settings, serialized = candidate, payload
+        elif payload != serialized:
+            differing = sorted(
+                key for key in settings if settings[key] != candidate[key]
+            )
+            raise ValueError(
+                "Dataset contains incompatible physical settings "
+                f"({', '.join(differing)}): {sample.fixture_path}"
+            )
+        geometry = (sample.seed, sample.box_len, sample.dimension)
+        array_identity = _canonical(metadata["array_sha256"])
+        if geometry in observed and observed[geometry] != array_identity:
+            raise ValueError(
+                "Conflicting native histories for the same seed and geometry"
+            )
+        observed[geometry] = array_identity
+        histories.append(
+            {
+                "fixture": str(sample.fixture_path),
+                "seed": sample.seed,
+                "box_len_cMpc": sample.box_len,
+                "dimension": sample.dimension,
+                "capacity_sha256": sample.capacity_sha256,
+                "array_sha256": metadata["array_sha256"],
+            }
+        )
+    return {
+        "settings": settings,
+        "sha256": hashlib.sha256(serialized).hexdigest(),
+        "histories": histories,
+    }
 
 
 def _read_report(case: Path) -> tuple[dict, dict | None, str | None]:
@@ -556,19 +741,30 @@ def split_samples(samples: list[Sample]) -> dict[str, Any]:
     ----------
     samples : list of Sample
         Selected snapshots, optionally already restricted to a useful epoch.
+        Different boxes and grid resolutions may share an initial-condition seed.
 
     Returns
     -------
     dict
         ``train``, ``validation`` and ``test`` lists plus a ``strategy`` label.
         Four seeds give two training, one validation and one test realization.
-        A single seed uses contiguous 60/20/20 time blocks, explicitly testing
-        only within-realization temporal extrapolation.
+        Every geometry carrying the same integer seed stays in the same role.
+        A single seed uses contiguous 60/20/20 redshift blocks across all grids,
+        explicitly testing only within-realization temporal extrapolation.
     """
     if not samples:
         raise ValueError("Cannot split an empty dataset")
-    ordered = sorted(samples, key=lambda sample: (sample.seed, sample.node_index))
-    keys = [(sample.seed, sample.node_index) for sample in ordered]
+    ordered = sorted(
+        samples,
+        key=lambda sample: (
+            sample.seed,
+            -sample.redshift,
+            sample.box_len,
+            sample.dimension,
+            sample.node_index,
+        ),
+    )
+    keys = [sample_key(sample) for sample in ordered]
     if len(keys) != len(set(keys)):
         raise ValueError("Repeated realization/node in dataset")
     arms = {(sample.subcells, sample.angles, sample.stride) for sample in ordered}
@@ -584,26 +780,36 @@ def split_samples(samples: list[Sample]) -> dict[str, Any]:
         }
     if len(seeds) == 2:
         first = [sample for sample in ordered if sample.seed == seeds[0]]
-        if len(first) < 2:
+        epochs = sorted({sample.redshift for sample in first}, reverse=True)
+        if len(epochs) < 2:
             raise ValueError(
-                "Two-seed split requires at least two training-seed snapshots"
+                "Two-seed split requires at least two training-seed redshifts"
             )
-        cut = min(len(first) - 1, max(1, int(0.8 * len(first))))
+        cut = min(len(epochs) - 1, max(1, int(0.8 * len(epochs))))
+        validation_start = epochs[cut]
         return {
-            "train": first[:cut],
-            "validation": first[cut:],
+            "train": [sample for sample in first if sample.redshift > validation_start],
+            "validation": [
+                sample for sample in first if sample.redshift <= validation_start
+            ],
             "test": [sample for sample in ordered if sample.seed == seeds[-1]],
             "strategy": "heldout_test_seed_with_temporal_validation",
         }
-    if len(ordered) < 3:
+    epochs = sorted({sample.redshift for sample in ordered}, reverse=True)
+    if len(epochs) < 3:
         raise ValueError(
-            "Single-seed split requires at least three committed snapshots"
+            "Single-seed split requires at least three committed redshifts"
         )
-    first_cut = min(len(ordered) - 2, max(1, int(0.6 * len(ordered))))
-    second_cut = min(len(ordered) - 1, max(first_cut + 1, int(0.8 * len(ordered))))
+    first_cut = min(len(epochs) - 2, max(1, int(0.6 * len(epochs))))
+    second_cut = min(len(epochs) - 1, max(first_cut + 1, int(0.8 * len(epochs))))
+    validation_start, test_start = epochs[first_cut], epochs[second_cut]
     return {
-        "train": ordered[:first_cut],
-        "validation": ordered[first_cut:second_cut],
-        "test": ordered[second_cut:],
+        "train": [sample for sample in ordered if sample.redshift > validation_start],
+        "validation": [
+            sample
+            for sample in ordered
+            if test_start < sample.redshift <= validation_start
+        ],
+        "test": [sample for sample in ordered if sample.redshift <= test_start],
         "strategy": "within_realization_temporal_extrapolation",
     }

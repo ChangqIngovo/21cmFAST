@@ -6,12 +6,16 @@ import hashlib
 import json
 import tempfile
 import unittest
+from dataclasses import asdict
 from pathlib import Path
+from unittest.mock import patch
 
 import numpy as np
 
 from research.pc_evolution.evolution import run_history
 from research.pc_evolution.native_history import ARRAY_KEYS, array_hash
+from research.pc_field_emulator import train as training
+from research.pc_field_emulator.data import discover_samples, sample_stem
 from research.pc_field_emulator.test_data import make_case
 from research.pc_field_emulator.train import run_experiment
 
@@ -110,6 +114,169 @@ class ProducerIntegrationTests(unittest.TestCase):
                 assert abs(sample["metrics"]["projected"]["delta_Q_mass"]) < 1e-10
                 assert "ratio_baseline" in sample["spectra"]
             assert len(list((output / "test").glob("*.png"))) == 2
+            assert before == {path: _digest(path) for path in before}
+
+    def test_mixed_geometry_residual_training_and_reconstruction(self) -> None:
+        """Train on existing larger grids without relabelling them as held out."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            small, large = root / "small", root / "large"
+            for seed in (10, 20, 30, 40):
+                make_case(small, seed, dimension=4, box_len=40.0)
+            make_case(large, 10, dimension=8, box_len=80.0, production=True)
+            before = {
+                path: _digest(path)
+                for folder in (small, large)
+                for path in folder.rglob("*")
+                if path.is_file()
+            }
+            output = root / "emulator"
+            report = run_experiment(
+                [small, large],
+                output,
+                workers=2,
+                model_seeds=(11, 23),
+                epochs=3,
+                hidden=(4,),
+                samples_per_snapshot=32,
+                max_snapshots_per_seed=3,
+                batch_size=32,
+                patience=2,
+                model_mode="residual",
+                radii_cmpc=(2.0, 4.0, 8.0, 16.0),
+                front_weight=4.0,
+                neutral_weight=2.0,
+            )
+            assert (output / "COMPLETED").is_file()
+            assert report["snapshot_counts"] == {
+                "train": 9,
+                "validation": 3,
+                "test": 3,
+            }
+            manifest = json.loads((output / "dataset_manifest.json").read_text())
+            train = manifest["splits"]["train"]
+            assert {row["seed"] for row in train} == {10, 20}
+            assert {row["dimension"] for row in train} == {4, 8}
+            assert {row["seed"] for row in manifest["splits"]["validation"]} == {30}
+            assert {row["seed"] for row in manifest["splits"]["test"]} == {40}
+            assert all(row["dimension"] == 4 for row in manifest["splits"]["test"])
+            coverage = {row["dimension"]: row for row in report["geometry_coverage"]}
+            assert coverage[8]["train"] == {"count": 3, "seeds": [10]}
+            assert coverage[8]["test"]["count"] == 0
+            assert coverage[8]["independent_test_available"] is False
+            assert coverage[4]["independent_test_available"] is True
+            assert report["feature_config"] == {"radii_cMpc": (2.0, 4.0, 8.0, 16.0)}
+            assert all(name.endswith("_cMpc") for name in report["feature_names"][3:15])
+            with np.load(output / "model.npz", allow_pickle=False) as model:
+                assert str(model["output_mode"]) == "residual"
+                metadata = json.loads(str(model["metadata_json"].item()))
+            assert metadata["feature_config"]["radii_cMpc"] == [2.0, 4.0, 8.0, 16.0]
+            assert metadata["loss_config"] == {
+                "front_weight": 4.0,
+                "late_neutral_weight": 2.0,
+            }
+            assert metadata["training_samples"] == 9 * 32
+            highres = [
+                row
+                for row in report["training_reconstruction"]
+                if row["dimension"] == 8
+            ]
+            assert len(highres) == 3
+            assert all(
+                row["evaluation_role"] == "training_reconstruction" for row in highres
+            )
+            names = [
+                path.stem for path in (output / "training_reconstruction").glob("*.npz")
+            ]
+            assert len(names) == len(set(names)) == 6
+            lookup = {
+                str(sample.checkpoint_path): sample
+                for folder in (small, large)
+                for sample in discover_samples(folder)
+            }
+            for role, reports in (
+                ("test", report["test"]),
+                ("training_reconstruction", report["training_reconstruction"]),
+            ):
+                for row in reports:
+                    sample = lookup[row["teacher_checkpoint"]]
+                    path = output / role / f"{sample_stem(sample)}.npz"
+                    assert path.with_suffix(".png").is_file()
+                    with np.load(path, allow_pickle=False) as archive:
+                        rho = archive["capacity"]
+                        assert rho.shape == (sample.dimension,) * 3
+                        for name in ("raw", "projected", "baseline"):
+                            field = archive[name]
+                            assert field.shape == rho.shape
+                            assert np.all(np.isfinite(field))
+                            assert np.all((field >= 0) & (field <= 1))
+                        budget = min(
+                            np.sum(archive["photons"], dtype=np.longdouble),
+                            np.sum(rho, dtype=np.longdouble),
+                        )
+                        count = np.sum(rho * archive["projected"], dtype=np.longdouble)
+                        assert abs(count - budget) / budget < 2e-10
+            assert before == {path: _digest(path) for path in before}
+
+    def test_frozen_inventory_is_not_rediscovered_during_training(self) -> None:
+        """Prepared snapshots remain fixed when a producer adds later outputs."""
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            inputs = root / "teacher"
+            for seed in (10, 20, 30, 40):
+                make_case(inputs, seed, dimension=4)
+            samples = [
+                sample for sample in discover_samples(inputs) if sample.node_index <= 4
+            ]
+            inventory = root / "sample_inventory.json"
+            inventory.write_text(
+                json.dumps(
+                    {
+                        "schema": 1,
+                        "input_roots": [str(inputs)],
+                        "teacher_arm": {"subcells": 4, "angles": 768, "stride": 4},
+                        "samples": [asdict(sample) for sample in samples],
+                    },
+                    default=str,
+                )
+            )
+            # Valid later endpoints already exist on disk but are not part of
+            # the frozen inventory. A new realization is also created afterward.
+            make_case(inputs, 50, dimension=4)
+            before = {
+                path: _digest(path) for path in inputs.rglob("*") if path.is_file()
+            }
+            with (
+                patch.object(
+                    training,
+                    "discover_samples",
+                    side_effect=AssertionError(
+                        "Frozen inventories must not rediscover"
+                    ),
+                ),
+                patch.object(training, "plot_comparison"),
+            ):
+                report = run_experiment(
+                    [inputs],
+                    root / "emulator",
+                    workers=1,
+                    model_seeds=(11,),
+                    epochs=2,
+                    hidden=(4,),
+                    samples_per_snapshot=8,
+                    max_snapshots_per_seed=3,
+                    batch_size=8,
+                    model_mode="residual",
+                    radii_cmpc=(2.0, 4.0, 8.0, 16.0),
+                    sample_manifest=inventory,
+                )
+            manifest = json.loads((root / "emulator/dataset_manifest.json").read_text())
+            retained = [row for rows in manifest["splits"].values() for row in rows]
+            assert {row["seed"] for row in retained} == {10, 20, 30, 40}
+            assert all(row["node_index"] <= 4 for row in retained)
+            assert report["snapshot_counts"] == {"train": 6, "validation": 3, "test": 3}
+            assert {row["seed"] for row in report["test"]} == {40}
+            assert manifest["frozen_inventory"]["sha256"] == _digest(inventory)
             assert before == {path: _digest(path) for path in before}
 
     def test_late_retained_snapshots_are_reported_and_training_finishes(self) -> None:

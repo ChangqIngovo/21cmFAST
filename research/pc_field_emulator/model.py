@@ -46,9 +46,60 @@ def _target(values: np.ndarray, count: int, name: str) -> np.ndarray:
     return result
 
 
+def _sample_weights(values: np.ndarray | None, count: int, name: str) -> np.ndarray:
+    if values is None:
+        return np.ones(count, dtype=np.float64)
+    result = np.asarray(values, dtype=np.float64)
+    if result.shape != (count,):
+        raise ValueError(f"{name} must have one weight per sample")
+    if not np.all(np.isfinite(result)) or np.any(result < 0):
+        raise ValueError(f"{name} must be finite and nonnegative")
+    mean = float(np.mean(result))
+    if not np.isfinite(mean) or mean <= 0:
+        raise ValueError(f"{name} must have positive total weight")
+    return result / mean
+
+
+def _residual_controls(
+    baseline: np.ndarray | None,
+    residual_scale: np.ndarray | None,
+    count: int,
+    name: str,
+) -> tuple[np.ndarray, np.ndarray]:
+    if baseline is None:
+        raise ValueError(f"{name} requires an input-only baseline")
+    base = _target(baseline, count, f"{name} baseline")
+    gate = (
+        np.ones(count, dtype=np.float64)
+        if residual_scale is None
+        else _target(residual_scale, count, f"{name} residual scale")
+    )
+    return base, gate
+
+
+def _residual_fraction(
+    amplitude: np.ndarray, baseline: np.ndarray, residual_scale: np.ndarray
+) -> np.ndarray:
+    available = np.where(amplitude >= 0, 1.0 - baseline, baseline)
+    return baseline + residual_scale * available * amplitude
+
+
+def _residual_slope(
+    amplitude: np.ndarray,
+    baseline: np.ndarray,
+    residual_scale: np.ndarray,
+    error: np.ndarray,
+) -> np.ndarray:
+    # At zero residual the output has a kink. Select the feasible branch in
+    # the loss-decreasing direction; saturated baselines can then move inward.
+    increasing = (amplitude > 0) | ((amplitude == 0) & (error <= 0))
+    available = np.where(increasing, 1.0 - baseline, baseline)
+    return residual_scale * available * (1.0 - amplitude**2)
+
+
 @dataclass
 class MLPModel:
-    """Portable tanh-hidden-layer neural network with sigmoid output.
+    """Portable tanh network with direct or bounded residual output.
 
     Parameters
     ----------
@@ -58,6 +109,9 @@ class MLPModel:
         Feature standardization fitted on training samples only.
     metadata : dict
         Training configuration and selected validation epoch.
+    output_mode : {"sigmoid", "residual"}
+        Direct fraction or a bounded correction to an input-only baseline.
+        Residual models require the same baseline convention at inference.
     """
 
     weights: list[np.ndarray]
@@ -65,21 +119,36 @@ class MLPModel:
     mean: np.ndarray
     scale: np.ndarray
     metadata: dict
+    output_mode: str = "sigmoid"
 
     def _forward(self, standardized: np.ndarray) -> list[np.ndarray]:
         values = [standardized]
         for weight, bias in zip(self.weights[:-1], self.biases[:-1], strict=True):
             values.append(np.tanh(values[-1] @ weight + bias))
-        values.append(_sigmoid(values[-1] @ self.weights[-1] + self.biases[-1]))
+        activation = _sigmoid if self.output_mode == "sigmoid" else np.tanh
+        values.append(activation(values[-1] @ self.weights[-1] + self.biases[-1]))
         return values
 
-    def predict(self, features: np.ndarray, *, chunk_size: int = 262144) -> np.ndarray:
+    def predict(
+        self,
+        features: np.ndarray,
+        *,
+        baseline: np.ndarray | None = None,
+        residual_scale: np.ndarray | None = None,
+        chunk_size: int = 262144,
+    ) -> np.ndarray:
         """Predict ionized fractions without fitting or updating any parameters.
 
         Parameters
         ----------
         features : ndarray
             Samples-by-features matrix in the original feature units.
+        baseline : ndarray, optional
+            Input-only fraction per sample, required for residual models.
+        residual_scale : ndarray, optional
+            Per-sample residual amplitude in [0, 1]; defaults to one. A zero
+            gate preserves the baseline exactly, including fraction endpoints.
+            The gate must be derived from inputs, never target ionization.
         chunk_size : int
             Maximum samples per dense network evaluation.
 
@@ -91,6 +160,14 @@ class MLPModel:
         features = _features(features, "Prediction features")
         if features.shape[1] != self.mean.size:
             raise ValueError("Prediction features do not match the fitted network")
+        if self.output_mode == "residual":
+            baseline, residual_scale = _residual_controls(
+                baseline, residual_scale, len(features), "Prediction"
+            )
+        elif self.output_mode != "sigmoid":
+            raise ValueError("Unsupported neural output mode")
+        elif baseline is not None or residual_scale is not None:
+            raise ValueError("A sigmoid model does not accept residual controls")
         if (
             isinstance(chunk_size, bool)
             or not isinstance(chunk_size, (int, np.integer))
@@ -101,7 +178,14 @@ class MLPModel:
         for start in range(0, features.shape[0], chunk_size):
             end = min(start + chunk_size, features.shape[0])
             standardized = (features[start:end] - self.mean) / self.scale
-            predicted[start:end] = self._forward(standardized)[-1][:, 0]
+            amplitude = self._forward(standardized)[-1][:, 0]
+            predicted[start:end] = (
+                amplitude
+                if self.output_mode == "sigmoid"
+                else _residual_fraction(
+                    amplitude, baseline[start:end], residual_scale[start:end]
+                )
+            )
         if not np.all(np.isfinite(predicted)):
             raise FloatingPointError("Network inference produced nonfinite fractions")
         return predicted
@@ -115,7 +199,8 @@ class MLPModel:
             Output file; its parent directory must already exist.
         """
         arrays = {
-            "schema": np.array(1, dtype=np.int64),
+            "schema": np.array(2, dtype=np.int64),
+            "output_mode": np.array(self.output_mode),
             "mean": self.mean,
             "scale": self.scale,
             "layer_count": np.array(len(self.weights), dtype=np.int64),
@@ -144,8 +229,12 @@ class MLPModel:
             Validated model ready for inference.
         """
         with np.load(path, allow_pickle=False) as archive:
-            if int(archive["schema"]) != 1:
+            schema = int(archive["schema"])
+            if schema not in (1, 2):
                 raise ValueError("Unsupported neural model schema")
+            output_mode = "sigmoid" if schema == 1 else str(archive["output_mode"])
+            if output_mode not in ("sigmoid", "residual"):
+                raise ValueError("Unsupported neural output mode")
             layer_count = int(archive["layer_count"])
             if not 1 <= layer_count <= 32:
                 raise ValueError("Invalid neural layer count")
@@ -184,60 +273,23 @@ class MLPModel:
         if previous_size != 1 or not isinstance(metadata, dict):
             raise ValueError("Invalid neural output or metadata")
         return cls(
-            weights=weights, biases=biases, mean=mean, scale=scale, metadata=metadata
+            weights=weights,
+            biases=biases,
+            mean=mean,
+            scale=scale,
+            metadata=metadata,
+            output_mode=output_mode,
         )
 
 
-def train(
-    x_train: np.ndarray,
-    y_train: np.ndarray,
-    x_validation: np.ndarray,
-    y_validation: np.ndarray,
-    *,
-    seed: int = 1234,
-    hidden: tuple[int, ...] = (32, 32),
-    epochs: int = 100,
-    batch_size: int = 2048,
-    learning_rate: float = 1e-3,
-    patience: int = 12,
-    min_delta: float = 1e-7,
-    on_epoch: Callable[[dict], None] | None = None,
-) -> tuple[MLPModel, list[dict]]:
-    """Fit a small network using Adam and validation-based early stopping.
-
-    Parameters
-    ----------
-    x_train, x_validation : ndarray
-        Disjoint samples-by-features matrices. Split independent realizations
-        before calling this function; it does not create the science split.
-    y_train, y_validation : ndarray
-        Ionized-fraction targets, one per sample.
-    seed : int
-        Seed for initialization and minibatch permutations.
-    hidden : tuple of int
-        Hidden-layer widths. An empty tuple fits sigmoid linear regression.
-    epochs, batch_size, patience : int
-        Training limit, minibatch size and nonimproving-epoch stopping limit.
-    learning_rate : float
-        Adam step size.
-    min_delta : float
-        Minimum absolute validation-MSE improvement for selecting a new model.
-    on_epoch : callable, optional
-        Callback receiving one JSON-compatible training diagnostic per epoch.
-
-    Returns
-    -------
-    model : MLPModel
-        Parameters from the best validation epoch, not the final epoch.
-    history : list of dict
-        Full training/validation MSE and model-selection diagnostics by epoch.
-    """
-    x_train = _features(x_train, "Training features")
-    x_validation = _features(x_validation, "Validation features")
-    if x_train.shape[1] != x_validation.shape[1]:
-        raise ValueError("Training and validation feature counts differ")
-    y_train = _target(y_train, len(x_train), "Training targets")
-    y_validation = _target(y_validation, len(x_validation), "Validation targets")
+def _validate_training_options(
+    epochs: int,
+    batch_size: int,
+    patience: int,
+    hidden: tuple[int, ...],
+    learning_rate: float,
+    min_delta: float,
+) -> None:
     for name, value in [
         ("epochs", epochs),
         ("batch_size", batch_size),
@@ -261,6 +313,106 @@ def train(
         or min_delta < 0
     ):
         raise ValueError("Invalid learning rate or early-stopping tolerance")
+
+
+def train(
+    x_train: np.ndarray,
+    y_train: np.ndarray,
+    x_validation: np.ndarray,
+    y_validation: np.ndarray,
+    *,
+    seed: int = 1234,
+    hidden: tuple[int, ...] = (32, 32),
+    epochs: int = 100,
+    batch_size: int = 2048,
+    learning_rate: float = 1e-3,
+    patience: int = 12,
+    min_delta: float = 1e-7,
+    on_epoch: Callable[[dict], None] | None = None,
+    baseline_train: np.ndarray | None = None,
+    baseline_validation: np.ndarray | None = None,
+    residual_scale_train: np.ndarray | None = None,
+    residual_scale_validation: np.ndarray | None = None,
+    sample_weight_train: np.ndarray | None = None,
+    sample_weight_validation: np.ndarray | None = None,
+) -> tuple[MLPModel, list[dict]]:
+    """Fit a small network using Adam and validation-based early stopping.
+
+    Parameters
+    ----------
+    x_train, x_validation : ndarray
+        Disjoint samples-by-features matrices. Split independent realizations
+        before calling this function; it does not create the science split.
+    y_train, y_validation : ndarray
+        Ionized-fraction targets, one per sample.
+    seed : int
+        Seed for initialization and minibatch permutations.
+    hidden : tuple of int
+        Hidden-layer widths. An empty tuple fits sigmoid linear regression.
+    epochs, batch_size, patience : int
+        Training limit, minibatch size and nonimproving-epoch stopping limit.
+    learning_rate : float
+        Adam step size.
+    min_delta : float
+        Minimum absolute validation-loss improvement for selecting a new model.
+    on_epoch : callable, optional
+        Callback receiving one JSON-compatible training diagnostic per epoch.
+    baseline_train, baseline_validation : ndarray, optional
+        Input-only baseline fractions. Supplying both enables a bounded tanh
+        residual model initialized to zero correction. Supplying neither
+        retains the direct sigmoid model.
+    residual_scale_train, residual_scale_validation : ndarray, optional
+        Input-only residual gates in [0, 1], one per sample. Zero gates preserve
+        the corresponding baseline exactly; omitted gates are one.
+    sample_weight_train, sample_weight_validation : ndarray, optional
+        Finite nonnegative loss weights with positive totals. Each array is
+        normalized to mean one. Training uses weighted MSE, and validation
+        uses its own weighted MSE for model selection. Both unweighted MSE and
+        the selection loss are retained in the epoch history.
+
+    Returns
+    -------
+    model : MLPModel
+        Parameters from the best validation epoch, not the final epoch. The
+        initial zero correction is also a candidate for residual models and
+        is recorded as best_epoch=0 when no fitted epoch improves it.
+    history : list of dict
+        Training/validation MSE and loss for epochs with optimizer updates.
+        The initial residual candidate is recorded separately in metadata,
+        so history length and completed_epochs count actual fitted epochs.
+    """
+    x_train = _features(x_train, "Training features")
+    x_validation = _features(x_validation, "Validation features")
+    if x_train.shape[1] != x_validation.shape[1]:
+        raise ValueError("Training and validation feature counts differ")
+    y_train = _target(y_train, len(x_train), "Training targets")
+    y_validation = _target(y_validation, len(x_validation), "Validation targets")
+    if (baseline_train is None) != (baseline_validation is None):
+        raise ValueError(
+            "Residual mode requires both training and validation baselines"
+        )
+    residual = baseline_train is not None
+    if residual:
+        baseline_train, residual_scale_train = _residual_controls(
+            baseline_train, residual_scale_train, len(x_train), "Training"
+        )
+        baseline_validation, residual_scale_validation = _residual_controls(
+            baseline_validation,
+            residual_scale_validation,
+            len(x_validation),
+            "Validation",
+        )
+    elif residual_scale_train is not None or residual_scale_validation is not None:
+        raise ValueError("Residual scale requires a baseline")
+    training_weights = _sample_weights(
+        sample_weight_train, len(x_train), "Training weights"
+    )
+    validation_weights = _sample_weights(
+        sample_weight_validation, len(x_validation), "Validation weights"
+    )
+    _validate_training_options(
+        epochs, batch_size, patience, hidden, learning_rate, min_delta
+    )
     mean = x_train.mean(axis=0)
     scale = x_train.std(axis=0)
     scale[scale == 0] = 1.0
@@ -275,14 +427,24 @@ def train(
         for left, right in itertools.pairwise(widths)
     ]
     biases = [np.zeros(width, dtype=np.float64) for width in widths[1:]]
-    prior = float(np.clip(y_train.mean(), 1e-4, 1 - 1e-4))
-    biases[-1][0] = np.log(prior) - np.log1p(-prior)
+    if residual:
+        weights[-1].fill(0.0)
+    else:
+        prior = float(np.clip(y_train.mean(), 1e-4, 1 - 1e-4))
+        biases[-1][0] = np.log(prior) - np.log1p(-prior)
     metadata = {
-        "schema": 1,
+        "schema": 2,
         "hidden_activation": "tanh",
-        "output_activation": "sigmoid",
+        "output_activation": "bounded baseline plus tanh residual"
+        if residual
+        else "sigmoid",
         "optimizer": "Adam",
-        "loss": "unweighted ionized-fraction MSE",
+        "loss": "weighted ionized-fraction MSE",
+        "sample_weighted": sample_weight_train is not None,
+        "validation_weighted": sample_weight_validation is not None,
+        "residual_zero_derivative": "loss-decreasing one-sided branch"
+        if residual
+        else None,
         "standardizer_scope": "training samples only",
         "seed": int(seed),
         "hidden": [int(width) for width in hidden],
@@ -294,27 +456,61 @@ def train(
         "training_samples": len(x_train),
         "validation_samples": len(x_validation),
     }
-    model = MLPModel(weights, biases, mean, scale, metadata)
+    model = MLPModel(
+        weights,
+        biases,
+        mean,
+        scale,
+        metadata,
+        output_mode="residual" if residual else "sigmoid",
+    )
     parameters = [*weights, *biases]
     first_moment = [np.zeros_like(parameter) for parameter in parameters]
     second_moment = [np.zeros_like(parameter) for parameter in parameters]
     best_parameters = [parameter.copy() for parameter in parameters]
     best_loss = float("inf")
     best_epoch, stalled, iteration = 0, 0, 0
+    best_validation_mse = float("inf")
+    if residual:
+        initial_train_error = (baseline_train - y_train) ** 2
+        initial_validation_error = (baseline_validation - y_validation) ** 2
+        best_loss = float(np.mean(validation_weights * initial_validation_error))
+        best_validation_mse = float(np.mean(initial_validation_error))
+        metadata["initial_baseline_metrics"] = {
+            "epoch": 0,
+            "training_mse": float(np.mean(initial_train_error)),
+            "validation_mse": best_validation_mse,
+            "training_loss": float(np.mean(training_weights * initial_train_error)),
+            "validation_loss": best_loss,
+        }
     history = []
     for epoch in range(1, epochs + 1):
         permutation = rng.permutation(len(standardized))
         for start in range(0, len(standardized), batch_size):
             indices = permutation[start : start + batch_size]
             activations = model._forward(standardized[indices])
-            prediction = activations[-1]
-            delta = (
-                2.0
-                / len(indices)
-                * (prediction - y_train[indices, None])
-                * prediction
-                * (1.0 - prediction)
+            amplitude = activations[-1][:, 0]
+            prediction = (
+                _residual_fraction(
+                    amplitude, baseline_train[indices], residual_scale_train[indices]
+                )
+                if residual
+                else amplitude
             )
+            error = prediction - y_train[indices]
+            slope = (
+                _residual_slope(
+                    amplitude,
+                    baseline_train[indices],
+                    residual_scale_train[indices],
+                    error,
+                )
+                if residual
+                else prediction * (1.0 - prediction)
+            )
+            delta = (2.0 / len(indices) * training_weights[indices] * error * slope)[
+                :, None
+            ]
             weight_gradients = [np.empty_like(weight) for weight in weights]
             bias_gradients = [np.empty_like(bias) for bias in biases]
             for layer in range(len(weights) - 1, -1, -1):
@@ -338,20 +534,34 @@ def train(
                 )
         training_prediction = model._forward(standardized)[-1][:, 0]
         validation_prediction = model._forward(validation_standardized)[-1][:, 0]
-        training_loss = float(np.mean((training_prediction - y_train) ** 2))
-        validation_loss = float(np.mean((validation_prediction - y_validation) ** 2))
+        if residual:
+            training_prediction = _residual_fraction(
+                training_prediction, baseline_train, residual_scale_train
+            )
+            validation_prediction = _residual_fraction(
+                validation_prediction, baseline_validation, residual_scale_validation
+            )
+        training_error = (training_prediction - y_train) ** 2
+        validation_error = (validation_prediction - y_validation) ** 2
+        training_mse = float(np.mean(training_error))
+        validation_mse = float(np.mean(validation_error))
+        training_loss = float(np.mean(training_weights * training_error))
+        validation_loss = float(np.mean(validation_weights * validation_error))
         if not np.isfinite(training_loss) or not np.isfinite(validation_loss):
             raise FloatingPointError("Neural optimization produced a nonfinite loss")
         improved = validation_loss < best_loss - min_delta
         if improved:
             best_loss, best_epoch, stalled = validation_loss, epoch, 0
+            best_validation_mse = validation_mse
             best_parameters = [parameter.copy() for parameter in parameters]
         else:
             stalled += 1
         record = {
             "epoch": epoch,
-            "training_mse": training_loss,
-            "validation_mse": validation_loss,
+            "training_mse": training_mse,
+            "validation_mse": validation_mse,
+            "training_loss": training_loss,
+            "validation_loss": validation_loss,
             "selected": improved,
         }
         history.append(record)
@@ -363,7 +573,8 @@ def train(
         parameter[...] = best
     metadata.update(
         best_epoch=best_epoch,
-        best_validation_mse=best_loss,
+        best_validation_mse=best_validation_mse,
+        best_validation_loss=best_loss,
         completed_epochs=len(history),
     )
     return model, history

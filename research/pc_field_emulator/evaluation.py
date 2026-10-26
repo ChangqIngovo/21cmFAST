@@ -53,7 +53,9 @@ def field_metrics(
         JSON-safe means, errors, and morphology diagnostics. Partial cells have
         0.01 < teacher < 0.99. Front cells touch, by a periodic six-neighbor
         connection, a cell on the other side of the teacher's xHII=0.5 boundary.
-        Undefined correlations, empty masks and empty IoU unions return None.
+        Neutral cells have teacher xHII < 0.5; their IoU and MAE diagnose late
+        islands even when ionized-volume overlap is close to one. Undefined
+        correlations, empty masks and empty IoU unions return None.
     """
     pred = _fraction(predicted, "Prediction")
     truth = _fraction(teacher, "Teacher")
@@ -73,6 +75,7 @@ def field_metrics(
         for offset in (-1, 1):
             front |= truth_ionized != np.roll(truth_ionized, offset, axis=axis)
     union = int(np.count_nonzero(truth_ionized | pred_ionized))
+    neutral_union = int(np.count_nonzero(~truth_ionized | ~pred_ionized))
     centered_pred = pred - np.mean(pred)
     centered_truth = truth - np.mean(truth)
     denominator = float(np.sqrt(np.mean(centered_pred**2) * np.mean(centered_truth**2)))
@@ -102,6 +105,15 @@ def field_metrics(
             if union
             else None
         ),
+        "neutral_IoU": (
+            float(np.count_nonzero(~truth_ionized & ~pred_ionized) / neutral_union)
+            if neutral_union
+            else None
+        ),
+        "neutral_cell_count": int(np.count_nonzero(~truth_ionized)),
+        "neutral_cell_MAE": float(np.mean(absolute[~truth_ionized]))
+        if np.any(~truth_ionized)
+        else None,
         "field_correlation": correlation,
     }
 

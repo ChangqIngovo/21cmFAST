@@ -49,7 +49,7 @@ import scipy
 
 run = Path(sys.argv[1]).resolve()
 manifest = json.loads((run / 'run_manifest.json').read_text())
-if manifest.get('schema') != 1 or manifest.get('experiment') != 'pc-field-emulator':
+if manifest.get('schema') != 2 or manifest.get('experiment') != 'pc-field-emulator':
     raise RuntimeError('Wrong training preparation manifest.')
 if str(run) != manifest['run_directory']:
     raise RuntimeError('Prepared training directory moved.')
@@ -70,7 +70,8 @@ versions = {
 if versions != manifest['versions']:
     raise RuntimeError('Training dependencies changed after preparation.')
 print('Commit:', manifest['commit'], flush=True)
-print('Inputs:', manifest['input_root'], flush=True)
+print('Inputs:', manifest['input_roots'], flush=True)
+print('Frozen committed snapshots:', manifest['frozen_sample_count'], flush=True)
 print('Workers:', manifest['trial_workers'], '; BLAS threads/worker:',
       manifest['blas_threads_per_worker'], flush=True)
 subprocess.run([

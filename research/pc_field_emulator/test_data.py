@@ -6,6 +6,7 @@ import hashlib
 import json
 import tempfile
 import unittest
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -15,15 +16,23 @@ try:
     from .data import (
         UnresolvedPhotonBudgetError,
         discover_samples,
+        history_key,
         load_sample,
+        sample_key,
+        sample_stem,
         split_samples,
+        validate_physics,
     )
 except ImportError:
     from data import (
         UnresolvedPhotonBudgetError,
         discover_samples,
+        history_key,
         load_sample,
+        sample_key,
+        sample_stem,
         split_samples,
+        validate_physics,
     )
 
 
@@ -47,9 +56,12 @@ def make_case(
     retained: float = 0.0,
     retained_from_node: int = 0,
     complete: bool = True,
+    dimension: int = 2,
+    box_len: float = 40.0,
+    metadata_updates: dict | None = None,
 ) -> Path:
     """Write a small real-schema history/checkpoint case for reader tests."""
-    capacity = np.ones((2, 2, 2), dtype=np.float64)
+    capacity = np.ones((dimension, dimension, dimension), dtype=np.float64)
     capacity.flat[0] = 2.0
     z = np.linspace(12.0, 6.0, 7)
     times = np.arange(7, dtype=float)
@@ -59,8 +71,8 @@ def make_case(
         "rates_definition": "native_n_ion_times_H_over_t_STAR",
         "source_model": "L-INTEGRAL",
         "random_seed": seed,
-        "dimension": 2,
-        "box_len_cMpc": 40.0,
+        "dimension": dimension,
+        "box_len_cMpc": box_len,
         "physical_restrictions": [
             "No MCG, recombinations, X-ray/spin-temperature evolution or UV photoheating feedback"
         ],
@@ -73,6 +85,7 @@ def make_case(
             }.items()
         },
     }
+    metadata.update(metadata_updates or {})
     fixture = (
         root / "native_history.npz"
         if production
@@ -422,6 +435,142 @@ class DataTests(unittest.TestCase):
             assert max(sample.node_index for sample in split["validation"]) < min(
                 sample.node_index for sample in split["test"]
             )
+
+    def test_mixed_geometry_preserves_seed_roles_and_unique_names(self) -> None:
+        """The same seed in a bigger box stays in its original partition."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for seed in (11, 22, 33, 44):
+                make_case(root / "small", seed)
+            make_case(root / "large", 11, dimension=4, box_len=80.0)
+            samples = discover_samples(root / "small") + discover_samples(
+                root / "large"
+            )
+            split = split_samples(samples)
+            assert len(split["train"]) == 21
+            assert {row.seed for row in split["validation"]} == {33}
+            assert {row.seed for row in split["test"]} == {44}
+            assert {row.dimension for row in split["train"]} == {2, 4}
+            assert len({history_key(row) for row in samples}) == 5
+            assert len({sample_key(row) for row in samples}) == len(samples)
+            assert len({sample_stem(row) for row in samples}) == len(samples)
+
+    def test_duplicate_geometry_cannot_hide_behind_another_fixture_path(self) -> None:
+        """Copied or changed realizations at the same coordinates are duplicates."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            make_case(root / "first", 11)
+            make_case(root / "copy", 11)
+            samples = discover_samples(root / "first") + discover_samples(root / "copy")
+            with pytest.raises(ValueError, match="Repeated realization"):
+                split_samples(samples)
+
+    def test_temporal_split_keeps_matching_redshifts_together_across_grids(
+        self,
+    ) -> None:
+        """Grid size or node numbering cannot move one epoch across partitions."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            make_case(root / "small", 11)
+            make_case(root / "large", 11, dimension=4, box_len=80.0)
+            small = discover_samples(root / "small")
+            large = [
+                replace(row, node_index=row.node_index + 20)
+                for row in discover_samples(root / "large")
+            ]
+            for additional_seed in (False, True):
+                samples = small + large
+                if additional_seed:
+                    samples += [replace(row, seed=22) for row in small]
+                split = split_samples(samples)
+                roles = {}
+                for name in ("train", "validation", "test"):
+                    for row in split[name]:
+                        if row.seed == 11:
+                            roles.setdefault(row.redshift, set()).add(name)
+                assert all(len(names) == 1 for names in roles.values())
+                assert min(row.redshift for row in split["train"]) > max(
+                    row.redshift for row in split["validation"]
+                )
+
+    def test_mixed_geometry_physics_signature_ignores_only_geometry_and_runtime(
+        self,
+    ) -> None:
+        """One physics configuration can span box size, resolution and threads."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            base = {
+                "astro_params": {"F_STAR10": -1.3},
+                "cosmo_params": {"OMm": 0.3},
+                "matter_options": {"SOURCE_MODEL": "L-INTEGRAL"},
+            }
+            for name, n, length, seed in (
+                ("small", 2, 40.0, 11),
+                ("large", 4, 80.0, 22),
+            ):
+                make_case(
+                    root / name,
+                    seed,
+                    dimension=n,
+                    box_len=length,
+                    metadata_updates={
+                        "reference_redshift": 8.0,
+                        "redshift_start": 12.0,
+                        "inputs": {
+                            **base,
+                            "random_seed": seed,
+                            "node_redshifts": [12, 6] if n == 2 else [12, 9, 6],
+                            "simulation_options": {
+                                "HII_DIM": n,
+                                "DIM": 3 * n,
+                                "BOX_LEN": length,
+                                "N_THREADS": n,
+                            },
+                        },
+                    },
+                )
+            samples = discover_samples(root / "small") + discover_samples(
+                root / "large"
+            )
+            report = validate_physics(samples)
+            assert len(report["sha256"]) == 64
+            assert len(report["histories"]) == 2
+            assert report["settings"]["inputs"]["astro_params"] == base["astro_params"]
+
+    def test_incompatible_native_physics_is_rejected(self) -> None:
+        """Do not combine different source efficiencies as geometry training."""
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            for name, efficiency, seed in (("first", -1.3, 11), ("second", -1.0, 22)):
+                make_case(
+                    root / name,
+                    seed,
+                    metadata_updates={
+                        "inputs": {"astro_params": {"F_STAR10": efficiency}}
+                    },
+                )
+            with pytest.raises(ValueError, match="incompatible physical"):
+                validate_physics(
+                    discover_samples(root / "first") + discover_samples(root / "second")
+                )
+
+    def test_density_reference_and_emission_start_remain_physical_parameters(
+        self,
+    ) -> None:
+        """Mixed grids cannot silently alter gas reference time or source history."""
+        for key in ("reference_redshift", "redshift_start"):
+            with (
+                self.subTest(parameter=key),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                root = Path(temporary)
+                make_case(root / "first", 11, metadata_updates={key: 8.0})
+                make_case(root / "second", 22, metadata_updates={key: 9.0})
+                with pytest.raises(ValueError, match="incompatible physical"):
+                    validate_physics(
+                        discover_samples(root / "first")
+                        + discover_samples(root / "second")
+                    )
 
 
 if __name__ == "__main__":

@@ -28,6 +28,7 @@ class FeatureTests(unittest.TestCase):
             "redshift",
             "box_len",
             "radii_cells",
+            "radii_cMpc",
         ]
         rho = np.ones((6, 6, 6))
         photons = np.full_like(rho, 0.25)
@@ -134,6 +135,16 @@ class SpectrumTests(unittest.TestCase):
 
 class MetricsTests(unittest.TestCase):
     """Check mass weighting and undefined diagnostics."""
+
+    def test_neutral_island_metric_detects_late_island_loss(self) -> None:
+        """A high ionized IoU must not conceal a completely lost neutral island."""
+        teacher = np.ones((4, 4, 4))
+        teacher[0, 0, 0] = 0.0
+        result = field_metrics(np.ones_like(teacher), teacher, np.ones_like(teacher))
+        assert result["ionized_IoU"] == 63 / 64
+        assert result["neutral_IoU"] == 0.0
+        assert result["neutral_cell_count"] == 1
+        assert result["neutral_cell_MAE"] == 1.0
 
     def test_mass_and_volume_are_distinct(self) -> None:
         """Check atom weighting and the empty partial-ionization mask."""
