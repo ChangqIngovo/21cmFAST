@@ -205,6 +205,7 @@ def export(fixture):
         fixture["output"],
         fixture["split"],
         fixture["expected_seed"],
+        initial_state_config={"allow_mismatch": True},
     )
 
 
@@ -223,6 +224,43 @@ def test_pairing_uses_integrated_rates_and_preserves_ionized_atoms(tmp_path):
     )
     assert last["metadata"]["convergence_certified"] is False
     assert last["metadata"]["scope"].startswith("ES-to-C2-Ray")
+
+
+def test_late_initial_state_requires_explicit_opt_in_and_retains_status(tmp_path):
+    """A mostly ionized ES start cannot silently label a neutral RT restart."""
+    f = pair_fixture(tmp_path / "late")
+    with pytest.raises(ValueError, match="Initial ES/RT state mismatch"):
+        export_pairs(f["history"], f["es"], f["teacher"], f["output"], f["split"])
+    assert not f["output"].exists()
+    manifest = export(f)
+    assert manifest["initial_state_compatible"] is False
+    report = load_pair(manifest["samples"][0])["metadata"]["initial_state_audit"]
+    assert report["exploratory_mismatch_opt_in"] is True
+    assert report["mass_weighted_initial_MAE"] > 0.2
+
+
+def test_legacy_unknown_cannot_hide_a_known_initial_state_mismatch(tmp_path):
+    """Mixed legacy/new seed manifests must still expose an explicit mismatch."""
+    manifests = []
+    for seed, split in enumerate(("train", "validation", "test"), start=1):
+        fixture = pair_fixture(tmp_path / f"seed{seed}", seed=seed, split=split)
+        manifest = export(fixture)
+        if split == "train":
+            # Reproduce a valid old-format pair without the new audit marker.
+            for record in manifest["samples"]:
+                with np.load(record["path"], allow_pickle=False) as archive:
+                    payload = {name: np.array(archive[name]) for name in archive.files}
+                metadata = json.loads(str(payload["metadata"].item()))
+                metadata.pop("initial_state_audit")
+                payload["metadata"] = np.asarray(json.dumps(metadata))
+                np.savez_compressed(record["path"], **payload)
+                record["sha256"] = file_hash(record["path"])
+            manifest.pop("initial_state_compatible")
+        manifests.append(manifest)
+    output = tmp_path / "mixed.json"
+    combined = combine_manifests(manifests, output)
+    assert combined["initial_state_compatible"] is False
+    assert load_dataset(output)["initial_state_compatible"] is False
 
 
 def test_existing_pair_output_and_sidecar_are_not_overwritten(tmp_path):

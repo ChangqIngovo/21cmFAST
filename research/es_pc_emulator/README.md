@@ -1,5 +1,9 @@
 # Native ES to C2-Ray field correction
 
+See the [2026-10-27 residual validation report](RESIDUAL_VALIDATION.md) for
+reproduced failures, controlled physical comparisons, held-out neural accuracy
+and remaining limits. The labels are not yet convergence-certified.
+
 This experiment pairs the native three-dimensional ES neutral-fraction field
 and its largest crossing radius with C2-Ray hydrogen neutral-fraction labels.
 Its purpose is to learn the error of an existing fast model, rather than to
@@ -51,7 +55,41 @@ control. Fitting standardization uses training samples only. All ablation arms
 sample identical cells. Independent neural initializations and input arms are
 selected by weighted validation MSE; held-out test data never select a model.
 
+Smoothed-feature standard deviations are floored by the training standard
+deviation of the corresponding unsmoothed central-cell channel. This prevents
+almost constant whole-box contexts from amplifying a change between seeds by
+thousands of standard deviations. All statistics use training data only.
+`--standardization independent` reproduces the original per-column scaling
+for a controlled comparison; the default is `channel`. The fitted mean/scale
+remain part of the saved model and are reused unchanged during inference.
+
 ## Generate a dataset on Gadi
+
+For an end-to-end **exploratory accuracy evaluation**, prepare the dataset and
+submit training with an `afterok` dependency in one command:
+
+```bash
+bash research/es_pc_emulator/gadi_validate.sh
+```
+
+This uses `validation_dataset.json`: 50 cMpc, 16-cubed source/RT/output grids,
+z=20 to 5, 30 source intervals, 60 RT steps, and angular order 8 (384 rays
+per source), with two training seeds and independent validation/test seeds.
+It is a lower-cost accuracy experiment; `--config FILE` overrides these settings.
+The larger `default_dataset.json` retains RT refinement 3/angular order 32.
+It first generates and audits the ES/RT residuals, then fits all three input
+arms. Training explicitly permits the still-uncertified teacher; this command
+does not certify spatial/time/angular convergence. The training job is held
+until the dataset job succeeds. Both job IDs and the exact run directory are
+printed. Run directories start with `es_pc_dataset_`.
+
+A new initial-state check compares the first native ES field with the uniform
+RT initial xHII, weighted by the teacher gas. The default maximum MAE is 0.001.
+Starting at z=8 when ES is already appreciably ionized fails **before RT runs**:
+the RT solver otherwise starts nearly neutral with no earlier source history.
+Use an earlier start for a usable dataset. `initial_state.allow_mismatch=true`
+and training `--allow-initial-state-mismatch` are independent, explicit opt-ins
+for reproducing the old diagnostic failure, not substitutes for an earlier start.
 
 From a committed `Photon_conserving` checkout:
 
@@ -124,6 +162,26 @@ runtime. The separate training request is 8 CPUs, 32 GB and four hours on
 Check `model_selection.json`, independent-test field/front/island errors,
 physical saturated-spin 21-cm power spectra, Fourier cross-correlations and
 baseline ES metrics. Full test prediction cubes and fitted models are saved.
+`accuracy_report.json` gives the original ES MAE, neural MAE, fractional
+improvement and selected epoch for every arm. Epoch zero means validation
+selected the unchanged ES baseline. The CLI prints these errors before the
+full JSON report; a completed fit does not by itself mean accuracy improved.
+
+The dataset job writes `audit_path.txt`, pointing to `summary.json` and
+`samples.csv` for **all** paired redshifts. They include mean and worst-snapshot
+errors, global ionized-stock bias, and the exact decomposition of MSE into
+squared mean bias plus centred spatial variance. Source-history and density
+diagnostics are also retained. This decomposition does not change any labels.
+To inspect an existing paired dataset without fitting:
+
+```bash
+python -m research.es_pc_emulator.audit --dataset /dataset/dataset_manifest.json \
+  --output /fresh/residual_audit --history /seed/native_history.npz \
+  --es-sidecar /seed/native_es.npz
+```
+
+Repeat the history/sidecar options for each seed. These files are checked
+against the pairing hashes. Without them, unavailable diagnostics remain unknown.
 
 The trainer refuses uncertified teacher convergence by default. The current
 generator deliberately marks its labels `convergence_certified=false`: primary
@@ -157,6 +215,23 @@ errors relative to C2-Ray are reported under that name. Strict local or
 per-source photon conservation of neural predictions is not claimed.
 
 ## Validation
+
+The causal history experiment is reproducible with the same native source
+histories, including a reset that removes only the pre-final-interval RT state:
+
+```bash
+python -m research.es_pc_emulator.validate_history warm --output /fresh/check --upstream /pinned/C2-Ray --workers 8
+python -m research.es_pc_emulator.validate_history reset --output /fresh/check --upstream /pinned/C2-Ray --workers 8
+python -m research.es_pc_emulator.validate_history original-late --output /fresh/check --upstream /pinned/C2-Ray --workers 8
+python -m research.es_pc_emulator.validate_history time2 --output /fresh/check --upstream /pinned/C2-Ray --workers 8
+python -m research.es_pc_emulator.validate_history report --output /fresh/check --upstream /pinned/C2-Ray --workers 8
+```
+
+These are computational experiments; run them on a compute allocation. `warm`
+uses three independent seeds, z=20 to 7.9, eight source intervals and 96 rays
+per source. `original-late` reproduces the old z=8 to 7.9 test; `reset` retains
+exactly the warm run's last source-rate segment and gas, starting RT afresh.
+`time2` doubles RT substeps at fixed input history. Source hashes are recorded.
 
 ```bash
 python -m pytest -q research/es_pc_emulator --confcutdir=research/es_pc_emulator

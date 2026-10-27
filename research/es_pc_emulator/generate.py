@@ -23,8 +23,16 @@ ROOT = Path(__file__).resolve().parents[2]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+from research.es_pc_emulator.initial_state import (  # noqa: E402
+    DEFAULT_POLICY,
+    initial_state_audit,
+    require_initial_state,
+    validate_policy,
+)
+
 DEFAULT_CONFIG = {
     "schema_version": 1,
+    "initial_state": dict(DEFAULT_POLICY),
     "teacher": {
         "dimension": 16,
         "highres_dimension": 48,
@@ -98,7 +106,19 @@ def validate_config(value: dict) -> dict:
     # Seed and benchmark are set independently for every run below.
     checked.pop("seed")
     checked.pop("benchmark")
-    return {"schema_version": 1, "teacher": checked, "splits": splits}
+    return {"schema_version": 1, "teacher": checked, "splits": splits,
+            "initial_state": validate_policy(value.get("initial_state"))}
+
+
+def audit_initial_history(history_path, es_path, policy, initial_xhii):
+    """Audit actual native initial fields before spending time on RT transport."""
+    from research.es_pc_emulator.pairs import _load_es
+    from research.pc_evolution.native_history import load_history
+
+    history = load_history(history_path)
+    es, _ = _load_es(es_path, history)
+    return initial_state_audit(history, es, initial_xhii=initial_xhii,
+                               max_mass_weighted_error=policy["max_mass_weighted_error"])
 
 
 def runtime_fingerprint() -> dict:
@@ -164,7 +184,8 @@ def verify_prepared(run: Path, workers: int) -> dict:
 
 def generation_identity(config: dict) -> dict:
     """Freeze all numerical source files and the runtime for durable continuation."""
-    paths = [Path(__file__), Path(__file__).with_name("pairs.py")]
+    paths = [Path(__file__), Path(__file__).with_name("pairs.py"),
+             Path(__file__).with_name("initial_state.py")]
     paths += list((ROOT / "research/c2ray_teacher").glob("*.py"))
     paths += list((ROOT / "research/c2ray_teacher").glob("*.F90"))
     paths += list((ROOT / "research/c2ray_teacher").glob("*.f90"))
@@ -282,6 +303,12 @@ def run_dataset(config: dict, output: Path, upstream: Path, workers: int = 32, *
                     output=history_path, es_output=es_path, threads=workers,
                     **{key: teacher[key] for key in keys},
                 )
+                initial_audit = audit_initial_history(
+                    history_path, es_path, config["initial_state"], teacher["initial_xhii"],
+                )
+                write_json(attempt / "initial_state_audit.json", initial_audit)
+                require_initial_state(initial_audit,
+                                      allow_mismatch=config["initial_state"]["allow_mismatch"])
                 # runner executes an actual compiled eight-source MPI/OpenMP
                 # smoke test before its first science history. It is never mocked
                 # or treated as a spatial-convergence certificate in production.
@@ -296,6 +323,7 @@ def run_dataset(config: dict, output: Path, upstream: Path, workers: int = 32, *
                 manifest = export_pairs(
                     history_path, es_path, attempt / "teacher", attempt / "pairs",
                     split, expected_seed=seed,
+                    initial_state_config=config["initial_state"],
                 )
                 manifest_path = attempt / "pairs/manifest.json"
                 write_json(directory / "COMPLETED.json", _seed_receipt(

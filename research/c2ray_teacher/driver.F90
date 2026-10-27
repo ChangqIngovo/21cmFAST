@@ -24,10 +24,10 @@ program c2ray_teacher_driver
   use photonstatistics, only: initialize_photonstatistics,total_ion,totrec,totcollisions,recomions, &
        photon_loss,LLS_loss,dh0,dhe0,dhe2
   implicit none
-  character(len=4096) :: input_path,output_path,line
+  character(len=4096) :: input_path,output_path,line,initialization_record
   character(len=8) :: magic
   integer(int32) :: header(4)
-  integer :: input_unit,output_unit,step,i,status,log_read_unit,converged_count,error_flag
+  integer :: input_unit,output_unit,initialization_unit,step,i,status,log_read_unit,converged_count,error_flag
 #ifdef C2_DIAGNOSTICS
   integer :: diagnostics_unit
 #endif
@@ -101,10 +101,17 @@ program c2ray_teacher_driver
     open(newunit=diagnostics_unit,file='results/transport_diagnostics.jsonl',status='new',action='write',iostat=status)
     if(status/=0) call fail('Transport diagnostics require a fresh writable path')
 #endif
-    write(*,'(A,ES24.16,A)',advance='no') &
-        '{"stage":"native_initialized","sed_table_photons_over_nominal":',sed_ratio,','
-    write(*,'(A,ES24.16,A)',advance='no') '"sed_transport_photons_over_nominal":',sed_transport_ratio,','
-    write(*,'(A,ES24.16,A)') '"sed_omitted_tail_photons_over_nominal":',sed_ratio-sed_transport_ratio,'}'
+    ! Persist the measured normalization independently of MPI stdout forwarding.
+    write(initialization_record,'(A,ES24.16,A,ES24.16,A,ES24.16,A)') &
+        '{"stage":"native_initialized","sed_table_photons_over_nominal":',sed_ratio, &
+        ',"sed_transport_photons_over_nominal":',sed_transport_ratio, &
+        ',"sed_omitted_tail_photons_over_nominal":',sed_ratio-sed_transport_ratio,'}'
+    open(newunit=initialization_unit,file='results/native_initialization.json', &
+         status='new',action='write',iostat=status)
+    if(status/=0) call fail('Initialization diagnostics require a fresh writable path')
+    write(initialization_unit,'(A)') trim(initialization_record)
+    close(initialization_unit)
+    write(*,'(A)') trim(initialization_record)
     flush(6)
   endif
   sim_time=0.0_dp

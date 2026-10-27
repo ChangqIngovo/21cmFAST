@@ -19,6 +19,11 @@ import numpy as np
 
 from research.c2ray_teacher.compare import load_run, restrict_fields
 from research.c2ray_teacher.runner import read_transport_diagnostics, validate_output
+from research.es_pc_emulator.initial_state import (
+    initial_state_audit,
+    require_initial_state,
+    validate_policy,
+)
 from research.pc_evolution.native_history import array_hash, load_history
 
 SCHEMA = 1
@@ -300,7 +305,8 @@ def _physics(history, summary):
 
 
 def export_pairs(
-    history_path, es_path, teacher_results, output, split, expected_seed=None
+    history_path, es_path, teacher_results, output, split, expected_seed=None,
+    *, initial_state_config=None,
 ):
     """Export audited same-IC/same-endpoint ES/RT samples into a fresh directory."""
     if split not in SPLITS:
@@ -320,6 +326,13 @@ def export_pairs(
     es, _ = _load_es(es_path, history)
     decoded, summary, diagnostics = _teacher(directory, history)
     manifest = decoded["manifest"]
+    initial_policy = validate_policy(initial_state_config)
+    initial_audit = initial_state_audit(
+        history, es, initial_xhii=manifest["initial_state"]["xHII"],
+        max_mass_weighted_error=initial_policy["max_mass_weighted_error"],
+    )
+    initial_audit["exploratory_mismatch_opt_in"] = initial_policy["allow_mismatch"]
+    require_initial_state(initial_audit, allow_mismatch=initial_policy["allow_mismatch"])
     history_digest, es_digest = file_hash(history_path), file_hash(es_path)
     times, rates = history["times_seconds"], history["rates"]
     cumulative = np.zeros_like(rates, dtype=np.float64)
@@ -398,6 +411,7 @@ def export_pairs(
                 "photon_residual_over_transported_emitted"
             ],
             "convergence_certified": False,
+            "initial_state_audit": initial_audit,
             "array_sha256": {key: array_hash(value) for key, value in fields.items()},
         }
         path = output / f"snapshot_{index:04d}.npz"
@@ -419,6 +433,7 @@ def export_pairs(
         "split_policy": "all epochs/geometries of a seed and IC identity stay in one split",
         "physics": physics,
         "convergence_certified": False,
+        "initial_state_compatible": initial_audit["compatible"],
         "scope": "Audited paired emulator data; transport closure does not certify spatial/time convergence",
     }
     _write_json(output / "manifest.json", result)
@@ -456,6 +471,17 @@ def load_pair(record):
     return fields | {"metadata": meta}
 
 
+def _initial_compatibility(statuses):
+    """Preserve a known failure even when another legacy sample is unaudited."""
+    if any(value is not None and type(value) is not bool for value in statuses):
+        raise ValueError("Initial-state compatibility must be boolean or unknown")
+    if any(value is False for value in statuses):
+        return False
+    if any(value is None for value in statuses):
+        return None
+    return True
+
+
 def _audit_manifest(manifest, *, require_splits):
     if (
         manifest.get("schema_version") != SCHEMA
@@ -466,6 +492,7 @@ def _audit_manifest(manifest, *, require_splits):
     if not isinstance(records, list) or not records:
         raise ValueError("Dataset has no samples")
     seeds, ics, seen, splits = {}, {}, set(), set()
+    initial_states = []
     for record in records:
         split = record.get("split")
         if split not in SPLITS:
@@ -489,10 +516,14 @@ def _audit_manifest(manifest, *, require_splits):
             raise ValueError("Duplicate physical sample in dataset")
         seen.add(identity)
         fields = load_pair(record)
+        initial_states.append(fields["metadata"].get("initial_state_audit", {}).get("compatible"))
         if fields["metadata"].get("physics") != manifest.get("physics"):
             raise ValueError("Dataset mixes incompatible source or RT physics")
     if require_splits and splits != set(SPLITS):
         raise ValueError("Training requires nonempty train, validation and test splits")
+    compatibility = _initial_compatibility(initial_states)
+    if manifest.get("initial_state_compatible") != compatibility:
+        raise ValueError("Dataset initial-state status differs from paired metadata")
     return manifest
 
 
@@ -523,6 +554,8 @@ def combine_manifests(manifests, output_path):
         raise ValueError("No completed seed manifests supplied")
     result = dict(parts[0])
     result["samples"] = [row for part in parts for row in part["samples"]]
+    statuses = [part.get("initial_state_compatible") for part in parts]
+    result["initial_state_compatible"] = _initial_compatibility(statuses)
     if any(part["physics"] != result["physics"] for part in parts):
         raise ValueError("Seed datasets use incompatible source or RT physics")
     _audit_manifest(result, require_splits=True)

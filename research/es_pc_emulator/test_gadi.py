@@ -48,7 +48,8 @@ def gadi_fixture(tmp_path):
     code = repo / "research/es_pc_emulator"
     code.mkdir(parents=True)
     _git(repo, "init", "--quiet")
-    for name in ("generate.py", "default_dataset.json", "gadi_dataset.pbs"):
+    for name in ("generate.py", "default_dataset.json", "gadi_dataset.pbs",
+                 "gadi_validate.sh", "gadi_train.pbs", "validation_dataset.json"):
         (code / name).write_bytes((HERE / name).read_bytes())
     prepare = (HERE / "gadi_prepare.sh").read_text().replace(
         UPSTREAM_REVISION, upstream_revision
@@ -66,12 +67,14 @@ def gadi_fixture(tmp_path):
     )
     (repo / "research/pc_evolution/native_history.py").write_text(
         "def require_es_radius_capability(): pass\n"
+        "def load_history(p): return {}\n"
         "def build_native_history(**c):\n"
         " c['output'].write_text('history'); c['es_output'].write_text('es')\n"
     )
     (code / "pairs.py").write_text(
         "import json\nfrom pathlib import Path\n"
-        "def export_pairs(h,e,t,out,split,expected_seed=None):\n"
+        "def _load_es(p,h): return ({},{})\n"
+        "def export_pairs(h,e,t,out,split,expected_seed=None,**kwargs):\n"
         " out.mkdir();m={'samples':[{'seed':expected_seed,'split':split}]};"
         "(out/'manifest.json').write_text(json.dumps(m));return m\n"
         "def combine_manifests(paths,out):\n"
@@ -80,7 +83,17 @@ def gadi_fixture(tmp_path):
         "def load_dataset(p): return json.loads(Path(p).read_text())\n"
         "def load_pair(r): return r\n"
     )
+    (code / "initial_state.py").write_text(
+        "DEFAULT_POLICY={'max_mass_weighted_error':0.001,'allow_mismatch':False}\n"
+        "def validate_policy(p=None): return DEFAULT_POLICY | (p or {})\n"
+        "def initial_state_audit(*args,**kwargs): return {'compatible':True}\n"
+        "def require_initial_state(*args,**kwargs): pass\n"
+    )
     package = repo / "src/py21cmfast"
+    (code / "audit.py").write_text(
+        "def audit_dataset(dataset,output,**kwargs):\n"
+        " output.mkdir(parents=True);(output/'summary.json').write_text('{}');return {'groups':{}}\n"
+    )
     package.mkdir(parents=True)
     (package / "__init__.py").write_text('__version__="test.1"\n')
     release = _commit(repo)
@@ -181,6 +194,23 @@ def test_compute_dispatch_never_installs_packages(gadi_fixture):
     manifest = json.loads((run / "results/dataset_manifest.json").read_text())
     assert len(manifest["samples"]) == 4
     assert pip_log.read_bytes() == installed
+    assert (run / "audit_path.txt").is_file()
+    assert (run / "audits/audit_123.gadi-pbs/summary.json").is_file()
+
+
+def test_validation_submits_training_only_after_dataset_success(gadi_fixture):
+    """Training depends on the job that generates and audits its exact dataset."""
+    result = subprocess.run(
+        ["bash", str(gadi_fixture["code"] / "gadi_validate.sh")],
+        env=gadi_fixture["env"], text=True, capture_output=True, check=False,
+    )
+    assert result.returncode == 0, result.stdout + result.stderr
+    run = _run_directory(gadi_fixture)
+    args = Path(gadi_fixture["env"]["TEST_QSUB"]).read_text()
+    assert "depend=afterok:123.gadi-pbs" in args
+    assert f"DATASET_RUN={run},ALLOW_UNCONVERGED_TEACHER=1" in args
+    assert str(run / "source/research/es_pc_emulator/gadi_train.pbs") in args
+    assert (run / "training_job_id.txt").read_text().strip() == "123.gadi-pbs"
 
 
 @pytest.mark.parametrize("change", ["allocation", "config", "native"])

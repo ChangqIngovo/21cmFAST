@@ -70,7 +70,7 @@ def run_case(
             timeout=180,
         )
     state = read_output(root / "output.bin")
-    init = _native_initialization(log)
+    init = _native_initialization(log, root / "results/native_initialization.json")
     counters = read_transport_diagnostics(
         root / "results/transport_diagnostics.jsonl",
         state,
@@ -186,3 +186,24 @@ def test_time_average_matches_high_precision(executable: Path, tmp_path: Path) -
             for x in numbers
         ]
     np.testing.assert_allclose(observed, expected, rtol=5e-15, atol=0)
+
+
+def test_initialization_sidecar_preserves_native_fields(
+    executable: Path, tmp_path: Path
+) -> None:
+    """Compare old/new logging binaries on an identical native physical input."""
+    reference = os.environ.get("C2RAY_REFERENCE_LOGGING_EXECUTABLE")
+    if not reference:
+        pytest.skip(
+            "Set C2RAY_REFERENCE_LOGGING_EXECUTABLE for the logging-only comparison"
+        )
+    old = run_case(Path(reference), tmp_path / "old_logging", threads=1)
+    new = run_case(executable, tmp_path / "new_logging", threads=1)
+    for name in FIELD_NAMES:
+        np.testing.assert_array_equal(old["fields"][name], new["fields"][name])
+    assert old["steps"] == new["steps"]
+    log = tmp_path / "new_logging/native.log"
+    sidecar = tmp_path / "new_logging/results/native_initialization.json"
+    reference_record = _native_initialization(log, sidecar)
+    log.write_text("")
+    assert _native_initialization(log, sidecar) == reference_record

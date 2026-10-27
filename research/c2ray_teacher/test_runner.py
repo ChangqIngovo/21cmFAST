@@ -440,3 +440,66 @@ def test_native_initialization_rejects_missing_duplicate_or_invalid_records(
     )
     with pytest.raises(RuntimeError, match=r"exactly one|positive finite"):
         _native_initialization(path)
+
+
+def _initialization_record() -> dict:
+    return {
+        "stage": "native_initialized",
+        "sed_table_photons_over_nominal": 1.01,
+        "sed_transport_photons_over_nominal": 1.0,
+        "sed_omitted_tail_photons_over_nominal": 0.01,
+    }
+
+
+def test_native_initialization_survives_missing_forwarded_stdout(
+    tmp_path: Path,
+) -> None:
+    """Read actual disk diagnostics without inventing a spectral normalization."""
+    log, sidecar = tmp_path / "native.log", tmp_path / "native_initialization.json"
+    record = _initialization_record()
+    log.write_text("")
+    sidecar.write_text(json.dumps(record))
+    assert _native_initialization(log, sidecar) == record
+    log.write_text(json.dumps(record) + "\n")
+    assert _native_initialization(log, sidecar) == record
+
+
+def test_native_initialization_rejects_disagreeing_copies(tmp_path: Path) -> None:
+    """A diagnostic file cannot hide a different stdout record."""
+    log, sidecar = tmp_path / "native.log", tmp_path / "native_initialization.json"
+    record = _initialization_record()
+    sidecar.write_text(json.dumps(record))
+    log.write_text(json.dumps(record | {"sed_table_photons_over_nominal": 1.02}))
+    with pytest.raises(RuntimeError, match="disagree"):
+        _native_initialization(log, sidecar)
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [
+        "{bad json",
+        "[]",
+        '{"stage":"other"}',
+        '{"stage":"native_initialized","sed_table_photons_over_nominal":-1}',
+    ],
+)
+def test_native_initialization_rejects_malformed_sidecar(
+    tmp_path: Path, payload: str
+) -> None:
+    """Malformed sidecars fail even when stdout appears valid."""
+    log, sidecar = tmp_path / "native.log", tmp_path / "native_initialization.json"
+    log.write_text(json.dumps(_initialization_record()))
+    sidecar.write_text(payload)
+    with pytest.raises(RuntimeError, match=r"sidecar|disagree"):
+        _native_initialization(log, sidecar)
+
+
+def test_native_initialization_legacy_fallback_requires_stdout(tmp_path: Path) -> None:
+    """Retain old-binary support while refusing missing evidence in both places."""
+    log, missing = tmp_path / "native.log", tmp_path / "absent.json"
+    record = _initialization_record()
+    log.write_text(json.dumps(record))
+    assert _native_initialization(log, missing) == record
+    log.write_text("")
+    with pytest.raises(RuntimeError, match="exactly one"):
+        _native_initialization(log, missing)

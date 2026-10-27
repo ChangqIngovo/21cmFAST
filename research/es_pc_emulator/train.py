@@ -90,6 +90,29 @@ def predict_pair(model, pair):
     return 1.0 - model.predict(features, **controls).reshape(pair["xhi_es"].shape)
 
 
+def _channel_scale_floor(features, names):
+    """Scale filtered inputs by at least their unsmoothed training channel.
+
+    A filter as large as the box is nearly constant within one realization.
+    Dividing by its tiny within-box scatter can turn modest between-seed
+    mean shifts into enormous standardized values. The unfiltered channel
+    supplies a physical reference scale without inspecting validation/test.
+    """
+    values = np.asarray(features, dtype=np.float64)
+    if values.ndim != 2 or values.shape[1] != len(names):
+        raise ValueError("Features and names must have matching columns")
+    centers = {name.split(":", 1)[0]: i for i, name in enumerate(names)
+               if name.endswith(":offset=(0, 0, 0)")}
+    floor = np.zeros(len(names), dtype=np.float64)
+    for index, name in enumerate(names):
+        if ":gaussian_sigma_cMpc=" in name:
+            channel = name.split(":", 1)[0]
+            if channel not in centers:
+                raise ValueError(f"Smoothed channel {channel} has no central unfiltered feature")
+            floor[index] = values[:, centers[channel]].std()
+    return floor
+
+
 def _evaluate(model, records, directory):
     directory.mkdir(parents=True, exist_ok=False)
     reports = []
@@ -130,11 +153,55 @@ def _evaluate(model, records, directory):
     return summary
 
 
+def _accuracy_report(selections, reports, best):
+    """Expose failed learning as prominently as successful execution.
+
+    Test scores describe the already selected models; they never select a
+    feature set, initialization or epoch. A positive MAE reduction alone is
+    not a convergence or photon-conservation certificate.
+    """
+    arms = {}
+    for selection in selections:
+        name = selection["feature_set"]
+        report = reports[name]
+        baseline, prediction = report["mean_es_MAE"], report["mean_nn_MAE"]
+        endpoint = min(report["samples"], key=lambda row: row["sample"]["redshift"])
+        worst = max(report["samples"], key=lambda row: row["nn"]["MAE"])
+        arms[name] = {
+            "selected_epoch": selection["best_epoch"],
+            "selected_training_mse": selection["training_mse"],
+            "selected_validation_mse": selection["validation_mse"],
+            "selected_validation_loss": selection["validation_loss"],
+            "validation_baseline_loss": selection["validation_baseline_loss"],
+            "validation_selected_zero_correction": selection["zero_correction"],
+            "test_snapshots": report["snapshots"],
+            "mean_es_MAE": baseline,
+            "mean_nn_MAE": prediction,
+            "MAE_reduction_fraction": (baseline - prediction) / baseline if baseline > 0 else None,
+            "test_MAE_improved": prediction < baseline,
+            "lowest_redshift_sample": {
+                "seed": endpoint["sample"]["seed"], "redshift": endpoint["sample"]["redshift"],
+                "ES_MAE": endpoint["es"]["MAE"], "NN_MAE": endpoint["nn"]["MAE"],
+            },
+            "worst_nn_sample": {
+                "seed": worst["sample"]["seed"], "redshift": worst["sample"]["redshift"],
+                "ES_MAE": worst["es"]["MAE"], "NN_MAE": worst["nn"]["MAE"],
+            },
+        }
+    return {
+        "selected_feature_set": best["feature_set"], "arms": arms,
+        "test_used_for_selection": False,
+        "MAE_units": "Absolute ionized-fraction difference; multiply by 100 for percentage points",
+        "scope": "Held-out field accuracy, not a full photon-budget or convergence certificate",
+    }
+
+
 def run(dataset, output, *, feature_sets=FEATURE_SETS, model_seeds=(11, 23, 47, 83),
         epochs=200, samples_per_snapshot=8192, snapshots_per_history=24,
         hidden=(32, 32), patch_radius=1, radii_cMpc=(6.25, 12.5, 25.0, 50.0),
         batch_size=2048, front_weight=4.0, output_mode="residual",
-        allow_unconverged_teacher=False):
+        allow_unconverged_teacher=False, allow_initial_state_mismatch=False,
+        standardization="channel"):
     """Fit ablations on independent seeds and evaluate each on held-out fields."""
     if (not feature_sets or len(set(feature_sets)) != len(feature_sets)
             or any(item not in FEATURE_SETS for item in feature_sets)):
@@ -150,10 +217,19 @@ def run(dataset, output, *, feature_sets=FEATURE_SETS, model_seeds=(11, 23, 47, 
         raise ValueError("front_weight must be finite and positive")
     if output_mode not in ("residual", "direct"):
         raise ValueError("output_mode must be residual or direct")
+    if standardization not in ("channel", "independent"):
+        raise ValueError("standardization must be channel or independent")
     dataset = Path(dataset).resolve()
     manifest = load_dataset(dataset)
     if type(allow_unconverged_teacher) is not bool:
         raise ValueError("allow_unconverged_teacher must be boolean")
+    if type(allow_initial_state_mismatch) is not bool:
+        raise ValueError("allow_initial_state_mismatch must be boolean")
+    initial_state_compatible = manifest.get("initial_state_compatible")
+    if initial_state_compatible is False and not allow_initial_state_mismatch:
+        raise ValueError("ES and RT initial states are incompatible. Generate a history starting "
+                         "before appreciable ES ionization, or explicitly reproduce the mismatch "
+                         "with --allow-initial-state-mismatch.")
     convergence_certified = manifest.get("convergence_certified") is True
     if not convergence_certified and not allow_unconverged_teacher:
         raise ValueError("Teacher convergence is not certified. Finish convergence validation, "
@@ -176,8 +252,13 @@ def run(dataset, output, *, feature_sets=FEATURE_SETS, model_seeds=(11, 23, 47, 
         "dataset": str(dataset), "dataset_sha256": dataset_hash,
         "selected_samples": splits, "model_seeds": list(model_seeds),
         "output_mode": output_mode, "front_weight": front_weight,
+        "standardization": standardization,
         "teacher_convergence_certified": convergence_certified,
         "exploratory_teacher_opt_in": allow_unconverged_teacher,
+        "initial_state_compatible": initial_state_compatible,
+        "initial_state_status": ("compatible" if initial_state_compatible is True else
+                                 "mismatch" if initial_state_compatible is False else "legacy_unknown"),
+        "exploratory_initial_state_opt_in": allow_initial_state_mismatch,
         "model_selection": "Minimum weighted validation MSE; test never selects weights or feature set",
         "scope": "Coeval field correction, not an autoregressive RT solver or guaranteed photon-conserving model",
         "network": {"type": "NumPy spatial-feature MLP", "hidden": list(hidden)},
@@ -193,6 +274,8 @@ def run(dataset, output, *, feature_sets=FEATURE_SETS, model_seeds=(11, 23, 47, 
             splits["validation"], configuration, samples_per_snapshot, 2026, front_weight)
         if names != validation_names:
             raise ValueError("Train/validation feature definitions differ")
+        scale_floor = (_channel_scale_floor(train_arrays["features"], names)
+                       if standardization == "channel" else None)
         arm = output / feature_set
         arm.mkdir()
         _json(arm / "sampling.json", {"train": train_inventory, "validation": validation_inventory})
@@ -208,24 +291,34 @@ def run(dataset, output, *, feature_sets=FEATURE_SETS, model_seeds=(11, 23, 47, 
                 validation_arrays["features"], validation_arrays["target"],
                 seed=seed, hidden=tuple(hidden), epochs=epochs, batch_size=batch_size,
                 sample_weight_train=train_arrays["weights"],
-                sample_weight_validation=validation_arrays["weights"], **controls)
+                sample_weight_validation=validation_arrays["weights"],
+                feature_scale_floor=scale_floor, **controls)
             model.metadata["es_to_c2ray"] = {
                 "features": configuration, "feature_names": names,
                 "dataset_sha256": dataset_hash, "target": "C2-Ray xHII",
                 "baseline": "1 - native ES xHI", "inference_uses_teacher": False,
                 "scope": experiment["scope"],
+                "standardization": standardization,
             }
             model.save(trial_dir / "model.npz")
             _json(trial_dir / "history.json", history)
+            best_epoch = model.metadata["best_epoch"]
+            baseline_metrics = model.metadata.get("initial_baseline_metrics")
+            selected_metrics = (baseline_metrics if best_epoch == 0 else
+                                next(row for row in history if row["epoch"] == best_epoch))
             trials.append({"seed": seed, "model": str(trial_dir / "model.npz"),
                            "validation_loss": model.metadata["best_validation_loss"],
-                           "best_epoch": model.metadata["best_epoch"]})
+                           "best_epoch": best_epoch,
+                           "training_mse": selected_metrics["training_mse"],
+                           "validation_mse": selected_metrics["validation_mse"],
+                           "validation_baseline_loss": (baseline_metrics["validation_loss"]
+                                                        if baseline_metrics else None),
+                           "zero_correction": output_mode == "residual" and best_epoch == 0})
         selected = min(trials, key=lambda row: (row["validation_loss"], row["seed"]))
         _json(arm / "model_selection.json", {"trials": trials, "selected": selected})
         selected_model = MLPModel.load(selected["model"])
         selected_model.save(arm / "model.npz")
-        selections.append({"feature_set": feature_set, "model": str(arm / "model.npz"),
-                           "validation_loss": selected["validation_loss"]})
+        selections.append(selected | {"feature_set": feature_set, "model": str(arm / "model.npz")})
         del train_arrays, validation_arrays
     best = min(selections, key=lambda row: (row["validation_loss"], row["feature_set"]))
     _json(output / "model_selection.json", {"arms": selections, "selected": best,
@@ -242,6 +335,12 @@ def run(dataset, output, *, feature_sets=FEATURE_SETS, model_seeds=(11, 23, 47, 
                "scope": experiment["scope"], "strict_photon_conservation": False}
     summary["teacher_convergence_certified"] = convergence_certified
     summary["exploratory_teacher_opt_in"] = allow_unconverged_teacher
+    summary["initial_state_compatible"] = initial_state_compatible
+    summary["initial_state_status"] = experiment["initial_state_status"]
+    summary["standardization"] = standardization
+    summary["exploratory_initial_state_opt_in"] = allow_initial_state_mismatch
+    summary["accuracy_report"] = _accuracy_report(selections, reports, best)
+    _json(output / "accuracy_report.json", summary["accuracy_report"])
     _json(output / "summary.json", summary)
     (output / "COMPLETED").write_text("Independent-seed fitting and held-out evaluation completed.\n")
     return summary
@@ -263,11 +362,24 @@ def main():
     parser.add_argument("--batch-size", type=int, default=2048)
     parser.add_argument("--front-weight", type=float, default=4.0)
     parser.add_argument("--output-mode", choices=["residual", "direct"], default="residual")
+    parser.add_argument("--standardization", choices=["channel", "independent"], default="channel",
+                        help="Channel scale floor for smoothed inputs; independent reproduces old scaling")
     parser.add_argument("--allow-unconverged-teacher", action="store_true",
                         help="Explicitly train an exploratory model on labels not certified converged")
+    parser.add_argument("--allow-initial-state-mismatch", action="store_true",
+                        help="Explicitly reproduce an exploratory history with incompatible ES/RT initial states")
     options = vars(parser.parse_args())
     options["radii_cMpc"] = options.pop("radii_cmpc")
-    print(json.dumps(run(**options), default=str), flush=True)  # noqa: T201
+    summary = run(**options)
+    print("Held-out accuracy (fraction MAE; 0.01 = one percentage point):", flush=True)  # noqa: T201
+    for name, row in summary["accuracy_report"]["arms"].items():
+        print(f"{name}: ES={row['mean_es_MAE']:.8g}; NN={row['mean_nn_MAE']:.8g}; "  # noqa: T201
+              f"epoch={row['selected_epoch']}; "
+              f"zero_correction={row['validation_selected_zero_correction']}; "
+              f"test_MAE_improved={row['test_MAE_improved']}", flush=True)
+        print(f"  Lowest redshift: {row['lowest_redshift_sample']}; "  # noqa: T201
+              f"worst NN snapshot: {row['worst_nn_sample']}", flush=True)
+    print(json.dumps(summary, default=str), flush=True)  # noqa: T201
 
 
 if __name__ == "__main__":

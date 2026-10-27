@@ -97,6 +97,21 @@ def _residual_slope(
     return residual_scale * available * (1.0 - amplitude**2)
 
 
+def _fit_standardizer(features, floor):
+    """Fit feature units on training inputs with optional physical scale floors."""
+    mean = features.mean(axis=0)
+    scale = features.std(axis=0)
+    if floor is not None:
+        floor = np.asarray(floor, dtype=np.float64)
+        if (floor.shape != scale.shape or not np.isfinite(floor).all() or np.any(floor < 0)):
+            raise ValueError("Feature scale floor must be finite, nonnegative and match the feature count")
+        scale = np.maximum(scale, floor)
+    scale[scale == 0] = 1.0
+    if not np.all(np.isfinite(mean)) or not np.all(np.isfinite(scale)):
+        raise ValueError("Feature range overflowed standardization")
+    return mean, scale, floor
+
+
 @dataclass
 class MLPModel:
     """Portable tanh network with direct or bounded residual output.
@@ -335,6 +350,7 @@ def train(
     residual_scale_validation: np.ndarray | None = None,
     sample_weight_train: np.ndarray | None = None,
     sample_weight_validation: np.ndarray | None = None,
+    feature_scale_floor: np.ndarray | None = None,
 ) -> tuple[MLPModel, list[dict]]:
     """Fit a small network using Adam and validation-based early stopping.
 
@@ -369,6 +385,11 @@ def train(
         normalized to mean one. Training uses weighted MSE, and validation
         uses its own weighted MSE for model selection. Both unweighted MSE and
         the selection loss are retained in the epoch history.
+    feature_scale_floor : ndarray, optional
+        Nonnegative scale lower bounds, one per input column, derived from
+        training inputs only. These can keep nearly constant smoothed fields
+        on the scale of their unsmoothed physical channel. Omitting this
+        preserves independent per-column standardization.
 
     Returns
     -------
@@ -413,11 +434,7 @@ def train(
     _validate_training_options(
         epochs, batch_size, patience, hidden, learning_rate, min_delta
     )
-    mean = x_train.mean(axis=0)
-    scale = x_train.std(axis=0)
-    scale[scale == 0] = 1.0
-    if not np.all(np.isfinite(mean)) or not np.all(np.isfinite(scale)):
-        raise ValueError("Feature range overflowed standardization")
+    mean, scale, feature_scale_floor = _fit_standardizer(x_train, feature_scale_floor)
     standardized = (x_train - mean) / scale
     validation_standardized = (x_validation - mean) / scale
     rng = np.random.default_rng(seed)
@@ -446,6 +463,8 @@ def train(
         if residual
         else None,
         "standardizer_scope": "training samples only",
+        "feature_scale_floor": (feature_scale_floor.tolist()
+                                if feature_scale_floor is not None else None),
         "seed": int(seed),
         "hidden": [int(width) for width in hidden],
         "requested_epochs": int(epochs),

@@ -646,7 +646,10 @@ def _launch(
     elapsed = time.perf_counter() - started
     shutil.copytree(runtime / "results", destination / "native_diagnostics")
     _check_native_logs(destination)
-    initialization = _native_initialization(destination / "native.log")
+    initialization = _native_initialization(
+        destination / "native.log",
+        destination / "native_diagnostics/native_initialization.json",
+    )
     LOGGER.info("native_complete %s seconds=%.3f", destination.name, elapsed)
     state = read_output(output)
     build_manifest = json.loads((build_dir / "build_manifest.json").read_text())
@@ -677,7 +680,8 @@ def _launch(
     }
 
 
-def _native_initialization(path: Path) -> dict:
+def _native_initialization(path: Path, sidecar: Path | None = None) -> dict:
+    """Read measured normalization from disk, checking any forwarded stdout copy."""
     records = []
     for line in path.read_text(errors="replace").splitlines():
         if "native_initialized" not in line:
@@ -688,6 +692,16 @@ def _native_initialization(path: Path) -> dict:
             raise RuntimeError("Invalid native initialization JSON record") from exc
         if record.get("stage") == "native_initialized":
             records.append(record)
+    if sidecar is not None and sidecar.is_file():
+        try:
+            stored = json.loads(sidecar.read_text())
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("Invalid native initialization sidecar JSON") from exc
+        if not isinstance(stored, dict) or stored.get("stage") != "native_initialized":
+            raise RuntimeError("Invalid native initialization sidecar stage")
+        if records and (len(records) != 1 or records[0] != stored):
+            raise RuntimeError("Native initialization stdout and sidecar disagree")
+        records = [stored]
     if len(records) != 1:
         raise RuntimeError("Expected exactly one native initialization record")
     ratio = records[0].get("sed_table_photons_over_nominal")

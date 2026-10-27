@@ -48,6 +48,24 @@ if [[ -d $RUN_DIR/results ]]; then resume=(--resume); fi
     --config "$RUN_DIR/dataset_config.json" --output "$RUN_DIR/results" \
     --upstream "$RUN_DIR/upstream" --workers "$PBS_NCPUS" "${resume[@]}"
 test -f "$RUN_DIR/results/COMPLETED"
+"$RUN_DIR/venv/bin/python" - <<'PY'
+import json
+import os
+from pathlib import Path
+from research.es_pc_emulator.audit import audit_dataset
+
+run = Path(os.environ['RUN_DIR'])
+result = run / 'results'
+audit = run / 'audits' / ('audit_' + os.environ['PBS_JOBID'])
+attempts = [Path(json.loads(p.read_text())['manifest']).parent.parent
+            for p in sorted(result.glob('seed_*/COMPLETED.json'))]
+report = audit_dataset(result / 'dataset_manifest.json', audit,
+              histories=[p / 'native_history.npz' for p in attempts],
+              sidecars=[p / 'native_es.npz' for p in attempts])
+(run / 'audit_path.txt').write_text(str(audit) + '\n')
+print('Residual audit:', audit, flush=True)
+print(json.dumps(report['groups'], indent=2), flush=True)
+PY
 rm -f "$RUN_DIR/FAILED"
 touch "$RUN_DIR/COMPLETED"
 printf 'Dataset ready: %s/results/dataset_manifest.json\n' "$RUN_DIR"

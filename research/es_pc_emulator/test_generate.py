@@ -64,7 +64,7 @@ def _orchestration(monkeypatch, tmp_path, *, smoke_passes=True, pair_fails=False
         (output / "COMPLETED").touch()
         return {"benchmarks": {"passed": smoke_passes}}
 
-    def pairs(history_path, es_path, teacher_results, output, split, expected_seed=None):
+    def pairs(history_path, es_path, teacher_results, output, split, expected_seed=None, **kwargs):
         calls.append(("pairs", expected_seed, split))
         if pair_fails:
             raise ValueError("Rejected teacher source hash")
@@ -94,6 +94,7 @@ def _orchestration(monkeypatch, tmp_path, *, smoke_passes=True, pair_fails=False
     monkeypatch.setattr(native_history, "build_native_history", history)
     monkeypatch.setattr(runner, "run", teacher)
     monkeypatch.setattr(generate, "generation_identity", lambda config: {"config": config, "runtime": "test"})
+    monkeypatch.setattr(generate, "audit_initial_history", lambda *args: {"compatible": True})
     upstream = tmp_path / "upstream"
     upstream.mkdir()
     return calls, upstream
@@ -114,6 +115,22 @@ def test_dataset_runs_one_actual_smoke_gate_and_seed_disjoint_cases(monkeypatch,
     assert {row["split"] for row in result["cases"]} == {"train", "validation", "test"}
     with pytest.raises(FileExistsError):
         generate.run_dataset({}, output, upstream, workers=4)
+
+
+def test_late_restart_is_reported_before_running_teacher(monkeypatch, tmp_path):
+    """The guard preserves evidence and stops before any expensive RT work."""
+    calls, upstream = _orchestration(monkeypatch, tmp_path)
+    audit = {"compatible": False, "mass_weighted_initial_MAE": 0.3,
+             "max_mass_weighted_error": 0.001, "initial_redshift": 8.0}
+    monkeypatch.setattr(generate, "audit_initial_history", lambda *args: audit)
+    output = tmp_path / "late"
+    with pytest.raises(ValueError, match="Initial ES/RT state mismatch"):
+        generate.run_dataset({}, output, upstream, workers=1)
+    assert [call[0] for call in calls] == ["history"]
+    path = output / "seed_1234/attempt_0001/initial_state_audit.json"
+    assert json.loads(path.read_text()) == audit
+    assert (output / "FAILED.json").is_file()
+    assert not (output / "COMPLETED").exists()
 
 
 @pytest.mark.parametrize(("smoke_passes", "pair_fails"), [(False, False), (True, True)])
@@ -251,11 +268,12 @@ def test_coordinator_and_real_binary_pair_export_interoperate(monkeypatch, tmp_p
     upstream = tmp_path / "upstream"
     upstream.mkdir()
     output = tmp_path / "dataset"
-    result = generate.run_dataset({}, output, upstream, workers=1)
+    configuration = {"initial_state": {"allow_mismatch": True}}
+    result = generate.run_dataset(configuration, output, upstream, workers=1)
     manifest = load_dataset(result["dataset_manifest"])
     assert len(manifest["samples"]) == 8
     assert {row["split"] for row in manifest["samples"]} == {"train", "validation", "test"}
     assert all(load_pair(row)["xhi_c2ray"].shape == (2, 2, 2) for row in manifest["samples"])
     # A completed rerun still audits all native artifacts and pair checksums.
-    repeated = generate.run_dataset({}, output, upstream, workers=1, resume=True)
+    repeated = generate.run_dataset(configuration, output, upstream, workers=1, resume=True)
     assert all(row["reused"] for row in repeated["cases"])

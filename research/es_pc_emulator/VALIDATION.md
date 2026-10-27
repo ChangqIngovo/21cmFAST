@@ -1,5 +1,10 @@
 # Validation recorded 2026-10-27
 
+> Historical pipeline validation. See [Residual validation and corrected accuracy
+> assessment](RESIDUAL_VALIDATION.md) for the reproduced 25.624 pp error, controlled
+> history tests, subsequent fixes, held-out NN results and remaining limitations.
+> Passing the workflow checks below did not establish physical accuracy.
+
 Implementation base: `2a57851d5d28c2af6038c66932883293f5516bd5` on
 `Photon_conserving`. Validation used genuinely compiled native 21cmFAST and
 the pinned C2-Ray H+He backend, not mocked transport outputs.
