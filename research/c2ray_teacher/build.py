@@ -1,6 +1,7 @@
 """Build a pinned C2-Ray H+He kernel with optional passive diagnostics.
 
-Only grid size, cosmology and abundance *configuration modules* are generated.
+Grid size, cosmology and abundance *configuration modules* are generated; the
+nominal blackbody temperature declaration is exposed as runtime configuration.
 Optional guarded insertions count primary and secondary events without feeding
 back into native numerical variables. An uninstrumented reference build remains
 available for equivalence tests.
@@ -164,6 +165,37 @@ def _patched_hash(patch: dict, key: str, expected: str, label: str) -> str:
     return change["after_sha256"]
 
 
+def _runtime_physics_configuration(code: Path, destination: Path) -> dict:
+    """Expose nominal blackbody temperature as runtime configuration only.
+
+    Native SED normalization and table calculations remain unchanged. The
+    driver assigns this value before calling the native ``rad_ini`` routine.
+    """
+    relative = "code/sed_parameters.f90"
+    path = code / "sed_parameters.f90"
+    original = path.read_text()
+    before = "real(kind=dp),parameter :: T_eff_nominal=5.0e4"
+    after = "real(kind=dp) :: T_eff_nominal=5.0e4"
+    if original.count(before) != 1:
+        raise ValueError("Native blackbody configuration anchor is not unique")
+    updated = original.replace(before, after, 1)
+    path.write_text(updated)
+    destination.write_text("".join(difflib.unified_diff(
+        original.splitlines(True), updated.splitlines(True),
+        fromfile=f"a/{relative}", tofile=f"b/{relative}",
+    )))
+    return {
+        "enabled": True,
+        "scope": "Runtime blackbody configuration; unchanged SED equations",
+        "files": {relative: {
+            "before_sha256": hashlib.sha256(original.encode()).hexdigest(),
+            "after_sha256": hashlib.sha256(updated.encode()).hexdigest(),
+        }},
+        "patch_sha256": sha256(destination),
+        "numerical_expressions_changed": False,
+    }
+
+
 def _configured_sources(
     upstream: Path,
     destination: Path,
@@ -292,6 +324,9 @@ def build_backend(
     native = output_dir / "upstream"
     shutil.copytree(upstream / "code", native / "code")
     shutil.copytree(upstream / "tables", output_dir / "tables")
+    runtime_physics = _runtime_physics_configuration(
+        native / "code", output_dir / "runtime_physics_configuration.patch"
+    )
     instrumentation = {"enabled": False}
     if diagnostics:
         if __package__:
@@ -390,6 +425,7 @@ def build_backend(
     for key, value in compiled_hashes.items():
         instrumented = instrumentation.get("files", {}).get(key)
         expected = instrumented["instrumented_sha256"] if instrumented else locked[key]
+        expected = _patched_hash(runtime_physics, key, expected, "Runtime configuration")
         expected = _patched_hash(logging_patch, key, expected, "Logging")
         expected = _patched_hash(numerical_patch, key, expected, "Numerical")
         if value != expected:
@@ -405,6 +441,10 @@ def build_backend(
         "omega_b": omega_b,
         "h": h,
         "blackbody_temperature_K": 50000,
+        "clumping_factor": 1.0,
+        "runtime_physics_input_supported": True,
+        "runtime_physics_defaults": {"blackbody_temperature_K": 50000.0, "clumping_factor": 1.0},
+        "runtime_physics_configuration": runtime_physics,
         "numerical_sources_unchanged": not diagnostics and transport == "native",
         "numerical_algorithm_unchanged": transport == "native",
         "transport": transport,

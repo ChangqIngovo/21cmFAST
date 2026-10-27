@@ -201,7 +201,16 @@ def validate_history(history, *, verify_hashes=True):
         raise ValueError("Unsupported native-history schema version")
     if metadata.get("density_evolution") != "frozen_at_reference_redshift":
         raise ValueError("This fixture requires an explicitly frozen gas-density field")
-    if metadata.get("rates_definition") != "native_n_ion_times_H_over_t_STAR":
+    convention = metadata.get("rates_definition")
+    if convention == "controlled_transform_of_native_rates":
+        transform = metadata.get("physical_pilot_transform", {})
+        parent = transform.get("parent_array_sha256", {})
+        theta = np.asarray(transform.get("theta", []), dtype=float)
+        if (set(parent) != set(ARRAY_KEYS) or theta.shape != (6,)
+                or not np.isfinite(theta).all()
+                or any(not isinstance(v, str) or len(v) != 64 for v in parent.values())):
+            raise ValueError("Controlled histories require parent hashes and six finite controls")
+    elif convention != "native_n_ion_times_H_over_t_STAR":
         raise ValueError("Unrecognized instantaneous source-rate convention")
     reference_z = metadata.get("reference_redshift")
     if (not isinstance(reference_z, (int, float)) or isinstance(reference_z, bool)

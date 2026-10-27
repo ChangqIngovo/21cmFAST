@@ -42,6 +42,17 @@ def test_config_rejects_small_grid_and_source_shifting_refinement() -> None:
     assert config["thermal"] is True
 
 
+def test_physical_controls_are_validated_before_native_work():
+    """Do not launch or compile an experiment with unphysical control values."""
+    config = validate_config({"blackbody_temperature_K": 75000., "clumping_factor": 4.})
+    assert config["blackbody_temperature_K"] == 75000.
+    assert config["clumping_factor"] == 4.
+    for updates in ({"blackbody_temperature_K": 0}, {"clumping_factor": 0.1},
+                    {"clumping_factor": float("nan")}):
+        with pytest.raises(ValueError, match=r"blackbody|clumping"):
+            validate_config(updates)
+
+
 def output_fixture() -> tuple[dict, dict]:
     """Return a synthetic valid field with independently known atomic counts."""
     shape = (1, 16, 16, 16)

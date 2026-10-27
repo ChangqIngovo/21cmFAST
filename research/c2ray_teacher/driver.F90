@@ -11,12 +11,13 @@ program c2ray_teacher_driver
   use clocks, only: setup_clocks
   use file_admin, only: logf, timefile
   use grid, only: x,y,z,dr,vol,sim_volume
-  use material, only: ndens,xh,xhe,temperature_grid,temper_val,isothermal,set_clumping
+  use material, only: ndens,xh,xhe,temperature_grid,temper_val,isothermal,set_clumping,clumping
   use cgsconstants, only: ini_rec_colion_factors
   use cosmology_parameters, only: H0,Omega0
   use cosmology, only: zred,Hz,zred_t0,t0
   use radiation_tables, only: rad_ini,bb_photo_thick_table,bb_FreqBnd_UpperLimit
   use radiation_sed_parameters, only: S_star
+  use sed_parameters, only: T_eff_nominal
   use radiative_cooling, only: setup_cool
   use sourceprops, only: NumSrc,srcpos,NormFlux,srcSeries
   use evolve_data, only: evolve_ini,phih_grid,phihe_grid,phiheat,xh_av,xhe_av,xh_intermed,xhe_intermed
@@ -33,6 +34,7 @@ program c2ray_teacher_driver
 #endif
   integer(kind=8) :: log_position=1
   real(dp) :: initial(6),step_info(3),dt,sim_time,box_cm,metadata(14),sed_ratio,sed_transport_ratio
+  real(dp) :: physical_controls(2)=[50000.0_dp,1.0_dp]
   real(dp),allocatable :: temperature_output(:,:,:)
 
   call setup_clocks()
@@ -45,7 +47,17 @@ program c2ray_teacher_driver
        form='unformatted',action='read',convert='little_endian',iostat=status)
   if(status/=0) call fail('Cannot open binary input')
   read(input_unit,iostat=status) magic,header,initial
-  if(status/=0 .or. magic/='C2RTHHE1') call fail('Bad input header')
+  if(status/=0 .or. (magic/='C2RTHHE1' .and. magic/='C2RTHHE2')) call fail('Bad input header')
+  if(magic=='C2RTHHE2') then
+    read(input_unit,iostat=status) physical_controls
+    if(status/=0) call fail('Truncated physical controls')
+  endif
+  if(any(.not.ieee_is_finite(physical_controls))) call fail('Non-finite physical controls')
+  if(physical_controls(1)<2000.0_dp .or. physical_controls(1)>1000000.0_dp) &
+       call fail('Blackbody temperature outside supported range')
+  if(physical_controls(2)<1.0_dp .or. physical_controls(2)>real(huge(clumping),dp)) &
+       call fail('Clumping factor must be finite, representable and >=1')
+  T_eff_nominal=physical_controls(1)
   if(header(1)/=mesh(1) .or. header(1)<16) call fail('Grid does not match compiled dimension >=16')
   if(header(2)<1 .or. header(3)<1) call fail('At least one step and source slot required')
   if(header(4)/=1) call fail('This unchanged upstream requires thermal evolution; isothermal table logging is invalid')
@@ -102,10 +114,11 @@ program c2ray_teacher_driver
     if(status/=0) call fail('Transport diagnostics require a fresh writable path')
 #endif
     ! Persist the measured normalization independently of MPI stdout forwarding.
-    write(initialization_record,'(A,ES24.16,A,ES24.16,A,ES24.16,A)') &
+    write(initialization_record,'(A,ES24.16,A,ES24.16,A,ES24.16,A,ES24.16,A,ES24.16,A)') &
         '{"stage":"native_initialized","sed_table_photons_over_nominal":',sed_ratio, &
         ',"sed_transport_photons_over_nominal":',sed_transport_ratio, &
-        ',"sed_omitted_tail_photons_over_nominal":',sed_ratio-sed_transport_ratio,'}'
+        ',"sed_omitted_tail_photons_over_nominal":',sed_ratio-sed_transport_ratio, &
+        ',"blackbody_temperature_K":',T_eff_nominal,',"clumping_factor":',real(clumping,dp),'}'
     open(newunit=initialization_unit,file='results/native_initialization.json', &
          status='new',action='write',iostat=status)
     if(status/=0) call fail('Initialization diagnostics require a fresh writable path')
@@ -209,6 +222,10 @@ contains
       z(j)=(real(j,dp)-0.5_dp)*dr(3)
     enddo
     call set_clumping(zred)
+    ! Uniform subgrid multiplier; the native chemistry expressions are unchanged.
+    clumping=real(physical_controls(2),kind(clumping))
+    if(rank==0 .and. physical_controls(2)/=1.0_dp) &
+         write(logf,*) 'External uniform clumping override: ',clumping
   end subroutine set_environment
 
   subroutine fail(message)

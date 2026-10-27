@@ -10,9 +10,24 @@ from research.c2ray_teacher.build import (
     FIELD_NAMES,
     META_NAMES,
     _patch_log_format,
+    _runtime_physics_configuration,
     read_output,
     validate_configuration,
 )
+
+
+def test_runtime_sed_configuration_preserves_default_and_equations(tmp_path):
+    """Expose a configuration value without modifying its default or SED formula."""
+    code = tmp_path / "code"
+    code.mkdir()
+    source = code / "sed_parameters.f90"
+    original = "  real(kind=dp),parameter :: T_eff_nominal=5.0e4 ! Kelvin\n"
+    source.write_text(original)
+    record = _runtime_physics_configuration(code, tmp_path / "physics.patch")
+    assert source.read_text() == original.replace(",parameter", "")
+    assert record["numerical_expressions_changed"] is False
+    with pytest.raises(ValueError, match="anchor"):
+        _runtime_physics_configuration(code, tmp_path / "again.patch")
 
 
 def test_logging_format_patch_is_guarded_and_only_changes_descriptor(tmp_path):

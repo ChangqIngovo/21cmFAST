@@ -28,6 +28,7 @@ build_backend, read_output, sha256 = (
     _backend.sha256,
 )
 prepare_history = import_module("research.c2ray_teacher.data").prepare_history
+validate_physical_controls = import_module("research.c2ray_teacher.data").validate_physical_controls
 _native = import_module("research.pc_evolution.native_history")
 ARRAY_KEYS, array_hash = _native.ARRAY_KEYS, _native.array_hash
 build_native_history, load_history = _native.build_native_history, _native.load_history
@@ -51,6 +52,8 @@ DEFAULT_CONFIG = {
     "initial_xheii": 1e-6,
     "initial_xheiii": 1e-12,
     "thermal": True,
+    "blackbody_temperature_K": 50000.0,
+    "clumping_factor": 1.0,
     "benchmark": True,
     "transport": "native",
     "angular_order": 16,
@@ -128,6 +131,7 @@ def validate_config(updates: dict) -> dict:
         raise ValueError(f"Unknown configuration keys: {sorted(unknown)}")
     config = DEFAULT_CONFIG | updates
     _validate_numbers(config)
+    validate_physical_controls(config["blackbody_temperature_K"], config["clumping_factor"])
     if config["transport"] not in ("native", "conservative_rays"):
         raise ValueError("transport must be native or conservative_rays")
     if config["dimension"] < 16 or config["highres_dimension"] < config["dimension"]:
@@ -676,6 +680,10 @@ def _launch(
         "sed_omitted_tail_photons_over_nominal": initialization[
             "sed_omitted_tail_photons_over_nominal"
         ],
+        "physical_controls": {
+            key: initialization[key] for key in ("blackbody_temperature_K", "clumping_factor")
+            if key in initialization
+        },
         "timing_scope": "MPI startup, table loading and native evolution; excludes compilation and input preparation",
     }
 
@@ -888,6 +896,8 @@ def run(config: dict, output: Path, upstream: Path, workers: int = 32) -> dict:
         "initial_xheii",
         "initial_xheiii",
         "thermal",
+        "blackbody_temperature_K",
+        "clumping_factor",
     )
     manifest = prepare_history(history, binary, **{key: config[key] for key in keys})
     manifest.update(

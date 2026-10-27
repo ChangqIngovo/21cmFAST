@@ -34,6 +34,22 @@ from research.pc_evolution.native_history import (
 
 ROOT = Path(__file__).resolve().parents[2]
 MAGIC = b"C2RTHHE1"
+PHYSICS_MAGIC = b"C2RTHHE2"
+
+
+def validate_physical_controls(blackbody_temperature_K, clumping_factor) -> tuple[float, float]:
+    """Validate uniform source SED and unresolved recombination multiplier."""
+    for name, value in (("blackbody_temperature_K", blackbody_temperature_K),
+                        ("clumping_factor", clumping_factor)):
+        if (isinstance(value, (bool, np.bool_))
+                or not isinstance(value, (int, float, np.integer, np.floating))
+                or not np.isfinite(value)):
+            raise ValueError(f"{name} must be a finite number")
+    if not 2000 <= blackbody_temperature_K <= 1000000:
+        raise ValueError("blackbody_temperature_K must be between 2000 and 1000000")
+    if not 1 <= clumping_factor <= float(np.finfo(np.float32).max):
+        raise ValueError("clumping_factor must be >=1 and representable by native real")
+    return float(blackbody_temperature_K), float(clumping_factor)
 
 
 def _integer(value: int, name: str) -> int:
@@ -61,9 +77,12 @@ def _constants() -> dict[str, float | str]:
 
 
 def _validate_physics(metadata: dict[str, Any], dimension: int) -> dict[str, float]:
+    controlled = metadata.get("rates_definition") == "controlled_transform_of_native_rates"
+    if controlled and not isinstance(metadata.get("physical_pilot_transform"), dict):
+        raise ValueError("Controlled history requires physical_pilot_transform provenance")
     expected = {
         "rate_units": "native effective escaped photons per mean-baryon cell per second",
-        "source_model": "L-INTEGRAL",
+        "source_model": "controlled_native_L-INTEGRAL" if controlled else "L-INTEGRAL",
         "source_components": ["ACG"],
         "density_weighting_applied_to_n_ion": False,
         "local_cumulative_n_ion_differenced": False,
@@ -198,6 +217,7 @@ def _write_binary(
     positions: np.ndarray,
     density: np.ndarray,
     steps: list[tuple[np.ndarray, np.ndarray]],
+    physical_controls: np.ndarray | None = None,
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
@@ -206,9 +226,11 @@ def _write_binary(
     temporary = Path(name)
     try:
         with os.fdopen(fd, "wb") as stream:
-            stream.write(MAGIC)
+            stream.write(MAGIC if physical_controls is None else PHYSICS_MAGIC)
             stream.write(struct.pack("<4i", *header))
             stream.write(np.asarray(initial, dtype="<f8").tobytes())
+            if physical_controls is not None:
+                stream.write(np.asarray(physical_controls, dtype="<f8").tobytes())
             stream.write(np.asarray(positions, dtype="<i4").tobytes(order="C"))
             stream.write(
                 np.asarray(density * (1 + initial[0]) ** 3, dtype="<f8").tobytes(
@@ -242,6 +264,8 @@ def prepare_history(
     initial_xheii: float = 1e-6,
     initial_xheiii: float = 1e-12,
     thermal: bool = True,
+    blackbody_temperature_K: float = 50000.0,
+    clumping_factor: float = 1.0,
 ) -> dict[str, Any]:
     """Write a physical prescribed-source history for the native C2-Ray driver.
 
@@ -266,6 +290,12 @@ def prepare_history(
     thermal : bool
         Must be True. The unchanged upstream isothermal initialization accesses
         unallocated heating tables and is unsupported by this integration.
+    blackbody_temperature_K : float
+        Uniform blackbody SED effective temperature, in the native supported
+        range 2000--1000000 K. This is separate from the initial gas temperature.
+    clumping_factor : float
+        Uniform unresolved recombination multiplier, at least one. Defaults
+        preserve the legacy binary format and physical results.
 
     Returns
     -------
@@ -289,6 +319,12 @@ def prepare_history(
     _validate_initial_state(
         initial_temperature, initial_xhii, initial_xheii, initial_xheiii
     )
+    blackbody_temperature_K, clumping_factor = validate_physical_controls(
+        blackbody_temperature_K, clumping_factor
+    )
+    physical_controls = None
+    if (blackbody_temperature_K, clumping_factor) != (50000.0, 1.0):
+        physical_controls = np.array([blackbody_temperature_K, clumping_factor])
     if not isinstance(thermal, (bool, np.bool_)):
         raise TypeError("thermal must be boolean")
     if not thermal:
@@ -388,6 +424,7 @@ def prepare_history(
         positions=positions,
         density=density,
         steps=steps,
+        physical_controls=physical_controls,
     )
     total_nuclei = float(
         np.sum(history["capacity"], dtype=np.longdouble) * mean_cell_nuclei
@@ -396,7 +433,10 @@ def prepare_history(
         digest = hashlib.file_digest(stream, "sha256").hexdigest()
     return {
         "schema_version": 1,
-        "binary_format": MAGIC.decode(),
+        "binary_format": (MAGIC if physical_controls is None else PHYSICS_MAGIC).decode(),
+        "blackbody_temperature_K": blackbody_temperature_K,
+        "clumping_factor": clumping_factor,
+        "clumping_factor_native": float(np.float32(clumping_factor)),
         "input_sha256": digest,
         "input_bytes": output.stat().st_size,
         "native_array_sha256": dict(metadata["array_sha256"]),
@@ -418,6 +458,9 @@ def prepare_history(
         "density_reference_redshift": float(metadata["reference_redshift"]),
         "density_units": "total H plus He nuclei per proper cm^3",
         "source_units": "escaped ionizing photons per second",
+        "source_model": metadata["source_model"],
+        "rates_definition": metadata["rates_definition"],
+        "physical_pilot_transform": metadata.get("physical_pilot_transform"),
         "photon_normalization": "native_N_b0_H_plus_He_nuclei",
         "source_integration": "exact trapezoidal integral of piecewise-linear-in-time native endpoint rates",
         "density_time_sampling": "native cosmic-time midpoint of each transport step",

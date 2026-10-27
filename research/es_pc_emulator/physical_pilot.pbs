@@ -1,0 +1,145 @@
+#!/usr/bin/env bash
+#PBS -N es_pc_physics
+#PBS -q normal
+#PBS -l ncpus=8
+#PBS -l mem=32GB
+#PBS -l walltime=12:00:00
+#PBS -l jobfs=4GB
+#PBS -l wd
+#PBS -j oe
+# Supply project and storage permissions to qsub; neither is hardcoded here.
+set -euo pipefail
+: "${PBS_JOBID:?Launch this diagnostic with qsub}"
+: "${PBS_NCPUS:?Missing CPU allocation}"
+: "${PILOT_REPO:?Absolute path to the committed 21cmFAST checkout}"
+: "${PILOT_PYTHON:?Absolute path to an existing native-capable Python environment}"
+: "${PILOT_UPSTREAM:?Absolute path to the pinned C2-Ray source checkout}"
+: "${PILOT_OUTPUT:?Absolute path to a fresh output directory}"
+: "${PILOT_RUNTIME_ENV:?Absolute path to a trusted runtime.env defining PC_MODULES}"
+[[ $PBS_NCPUS =~ ^([1-9]|[12][0-9]|3[0-2])$ ]] || { echo 'Use 1 to 32 CPUs.' >&2; exit 2; }
+for variable in PILOT_REPO PILOT_PYTHON PILOT_UPSTREAM PILOT_OUTPUT PILOT_RUNTIME_ENV; do
+    value=${!variable}
+    [[ $value == /* && $value != *$'\n'* && $value != *$'\r'* && $value != *,* ]] || {
+        echo "$variable must be an absolute path without PBS separators." >&2; exit 2;
+    }
+done
+PILOT_REPO=$(realpath "$PILOT_REPO")
+# Preserve the venv/bin/python path: resolving its symlink would bypass the venv.
+PILOT_UPSTREAM=$(realpath "$PILOT_UPSTREAM")
+PILOT_RUNTIME_ENV=$(realpath "$PILOT_RUNTIME_ENV")
+test -x "$PILOT_PYTHON"
+test -d "$PILOT_UPSTREAM"
+test -f "$PILOT_RUNTIME_ENV"
+git -C "$PILOT_REPO" diff --quiet HEAD -- || { echo 'Commit or resolve tracked edits before submission.' >&2; exit 2; }
+git -C "$PILOT_REPO" cat-file -e HEAD:research/es_pc_emulator/physical_pilot.py
+revision=$(git -C "$PILOT_REPO" rev-parse HEAD)
+mkdir -p "$(dirname "$PILOT_OUTPUT")"
+mkdir "$PILOT_OUTPUT" || { echo 'PILOT_OUTPUT must be fresh; existing results were not changed.' >&2; exit 2; }
+PILOT_OUTPUT=$(realpath "$PILOT_OUTPUT")
+export PILOT_OUTPUT PILOT_PYTHON PILOT_UPSTREAM
+exec > "$PILOT_OUTPUT/run_${PBS_JOBID}.log" 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$PILOT_OUTPUT/FAILED"; fi' EXIT
+trap 'exit 143' TERM
+trap 'exit 130' INT
+trap 'exit 129' HUP
+
+module --force purge
+source "$PILOT_RUNTIME_ENV"
+declare -p PC_MODULES >/dev/null 2>&1 || { echo 'runtime.env must define PC_MODULES.' >&2; exit 2; }
+module load "${PC_MODULES[@]}"
+command -v mpifort >/dev/null
+command -v mpirun >/dev/null
+export CC=gcc CXX=g++ FC=gfortran MPIFC=mpifort
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1 OMP_NUM_THREADS=1
+# Each RT invocation owns the allocation. Concurrent bound mpirun processes
+# would otherwise be liable to map onto the same cores.
+export OMP_PROC_BIND=spread OMP_PLACES=cores
+git -C "$PILOT_REPO" worktree add --detach "$PILOT_OUTPUT/source" "$revision"
+printf '%s\n' "$revision" > "$PILOT_OUTPUT/commit.txt"
+cp "$PILOT_RUNTIME_ENV" "$PILOT_OUTPUT/runtime.env"
+module -t list > "$PILOT_OUTPUT/modules.txt" 2>&1
+"$PILOT_PYTHON" -m pip freeze > "$PILOT_OUTPUT/python_packages.txt"
+cd "$PILOT_OUTPUT/source"
+"$PILOT_PYTHON" - <<'PY'
+import json
+import os
+import sys
+from pathlib import Path
+
+import matplotlib
+import numpy
+import py21cmfast
+import scipy
+import sklearn
+
+if sys.version_info < (3, 12):
+    raise RuntimeError('Use the project native runtime with Python >=3.12')
+record = {'python': sys.executable, 'python_version': sys.version,
+          'native_package': py21cmfast.__file__,
+          'numpy': numpy.__version__, 'scipy': scipy.__version__,
+          'sklearn': sklearn.__version__, 'matplotlib': matplotlib.__version__,
+          'pbs_jobid': os.environ['PBS_JOBID'], 'cpus': int(os.environ['PBS_NCPUS'])}
+(Path(os.environ['PILOT_OUTPUT']) / 'runtime_versions.json').write_text(json.dumps(record, indent=2) + '\n')
+PY
+
+dataset=$PILOT_OUTPUT/native
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot prepare \
+    --output "$dataset" --upstream "$PILOT_UPSTREAM"
+"$PILOT_PYTHON" - <<'PY'
+import json
+import os
+from pathlib import Path
+
+root = Path(os.environ['PILOT_OUTPUT'])
+design = json.loads((root / 'native/design.json').read_text())
+selected = []
+for case in design['cases']:
+    name, split = case['case_id'], case['split']
+    include = split in {'control', 'convergence', 'validation'}
+    if split in {'train', 'test', 'external_test'}:
+        index = int(name.rsplit('_', 1)[1])
+        include = (split == 'train' and index < 32 or split == 'test' and index < 8
+                   or split == 'external_test' and index in {0, 1, 2, 3, 8, 9, 10, 11})
+    if include:
+        selected.append(name)
+if len(selected) != 80:
+    raise RuntimeError('Reduced diagnostic selection no longer contains 80 cases')
+record = {'case_ids': selected, 'counts': {'control': 13, 'convergence': 3,
+          'train': 32, 'validation': 16, 'test': 8, 'external_test': 8},
+          'scope': 'reduced diagnostic subset, not the complete 128-case design'}
+(root / 'pilot_selection.json').write_text(json.dumps(record, indent=2) + '\n')
+(root / 'selected_groups.txt').write_text(','.join(selected) + '\n')
+PY
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot run \
+    --output "$dataset" --upstream "$PILOT_UPSTREAM" \
+    --group control,convergence --workers "$PBS_NCPUS" --parallel 1
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot_analysis \
+    --root "$dataset" --output "$PILOT_OUTPUT/sensitivity"
+echo 'Continuing the explicitly exploratory small training; numerical refinement is reported, not certified.'
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot run \
+    --output "$dataset" --upstream "$PILOT_UPSTREAM" \
+    --group "$(cat "$PILOT_OUTPUT/selected_groups.txt")" --workers "$PBS_NCPUS" --parallel 1
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot collect --output "$dataset"
+"$PILOT_PYTHON" - <<'PY'
+import json
+import os
+from pathlib import Path
+
+root = Path(os.environ['PILOT_OUTPUT'])
+selected = set(json.loads((root / 'pilot_selection.json').read_text())['case_ids'])
+completed = {case['case_id'] for case in json.loads((root / 'native/dataset_manifest.json').read_text())['cases']}
+if completed != selected:
+    raise RuntimeError(f'Unexpected completed subset; missing={sorted(selected-completed)}, extra={sorted(completed-selected)}')
+PY
+parallel_arms=$(( PBS_NCPUS < 4 ? PBS_NCPUS : 4 ))
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot_training \
+    --manifest "$dataset/dataset_manifest.json" --output "$PILOT_OUTPUT/field_training" \
+    --model-seeds 11 23 --epochs 120 --samples-per-snapshot 128 --parallel-arms "$parallel_arms"
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot_inference \
+    --dataset "$dataset/summary.npz" --output "$PILOT_OUTPUT/inference" \
+    --chains 8 --burn 3000 --steps 30000 --thin 5 --power-noise 0.10 --neutral-noise 0.02
+touch "$PILOT_OUTPUT/COMPLETED"
+printf 'Diagnostic outputs: %s\nInspect sensitivity, field_training/summary.json, and inference/summary.json.\n' "$PILOT_OUTPUT"
+echo 'Completion means the workflow finished; inference diagnostics and teacher convergence are separate results.'

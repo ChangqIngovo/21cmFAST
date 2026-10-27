@@ -41,6 +41,7 @@ def run_case(
     positions: np.ndarray | None = None,
     rates: list[float] | None = None,
     threads: int = 4,
+    physical_controls: tuple[float, float] | None = None,
 ) -> dict:
     """Execute two intervals, including a dark chemistry-only interval."""
     positions = np.array([[5, 8, 8], [10, 8, 8]]) if positions is None else positions
@@ -49,9 +50,11 @@ def run_case(
     (root / "results").mkdir()
     binary = root / "input.bin"
     with binary.open("xb") as stream:
-        stream.write(b"C2RTHHE1")
+        stream.write(b"C2RTHHE1" if physical_controls is None else b"C2RTHHE2")
         stream.write(struct.pack("<4i", 16, 2, len(rates), 1))
         np.array([9, 5e22, 100, 1e-6, 1e-6, 1e-6], dtype="<f8").tofile(stream)
+        if physical_controls is not None:
+            np.array(physical_controls, dtype="<f8").tofile(stream)
         positions.astype("<i4").tofile(stream)
         np.full(16**3, density, dtype="<f8").tofile(stream)
         for source in (rates, np.zeros(len(rates))):
@@ -71,6 +74,9 @@ def run_case(
         )
     state = read_output(root / "output.bin")
     init = _native_initialization(log, root / "results/native_initialization.json")
+    if physical_controls is not None:
+        assert init["blackbody_temperature_K"] == physical_controls[0]
+        assert init["clumping_factor"] == pytest.approx(physical_controls[1], rel=1e-7)
     counters = read_transport_diagnostics(
         root / "results/transport_diagnostics.jsonl",
         state,
@@ -87,6 +93,22 @@ def run_case(
             assert values.min() >= 0
             assert values.max() <= 1
     return state
+
+
+def test_runtime_spectrum_and_clumping_controls(executable: Path, tmp_path: Path):
+    """One executable responds to SED hardness and recombination, not photon rate."""
+    base = run_case(executable, tmp_path / "default")
+    explicit = run_case(executable, tmp_path / "explicit", physical_controls=(50000., 1.))
+    hard = run_case(executable, tmp_path / "hard", physical_controls=(80000., 1.))
+    sink = run_case(executable, tmp_path / "sink", physical_controls=(50000., 8.))
+    for key in FIELD_NAMES:
+        np.testing.assert_array_equal(base["fields"][key], explicit["fields"][key])
+    assert base["steps"] == explicit["steps"]
+    for changed in (hard, sink):
+        assert [s["emitted_photons"] for s in changed["steps"]] == [
+            s["emitted_photons"] for s in base["steps"]]
+    assert not np.array_equal(hard["fields"]["temperature_K"], base["fields"]["temperature_K"])
+    assert sink["fields"]["xHII"][-1].mean() < base["fields"]["xHII"][-1].mean()
 
 
 @pytest.mark.parametrize("density", [1e-3, 1e-8])

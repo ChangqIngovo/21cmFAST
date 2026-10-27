@@ -7,7 +7,7 @@ import struct
 import numpy as np
 import pytest
 
-from research.c2ray_teacher.data import prepare_history
+from research.c2ray_teacher.data import _validate_physics, prepare_history
 from research.pc_evolution.native_history import (
     ARRAY_KEYS,
     array_hash,
@@ -128,6 +128,53 @@ def test_native_nuclei_units_and_no_duplicate_density_or_escape(tmp_path) -> Non
     )
     assert result["photon_normalization"] == "native_N_b0_H_plus_He_nuclei"
     assert result["omega_lambda"] == pytest.approx(0.6879, rel=1e-15)
+
+
+def test_runtime_physics_preserves_sources_and_default_binary(tmp_path):
+    """Changing the SED or sink does not silently change emitted photon counts."""
+    history = history_fixture()
+    base = prepare_history(history, tmp_path / "base.bin")
+    explicit = prepare_history(history, tmp_path / "explicit.bin",
+                               blackbody_temperature_K=50000., clumping_factor=1.)
+    changed = prepare_history(history, tmp_path / "changed.bin",
+                              blackbody_temperature_K=80000., clumping_factor=3.1)
+    old = (tmp_path / "base.bin").read_bytes()
+    new = (tmp_path / "changed.bin").read_bytes()
+    assert old == (tmp_path / "explicit.bin").read_bytes()
+    assert base["binary_format"] == explicit["binary_format"] == "C2RTHHE1"
+    assert changed["binary_format"] == "C2RTHHE2"
+    assert new[:8] == b"C2RTHHE2"
+    assert new[8:72] == old[8:72]
+    assert struct.unpack("<2d", new[72:88]) == (80000., 3.1)
+    assert new[88:] == old[72:]
+    assert changed["total_emitted_photons"] == base["total_emitted_photons"]
+    assert changed["clumping_factor_native"] == float(np.float32(3.1))
+
+
+def test_controlled_sources_require_explicit_history_provenance():
+    """A transformed source population must not masquerade as native L-INTEGRAL."""
+    metadata = history_fixture()["metadata"]
+    metadata["source_model"] = "controlled_native_L-INTEGRAL"
+    with pytest.raises(ValueError, match="source_model"):
+        _validate_physics(metadata, 16)
+    metadata["rates_definition"] = "controlled_transform_of_native_rates"
+    with pytest.raises(ValueError, match="physical_pilot_transform"):
+        _validate_physics(metadata, 16)
+    metadata["physical_pilot_transform"] = {"parent_array_sha256": metadata["array_sha256"]}
+    assert _validate_physics(metadata, 16)["OMm"] == 0.3121
+
+
+@pytest.mark.parametrize("controls", [
+    {"blackbody_temperature_K": 1999.}, {"blackbody_temperature_K": 1000001.},
+    {"blackbody_temperature_K": np.nan}, {"blackbody_temperature_K": True},
+    {"clumping_factor": 0.9}, {"clumping_factor": np.inf},
+    {"clumping_factor": 1e100}, {"clumping_factor": False},
+])
+def test_invalid_runtime_physics_rejected_before_writing(tmp_path, controls):
+    """Reject undefined source or subgrid physics before producing an input file."""
+    with pytest.raises(ValueError, match=r"blackbody|clumping"):
+        prepare_history(history_fixture(), tmp_path / "bad.bin", **controls)
+    assert not (tmp_path / "bad.bin").exists()
 
 
 def test_inconsistent_derived_dark_energy_is_rejected(tmp_path) -> None:

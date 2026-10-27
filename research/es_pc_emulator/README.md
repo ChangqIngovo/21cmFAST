@@ -247,3 +247,76 @@ payloads, leakage between independent seeds, directional inference features,
 input ablations, held-out learning, model serialization, workflow failures and
 Gadi preparation contracts. The real native integration run is recorded
 separately; synthetic tests alone are not a native transport validation.
+
+## Small physical-control and posterior pilot
+
+`physical_pilot.py` varies escaped photon amplitude, emission timing, source
+concentration, gas-density contrast, blackbody temperature and recombination
+clumping. It evolves actual native RT from z=20 to 7.9, using a 50 cMpc box,
+8-cubed source/analysis grid and a baseline 24-cubed transport grid. Its
+hydrogen-only budget-ES prior is a separate approximation, not native 21cmFAST.
+The corner plots use a held-out noisy mock, a conditional fixed-IC likelihood
+and a separately calibrated neural-summary error. They are diagnostics of
+parameter degeneracy, not evidence of a universally applicable physical
+posterior or a one-percent field model. Numerical refinement differences and
+their heuristic posterior stress comparison are reported separately.
+
+The optional [`physical_pilot.pbs`](physical_pilot.pbs) reproduces the reduced
+80-case experiment: 13 physical controls, three numerical refinements, 32
+training histories, 16 validation histories, eight fixed-IC test histories and
+eight external-IC histories (four for each of seeds 222 and 333). The frozen
+design contains 128 planned cases; `pilot_selection.json` records the exact
+80 executed by this wrapper. This job does not submit production training.
+
+Supply a clean committed checkout, the pinned upstream C2-Ray checkout, and an
+existing Python >=3.12 environment with the native 21cmFAST extension, NumPy,
+SciPy, scikit-learn and Matplotlib. `runtime.env` must define the `PC_MODULES`
+array for that environment and provide GCC, FFTW, GSL and OpenMPI. The job
+records package versions and freezes a detached source worktree; it does not
+install packages or modify the supplied Python environment. Set the project
+and storage permissions appropriate to your allocation:
+
+```bash
+export PILOT_REPO=/absolute/path/to/21cmFAST
+export PILOT_PYTHON=/absolute/path/to/native/venv/bin/python
+export PILOT_UPSTREAM=/absolute/path/to/C2-Ray3Dm1D_Helium
+export PILOT_RUNTIME_ENV=/absolute/path/to/native/runtime.env
+export PILOT_OUTPUT=/absolute/path/to/fresh/physical_pilot
+export PILOT_STORAGE="gdata/${PROJECT:?Set your NCI project}+scratch/${PROJECT}"
+
+qsub -P "$PROJECT" -l "storage=$PILOT_STORAGE" \
+  -v PILOT_REPO,PILOT_PYTHON,PILOT_UPSTREAM,PILOT_OUTPUT,PILOT_RUNTIME_ENV \
+  "$PILOT_REPO/research/es_pc_emulator/physical_pilot.pbs"
+```
+
+The preset requests eight CPUs, 32 GB and a 12-hour walltime limit; this is not
+a completion-time prediction. RT cases run sequentially with all allocated
+CPUs to avoid overlapping MPI core bindings. Afterwards, up to four field
+ablation arms run concurrently with single-thread BLAS, followed by mock
+inference. Inspect `sensitivity/sensitivity_summary.json`,
+`field_training/summary.json`, and `inference/summary.json`; the latter contains
+held-out errors, chain diagnostics, injected-truth recovery and posterior
+predictive checks. `COMPLETED` means the workflow finished, not that numerical
+convergence or the physical posterior passed validation.
+
+For three additional direct RT checks in the posterior region, run the
+following in a compute allocation after inference has finished, from the
+frozen source checkout. The points are the power-only posterior median and
+highest-likelihood retained draw, plus the highest-likelihood draw with the
+global neutral history included. They do not enter training, calibration or
+the original test set:
+
+```bash
+"$PILOT_PYTHON" -m research.es_pc_emulator.physical_pilot_predictive \
+  --root "$PILOT_OUTPUT/native" --inference "$PILOT_OUTPUT/inference" \
+  --workers "${PBS_NCPUS:-8}" --parallel 1
+```
+
+`inference/native_predictive_checks.json` compares saved neural predictions
+with the new RT runs and records changes in the same approximate likelihood.
+Its covariance is deliberately kept fixed to isolate forward-mean errors;
+these three checks do not recalibrate the posterior or establish numerical
+convergence of the teacher. When checking a different frozen inference, supply
+a new `--case-prefix` (for example `predictive_corrected_`) to retain and
+distinguish the earlier native checks; changed coordinates cannot reuse an
+existing case identifier.
