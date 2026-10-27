@@ -1,0 +1,68 @@
+#!/usr/bin/env bash
+#PBS -N es_pc_small_nn
+#PBS -l jobfs=4GB
+#PBS -j oe
+#PBS -l wd
+set -euo pipefail
+: "${PBS_JOBID:?Submit with qsub}"
+: "${PBS_NCPUS:?Missing allocation}"
+: "${SMALL_RUN:?Use small_pilot_prepare.sh}"
+cd "$SMALL_RUN"
+test ! -e COMPLETED
+exec > >(tee -a "$SMALL_RUN/run.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$SMALL_RUN/FAILED"; fi' EXIT
+module --force purge
+source "$SMALL_RUN/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export CC=gcc CXX=g++ FC=gfortran MPIFC=mpifort
+native_python=$(cat native_python.txt)
+python=$SMALL_RUN/train_venv/bin/python
+manifest=$(cat input_manifest.txt)
+cd "$SMALL_RUN/source"
+if [[ -z $manifest ]]; then
+    dataset=$SMALL_RUN/native
+    "$native_python" -m research.es_pc_emulator.physical_pilot prepare \
+        --output "$dataset" --upstream "$SMALL_RUN/upstream"
+    "$python" - <<'PY'
+import json
+import os
+from pathlib import Path
+
+run = Path(os.environ['SMALL_RUN'])
+cfg = json.loads((run / 'configuration.json').read_text())
+selected = [f'{split}_{i:03d}' for split, key in
+            [('train', 'train_cases'), ('validation', 'validation_cases'), ('test', 'test_cases')]
+            for i in range(cfg[key])]
+# Alternate the two independent ICs rather than taking only the first seed.
+external = [j for pair in zip(range(8), range(8, 16)) for j in pair]
+selected += [f'external_{i:03d}' for i in external[:cfg['external_cases']]]
+(run / 'selected_cases.txt').write_text(','.join(selected) + '\n')
+PY
+    "$native_python" -m research.es_pc_emulator.physical_pilot run \
+        --output "$dataset" --upstream "$SMALL_RUN/upstream" \
+        --group "$(cat "$SMALL_RUN/selected_cases.txt")" --workers "$PBS_NCPUS" --parallel 1
+    "$native_python" -m research.es_pc_emulator.physical_pilot collect --output "$dataset"
+    manifest=$dataset/dataset_manifest.json
+fi
+export SMALL_INPUT_MANIFEST="$manifest"
+"$python" - <<'PY'
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+run = Path(os.environ['SMALL_RUN'])
+cfg = json.loads((run / 'configuration.json').read_text())
+command = [sys.executable, '-m', 'research.es_pc_emulator.small_pilot_training',
+           '--manifest', os.environ['SMALL_INPUT_MANIFEST'], '--output', str(run / 'training'),
+           '--threads', os.environ['PBS_NCPUS'], '--model-seeds', '11']
+for key in ['train_cases', 'validation_cases', 'test_cases', 'external_cases', 'epochs', 'history_steps']:
+    command += ['--' + key.replace('_', '-'), str(cfg[key])]
+subprocess.run(command, check=True)
+PY
+touch "$SMALL_RUN/COMPLETED"
+printf 'Results: %s/training/summary.json\n' "$SMALL_RUN"

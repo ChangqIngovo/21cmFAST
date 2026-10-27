@@ -320,3 +320,71 @@ convergence of the teacher. When checking a different frozen inference, supply
 a new `--case-prefix` (for example `predictive_corrected_`) to retain and
 distinguish the earlier native checks; changed coordinates cannot reuse an
 existing case identifier.
+
+## Small history, chemistry, spatial-context and P21 experiment
+
+`small_pilot_training.py` trains six CPU-sized models on the physical pilot:
+
+| Arm | Change from the preceding field arm |
+| --- | --- |
+| `local` | ES residual, 3-cell local context, existing physical inputs plus Gaussian/global summaries |
+| `history` | Three causal source intervals: emitted photons, endpoint emissivity, redshift and availability mask |
+| `thermo` | Auxiliary supervision of log10 gas temperature and the HeI/HeII/HeIII simplex |
+| `spatial` | Periodic 3-D convolutions with nominal 15-cell receptive field |
+| `p21` | Add full-cube differentiable log-P21 loss to field and chemistry losses |
+| `direct_p21` | Separate six-control-parameter MLP predicting P21; no ionization field output |
+
+RT state is never an inference input. The field model retains the current ES
+prior, density, cumulative photons, emissivity, emission-time moment, source
+spectral temperature, clumping factor, redshift and cell size. Historical
+intervals only use present/past sources. The direct model takes the six controls
+in `physical_pilot.PARAMETER_NAMES`; it does not condition on the IC realization.
+Changing the spatial network also changes parameter count, so this is a practical
+progressive comparison rather than a capacity-matched causal experiment.
+
+On Gadi, from a clean checkout of `Photon_conserving`:
+
+```bash
+bash research/es_pc_emulator/small_pilot_prepare.sh --submit
+```
+
+Defaults are 32 training, 8 validation, 8 test and 4 external-IC histories,
+80 epochs with early stopping, one network seed, and 16 CPUs/64GB/8h. The
+external cases cover both independent IC seeds. The native pilot remains
+50 cMpc, 8^3 output cells and 24^3 RT cells; this run compares models, not
+teacher resolution. It does not launch MCMC or convergence sweeps.
+
+The preparation script uses the same existing native runtime default as
+`gadi_prepare.sh`; override `SMALL_RUNTIME_PARENT` or `SMALL_NATIVE_PYTHON`
+when necessary. It freezes a source worktree and creates a separate CPU
+PyTorch environment on the login node. Native simulations and all training
+run inside the PBS allocation. Existing environments/results are unchanged.
+
+To reuse an already generated physical-pilot dataset and skip RT entirely:
+
+```bash
+bash research/es_pc_emulator/small_pilot_prepare.sh \
+  --manifest /absolute/path/to/dataset_manifest.json --submit
+```
+
+To reduce the trial further, export `SMALL_TRAIN_CASES=16`,
+`SMALL_VALIDATION_CASES=4`, `SMALL_TEST_CASES=4`, `SMALL_EXTERNAL_CASES=4`
+and `SMALL_EPOCHS=40` before preparing. `--help` lists allocation overrides.
+The equivalent training-only command, in an environment with CPU PyTorch,
+NumPy, SciPy and Matplotlib, is:
+
+```bash
+python -m research.es_pc_emulator.small_pilot_training \
+  --manifest /absolute/path/to/dataset_manifest.json \
+  --output /absolute/fresh/training --threads 16 --epochs 80
+```
+
+Outputs are `training/summary.json`, `training/comparison.png`, individual
+`model.pt` checkpoints, training histories and per-case fields/spectra.
+`predict_checkpoint` reloads checkpoints with their saved normalization.
+Test/external histories never enter fitting or early stopping. Primary reported
+errors use the final three snapshots and 0.1 <= k <= 0.6 kNyquist; all spectra
+are also retained. Spectra are in mK^2 cMpc^3 under saturated spin temperature
+and no RSD. The additive 1e-8 power floor is only a loss/output-transform
+parameter; reported relative errors use unmodified nonzero reference powers.
+Teacher convergence remains explicitly uncertified in every checkpoint.
