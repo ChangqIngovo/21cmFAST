@@ -138,3 +138,89 @@ def test_component_evaluation_closes_and_retains_signed_errors(tmp_path):
                                    rtol=1e-10, atol=1e-12)
     assert set(result["test"]["components"]) == set(training.COMPONENT_NAMES)
     assert training.parser().parse_args(["--manifest", "a", "--output", "b"]).arms == list(training.DEFAULT_ARMS)
+
+
+def test_primary_diagnostics_match_direct_powers_and_ignore_early_snapshots():
+    """Batched diagnostics retain the same observable on both splits and exclude early labels."""
+    case = make_case(dimension=8)
+    case["photons"] = np.cumsum(case["photons"], axis=0)
+    batch, names = training.field_arrays([case, copy.deepcopy(case)], history_steps=2, auxiliary=True)
+    batch["primary"][0] = 0
+    model = FieldNet(len(names), width=2, auxiliary=True)
+    model.eval()
+    scale = training.training_component_scale(batch, 50., 1e-8)
+    one = training.field_diagnostics(model, batch, 50., 1e-8, scale, 1)
+    all_at_once = training.field_diagnostics(model, batch, 50., 1e-8, scale, 8)
+    for name in one:
+        assert one[name] == pytest.approx(all_at_once[name], rel=2e-6, abs=1e-8)
+    selected = batch["primary"].bool()
+    with torch.no_grad():
+        predicted, _ = model(batch["inputs"][selected], batch["base"][selected])
+    k, pp, _ = training.shell_power(batch["brightness"][selected].double()*predicted.double(), 50.)
+    _, pt, _ = training.shell_power(batch["brightness"][selected].double()*batch["truth"][selected].double(), 50.)
+    band = training.primary_band(k, 8, 50.)
+    assert one["log_power_mse"] == pytest.approx(float(training.power_loss(pp[..., band], pt[..., band])))
+    assert one["power_fractional_error_mean"] == pytest.approx(float((pp[..., band]/pt[..., band]-1).abs().mean()))
+    assert one["primary_snapshots"] == 3
+    altered = {key: value.clone() for key, value in batch.items()}
+    altered["truth"][0] = .99
+    altered["aux"][0] = 100
+    assert training.field_diagnostics(model, altered, 50., 1e-8, scale, 1) == one
+    assert all(parameter.grad is None for parameter in model.parameters())
+
+
+def test_primary_diagnostics_count_undefined_power_bins():
+    """A spatially constant teacher has undefined relative power, never an invented zero error."""
+    case = make_case(dimension=8)
+    case["density"][:] = 1
+    case["xhi_rt"][:] = .5
+    case["photons"] = np.cumsum(case["photons"], axis=0)
+    batch, names = training.field_arrays([case], history_steps=2, auxiliary=True)
+    model = FieldNet(len(names), width=2, auxiliary=True)
+    scale = training.training_component_scale(batch, 50., 1e-8)
+    result = training.field_diagnostics(model, batch, 50., 1e-8, scale, 1)
+    assert result["power_fractional_error_mean"] is None
+    assert result["power_fractional_error_undefined"] == result["power_bins"] > 0
+    assert np.isfinite(result["log_power_mse"])
+
+
+def test_diagnostics_cover_early_stop_and_restored_checkpoint():
+    """Record first/stopping epochs and diagnostics of the validation-selected state."""
+    model = torch.nn.Linear(1, 1, bias=False)
+    model.weight.data.zero_()
+    batch = {"x": torch.ones((2, 1))}
+    args = SimpleNamespace(learning_rate=.01, epochs=5, batch_size=2, patience=1, diagnostic_interval=20)
+    result = training.train_loop(model, batch, batch,
+        lambda network, data: (network(data["x"])-1).square().mean(), args, 11,
+        validation_function=lambda network, data: 1.,
+        diagnostic_function=lambda network, data: {"weight": float(network.weight.detach())})
+    assert [row["epoch"] for row in result["history"]] == [1, 2]
+    assert all("diagnostics" in row for row in result["history"])
+    assert result["best_epoch"] == 1
+    assert result["selected_diagnostics"]["train"] == result["history"][0]["diagnostics"]["train"]
+
+
+def test_requested_evaluation_splits_do_not_change_fit_cases(monkeypatch, tmp_path):
+    """A validation-only sweep does not evaluate test labels or alter case selection."""
+    cases = [{"metadata": {"case_id": split, "split": split, "seed": 1}, "sha256": split}
+             for split in ("train", "validation", "test", "external_test")]
+    monkeypatch.setattr(training, "load_manifest", lambda path: {"source_manifest_sha256": "test"})
+    monkeypatch.setattr(training, "select_cases", lambda *args: cases)
+    monkeypatch.setattr(torch, "set_num_interop_threads", lambda count: None)
+    fit_cases, evaluated = [], []
+
+    def fit(selected, *args):
+        fit_cases.extend(selected)
+        return {}, {}
+
+    def evaluate(checkpoint, selected, output):
+        evaluated.append([case["metadata"]["split"] for case in selected])
+        return {}
+
+    monkeypatch.setattr(training, "fit_field", fit)
+    monkeypatch.setattr(training, "evaluate", evaluate)
+    monkeypatch.setattr(training, "comparison_plot", lambda *args: None)
+    training.main(["--manifest", "unused", "--output", str(tmp_path/"run"), "--arms", "thermo",
+                   "--evaluation-splits", "train", "validation"])
+    assert fit_cases == cases
+    assert evaluated == [["train", "validation"], ["train", "validation"]]

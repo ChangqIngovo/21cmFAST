@@ -188,7 +188,59 @@ def field_loss(model, batch, power_weight, auxiliary_weight, power_floor, box, *
     return loss
 
 
-def train_loop(model, train, validation, loss_function, args, seed, validation_function=None):
+@torch.no_grad()
+def field_diagnostics(model, arrays, box, power_floor, component_scale, batch_size):
+    """Measure comparable train/validation metrics on primary snapshots and bins.
+
+    All reported field and chemistry errors use those same snapshots. Component
+    loss includes all six terms with fixed training-only scales, irrespective of
+    which terms enter optimization. Relative power errors exclude undefined bins.
+    """
+    if batch_size < 1:
+        raise ValueError("Diagnostic batch size must be positive")
+    indices = torch.nonzero(arrays["primary"].bool(), as_tuple=False).flatten()
+    if not len(indices):
+        raise ValueError("Diagnostics require primary snapshots")
+    sums = dict.fromkeys(("log_power_mse", "field_mae", "field_mse", "component_loss"), 0.)
+    relative_sum, valid_count, bins, auxiliary_sum = 0., 0, 0, 0.
+    has_auxiliary = False
+    for selected in indices.split(batch_size):
+        batch = {key: value[selected] for key, value in arrays.items()}
+        prediction, auxiliary = model(batch["inputs"], batch["base"])
+        prediction, truth = prediction.double(), batch["truth"].double()
+        density, amplitude = batch["density"].double(), batch["amplitude"].double()
+        k, pp, _ = shell_power(batch["brightness"].double() * prediction, box)
+        _, pt, valid = shell_power(batch["brightness"].double() * truth, box)
+        band = primary_band(k, prediction.shape[-1], box)
+        pp, pt, valid = pp[..., band], pt[..., band], valid[..., band]
+        differences = prediction-truth
+        predicted_terms = decompose_power(density, prediction, amplitude, box)["terms"][..., band]
+        true_terms = decompose_power(density, truth, amplitude, box)["terms"][..., band]
+        values = {"log_power_mse": power_loss(pp, pt, floor=power_floor),
+                  "field_mae": differences.abs().mean(), "field_mse": differences.square().mean(),
+                  "component_loss": component_loss(predicted_terms, true_terms, component_scale[..., band])}
+        if any(not torch.isfinite(value) for value in values.values()):
+            raise FloatingPointError("Nonfinite diagnostic metric")
+        for key, value in values.items():
+            sums[key] += float(value) * len(selected)
+        relative_sum += float((pp[valid]/pt[valid]-1).abs().sum())
+        valid_count += int(valid.sum())
+        bins += valid.numel()
+        if auxiliary is not None:
+            has_auxiliary = True
+            auxiliary_sum += float((auxiliary.double()-batch["aux"].double()).square().mean()) * len(selected)
+    result = {key: value/len(indices) for key, value in sums.items()}
+    result.update(power_fractional_error_mean=relative_sum/valid_count if valid_count else None,
+                  power_fractional_error_undefined=bins-valid_count, power_bins=bins,
+                  primary_snapshots=len(indices),
+                  auxiliary_mse=auxiliary_sum/len(indices) if has_auxiliary else None)
+    if any(value is not None and not np.isfinite(value) for value in result.values()):
+        raise FloatingPointError("Nonfinite diagnostic metric")
+    return result
+
+
+def train_loop(model, train, validation, loss_function, args, seed, validation_function=None,
+               diagnostic_function=None):
     """Optimize batches and retain the best validation-selected parameters."""
     optimizer = torch.optim.Adam(model.parameters(), lr=args.learning_rate)
     generator = torch.Generator().manual_seed(seed)
@@ -228,13 +280,26 @@ def train_loop(model, train, validation, loss_function, args, seed, validation_f
             best_epoch = epoch + 1
         else:
             stale += 1
+        interval = getattr(args, "diagnostic_interval", 0)
+        if diagnostic_function is not None and interval and (
+                epoch == 0 or (epoch+1) % interval == 0 or epoch+1 == args.epochs or stale >= args.patience):
+            history[-1]["diagnostics"] = {
+                "scope": "primary snapshots and k bins; unweighted losses",
+                "train": diagnostic_function(model, train),
+                "validation": diagnostic_function(model, validation)}
         if epoch == 0 or (epoch + 1) % 10 == 0 or stale >= args.patience:
             print(json.dumps(history[-1]), flush=True)  # noqa: T201
         if stale >= args.patience:
             break
     model.load_state_dict(best_state)
     model.eval()
-    return {"history": history, "best_epoch": best_epoch, "best_validation_loss": best}
+    result = {"history": history, "best_epoch": best_epoch, "best_validation_loss": best}
+    if diagnostic_function is not None and getattr(args, "diagnostic_interval", 0):
+        result["selected_diagnostics"] = {
+            "scope": "validation-selected checkpoint; primary snapshots and k bins; unweighted losses",
+            "train": diagnostic_function(model, train),
+            "validation": diagnostic_function(model, validation)}
+    return result
 
 
 def direct_model(n_parameters, n_outputs, width):
@@ -297,6 +362,13 @@ def fit_field(cases, arm, args, seed):
     indices = COMPONENT_GROUPS.get(arm, ())
     component_scale = training_component_scale(train, box, args.power_floor) if indices else None
     primary_spectra = arm.startswith("thermo_")
+    diagnostic_function = None
+    if getattr(args, "diagnostic_interval", 0):
+        diagnostic_scale = (component_scale if component_scale is not None
+                            else training_component_scale(train, box, args.power_floor))
+
+        def diagnostic_function(network, batch):
+            return field_diagnostics(network, batch, box, args.power_floor, diagnostic_scale, args.batch_size)
 
     def validation_score(network, batch):
         # All field arms select epochs on the SAME observable and physical bins.
@@ -312,7 +384,7 @@ def fit_field(cases, arm, args, seed):
                                                primary_spectra=primary_spectra, component_indices=indices,
                                                component_scale=component_scale,
                                                component_weight=args.component_weight),
-                        args, seed, validation_function=validation_score)
+                        args, seed, validation_function=validation_score, diagnostic_function=diagnostic_function)
     checkpoint = {"kind": "field", "state_dict": model.state_dict(), "input_mean": mean, "input_scale": scale,
                   "feature_names": names, "history_steps": history_steps, "width": args.width,
                   "wide": wide, "auxiliary": auxiliary, "box_len_cMpc": box,
@@ -450,12 +522,14 @@ def evaluate(checkpoint, cases, output):
 
 
 def comparison_plot(summary, output):
-    """Plot held-out power errors without selecting models on test data."""
+    """Plot available split errors without selecting models on test data."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     fig, axes = plt.subplots(1, 2, figsize=(11, 4), constrained_layout=True)
-    for axis, split in zip(axes, ("test", "external_test"), strict=True):
+    available = {split for result in summary.values() for split in result}
+    splits = ("test", "external_test") if available & {"test", "external_test"} else ("train", "validation")
+    for axis, split in zip(axes, splits, strict=True):
         labels, values = [], []
         for name, results in summary.items():
             metric = results.get(split, {}).get("power_fractional_error", {}).get("mean")
@@ -477,6 +551,11 @@ def parser():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--arms", nargs="+", choices=ARMS, default=list(DEFAULT_ARMS))
     p.add_argument("--model-seeds", nargs="+", type=int, default=[11])
+    p.add_argument("--diagnostic-interval", type=int, default=0,
+                   help="Record comparable primary-bin train/validation metrics every N epochs; 0 disables")
+    p.add_argument("--evaluation-splits", nargs="+", choices=("train", "validation", "test", "external_test"),
+                   default=["train", "validation", "test", "external_test"],
+                   help="Splits to evaluate after fitting; does not change training or case selection")
     for name, default in (("epochs", 80), ("patience", 15), ("threads", 8), ("batch-size", 8),
                           ("train-cases", 32), ("validation-cases", 8), ("test-cases", 8),
                           ("external-cases", 4), ("history-steps", 3), ("width", 16)):
@@ -498,6 +577,10 @@ def main(argv=None):
             raise ValueError(f"{name} must be positive")
     if args.external_cases < 0 or any(seed < 0 for seed in args.model_seeds):
         raise ValueError("External case count and seeds must be nonnegative")
+    if args.diagnostic_interval < 0:
+        raise ValueError("Diagnostic interval must be nonnegative")
+    if len(set(args.evaluation_splits)) != len(args.evaluation_splits):
+        raise ValueError("Evaluation splits must be unique")
     if len(set(args.arms)) != len(args.arms) or len(set(args.model_seeds)) != len(args.model_seeds):
         raise ValueError("Arms and model seeds must be unique")
     for name in ("learning_rate", "power_weight", "auxiliary_weight", "component_weight", "power_floor"):
@@ -527,7 +610,8 @@ def main(argv=None):
                "component_groups": {key: list(value) for key, value in COMPONENT_GROUPS.items()},
                "component_loss_scope": "final three snapshots and primary k bins; weighted contributions to P21",
                "component_comparison_architecture": "all thermo_* arms retain the same local network and auxiliary head"})
-    summary = {"es": evaluate(None, cases, args.output / "es")}
+    evaluation_cases = [case for case in cases if case["metadata"]["split"] in args.evaluation_splits]
+    summary = {"es": evaluate(None, evaluation_cases, args.output / "es")}
     write_json(args.output / "summary.json", summary)
     for seed in args.model_seeds:
         for arm in args.arms:
@@ -542,7 +626,7 @@ def main(argv=None):
             checkpoint.update(arm=arm, seed=seed, convergence_certified=False)
             torch.save(checkpoint, folder / "model.pt")
             write_json(folder / "training.json", training)
-            summary[name] = evaluate(checkpoint, cases, folder / "predictions")
+            summary[name] = evaluate(checkpoint, evaluation_cases, folder / "predictions")
             write_json(args.output / "summary.json", summary)
             print(json.dumps({"completed": name, "test": summary[name].get("test")}), flush=True)  # noqa: T201
     comparison_plot(summary, args.output)

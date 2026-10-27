@@ -442,3 +442,76 @@ individual cross spectra are negative or cross zero. Original summary,
 checkpoints, fields and per-snapshot spectra are also retained. These runs test
 learning objectives on the existing uncertified teacher; they do not certify
 physical photon conservation or numerical convergence.
+
+## Small loss-weight sweep and learning curves
+
+After the component experiment, run:
+
+```bash
+git switch Photon_conserving
+git fetch origin Photon_conserving
+git merge --ff-only FETCH_HEAD
+bash research/es_pc_emulator/loss_sweep_prepare.sh --submit
+```
+
+This reuses the latest completed `component_nn_*` run (fallback `small_nn_*`),
+including its exact case list, split, checksums and Python environment. Select
+another completed run with `--parent /absolute/run/path`. Preparation prints
+and records the parent and creates a frozen checkout in a new `loss_sweep_*`
+directory. Training uses existing labels; no new RT simulations run.
+
+The seven settings retain the same small thermo network and input features:
+
+| Settings | Component weight | Total P21 weight |
+| --- | --- | --- |
+| Thermo baseline | 0 | 0 |
+| Six-component scan (3) | 0.003, 0.01, 0.03 | 0 |
+| Joint scan (3) | 0.01 | 0.003, 0.01, 0.03 |
+
+These are one-factor scans, not a full two-dimensional grid. The objective is
+`field_MSE + auxiliary_weight*chemistry_MSE + component_weight*component_loss
++ power_weight*log_P21_MSE`. The auxiliary weight and other network/training
+parameters are inherited. Defaults: seeds 11 and 23, at most 120 epochs per fit,
+early-stopping patience 30, diagnostics every 5 epochs, 16 CPUs, 64GB and 12h.
+There are 14 fits, run sequentially inside one PBS job.
+
+Every candidate retains its best epoch using the same validation log-P21 MSE.
+The setting is selected by averaging that validation score across both network
+seeds. Only after this choice is saved are its models and the paired thermo
+baseline evaluated on test/external cases. Seed averages are averages of
+individual-model errors, not ensemble predictions. These test sets were used
+in previous exploratory comparisons; this is not a new independent test set.
+
+Diagnostics measure **the same primary snapshots and k bins** on training and
+validation data: log-P21 MSE, absolute relative P21 error, field MAE/MSE,
+chemistry MSE and unweighted six-component loss. They are recorded at epoch 1,
+every diagnostic interval, the final/stopping epoch and the restored best
+checkpoint. This makes train/validation curves comparable even when different
+weighted objectives drive optimization. Undefined relative-power bins are
+counted and excluded. Teacher convergence remains uncertified.
+
+Important outputs under the new run's `training/` directory:
+
+- `sweep_report.json`: weights, all seed/epoch diagnostics, validation selection,
+  selected held-out results and whole-simulation paired comparisons.
+- `learning_curves.png`: common-metric train/validation histories.
+- `loss_sweep.png`: weight comparison using train/validation errors.
+- `selected_summary.json`: selected models and baseline test/external errors,
+  including six spectral contributions.
+- `selection.json`: setting selected before held-out evaluation.
+- `trials/<setting>/seed<seed>/attempt_*/`: checkpoint, full training history,
+  train/validation spectra and fields.
+- `progress.json`: current fit; `sweep_progress.json`: completed settings.
+
+Set `LOSS_SWEEP_EPOCHS`, `LOSS_SWEEP_PATIENCE`, `LOSS_SWEEP_DIAGNOSTIC_INTERVAL`,
+`LOSS_SWEEP_SEEDS` (comma-separated), `LOSS_SWEEP_COMPONENT_WEIGHTS`,
+`LOSS_SWEEP_POWER_WEIGHTS` and `LOSS_SWEEP_ANCHOR_COMPONENT_WEIGHT` before
+preparation to change the scan. The anchor must appear in component weights.
+Allocation overrides are `LOSS_SWEEP_WORKERS`, `LOSS_SWEEP_MEM` and
+`LOSS_SWEEP_WALLTIME`; `--help` lists parent/root/project overrides.
+
+After a walltime interruption, submit the prepared run again with
+`bash /absolute/loss_sweep_run/resubmit.sh`. Completed fits are reused; only
+an interrupted fit restarts, with its old files retained in a separate attempt.
+Configuration, manifest and source hashes must match for resumption. An
+exclusive PBS lock prevents duplicate jobs writing to the same run.
