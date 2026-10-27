@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+#PBS -N es_pc_full_history
+#PBS -l jobfs=4GB
+#PBS -j oe
+#PBS -l wd
+set -euo pipefail
+: "${PBS_JOBID:?Submit with qsub}"
+: "${PBS_NCPUS:?Missing allocation}"
+: "${FULL_HISTORY_RUN:?Use full_history_prepare.sh}"
+cd "$FULL_HISTORY_RUN"
+exec 9>"$FULL_HISTORY_RUN/run.lock"
+flock -n 9 || { echo 'This run already has an active job.' >&2; exit 2; }
+if [[ -e COMPLETED ]]; then
+    echo "Already completed: $FULL_HISTORY_RUN"
+    exit 0
+fi
+exec > >(tee -a "$FULL_HISTORY_RUN/run.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$FULL_HISTORY_RUN/FAILED"; fi' EXIT
+module --force purge
+source "$FULL_HISTORY_RUN/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export CC=gcc CXX=g++ FC=gfortran MPIFC=mpifort
+python=$(cat "$FULL_HISTORY_RUN/python_path.txt")
+export FULL_NATIVE_EXECUTABLE=$(cat "$FULL_HISTORY_RUN/native_python.txt")
+cd "$FULL_HISTORY_RUN/source"
+"$python" - <<'PY'
+import json
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+run = Path(os.environ['FULL_HISTORY_RUN'])
+config = json.loads((run/'configuration.json').read_text())
+native = config['native']
+cpus = int(os.environ['PBS_NCPUS'])
+parallel = native['parallel']
+if not 1 <= parallel <= cpus:
+    raise ValueError('Native parallel cases exceed allocated CPUs')
+per_case = cpus//parallel
+dataset = run/'native'
+base_command = [os.environ['FULL_NATIVE_EXECUTABLE'], '-m', 'research.es_pc_emulator.physical_pilot']
+subprocess.run(base_command + ['prepare', '--output', str(dataset), '--upstream', str(run/'upstream'),
+               '--z-start', str(native['z_start']), '--z-end', str(native['z_end']),
+               '--intervals', str(native['intervals']), '--include-initial'], check=True)
+reference = json.loads((run/'reference_cases.json').read_text())
+design = json.loads((dataset/'design.json').read_text())
+actual = {row['case_id']: row for row in design['cases']}
+for old in reference:
+    if old['case_id'] not in actual:
+        raise ValueError('Reference case is absent from new native design')
+    new = actual[old['case_id']]
+    if any(new[key] != old[key] for key in ('case_id', 'split', 'seed', 'theta')):
+        raise ValueError('New native case differs from its original parameter point or split: '+old['case_id'])
+subprocess.run(base_command + ['run', '--output', str(dataset), '--upstream', str(run/'upstream'),
+               '--group', (run/'selected_cases.txt').read_text().strip(), '--workers', str(per_case),
+               '--parallel', str(parallel)], check=True)
+subprocess.run(base_command + ['collect', '--output', str(dataset)], check=True)
+manifest = dataset/'dataset_manifest.json'
+collected = json.loads(manifest.read_text())
+if {row['case_id'] for row in collected['cases']} != {row['case_id'] for row in reference}:
+    raise ValueError('Collected histories do not exactly match the declared case inventory')
+subprocess.run([sys.executable, '-m', 'research.es_pc_emulator.full_history', 'coverage',
+               '--manifest', str(manifest), '--output', str(run/'coverage.json'),
+               '--z-start', str(native['z_start']), '--z-end', str(native['z_end']),
+               '--snapshots', str(native['intervals']+1), '--end-xhi', str(native['end_xhi'])], check=True)
+training = run/'training'
+if not (training/'COMPLETED').is_file():
+    if training.exists():
+        failed = run/'failed_training_attempts'
+        failed.mkdir(exist_ok=True)
+        training.rename(failed/f'attempt_{time.time_ns()}')
+    command = [sys.executable, '-m', 'research.es_pc_emulator.small_pilot_training',
+               '--manifest', str(manifest), '--output', str(training), '--threads', str(cpus)]
+    for key, value in config['training'].items():
+        command += ['--'+key.replace('_', '-')]
+        command += [str(item) for item in value] if isinstance(value, list) else [str(value)]
+    subprocess.run(command, check=True)
+subprocess.run([sys.executable, '-m', 'research.es_pc_emulator.full_history', 'report',
+               '--run', str(run)], check=True)
+PY
+rm -f "$FULL_HISTORY_RUN/FAILED"
+touch "$FULL_HISTORY_RUN/COMPLETED"
+printf 'Coverage: %s/coverage.json\n' "$FULL_HISTORY_RUN"
+printf 'Report: %s/training/full_history_report.json\n' "$FULL_HISTORY_RUN"
+printf 'Figures: %s/training/{evolution_errors,learning_curves}.png\n' "$FULL_HISTORY_RUN"

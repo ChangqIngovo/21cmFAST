@@ -515,3 +515,78 @@ After a walltime interruption, submit the prepared run again with
 an interrupted fit restarts, with its old files retained in a separate attempt.
 Configuration, manifest and source hashes must match for resumption. An
 exclusive PBS lock prevents duplicate jobs writing to the same run.
+
+## Train from the initial state through the end of reionization
+
+From the updated branch on Gadi:
+
+```bash
+bash research/es_pc_emulator/full_history_prepare.sh --submit
+```
+
+The parent is the latest completed loss-weight sweep, component experiment or
+small pilot, in that order. `--parent /absolute/run` selects one explicitly.
+The script reuses both Python environments and the exact previous parameter
+points, case IDs and splits (normally 32 train / 8 validation / 8 test / 4 external).
+It freezes a new worktree and archives the same pinned C2-Ray upstream source.
+
+This job **generates new native histories**: by default 40 intervals from z=20 to z=4,
+with 41 saved snapshots including the declared initial state. It retains the
+50 cMpc box, 8^3 source/label grid, 24^3 RT grid, angular order 2, source prescription,
+and frozen z=8 density contrast of the physical pilot. The requested final
+redshift is a domain choice; completion is checked from the resulting fields.
+The history-tilt transform is normalized over the full new time interval, so
+all endpoints are regenerated rather than appended to old labels.
+
+Snapshot 0 records the RT input's exact initial H/He fractions and temperature,
+zero integrated photons, zero mean emission time, initial endpoint emissivity,
+and a neutral ES prior with zero first-crossing radius. All saved arrays and
+spectra have the same redshift/time axes. This initial label is a prescribed
+condition, not an RT-evolved output.
+
+Before training, `coverage.json` checks every selected case:
+
+- Every requested endpoint is present, with time starting at zero.
+- Initial H/He/T match the declared RT initial state, and the initial neutral
+  fraction is at least 0.99.
+- At least one saved snapshot has 0.1 <= mean xHI <= 0.9.
+- Both final volume- and mass-weighted xHI are <= 0.01.
+
+A failure retains per-case reasons and stops before training. It does not drop
+slow-reionizing cases or reinterpret z=4 as a completed history. Temporal coverage
+is separate from the teacher's still-uncertified numerical convergence.
+
+Training uses `--snapshot-scope all` with the existing thermo residual network,
+three-interval causal source features, six-component weight 0.01 and total-P21
+weight 0.01. All snapshots enter field, chemistry and spectral supervision,
+train-only component normalization, validation checkpoint selection and reported
+errors. Redshifts have equal snapshot weighting; the k range remains
+0.1 <= k <= 0.6 kNyquist. This is snapshot correction over a full trajectory, not a
+recurrent model feeding predictions into the next snapshot.
+
+Both seeds 11 and 23 run for at most 120 epochs with patience 30; other optimization
+settings are inherited. Errors are reported for each redshift and in neutral
+fraction bins [0, .01, .1, .5, .9, .99, 1], alongside the aggregate. These stage bins use
+teacher xHI only for evaluation. Undefined relative-power bins are counted,
+and absolute power errors are retained, including after the signal vanishes.
+
+Default allocation: 32 CPUs, 128 GB, 24 h; two native cases run concurrently with 16
+threads each. Training runs after collection and successful coverage validation.
+No new packages are installed. Set `FULL_Z_END`, `FULL_INTERVALS`, `FULL_EPOCHS`,
+`FULL_SEEDS`, `FULL_WORKERS`, `FULL_NATIVE_PARALLEL`, `FULL_MEM` or `FULL_WALLTIME`
+before preparation to change the run; `--help` lists other overrides.
+
+Outputs in the printed `full_history_*` run directory:
+
+- `coverage.json`: actual start/end fractions and stage coverage for every case.
+- `native/dataset_manifest.json`: regenerated complete-history dataset.
+- `training/full_history_report.json`: training diagnostics, global and stage
+  errors, coverage and provenance in one uploadable report.
+- `training/evolution_errors.png`: P21 errors throughout redshift evolution.
+- `training/learning_curves.png`: common-metric train/validation curves.
+- `training/summary.json`: full six-component distributions by split, snapshot
+  and neutral-fraction stage; individual checkpoints and predictions remain.
+
+If interrupted, `bash /absolute/run/resubmit.sh` reuses completed native cases.
+An incomplete training directory is archived and training restarts; completed
+training is reused to regenerate reports. Previous runs remain unchanged.

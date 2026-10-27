@@ -167,8 +167,25 @@ def design():
     return cases
 
 
-def prepare(root, upstream):
-    """Freeze the design and generate the three native IC/source templates."""
+def history_settings(z_start=20., z_end=7.9, intervals=8, include_initial=False):
+    """Validate the requested temporal domain without changing source physics."""
+    if (not np.isfinite([z_start, z_end]).all() or not z_start > z_end >= 0
+            or type(intervals) is not int or intervals < 1 or type(include_initial) is not bool):
+        raise ValueError("Use finite descending nonnegative redshifts, positive integer intervals and a boolean initial flag")
+    return {"z_start": float(z_start), "z_end": float(z_end), "intervals": intervals,
+            "include_initial": include_initial}
+
+
+def validate_base_timeline(history, settings):
+    """Reject a cached source template from another requested temporal domain."""
+    expected = np.linspace(settings["z_start"], settings["z_end"], settings["intervals"] + 1)
+    if not np.array_equal(history["redshifts"], expected):
+        raise ValueError("Cached base history redshifts differ from requested timeline")
+
+
+def prepare(root, upstream, *, z_start=20., z_end=7.9, intervals=8, include_initial=False):
+    """Freeze the design and generate native templates over the requested timeline."""
+    settings = history_settings(z_start, z_end, intervals, include_initial)
     root.mkdir(parents=True, exist_ok=True)
     cases = design()
     configuration = {"schema_version": 1, "parameter_names": PARAMETER_NAMES,
@@ -178,23 +195,28 @@ def prepare(root, upstream):
                                    "posterior_scope": "fixed IC, diagnostic physical-control priors, synthetic likelihood",
                                    "density_evolution": "frozen contrast at z8 with cosmic dilution",
                                    "prior": "periodic hydrogen-only photon-budget ES; NOT native21cmFAST",
-                                   "convergence_certified": False}}
+                                   "convergence_certified": False, "history_settings": settings}}
     plan = root / "design.json"
-    if plan.exists() and json.loads(plan.read_text()) != configuration:
-        raise ValueError("Existing design differs; use a new output directory")
+    if plan.exists():
+        previous = json.loads(plan.read_text())
+        # Legacy designs omit the timeline and always mean the original defaults.
+        previous["metadata"].setdefault("history_settings", history_settings())
+        if previous != configuration:
+            raise ValueError("Existing design differs; use a new output directory")
     write_json(plan, configuration)
     for seed in (111, 222, 333):
         path = root / f"base_{seed}.npz"
         if not path.exists():
             build_native_history(output=path, dimension=8, highres_dimension=24, box_len=50., threads=1,
-                                 seed=seed, z_start=20., z_end=7.9, intervals=8, reference_z=8.)
+                                 seed=seed, z_start=z_start, z_end=z_end, intervals=intervals, reference_z=8.)
+        validate_base_timeline(load_history(path), settings)
     write_json(root / "provenance.json", {
         "git_commit": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip(),
         "source_sha256": {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest()
                           for p in list((ROOT / "research/c2ray_teacher").glob("*.py"))
                           + list((ROOT / "research/c2ray_teacher").glob("*.F90"))
                           + [Path(__file__), ROOT / "research/pc_evolution/native_history.py"]},
-        "upstream": str(upstream),
+        "upstream": str(upstream), "history_settings": settings,
     })
 
 
@@ -236,13 +258,90 @@ def calibrate_sed(root, base, theta, executable, workers):
         return ratio
 
 
+def collect_history_fields(history, state, manifest, refinement, *, include_initial=False, box_len=50.):
+    """Pair endpoint fields and optionally prepend the declared native initial state.
+
+    Initial labels reproduce the RT input, not an extrapolated evolved solution.
+    Source integrals start at zero while endpoint emissivity can be nonzero.
+    """
+    selected = []
+    for t in history["times_seconds"][1:]:
+        matches = [i for i, row in enumerate(manifest["steps"])
+                   if np.isclose(row["time_end_seconds"], t, rtol=1e-12, atol=1.)]
+        if len(matches) != 1:
+            raise ValueError("Cannot pair native output to an exact source endpoint")
+        selected.append(matches[0])
+    photons, emission_time = integrated_history(history["rates"], history["times_seconds"])
+    rho = history["capacity"]
+    hydrogen_fraction = 1 - manifest["helium_number_fraction"]
+    start = 0 if include_initial else 1
+    arrays = {"redshifts": history["redshifts"][start:], "density": rho,
+              "times_seconds": history["times_seconds"][start:],
+              "photons": photons[start:], "emissivity": history["rates"][start:] * MYR,
+              "emission_time_mean": emission_time[start:] / MYR}
+    collected = {name: [] for name in ("xhi_rt", "temperature_rt", "xheii_rt", "xheiii_rt",
+                                       "xhi_es", "radius_es_cMpc")}
+    power, mean_xhi, fine_power = [], [], []
+    endpoints = list(zip(range(1, len(history["redshifts"])), selected, strict=True))
+    if include_initial:
+        endpoints.insert(0, (0, None))
+    for endpoint, index in endpoints:
+        if index is None:
+            initial = manifest["initial_state"]
+            initial_density = rho * manifest["mean_total_nuclei_density_z0_cm3"] * (1 + history["redshifts"][0])**3
+            for axis in range(3):
+                initial_density = np.repeat(initial_density, refinement, axis=axis)
+            fine = {"density_total_cm3": initial_density}
+            for field, key in (("xHII", "xHII"), ("xHeII", "xHeII"),
+                               ("xHeIII", "xHeIII"), ("temperature_K", "temperature_kelvin")):
+                fine[field] = np.full(initial_density.shape, initial[key], dtype=float)
+        else:
+            fine = {key: value[index] for key, value in state["fields"].items()}
+        restricted = restrict_fields(fine, len(rho))
+        if index is None:
+            restricted["xHII"] = np.full(rho.shape, initial["xHII"])
+            restricted["temperature_K"] = np.full(rho.shape, initial["temperature_kelvin"])
+        xhi = 1 - restricted["xHII"]
+        collected["xhi_rt"].append(xhi)
+        collected["temperature_rt"].append(restricted["temperature_K"])
+        for field, output in (("xHeII", "xheii_rt"), ("xHeIII", "xheiii_rt")):
+            if index is None:
+                collected[output].append(np.full(rho.shape, initial[field]))
+            else:
+                weighted = (fine[field] * fine["density_total_cm3"]).reshape((len(rho), refinement) * 3).mean(axis=(1, 3, 5))
+                collected[output].append(weighted / restricted["density_total_cm3"])
+        es, radius = budget_es(photons[endpoint], rho, box_len, hydrogen_fraction)
+        collected["xhi_es"].append(es)
+        collected["radius_es_cMpc"].append(radius)
+        amplitude = 27 * np.sqrt((1 + history["redshifts"][endpoint]) / 10)
+        spectra = shell_spectra({"teacher": amplitude * rho * xhi}, box_len)
+        power.append(spectra["P_teacher"])
+        mean_xhi.append(float(xhi.mean()))
+        fine_rho = fine["density_total_cm3"] / fine["density_total_cm3"].mean() * rho.mean()
+        fs = shell_spectra({"teacher": amplitude * fine_rho * (1 - fine["xHII"])}, box_len)
+        fine_power.append(fs["P_teacher"])
+    arrays.update({key: np.asarray(value) for key, value in collected.items()})
+    summary = {"P21": power, "k": spectra["k_cMpc_inv"],
+               "redshifts": arrays["redshifts"].tolist(), "xHI_mean": mean_xhi,
+               "P21_fine": fine_power, "k_fine": fs["k_cMpc_inv"]}
+    return arrays, summary
+
+
 def run_case(root, case, executable, workers):
     """Evolve one real RT history and retain fields, budgets and physical spectra."""
+    settings = json.loads((root / "design.json").read_text())["metadata"].get("history_settings", history_settings())
     folder = root / "cases" / case["case_id"]
     if (folder / "COMPLETED").exists():
         if json.loads((folder / "case.json").read_text()) != case:
             raise ValueError("Completed case configuration changed")
-        return json.loads((folder / "result.json").read_text())
+        cached = json.loads((folder / "result.json").read_text())
+        if cached.get("initial_snapshot_included", False) != settings["include_initial"]:
+            raise ValueError("Completed case initial-snapshot convention changed")
+        expected = np.linspace(settings["z_start"], settings["z_end"], settings["intervals"]+1)
+        expected = expected if settings["include_initial"] else expected[1:]
+        if not np.array_equal(cached["redshifts"], expected):
+            raise ValueError("Completed case timeline differs from frozen design")
+        return cached
     if folder.exists():
         failed = root / "failed_attempts"
         failed.mkdir(exist_ok=True)
@@ -250,6 +349,7 @@ def run_case(root, case, executable, workers):
     folder.mkdir(parents=True, exist_ok=False)
     write_json(folder / "case.json", case)
     history = transform_history(load_history(root / f'base_{case["seed"]}.npz'), case["theta"])
+    validate_base_timeline(history, settings)
     _write_fresh_history(folder / "history.npz", history)
     sed_factor = calibrate_sed(root, load_history(root / f'base_{case["seed"]}.npz'),
                                case["theta"], executable, workers)
@@ -271,48 +371,17 @@ def run_case(root, case, executable, workers):
     validation = validate_output(state, manifest)
     write_json(folder / "native_validation.json", validation)
     write_json(folder / "timing.json", timing)
-    selected = []
-    for t in history["times_seconds"][1:]:
-        matches = [i for i, row in enumerate(manifest["steps"])
-                   if np.isclose(row["time_end_seconds"], t, rtol=1e-12, atol=1.)]
-        if len(matches) != 1:
-            raise ValueError("Cannot pair native output to an exact source endpoint")
-        selected.append(matches[0])
-    photons, emission_time = integrated_history(history["rates"], history["times_seconds"])
-    rho = history["capacity"]
-    hydrogen_fraction = 1 - manifest["helium_number_fraction"]
-    arrays = {"redshifts": history["redshifts"][1:], "density": rho,
-              "photons": photons[1:], "emissivity": history["rates"][1:] * MYR,
-              "emission_time_mean": emission_time[1:] / MYR}
-    collected = {name: [] for name in ("xhi_rt", "temperature_rt", "xheii_rt", "xheiii_rt",
-                                       "xhi_es", "radius_es_cMpc")}
-    power, mean_xhi, fine_power = [], [], []
-    for j, index in enumerate(selected):
-        fine = {key: value[index] for key, value in state["fields"].items()}
-        restricted = restrict_fields(fine, len(rho))
-        xhi = 1 - restricted["xHII"]
-        collected["xhi_rt"].append(xhi)
-        collected["temperature_rt"].append(restricted["temperature_K"])
-        ratio = case["refinement"]
-        for field, output in (("xHeII", "xheii_rt"), ("xHeIII", "xheiii_rt")):
-            weighted = (fine[field] * fine["density_total_cm3"]).reshape((8, ratio) * 3).mean(axis=(1, 3, 5))
-            collected[output].append(weighted / restricted["density_total_cm3"])
-        es, radius = budget_es(photons[j + 1], rho, 50., hydrogen_fraction)
-        collected["xhi_es"].append(es)
-        collected["radius_es_cMpc"].append(radius)
-        amplitude = 27 * np.sqrt((1 + arrays["redshifts"][j]) / 10)
-        spectra = shell_spectra({"teacher": amplitude * rho * xhi}, 50.)
-        power.append(spectra["P_teacher"])
-        mean_xhi.append(float(xhi.mean()))
-        fine_rho = fine["density_total_cm3"] / fine["density_total_cm3"].mean() * rho.mean()
-        fs = shell_spectra({"teacher": amplitude * fine_rho * (1 - fine["xHII"])}, 50.)
-        fine_power.append(fs["P_teacher"])
-    arrays.update({key: np.asarray(value) for key, value in collected.items()})
+    arrays, spectra_summary = collect_history_fields(
+        history, state, manifest, case["refinement"], include_initial=settings["include_initial"])
     metadata = case | {"parameter_names": PARAMETER_NAMES, "box_len_cMpc": 50.,
                        "field_prior": "hydrogen-only budget ES, ignores recombinations and helium",
                        "density_units": "mean reference nuclei per cell", "photons_units": "emitted photons per mean reference nucleus",
                        "emissivity_units": "emitted photons per mean reference nucleus per Myr",
-                       "emission_time_mean_units": "Myr since z20", "seed_disjoint_primary_split": False,
+                       "emission_time_mean_units": f"Myr since z{settings['z_start']:g}",
+                       "times_seconds_units": "seconds since initial source endpoint",
+                       "initial_snapshot_included": settings["include_initial"],
+                       "history_settings": settings, "initial_state": manifest["initial_state"],
+                       "seed_disjoint_primary_split": False,
                        "history_array_sha256": history["metadata"]["array_sha256"],
                        "native_nominal_array_sha256": nominal["metadata"]["array_sha256"],
                        "active_over_nominal_sed_factor": sed_factor,
@@ -321,16 +390,15 @@ def run_case(root, case, executable, workers):
                        "convergence_certified": False}
     np.savez_compressed(folder / "fields.npz", **arrays, metadata=np.asarray(json.dumps(metadata)))
     transported = state.get("transport_diagnostics", {}).get("cumulative", {})
-    result = case | {"path": str(folder / "fields.npz"), "P21": power,
-                     "k": spectra["k_cMpc_inv"], "redshifts": arrays["redshifts"].tolist(),
-                     "xHI_mean": mean_xhi, "P21_fine": fine_power, "k_fine": fs["k_cMpc_inv"],
+    result = case | spectra_summary | {"path": str(folder / "fields.npz"),
+                     "initial_snapshot_included": settings["include_initial"], "history_settings": settings,
                      "timing_seconds": timing["seconds"], "transport_ledger": transported,
                      "sed_transport_photons_over_nominal": timing["sed_transport_photons_over_nominal"],
                      "fields_sha256": hashlib.sha256((folder / "fields.npz").read_bytes()).hexdigest()}
     write_json(folder / "result.json", result)
     (folder / "COMPLETED").write_text("passed native state/metadata/transport validations\n")
     print(json.dumps({"completed": case["case_id"], "seconds": timing["seconds"],  # noqa: T201
-                      "final_xHI": mean_xhi[-1]}), flush=True)
+                      "final_xHI": spectra_summary["xHI_mean"][-1]}), flush=True)
     return result
 
 
@@ -385,6 +453,9 @@ def run(root, upstream, group, workers, parallel):
 def collect(root):
     """Collect only completed, explicitly identified native cases for analysis."""
     configuration = json.loads((root / "design.json").read_text())
+    settings = configuration["metadata"].get("history_settings", history_settings())
+    expected = np.linspace(settings["z_start"], settings["z_end"], settings["intervals"]+1)
+    expected = expected if settings["include_initial"] else expected[1:]
     results = []
     for case in configuration["cases"]:
         path = root / "cases" / case["case_id"]
@@ -392,6 +463,9 @@ def collect(root):
             if json.loads((path / "case.json").read_text()) != case:
                 raise ValueError("Completed native case differs from the frozen design")
             result = json.loads((path / "result.json").read_text())
+            if (result.get("initial_snapshot_included", False) != settings["include_initial"]
+                    or not np.array_equal(result["redshifts"], expected)):
+                raise ValueError("Completed case timeline differs from the frozen design")
             if hashlib.sha256((path / "fields.npz").read_bytes()).hexdigest() != result["fields_sha256"]:
                 raise ValueError("Completed field artifact hash differs")
             native = list(path.glob("run_*/native_output.bin"))
@@ -432,10 +506,15 @@ def main():
     parser.add_argument("--group", default="all")
     parser.add_argument("--workers", type=int, default=2)
     parser.add_argument("--parallel", type=int, default=3)
+    parser.add_argument("--z-start", type=float, default=20.)
+    parser.add_argument("--z-end", type=float, default=7.9)
+    parser.add_argument("--intervals", type=int, default=8)
+    parser.add_argument("--include-initial", action="store_true")
     args = parser.parse_args()
     root = args.output.resolve()
     if args.phase == "prepare":
-        prepare(root, args.upstream)
+        prepare(root, args.upstream, z_start=args.z_start, z_end=args.z_end,
+                intervals=args.intervals, include_initial=args.include_initial)
     elif args.phase == "run":
         run(root, args.upstream, args.group, args.workers, args.parallel)
     else:

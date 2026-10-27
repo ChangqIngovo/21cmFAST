@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import itertools
 import json
 import random
 from pathlib import Path
@@ -97,12 +98,20 @@ def density_at(case, snapshot):
     return rho
 
 
-def field_arrays(cases, history_steps, auxiliary):
+def snapshot_mask(count, snapshot_scope="last-three"):
+    """Select the declared spectral/validation snapshots without changing field fitting."""
+    if snapshot_scope not in ("last-three", "all"):
+        raise ValueError("snapshot_scope must be last-three or all")
+    return np.ones(count, dtype=bool) if snapshot_scope == "all" else np.arange(count) >= count-3
+
+
+def field_arrays(cases, history_steps, auxiliary, snapshot_scope="last-three"):
     """Build full-cube batches with separate deployment inputs and labels."""
     rows = {name: [] for name in ("inputs", "base", "truth", "brightness", "density",
                                  "amplitude", "aux", "primary")}
     names = None
     for case in cases:
+        selected_snapshots = snapshot_mask(len(case["redshifts"]), snapshot_scope)
         for snapshot, redshift in enumerate(case["redshifts"]):
             inputs, columns = build_inputs(case, snapshot, history_steps=history_steps)
             if names is not None and names != columns:
@@ -111,7 +120,7 @@ def field_arrays(cases, history_steps, auxiliary):
             rows["inputs"].append(inputs)
             rows["base"].append(case["xhi_es"][snapshot])
             rows["truth"].append(case["xhi_rt"][snapshot])
-            rows["primary"].append(snapshot >= len(case["redshifts"]) - 3)
+            rows["primary"].append(selected_snapshots[snapshot])
             amplitude = 27 * np.sqrt((1 + redshift) / 10)
             density = density_at(case, snapshot)
             rows["brightness"].append(amplitude * density)
@@ -246,6 +255,8 @@ def train_loop(model, train, validation, loss_function, args, seed, validation_f
     generator = torch.Generator().manual_seed(seed)
     best, best_state, stale = float("inf"), None, 0
     history = []
+    diagnostic_scope = (f"{getattr(args, 'snapshot_scope', 'last-three')} snapshots and primary k bins; "
+                        "unweighted losses; equal snapshot weighting")
     for epoch in range(args.epochs):
         model.train()
         indices = torch.randperm(len(next(iter(train.values()))), generator=generator)
@@ -284,7 +295,7 @@ def train_loop(model, train, validation, loss_function, args, seed, validation_f
         if diagnostic_function is not None and interval and (
                 epoch == 0 or (epoch+1) % interval == 0 or epoch+1 == args.epochs or stale >= args.patience):
             history[-1]["diagnostics"] = {
-                "scope": "primary snapshots and k bins; unweighted losses",
+                "scope": diagnostic_scope,
                 "train": diagnostic_function(model, train),
                 "validation": diagnostic_function(model, validation)}
         if epoch == 0 or (epoch + 1) % 10 == 0 or stale >= args.patience:
@@ -296,7 +307,7 @@ def train_loop(model, train, validation, loss_function, args, seed, validation_f
     result = {"history": history, "best_epoch": best_epoch, "best_validation_loss": best}
     if diagnostic_function is not None and getattr(args, "diagnostic_interval", 0):
         result["selected_diagnostics"] = {
-            "scope": "validation-selected checkpoint; primary snapshots and k bins; unweighted losses",
+            "scope": "validation-selected checkpoint; " + diagnostic_scope,
             "train": diagnostic_function(model, train),
             "validation": diagnostic_function(model, validation)}
     return result
@@ -348,9 +359,12 @@ def fit_field(cases, arm, args, seed):
     history_steps = 0 if arm == "local" else args.history_steps
     auxiliary = arm in ("thermo", "spatial", "p21") or arm.startswith("thermo_")
     wide = arm in ("spatial", "p21")
-    train, names = field_arrays([c for c in cases if c["metadata"]["split"] == "train"], history_steps, auxiliary)
+    snapshot_scope = getattr(args, "snapshot_scope", "last-three")
+    train, names = field_arrays([c for c in cases if c["metadata"]["split"] == "train"],
+                                history_steps, auxiliary, snapshot_scope)
     validation, validation_names = field_arrays(
-        [c for c in cases if c["metadata"]["split"] == "validation"], history_steps, auxiliary)
+        [c for c in cases if c["metadata"]["split"] == "validation"],
+        history_steps, auxiliary, snapshot_scope)
     if names != validation_names:
         raise ValueError("Training and validation features differ")
     mean, scale = normalization(train["inputs"])
@@ -361,7 +375,7 @@ def fit_field(cases, arm, args, seed):
     weight = args.power_weight if arm in ("p21", "thermo_p21", "thermo_components_p21") else 0.
     indices = COMPONENT_GROUPS.get(arm, ())
     component_scale = training_component_scale(train, box, args.power_floor) if indices else None
-    primary_spectra = arm.startswith("thermo_")
+    primary_spectra = arm.startswith("thermo_") or snapshot_scope == "all"
     diagnostic_function = None
     if getattr(args, "diagnostic_interval", 0):
         diagnostic_scale = (component_scale if component_scale is not None
@@ -390,10 +404,11 @@ def fit_field(cases, arm, args, seed):
                   "wide": wide, "auxiliary": auxiliary, "box_len_cMpc": box,
                   "grid_dimension": cases[0]["xhi_es"].shape[-1],
                   "power_weight": weight, "auxiliary_weight": args.auxiliary_weight, "power_floor": args.power_floor,
-                  "primary_spectra": primary_spectra, "component_indices": list(indices),
+                  "primary_spectra": primary_spectra, "snapshot_scope": snapshot_scope,
+                  "component_indices": list(indices),
                   "component_names": list(COMPONENT_NAMES), "component_scale": component_scale,
                   "component_weight": args.component_weight if indices else 0.,
-                  "component_scale_scope": "RMS over primary training snapshots only; fixed at inference",
+                  "component_scale_scope": f"RMS over {snapshot_scope} training snapshots only; fixed at inference",
                   "component_units": "weighted signed contributions to P21, mK^2 cMpc^3"}
     return checkpoint, result
 
@@ -447,11 +462,12 @@ def predict_checkpoint(checkpoint, case):
     return result
 
 
-def evaluate(checkpoint, cases, output):
+def evaluate(checkpoint, cases, output, snapshot_scope="last-three"):
     """Save predictions and independently measure field and power errors."""
     output.mkdir()
     records = []
     for case in cases:
+        selected_snapshots = snapshot_mask(len(case["redshifts"]), snapshot_scope)
         prediction = predict_checkpoint(checkpoint, case) if checkpoint is not None else {"xhi": case["xhi_es"]}
         np.savez_compressed(output / f"{case['metadata']['case_id']}.npz", **prediction,
                             redshifts=case["redshifts"])
@@ -475,9 +491,11 @@ def evaluate(checkpoint, cases, output):
                         * max(float(np.mean(fields["teacher"] ** 2)), 1.))
             errors = [float(abs(p / t - 1)) if t > floor else None for p, t in zip(power, truth, strict=True)]
             row = {"case_id": case["metadata"]["case_id"], "split": case["metadata"]["split"],
-                   "snapshot": j, "redshift": float(z), "primary_snapshot": j >= len(case["redshifts"]) - 3,
+                   "snapshot": j, "redshift": float(z), "primary_snapshot": bool(selected_snapshots[j]),
+                   "teacher_xHI_mean": float(np.mean(case["xhi_rt"][j])),
                    "k_cMpc_inv": k.tolist(), "primary_k": selected.tolist(), "P_teacher": truth.tolist(),
-                   "P_predicted": power.tolist(), "fractional_power_error": errors}
+                   "P_predicted": power.tolist(), "fractional_power_error": errors,
+                   "absolute_power_error": np.abs(power-truth).tolist()}
             if "xhi" in prediction:
                 row["field"] = field_metrics(1 - prediction["xhi"][j], 1 - case["xhi_rt"][j], density_at(case, j))
                 row["r21"] = spectra["r_nn"]
@@ -504,21 +522,42 @@ def evaluate(checkpoint, cases, output):
     write_json(output / "metrics.json", records)
     summary = {}
     for split in sorted({r["split"] for r in records}):
-        rows = [r for r in records if r["split"] == split and r["primary_snapshot"]]
-        summary[split] = {"cases": len({r["case_id"] for r in rows}),
-                          "power_fractional_error": distribution(v for r in rows
-                              for v, use in zip(r["fractional_power_error"], r["primary_k"], strict=True) if use),
-                          "field_MAE": distribution(r["field"]["MAE"] for r in rows if "field" in r),
-                          "field_correlation": distribution(r["field"]["field_correlation"] for r in rows if "field" in r),
-                          "r21": distribution(v for r in rows if "r21" in r
-                              for v, use in zip(r["r21"], r["primary_k"], strict=True) if use),
-                          "components": {name: distribution(
-                              abs(value) if value is not None else None
-                              for row in rows if "component_error_over_P21" in row
-                              for value, use in zip(row["component_error_over_P21"][index],
-                                                     row["primary_k"], strict=True) if use)
-                              for index, name in enumerate(COMPONENT_NAMES)}}
+        all_rows = [r for r in records if r["split"] == split]
+        rows = [r for r in all_rows if r["primary_snapshot"]]
+        summary[split] = summarize_records(rows)
+        summary[split]["snapshot_scope"] = snapshot_scope
+        summary[split]["by_snapshot"] = [
+            {"snapshot": index, "redshift": next(r["redshift"] for r in all_rows if r["snapshot"] == index),
+             "included_in_primary_summary": next(r["primary_snapshot"] for r in all_rows if r["snapshot"] == index),
+             **summarize_records([r for r in all_rows if r["snapshot"] == index])}
+            for index in sorted({r["snapshot"] for r in all_rows})]
+        edges = (0., .01, .1, .5, .9, .99, 1.)
+        summary[split]["by_neutral_fraction"] = [
+            {"lower": low, "upper": high, "lower_inclusive": True, "upper_inclusive": high == 1.,
+             **summarize_records([r for r in rows if low <= r["teacher_xHI_mean"]
+                                  and (r["teacher_xHI_mean"] < high or
+                                       (high == 1. and r["teacher_xHI_mean"] == 1.))])}
+            for low, high in itertools.pairwise(edges)]
     return summary
+
+
+def summarize_records(rows):
+    """Summarize selected snapshots, retaining undefined relative bins and absolute errors."""
+    return {"cases": len({r["case_id"] for r in rows}), "snapshots": len(rows),
+            "power_fractional_error": distribution(v for r in rows
+                for v, use in zip(r["fractional_power_error"], r["primary_k"], strict=True) if use),
+            "absolute_power_error": distribution(v for r in rows
+                for v, use in zip(r["absolute_power_error"], r["primary_k"], strict=True) if use),
+            "absolute_power_error_units": "mK^2 cMpc^3",
+            "field_MAE": distribution(r["field"]["MAE"] for r in rows if "field" in r),
+            "field_correlation": distribution(r["field"]["field_correlation"] for r in rows if "field" in r),
+            "r21": distribution(v for r in rows if "r21" in r
+                for v, use in zip(r["r21"], r["primary_k"], strict=True) if use),
+            "components": {name: distribution(
+                abs(value) if value is not None else None
+                for row in rows if "component_error_over_P21" in row
+                for value, use in zip(row["component_error_over_P21"][index], row["primary_k"], strict=True) if use)
+                for index, name in enumerate(COMPONENT_NAMES)}}
 
 
 def comparison_plot(summary, output):
@@ -551,6 +590,8 @@ def parser():
     p.add_argument("--output", type=Path, required=True)
     p.add_argument("--arms", nargs="+", choices=ARMS, default=list(DEFAULT_ARMS))
     p.add_argument("--model-seeds", nargs="+", type=int, default=[11])
+    p.add_argument("--snapshot-scope", choices=("last-three", "all"), default="last-three",
+                   help="Snapshots for spectral fitting, validation, diagnostics and primary evaluation")
     p.add_argument("--diagnostic-interval", type=int, default=0,
                    help="Record comparable primary-bin train/validation metrics every N epochs; 0 disables")
     p.add_argument("--evaluation-splits", nargs="+", choices=("train", "validation", "test", "external_test"),
@@ -601,17 +642,18 @@ def main(argv=None):
                "manifest_sha256": manifest["source_manifest_sha256"], "torch": str(torch.__version__),
                "convergence_certified": False, "scope": "exploratory existing-label model ablations",
                "selection": "field arms: common primary-bin validation log-P21 MSE; direct arm: validation standardized log-P21 MSE",
-               "primary_metrics": "last three snapshots, 0.1 <= k <= 0.6 kNyquist; no power floor in valid relative errors",
+               "primary_metrics": f"{args.snapshot_scope} snapshots, 0.1 <= k <= 0.6 kNyquist; no power floor in valid relative errors",
+               "snapshot_weighting": "equal per snapshot; field and chemistry objectives always use all snapshots",
                "loss_power_floor_units": "mK^2 cMpc^3; used only in log-loss and direct-output transform",
                "direct_p21_scope": "six physical controls to P21; no ionization field output, no IC-seed input",
                "chemistry_supervision": "log10 gas TK plus helium simplex; never inference inputs",
                "component_names": list(COMPONENT_NAMES),
                "component_loss": "signed asinh residual with fixed train-only per-term/per-mode RMS scale",
                "component_groups": {key: list(value) for key, value in COMPONENT_GROUPS.items()},
-               "component_loss_scope": "final three snapshots and primary k bins; weighted contributions to P21",
+               "component_loss_scope": f"{args.snapshot_scope} snapshots and primary k bins; weighted contributions to P21",
                "component_comparison_architecture": "all thermo_* arms retain the same local network and auxiliary head"})
     evaluation_cases = [case for case in cases if case["metadata"]["split"] in args.evaluation_splits]
-    summary = {"es": evaluate(None, evaluation_cases, args.output / "es")}
+    summary = {"es": evaluate(None, evaluation_cases, args.output / "es", args.snapshot_scope)}
     write_json(args.output / "summary.json", summary)
     for seed in args.model_seeds:
         for arm in args.arms:
@@ -626,7 +668,7 @@ def main(argv=None):
             checkpoint.update(arm=arm, seed=seed, convergence_certified=False)
             torch.save(checkpoint, folder / "model.pt")
             write_json(folder / "training.json", training)
-            summary[name] = evaluate(checkpoint, evaluation_cases, folder / "predictions")
+            summary[name] = evaluate(checkpoint, evaluation_cases, folder / "predictions", args.snapshot_scope)
             write_json(args.output / "summary.json", summary)
             print(json.dumps({"completed": name, "test": summary[name].get("test")}), flush=True)  # noqa: T201
     comparison_plot(summary, args.output)

@@ -213,7 +213,7 @@ def test_requested_evaluation_splits_do_not_change_fit_cases(monkeypatch, tmp_pa
         fit_cases.extend(selected)
         return {}, {}
 
-    def evaluate(checkpoint, selected, output):
+    def evaluate(checkpoint, selected, output, snapshot_scope="last-three"):
         evaluated.append([case["metadata"]["split"] for case in selected])
         return {}
 
@@ -224,3 +224,98 @@ def test_requested_evaluation_splits_do_not_change_fit_cases(monkeypatch, tmp_pa
                    "--evaluation-splits", "train", "validation"])
     assert fit_cases == cases
     assert evaluated == [["train", "validation"], ["train", "validation"]]
+
+
+
+def expanded_case(split="train", count=5):
+    """Extend a synthetic case with an explicit neutral snap0 and monotonic photons."""
+    case = make_case(split=split, dimension=8)
+    for key, value in list(case.items()):
+        if isinstance(value, np.ndarray) and value.ndim == 4:
+            case[key] = np.repeat(value[:1], count, axis=0)
+    case["redshifts"] = np.linspace(20., 4., count)
+    case["photons"] = np.cumsum(case["photons"], axis=0)
+    case["photons"] -= case["photons"][:1]
+    case["xhi_es"][0] = 1.
+    case["xhi_rt"][0] = 1.-1e-6
+    case["temperature_rt"][0] = 100.
+    case["xheii_rt"][0] = 1e-6
+    case["xheiii_rt"][0] = 1e-12
+    return case
+
+
+def test_all_snapshot_scope_supervises_snap0_spectral_residuals():
+    """An early label changes both spectral penalties only when all snapshots are enabled."""
+    case = expanded_case()
+    all_batch, names = training.field_arrays([case], 3, True, snapshot_scope="all")
+    late_batch, _ = training.field_arrays([case], 3, True)
+    assert all_batch["primary"].tolist() == [1., 1., 1., 1., 1.]
+    assert late_batch["primary"].tolist() == [0., 0., 1., 1., 1.]
+    assert torch.count_nonzero(all_batch["base"][0]-1) == 0
+    model = FieldNet(len(names), width=2, auxiliary=True)
+    for batch, changes in ((all_batch, True), (late_batch, False)):
+        scale = training.training_component_scale(batch, 50., 1e-8)
+        altered = {key: value.clone() for key, value in batch.items()}
+        altered["truth"][0] = .2
+        for power_weight, component_weight in ((.01, 0.), (0., .01)):
+            kwargs = {"primary_spectra": True, "component_indices": tuple(range(6)),
+                          "component_scale": scale, "component_weight": component_weight}
+            penalties = [training.field_loss(model, data, power_weight, .01, 1e-8, 50., **kwargs)
+                         - training.field_loss(model, data, 0., .01, 1e-8, 50.)
+                         for data in (batch, altered)]
+            if changes:
+                assert abs(float((penalties[0]-penalties[1]).detach())) > 1e-7
+            else:
+                torch.testing.assert_close(*penalties, atol=1e-8, rtol=1e-4)
+    with pytest.raises(ValueError, match="snapshot_scope"):
+        training.field_arrays([case], 3, True, snapshot_scope="unknown")
+
+
+def test_all_scope_fit_scaling_and_validation_include_initial_snapshot(monkeypatch):
+    """The mask propagates through train scaling, common validation and checkpoints."""
+    cases = [expanded_case(), expanded_case(split="validation")]
+    args = SimpleNamespace(history_steps=3, width=2, power_floor=1e-8, power_weight=.01,
+                           component_weight=.01, auxiliary_weight=.01, snapshot_scope="all")
+    captured = {}
+
+    def loop(model, train, validation, loss_function, options, seed, validation_function=None, **kwargs):
+        assert train["primary"].all()
+        assert validation["primary"].all()
+        with torch.no_grad():
+            before = validation_function(model, validation)
+            changed = {key: value.clone() for key, value in validation.items()}
+            changed["truth"][0] = .25
+            after = validation_function(model, changed)
+        assert abs(float(before-after)) > 1e-4
+        captured["scale"] = training.training_component_scale(train, 50., 1e-8)
+        return {}
+
+    monkeypatch.setattr(training, "train_loop", loop)
+    checkpoint, _ = training.fit_field(cases, "thermo_components_p21", args, 11)
+    assert checkpoint["snapshot_scope"] == "all"
+    torch.testing.assert_close(checkpoint["component_scale"], captured["scale"])
+    assert "all training snapshots" in checkpoint["component_scale_scope"]
+
+
+def test_evaluation_scope_and_stage_summaries_cover_all_snapshots(tmp_path):
+    """Early and fully ionized stages remain explicit, with undefined power counted."""
+    case = expanded_case(split="test", count=7)
+    for index, mean in enumerate((1., .995, .95, .7, .3, .05, 0.)):
+        case["xhi_rt"][index] = mean
+    full = training.evaluate(None, [case], tmp_path/"full", snapshot_scope="all")["test"]
+    legacy = training.evaluate(None, [case], tmp_path/"late")["test"]
+    assert full["snapshots"] == 7
+    assert legacy["snapshots"] == 3
+    assert len(full["by_snapshot"]) == 7
+    assert all(row["included_in_primary_summary"] for row in full["by_snapshot"])
+    assert [row["included_in_primary_summary"] for row in legacy["by_snapshot"]] == [False]*4+[True]*3
+    assert sum(row["snapshots"] for row in full["by_neutral_fraction"]) == 7
+    assert full["by_neutral_fraction"][0]["snapshots"] == 1
+    assert full["by_neutral_fraction"][-1]["snapshots"] == 2
+    assert full["by_neutral_fraction"][-1]["upper_inclusive"] is True
+    assert all(not row["upper_inclusive"] for row in full["by_neutral_fraction"][:-1])
+    assert full["by_snapshot"][-1]["power_fractional_error"]["undefined"] > 0
+    assert full["by_snapshot"][-1]["power_fractional_error"]["mean"] is None
+    assert full["by_snapshot"][-1]["absolute_power_error"]["mean"] > 0
+    args = training.parser().parse_args(["--manifest", "a", "--output", "b", "--snapshot-scope", "all"])
+    assert args.snapshot_scope == "all"
