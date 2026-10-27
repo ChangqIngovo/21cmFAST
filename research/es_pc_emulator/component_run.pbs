@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+#PBS -N es_pc_components
+#PBS -l jobfs=4GB
+#PBS -j oe
+#PBS -l wd
+set -euo pipefail
+: "${PBS_JOBID:?Submit with qsub}"
+: "${PBS_NCPUS:?Missing allocation}"
+: "${COMPONENT_RUN:?Use component_prepare.sh}"
+cd "$COMPONENT_RUN"
+test ! -e COMPLETED
+exec > >(tee -a "$COMPONENT_RUN/run.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$COMPONENT_RUN/FAILED"; fi' EXIT
+module --force purge
+source "$COMPONENT_RUN/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+python=$(cat "$COMPONENT_RUN/python_path.txt")
+cd "$COMPONENT_RUN/source"
+"$python" - <<'PY'
+import json
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+run = Path(os.environ['COMPONENT_RUN'])
+cfg = json.loads((run/'configuration.json').read_text())
+command = [sys.executable,'-m','research.es_pc_emulator.small_pilot_training',
+           '--manifest',str(run/'dataset_manifest.json'),'--output',str(run/'training'),
+           '--threads',os.environ['PBS_NCPUS']]
+for key,value in cfg.items():
+    command += ['--'+key.replace('_','-')]
+    command += [str(x) for x in value] if isinstance(value,list) else [str(value)]
+subprocess.run(command,check=True)
+subprocess.run([sys.executable,'-m','research.es_pc_emulator.component_report',
+                '--training',str(run/'training')],check=True)
+PY
+touch "$COMPONENT_RUN/COMPLETED"
+printf 'Results: %s/training/component_comparison.png\n' "$COMPONENT_RUN"

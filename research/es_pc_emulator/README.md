@@ -388,3 +388,57 @@ are also retained. Spectra are in mK^2 cMpc^3 under saturated spin temperature
 and no RSD. The additive 1e-8 power floor is only a loss/output-transform
 parameter; reported relative errors use unmodified nonzero reference powers.
 Teacher convergence remains explicitly uncertified in every checkpoint.
+
+## Test which P21 components need supervision
+
+The component experiment reuses a completed `small_nn_*` run, including its
+exact cases, split, hashes and CPU training environment. From the updated
+`Photon_conserving` checkout on Gadi:
+
+```bash
+bash research/es_pc_emulator/component_prepare.sh --submit
+```
+
+The script selects the most recently completed `small_nn_*` under
+`/g/data/qp00/sz4640/21cmfast_runs` and prints its path. Select a specific run with
+`--parent /absolute/path/to/small_nn_run`. No native simulations, package installs,
+or changes to previous results are made. A new frozen checkout and output
+directory are created. Defaults are two network seeds (11,23), inherited
+epochs/patience (normally 80/15), and 16 CPUs/64GB/8h.
+
+All seven arms retain the same small network, history inputs and thermal/helium
+auxiliary supervision. Only the spectral objectives change:
+
+| Arm | Added objective |
+| --- | --- |
+| `thermo` | None; field and thermochemical baseline |
+| `thermo_p21` | Total P21 |
+| `thermo_pxx` | Neutral-fraction auto contribution |
+| `thermo_cross` | Signed density-neutral cross contribution |
+| `thermo_nonlinear` | Product auto and its two cross contributions |
+| `thermo_components` | All six signed contributions |
+| `thermo_components_p21` | All six contributions and total P21 |
+
+For `T21=A rho xHI`, define centered fields `D=A*xbar*(rho-rhobar)`,
+`X=A*rhobar*(xHI-xbar)`, and `N=A*centered((rho-rhobar)*(xHI-xbar))`.
+The exact six terms are `PDD`, `PXX`, `2PDX`, `PNN`, `2PDN`, `2PXN`.
+These are weighted contributions to brightness power, not six independent
+physical control parameters. In particular the cross terms retain their signs.
+
+Component losses compare `asinh(term/scale)` with fixed per-term/per-mode RMS
+scales derived only from the primary training snapshots. Total P21 retains the
+log-power loss. New spectral objectives use the final three snapshots and
+0.1 <= k <= 0.6 kNyquist, as does the common validation epoch selection.
+The default spectral/auxiliary weights are 0.01. Set `COMPONENT_WEIGHT`,
+`COMPONENT_POWER_WEIGHT`, `COMPONENT_EPOCHS`, `COMPONENT_PATIENCE` or
+`COMPONENT_SEEDS` before preparing to change them; seeds are comma-separated.
+
+`training/component_comparison.png` compares total and individual component
+errors. `training/component_report.json` contains paired differences from
+`thermo` for each entire simulation and each seed, plus reconstruction closure.
+The component errors are reported as `(predicted_term-true_term)/true_P21`,
+so their signed sum reconstructs the total fractional power error even when
+individual cross spectra are negative or cross zero. Original summary,
+checkpoints, fields and per-snapshot spectra are also retained. These runs test
+learning objectives on the existing uncertified teacher; they do not certify
+physical photon conservation or numerical convergence.

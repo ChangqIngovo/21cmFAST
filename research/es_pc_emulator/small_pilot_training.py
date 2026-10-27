@@ -25,9 +25,20 @@ from research.es_pc_emulator.small_pilot_model import (
     shell_power,
     thermal_targets,
 )
+from research.es_pc_emulator.spectral_components import component_loss, decompose_power
 from research.pc_field_emulator.evaluation import field_metrics, shell_spectra
 
-ARMS = ("local", "history", "thermo", "spatial", "p21", "direct_p21")
+DEFAULT_ARMS = ("local", "history", "thermo", "spatial", "p21", "direct_p21")
+COMPONENT_GROUPS = {
+    "thermo_pxx": (1,),
+    "thermo_cross": (2,),
+    "thermo_nonlinear": (3, 4, 5),
+    "thermo_components": tuple(range(6)),
+    "thermo_components_p21": tuple(range(6)),
+}
+ARMS = (*DEFAULT_ARMS, "thermo_p21", *COMPONENT_GROUPS)
+COMPONENT_NAMES = ("density_auto", "neutral_auto", "density_neutral_cross",
+                   "product_auto", "density_product_cross", "neutral_product_cross")
 
 
 def write_json(path, value):
@@ -88,7 +99,8 @@ def density_at(case, snapshot):
 
 def field_arrays(cases, history_steps, auxiliary):
     """Build full-cube batches with separate deployment inputs and labels."""
-    rows = {name: [] for name in ("inputs", "base", "truth", "brightness", "aux", "primary")}
+    rows = {name: [] for name in ("inputs", "base", "truth", "brightness", "density",
+                                 "amplitude", "aux", "primary")}
     names = None
     for case in cases:
         for snapshot, redshift in enumerate(case["redshifts"]):
@@ -100,7 +112,11 @@ def field_arrays(cases, history_steps, auxiliary):
             rows["base"].append(case["xhi_es"][snapshot])
             rows["truth"].append(case["xhi_rt"][snapshot])
             rows["primary"].append(snapshot >= len(case["redshifts"]) - 3)
-            rows["brightness"].append(27 * np.sqrt((1 + redshift) / 10) * density_at(case, snapshot))
+            amplitude = 27 * np.sqrt((1 + redshift) / 10)
+            density = density_at(case, snapshot)
+            rows["brightness"].append(amplitude * density)
+            rows["density"].append(density)
+            rows["amplitude"].append(amplitude)
             if auxiliary:
                 rows["aux"].append(thermal_targets(case, snapshot))
     arrays = {key: torch.from_numpy(np.asarray(value, dtype=np.float32))
@@ -118,17 +134,55 @@ def normalization(inputs):
     return mean, scale
 
 
-def field_loss(model, batch, power_weight, auxiliary_weight, power_floor, box):
+def primary_band(k, dimension, box):
+    """Select the common physical modes used for fitting and validation."""
+    mask = (k >= .1) & (k <= .6 * np.pi * dimension / box)
+    if not mask.any():
+        raise ValueError("No primary spectral bins")
+    return mask
+
+
+def training_component_scale(train, box, floor):
+    """Compute fixed per-term/per-mode RMS scales from primary training labels."""
+    mask = train["primary"].bool()
+    if not mask.any():
+        raise ValueError("Component scaling requires primary training snapshots")
+    with torch.no_grad():
+        terms = decompose_power(train["density"][mask], train["truth"][mask],
+                                train["amplitude"][mask], box)["terms"]
+        scale = terms.square().mean(dim=0).sqrt().clamp_min(floor)
+    if not torch.isfinite(scale).all() or not torch.all(scale > 0):
+        raise ValueError("Invalid training component scales")
+    return scale
+
+
+def field_loss(model, batch, power_weight, auxiliary_weight, power_floor, box, *,
+               primary_spectra=False, component_indices=(), component_scale=None,
+               component_weight=0.):
     """Combine field error with enabled chemistry and spectral objectives."""
     prediction, auxiliary = model(batch["inputs"], batch["base"])
     loss = torch.mean((prediction - batch["truth"]) ** 2)
     if auxiliary is not None:
         # Temperature is log10(K); helium fractions have a simplex constraint.
         loss = loss + auxiliary_weight * torch.mean((auxiliary - batch["aux"]) ** 2)
-    if power_weight:
-        _, predicted, _ = shell_power(batch["brightness"] * prediction, box)
-        _, truth, _ = shell_power(batch["brightness"] * batch["truth"], box)
+    spectral_rows = batch["primary"].bool() if primary_spectra else torch.ones(
+        len(prediction), dtype=torch.bool, device=prediction.device)
+    if power_weight and spectral_rows.any():
+        k, predicted, _ = shell_power(batch["brightness"][spectral_rows] * prediction[spectral_rows], box)
+        _, truth, _ = shell_power(batch["brightness"][spectral_rows] * batch["truth"][spectral_rows], box)
+        if primary_spectra:
+            band = primary_band(k, prediction.shape[-1], box)
+            predicted, truth = predicted[..., band], truth[..., band]
         loss = loss + power_weight * power_loss(predicted, truth, floor=power_floor)
+    if component_indices and spectral_rows.any():
+        predicted = decompose_power(batch["density"][spectral_rows], prediction[spectral_rows],
+                                    batch["amplitude"][spectral_rows], box)
+        truth = decompose_power(batch["density"][spectral_rows], batch["truth"][spectral_rows],
+                                batch["amplitude"][spectral_rows], box)
+        band = primary_band(predicted["k"], prediction.shape[-1], box)
+        loss = loss + component_weight * component_loss(
+            predicted["terms"][..., band], truth["terms"][..., band],
+            component_scale[..., band], component_indices)
     if not torch.isfinite(loss):
         raise FloatingPointError("Nonfinite training/validation loss")
     return loss
@@ -227,7 +281,7 @@ def fit_direct(cases, args, seed):
 def fit_field(cases, arm, args, seed):
     """Train one field ablation with common validation power scoring."""
     history_steps = 0 if arm == "local" else args.history_steps
-    auxiliary = arm in ("thermo", "spatial", "p21")
+    auxiliary = arm in ("thermo", "spatial", "p21") or arm.startswith("thermo_")
     wide = arm in ("spatial", "p21")
     train, names = field_arrays([c for c in cases if c["metadata"]["split"] == "train"], history_steps, auxiliary)
     validation, validation_names = field_arrays(
@@ -239,7 +293,10 @@ def fit_field(cases, arm, args, seed):
     validation["inputs"] = (validation["inputs"] - mean) / scale
     model = FieldNet(len(names), width=args.width, wide=wide, auxiliary=auxiliary)
     box = cases[0]["metadata"]["box_len_cMpc"]
-    weight = args.power_weight if arm == "p21" else 0.
+    weight = args.power_weight if arm in ("p21", "thermo_p21", "thermo_components_p21") else 0.
+    indices = COMPONENT_GROUPS.get(arm, ())
+    component_scale = training_component_scale(train, box, args.power_floor) if indices else None
+    primary_spectra = arm.startswith("thermo_")
 
     def validation_score(network, batch):
         # All field arms select epochs on the SAME observable and physical bins.
@@ -247,19 +304,25 @@ def fit_field(cases, arm, args, seed):
         predicted, _ = network(selected["inputs"], selected["base"])
         k, pp, _ = shell_power(selected["brightness"] * predicted, box)
         _, pt, _ = shell_power(selected["brightness"] * selected["truth"], box)
-        mask = (k >= .1) & (k <= .6 * np.pi * predicted.shape[-1] / box)
-        if not mask.any():
-            raise ValueError("No primary validation k bins")
+        mask = primary_band(k, predicted.shape[-1], box)
         return power_loss(pp[..., mask], pt[..., mask], floor=args.power_floor)
 
     result = train_loop(model, train, validation,
-                        lambda m, b: field_loss(m, b, weight, args.auxiliary_weight, args.power_floor, box),
+                        lambda m, b: field_loss(m, b, weight, args.auxiliary_weight, args.power_floor, box,
+                                               primary_spectra=primary_spectra, component_indices=indices,
+                                               component_scale=component_scale,
+                                               component_weight=args.component_weight),
                         args, seed, validation_function=validation_score)
     checkpoint = {"kind": "field", "state_dict": model.state_dict(), "input_mean": mean, "input_scale": scale,
                   "feature_names": names, "history_steps": history_steps, "width": args.width,
                   "wide": wide, "auxiliary": auxiliary, "box_len_cMpc": box,
                   "grid_dimension": cases[0]["xhi_es"].shape[-1],
-                  "power_weight": weight, "auxiliary_weight": args.auxiliary_weight, "power_floor": args.power_floor}
+                  "power_weight": weight, "auxiliary_weight": args.auxiliary_weight, "power_floor": args.power_floor,
+                  "primary_spectra": primary_spectra, "component_indices": list(indices),
+                  "component_names": list(COMPONENT_NAMES), "component_scale": component_scale,
+                  "component_weight": args.component_weight if indices else 0.,
+                  "component_scale_scope": "RMS over primary training snapshots only; fixed at inference",
+                  "component_units": "weighted signed contributions to P21, mK^2 cMpc^3"}
     return checkpoint, result
 
 
@@ -321,7 +384,9 @@ def evaluate(checkpoint, cases, output):
         np.savez_compressed(output / f"{case['metadata']['case_id']}.npz", **prediction,
                             redshifts=case["redshifts"])
         for j, z in enumerate(case["redshifts"]):
-            factor = 27 * np.sqrt((1 + z) / 10) * density_at(case, j)
+            amplitude = 27 * np.sqrt((1 + z) / 10)
+            rho = density_at(case, j).astype(np.float64)
+            factor = amplitude * rho
             fields = {"teacher": factor * case["xhi_rt"][j]}
             if "xhi" in prediction:
                 fields["nn"] = factor * prediction["xhi"][j]
@@ -344,6 +409,25 @@ def evaluate(checkpoint, cases, output):
             if "xhi" in prediction:
                 row["field"] = field_metrics(1 - prediction["xhi"][j], 1 - case["xhi_rt"][j], density_at(case, j))
                 row["r21"] = spectra["r_nn"]
+                with torch.no_grad():
+                    components = [decompose_power(torch.as_tensor(rho, dtype=torch.float64),
+                                  torch.as_tensor(value, dtype=torch.float64), amplitude,
+                                  case["metadata"]["box_len_cMpc"])["terms"].numpy()
+                                  for value in (case["xhi_rt"][j], prediction["xhi"][j])]
+                teacher_terms, predicted_terms = components
+                for terms, total in zip(components, (truth, power), strict=True):
+                    np.testing.assert_allclose(terms.sum(axis=-2), total, rtol=1e-9, atol=1e-10)
+                row["P21_terms_teacher"] = teacher_terms.tolist()
+                row["P21_terms_predicted"] = predicted_terms.tolist()
+                row["component_error_over_P21"] = [
+                    [float(delta / t) if t > floor else None
+                     for delta, t in zip(difference, truth, strict=True)]
+                    for difference in predicted_terms - teacher_terms]
+                row["component_closure_relative"] = {
+                    name: float(np.max(np.abs(terms.sum(axis=-2) - total))
+                                / max(float(np.max(np.abs(total))), 1e-30))
+                    for name, terms, total in zip(("teacher", "predicted"), components,
+                                                  (truth, power), strict=True)}
             records.append(row)
     write_json(output / "metrics.json", records)
     summary = {}
@@ -355,7 +439,13 @@ def evaluate(checkpoint, cases, output):
                           "field_MAE": distribution(r["field"]["MAE"] for r in rows if "field" in r),
                           "field_correlation": distribution(r["field"]["field_correlation"] for r in rows if "field" in r),
                           "r21": distribution(v for r in rows if "r21" in r
-                              for v, use in zip(r["r21"], r["primary_k"], strict=True) if use)}
+                              for v, use in zip(r["r21"], r["primary_k"], strict=True) if use),
+                          "components": {name: distribution(
+                              abs(value) if value is not None else None
+                              for row in rows if "component_error_over_P21" in row
+                              for value, use in zip(row["component_error_over_P21"][index],
+                                                     row["primary_k"], strict=True) if use)
+                              for index, name in enumerate(COMPONENT_NAMES)}}
     return summary
 
 
@@ -385,7 +475,7 @@ def parser():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--manifest", type=Path, required=True)
     p.add_argument("--output", type=Path, required=True)
-    p.add_argument("--arms", nargs="+", choices=ARMS, default=list(ARMS))
+    p.add_argument("--arms", nargs="+", choices=ARMS, default=list(DEFAULT_ARMS))
     p.add_argument("--model-seeds", nargs="+", type=int, default=[11])
     for name, default in (("epochs", 80), ("patience", 15), ("threads", 8), ("batch-size", 8),
                           ("train-cases", 32), ("validation-cases", 8), ("test-cases", 8),
@@ -394,6 +484,7 @@ def parser():
     p.add_argument("--learning-rate", type=float, default=1e-3)
     p.add_argument("--power-weight", type=float, default=.01)
     p.add_argument("--auxiliary-weight", type=float, default=.01)
+    p.add_argument("--component-weight", type=float, default=.01)
     p.add_argument("--power-floor", type=float, default=1e-8)
     return p
 
@@ -409,7 +500,7 @@ def main(argv=None):
         raise ValueError("External case count and seeds must be nonnegative")
     if len(set(args.arms)) != len(args.arms) or len(set(args.model_seeds)) != len(args.model_seeds):
         raise ValueError("Arms and model seeds must be unique")
-    for name in ("learning_rate", "power_weight", "auxiliary_weight", "power_floor"):
+    for name in ("learning_rate", "power_weight", "auxiliary_weight", "component_weight", "power_floor"):
         if not np.isfinite(getattr(args, name)) or getattr(args, name) <= 0:
             raise ValueError(f"{name} must be finite and positive")
     if args.output.exists():
@@ -430,7 +521,12 @@ def main(argv=None):
                "primary_metrics": "last three snapshots, 0.1 <= k <= 0.6 kNyquist; no power floor in valid relative errors",
                "loss_power_floor_units": "mK^2 cMpc^3; used only in log-loss and direct-output transform",
                "direct_p21_scope": "six physical controls to P21; no ionization field output, no IC-seed input",
-               "chemistry_supervision": "log10 gas TK plus helium simplex; never inference inputs"})
+               "chemistry_supervision": "log10 gas TK plus helium simplex; never inference inputs",
+               "component_names": list(COMPONENT_NAMES),
+               "component_loss": "signed asinh residual with fixed train-only per-term/per-mode RMS scale",
+               "component_groups": {key: list(value) for key, value in COMPONENT_GROUPS.items()},
+               "component_loss_scope": "final three snapshots and primary k bins; weighted contributions to P21",
+               "component_comparison_architecture": "all thermo_* arms retain the same local network and auxiliary head"})
     summary = {"es": evaluate(None, cases, args.output / "es")}
     write_json(args.output / "summary.json", summary)
     for seed in args.model_seeds:
