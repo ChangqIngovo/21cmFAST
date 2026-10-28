@@ -1,0 +1,64 @@
+#!/usr/bin/env bash
+#PBS -N es_pc_history_refit
+#PBS -l jobfs=4GB
+#PBS -j oe
+#PBS -l wd
+set -euo pipefail
+: "${PBS_JOBID:?Submit with qsub}"
+: "${PBS_NCPUS:?Missing allocation}"
+: "${HISTORY_RETRAIN_RUN:?Use history_retrain_prepare.sh}"
+cd "$HISTORY_RETRAIN_RUN"
+exec 9>"$HISTORY_RETRAIN_RUN/run.lock"
+flock -n 9 || { echo 'This run already has an active job.' >&2; exit 2; }
+if [[ -e COMPLETED ]]; then
+    echo "Already completed: $HISTORY_RETRAIN_RUN"
+    exit 0
+fi
+exec > >(tee -a "$HISTORY_RETRAIN_RUN/run.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$HISTORY_RETRAIN_RUN/FAILED"; fi' EXIT
+module --force purge
+source "$HISTORY_RETRAIN_RUN/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+python=$(cat "$HISTORY_RETRAIN_RUN/python_path.txt")
+cd "$HISTORY_RETRAIN_RUN/source"
+"$python" - <<'PY'
+import os
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+from research.es_pc_emulator.history_retrain import verify
+
+run = Path(os.environ['HISTORY_RETRAIN_RUN'])
+config = verify(run)
+cpus = int(os.environ['PBS_NCPUS'])
+requested = config['coverage_requested']
+manifest = run/'dataset_manifest.json'
+subprocess.run([sys.executable, '-m', 'research.es_pc_emulator.full_history', 'coverage',
+               '--manifest', str(manifest), '--output', str(run/'coverage.json'),
+               '--z-start', str(requested['z_start']), '--z-end', str(requested['z_end']),
+               '--snapshots', str(requested['snapshots']),
+               '--end-xhi', str(requested['maximum_final_xHI_volume_and_mass'])], check=True)
+training = run/'training'
+if not (training/'COMPLETED').is_file():
+    if training.exists():
+        failed = run/'failed_training_attempts'
+        failed.mkdir(exist_ok=True)
+        training.rename(failed/f'attempt_{time.time_ns()}')
+    command = [sys.executable, '-m', 'research.es_pc_emulator.small_pilot_training',
+               '--manifest', str(manifest), '--output', str(training), '--threads', str(cpus)]
+    for key, value in config['training'].items():
+        command += ['--'+key.replace('_', '-')]
+        command += [str(item) for item in value] if isinstance(value, list) else [str(value)]
+    subprocess.run(command, check=True)
+subprocess.run([sys.executable, '-m', 'research.es_pc_emulator.full_history', 'report',
+               '--run', str(run)], check=True)
+PY
+rm -f "$HISTORY_RETRAIN_RUN/FAILED"
+touch "$HISTORY_RETRAIN_RUN/COMPLETED"
+printf 'Report: %s/training/full_history_report.json\n' "$HISTORY_RETRAIN_RUN"
+printf 'Figures: %s/training/{evolution_errors,learning_curves}.png\n' "$HISTORY_RETRAIN_RUN"

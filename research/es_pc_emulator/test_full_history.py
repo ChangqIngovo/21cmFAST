@@ -85,3 +85,28 @@ def test_nonfinite_clock_cannot_pass_a_monotonicity_check():
     result = full_history.check_coverage([case], 20., 4., 3)
     assert not result["passed"]
     assert "elapsed time" in result["cases"][0]["errors"][0]
+
+
+def test_selected_learning_point_is_present_between_diagnostic_epochs():
+    """The saved checkpoint's raw error cannot disappear between sampled epochs."""
+    fit = {"best_epoch": 12,
+           "history": [{"epoch": 10, "diagnostics": {"validation": {"power_fractional_error_mean": .2}}},
+                       {"epoch": 12},
+                       {"epoch": 15, "diagnostics": {"validation": {"power_fractional_error_mean": .1}}}],
+           "selected_diagnostics": {"validation": {"power_fractional_error_mean": 2.99}}}
+    points = full_history.learning_points(fit, "validation", "power_fractional_error_mean")
+    assert points == [(10, .2), (12, 2.99), (15, .1)]
+
+
+def test_active_phase_means_use_actual_sample_counts():
+    """Different stage populations must not be silently averaged fifty-fifty."""
+    rows = [{"lower": .1, "upper": .5, "snapshots": 1,
+             "power_fractional_error": {"mean": .2, "count": 2, "undefined": 0}},
+            {"lower": .5, "upper": .9, "snapshots": 3,
+             "power_fractional_error": {"mean": .6, "count": 6, "undefined": 0}},
+            {"lower": .99, "upper": 1., "snapshots": 100,
+             "power_fractional_error": {"mean": 0., "count": 200, "undefined": 0}}]
+    result = full_history.active_phase_summary(rows)
+    assert result["snapshots"] == 4
+    assert result["power_fractional_error"]["mean"] == pytest.approx(.5)
+    assert result["power_fractional_error"]["count"] == 8

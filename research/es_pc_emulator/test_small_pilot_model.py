@@ -101,3 +101,42 @@ def test_zero_head_can_leave_a_fully_neutral_prior():
     prediction, _ = model(torch.ones((1, 2, 2, 2, 2)), baseline)
     (prediction - .5).square().mean().backward()
     assert model.residual.bias.grad.abs().item() > 0
+
+
+@pytest.mark.parametrize(("prior", "bias", "target"), [(0., -2., .01), (1., 2., .99)])
+def test_logit_residual_recovers_from_wrong_side_at_es_boundary(prior, bias, target):
+    """A nonzero head must retain the corrective gradient at either ES endpoint."""
+    model = FieldNet(2, width=2, output_transform="logit", prior_epsilon=1e-4)
+    with torch.no_grad():
+        model.residual.bias.fill_(bias)
+    baseline = torch.full((1, 2, 2, 2), prior)
+    prediction, _ = model(torch.ones((1, 2, 2, 2, 2)), baseline)
+    (prediction - target).square().mean().backward()
+    gradient = model.residual.bias.grad.item()
+    assert np.isfinite(gradient)
+    assert abs(gradient) > 0
+    assert gradient < 0 if prior == 0 else gradient > 0
+    assert ((prediction > 0) & (prediction < 1)).all()
+
+
+def test_logit_residual_prior_regularization_is_not_an_output_floor():
+    """Tiny residual neutral fractions remain representable below prior epsilon."""
+    model = FieldNet(2, width=2, output_transform="logit", prior_epsilon=1e-4)
+    inputs = torch.ones((1, 2, 2, 2, 2))
+    baseline = torch.zeros((1, 2, 2, 2))
+    prediction, _ = model(inputs, baseline)
+    torch.testing.assert_close(prediction, torch.full_like(baseline, 1e-4), rtol=1e-6, atol=0)
+    with torch.no_grad():
+        model.residual.bias.fill_(-3.)
+    prediction, _ = model(inputs, baseline)
+    assert prediction.min() > 0
+    assert prediction.max() < 1e-4
+
+
+@pytest.mark.parametrize("options", [{"output_transform": "unknown"},
+    {"prior_epsilon": 0.}, {"prior_epsilon": .5}, {"prior_epsilon": float("nan")},
+    {"prior_epsilon": 1e-20}])
+def test_output_transform_rejects_invalid_configuration(options):
+    """Invalid transform settings fail before fitting or inference."""
+    with pytest.raises(ValueError, match=r"output transform|Prior epsilon"):
+        FieldNet(2, **options)

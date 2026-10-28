@@ -122,12 +122,39 @@ class FieldNet(nn.Module):
     The local arm uses one periodic 3-D convolution followed by two pointwise
     layers (a 3-cell receptive field). The wide arm uses three periodic 3-D
     convolutions with dilations 1,2,4 (a nominal 15-cell receptive field).
+
+    Parameters
+    ----------
+    in_channels : int
+        Number of deployment input features.
+    width : int, optional
+        Hidden channel count.
+    wide : bool, optional
+        Use dilated spatial convolutions.
+    auxiliary : bool, optional
+        Predict thermal and helium training targets.
+    output_transform : {"legacy", "logit"}, optional
+        Preserve the original piecewise residual, or learn an additive shift
+        of the regularized ES log odds. The latter removes the half-line of
+        exactly zero gradients at saturated ES priors.
+    prior_epsilon : float, optional
+        Regularize only the logit prior away from zero and one. This is not
+        a floor on predicted neutral fractions; a negative shift can produce
+        values below this epsilon. Must be representable away from one in
+        float32.
     """
 
-    def __init__(self, in_channels, width=16, wide=False, auxiliary=False):
+    def __init__(self, in_channels, width=16, wide=False, auxiliary=False, *,
+                 output_transform: str = "legacy", prior_epsilon: float = 1e-4):
         super().__init__()
         if in_channels < 1 or width < 1:
             raise ValueError("Channel counts must be positive")
+        if output_transform not in ("legacy", "logit"):
+            raise ValueError("Unknown neutral-fraction output transform")
+        if not np.isfinite(prior_epsilon) or not np.finfo(np.float32).eps <= prior_epsilon < .5:
+            raise ValueError("Prior epsilon must be float32-resolvable and smaller than 0.5")
+        self.output_transform = output_transform
+        self.prior_epsilon = prior_epsilon
         layers = []
         for dilation in (1, 2, 4):
             layers.extend((PeriodicConv3d(in_channels, width, dilation) if wide or dilation == 1
@@ -144,11 +171,17 @@ class FieldNet(nn.Module):
         if inputs.ndim != 5 or xhi_es.shape != (inputs.shape[0], *inputs.shape[-3:]):
             raise ValueError("Expected inputs [B,C,N,N,N] and ES [B,N,N,N]")
         hidden = self.trunk(inputs)
-        residual = torch.tanh(self.residual(hidden)[:, 0])
-        # Both clamp derivatives are one at zero: the zero-initialized head
-        # can learn either direction even for a fully neutral/ionized prior.
-        xhi = (xhi_es + (1 - xhi_es) * residual.clamp_min(0)
-               + xhi_es * residual.clamp_max(0))
+        raw = self.residual(hidden)[:, 0]
+        if self.output_transform == "logit":
+            prior = xhi_es.clamp(self.prior_epsilon, 1 - self.prior_epsilon)
+            xhi = torch.sigmoid(torch.logit(prior) + raw)
+        else:
+            residual = torch.tanh(raw)
+            # Keep old checkpoint behavior; this branch has a zero-gradient
+            # half-line at saturated priors, even though the derivative at
+            # the zero-initialized head itself is nonzero.
+            xhi = (xhi_es + (1 - xhi_es) * residual.clamp_min(0)
+                   + xhi_es * residual.clamp_max(0))
         aux = None
         if self.auxiliary is not None:
             raw = self.auxiliary(hidden)

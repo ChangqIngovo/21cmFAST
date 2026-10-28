@@ -590,3 +590,58 @@ Outputs in the printed `full_history_*` run directory:
 If interrupted, `bash /absolute/run/resubmit.sh` reuses completed native cases.
 An incomplete training directory is archived and training restarts; completed
 training is reused to regenerate reports. Previous runs remain unchanged.
+
+## Refit completed full histories with stage-balanced spectral objectives
+
+This training-only job reuses every case and split from a completed `full_history_*`
+run. It does not generate RT labels or install packages. From the updated
+`Photon_conserving` checkout:
+
+```bash
+bash research/es_pc_emulator/history_retrain_prepare.sh \
+  --parent /g/data/qp00/sz4640/21cmfast_runs/full_history_fa2af2bb1f_20261027T114951_BGRK \
+  --submit
+```
+
+Omit `--parent` to select the latest completed full-history run. The source
+manifest, individual field checksums and original split/seed identities are
+checked before preparation and again in the PBS job. The full temporal-coverage
+gate is rerun on the reused files. Existing simulations and training outputs
+remain in their original run directory; new outputs use `history_retrain_*`.
+
+The refit enables a smooth logit residual around an ES prior clipped to
+`[1e-4, 1-1e-4]`, removing the legacy residual's flat half-interval at fully
+neutral/ionized priors. The prior clipping is an initialization choice; it is
+not a hard floor on the final predicted fraction. Legacy checkpoints still use
+the original output transformation when their metadata has no transform field.
+
+Training and validation weight each occupied teacher-neutral-fraction stage
+`[0,.01,.1,.5,.9,.99,1]` equally in aggregate. The teacher stage is a supervision
+weight, never an inference input. Field, thermochemical and component objectives
+use the stage weights. The total-power objective and checkpoint selection use
+the same stage-balanced mean absolute fractional power residual with denominator
+`max(P_RT, 1e-4 * train_stage_weighted_RMS_P(k), 1e-8)`. The RMS is fitted from
+training labels alone and is frozen for validation/test/deployment. Thus weak
+late-time power is assessed in absolute units relative to a declared train-only
+scale; this regularized score must not be described as an unmodified percentage
+accuracy at vanishing signal. Raw relative errors and absolute power errors are
+retained alongside it in every reported stage.
+
+Defaults are two NN seeds (11,23), at most 120 epochs, patience 30, learning rate
+`3e-4`, the existing width/batch/history settings, and component/total-power
+weights `0.01`. The allocation is 16 CPUs, 64 GB, 12 h. Overrides are
+`RETRAIN_WORKERS`, `RETRAIN_MEM`, `RETRAIN_WALLTIME`, `RETRAIN_EPOCHS`,
+`RETRAIN_PATIENCE`, `RETRAIN_DIAGNOSTIC_INTERVAL`, `RETRAIN_SEEDS`,
+`RETRAIN_LEARNING_RATE`, `RETRAIN_RELATIVE_POWER_FLOOR`, and
+`RETRAIN_PRIOR_EPSILON`; seeds are comma-separated. Outputs are:
+
+- `training/full_history_report.json`: full raw and regularized metrics, stage
+  summaries, active-reionization aggregate (`0.1 <= mean xHI < 0.9`) and provenance.
+- `training/learning_curves.png`: raw relative error and the actual selection
+  metric in separate panels, with the restored checkpoint explicitly marked.
+- `training/evolution_errors.png`: raw relative error across every saved redshift.
+
+An interrupted native-free job can be resubmitted using its printed `resubmit.sh`.
+Completed training is reused; incomplete training is archived and restarted.
+These changes address the training procedure; teacher convergence remains
+uncertified and the model still has no hard photon-conservation constraint.

@@ -319,3 +319,68 @@ def test_evaluation_scope_and_stage_summaries_cover_all_snapshots(tmp_path):
     assert full["by_snapshot"][-1]["absolute_power_error"]["mean"] > 0
     args = training.parser().parse_args(["--manifest", "a", "--output", "b", "--snapshot-scope", "all"])
     assert args.snapshot_scope == "all"
+
+
+def stage_case(split="train"):
+    """Supply all six stages to the corrected-training integration checks."""
+    case = expanded_case(split=split, count=7)
+    for index, mean in enumerate((.999, .995, .95, .7, .3, .05, .001)):
+        case["xhi_rt"][index] = mean
+    return case
+
+
+def test_stage_relative_fit_uses_train_only_floors_and_label_free_reload(monkeypatch, tmp_path):
+    """Validation labels cannot set floors; saved logit models need no teacher inputs."""
+    cases = [stage_case(), stage_case("validation")]
+    args = SimpleNamespace(history_steps=3, width=2, power_floor=1e-8, power_weight=.01,
+                           component_weight=.01, auxiliary_weight=.01, snapshot_scope="all",
+                           training_objective="stage-relative", output_transform="logit",
+                           prior_epsilon=1e-4, relative_power_floor=1e-4, batch_size=2)
+    monkeypatch.setattr(training, "train_loop", lambda *a, **kw: {})
+    checkpoint, _ = training.fit_field(cases, "thermo_components_p21", args, 11)
+    altered = copy.deepcopy(cases)
+    altered[1]["xhi_rt"][:] = .02
+    other, _ = training.fit_field(altered, "thermo_components_p21", args, 11)
+    for name in ("power_denominator_floor", "component_scale", "input_mean", "input_scale"):
+        torch.testing.assert_close(checkpoint[name], other[name], rtol=0, atol=0)
+    assert checkpoint["stage_counts"]["train"] == [1, 1, 1, 1, 1, 2]
+    assert checkpoint["stage_counts"]["validation"] != other["stage_counts"]["validation"]
+    assert checkpoint["output_transform"] == "logit"
+    reference = training.predict_checkpoint(checkpoint, cases[1])["xhi"]
+    for key in ("xhi_rt", "temperature_rt", "xheii_rt", "xheiii_rt"):
+        altered[1].pop(key)
+    saved = tmp_path/"corrected.pt"
+    torch.save(checkpoint, saved)
+    np.testing.assert_allclose(training.predict_checkpoint(saved, altered[1])["xhi"], reference,
+                               rtol=0, atol=0)
+
+
+def test_stage_relative_selection_matches_training_and_numpy_evaluation(monkeypatch, tmp_path):
+    """The optimized power term, validation score and held-out summary agree."""
+    cases = [stage_case(), stage_case("validation")]
+    args = SimpleNamespace(history_steps=3, width=2, power_floor=1e-8, power_weight=.01,
+                           component_weight=.01, auxiliary_weight=.01, snapshot_scope="all",
+                           training_objective="stage-relative", output_transform="logit",
+                           prior_epsilon=1e-4, relative_power_floor=1e-4, batch_size=2)
+    captured = {}
+
+    def loop(model, train, validation, loss_function, options, seed, validation_function=None, **kwargs):
+        captured["score"] = float(validation_function(model, validation))
+        captured["model"] = model
+        captured["validation"] = validation
+        return {}
+
+    monkeypatch.setattr(training, "train_loop", loop)
+    checkpoint, _ = training.fit_field(cases, "thermo_components_p21", args, 11)
+    model, batch = captured["model"], captured["validation"]
+    bare = training.field_loss(model, batch, 0., 0., 1e-8, 50.)
+    with_power = training.field_loss(model, batch, 1., 0., 1e-8, 50., primary_spectra=True,
+                                     power_denominator=checkpoint["power_denominator_floor"])
+    assert float((with_power-bare).detach()) == pytest.approx(captured["score"], rel=2e-5)
+    one = training.stage_relative_score(model, batch, 50., checkpoint["power_denominator_floor"], 1)
+    assert float(one) == pytest.approx(captured["score"], rel=1e-10)
+    summary = training.evaluate(checkpoint, [cases[1]], tmp_path/"stage_eval", "all")["validation"]
+    assert summary["selection_score"] == pytest.approx(captured["score"], rel=2e-5)
+    assert summary["regularized_power_error"]["count"] == 14
+    assert summary["power_fractional_error"]["count"] == 14
+    assert summary["absolute_power_error"]["count"] == 14

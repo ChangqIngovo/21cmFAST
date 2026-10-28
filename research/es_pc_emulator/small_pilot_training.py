@@ -18,6 +18,14 @@ import numpy as np
 import torch
 from torch import nn
 
+from research.es_pc_emulator.history_objective import (
+    SELECTION_METRIC,
+    STAGE_EDGES,
+    denominator_floor,
+    relative_errors,
+    stage_weights,
+    weighted_rows,
+)
 from research.es_pc_emulator.physical_pilot_training import load_case, load_manifest
 from research.es_pc_emulator.small_pilot_model import (
     FieldNet,
@@ -108,7 +116,7 @@ def snapshot_mask(count, snapshot_scope="last-three"):
 def field_arrays(cases, history_steps, auxiliary, snapshot_scope="last-three"):
     """Build full-cube batches with separate deployment inputs and labels."""
     rows = {name: [] for name in ("inputs", "base", "truth", "brightness", "density",
-                                 "amplitude", "aux", "primary")}
+                                 "amplitude", "aux", "primary", "teacher_mean")}
     names = None
     for case in cases:
         selected_snapshots = snapshot_mask(len(case["redshifts"]), snapshot_scope)
@@ -120,6 +128,7 @@ def field_arrays(cases, history_steps, auxiliary, snapshot_scope="last-three"):
             rows["inputs"].append(inputs)
             rows["base"].append(case["xhi_es"][snapshot])
             rows["truth"].append(case["xhi_rt"][snapshot])
+            rows["teacher_mean"].append(np.mean(case["xhi_rt"][snapshot], dtype=np.float64))
             rows["primary"].append(selected_snapshots[snapshot])
             amplitude = 27 * np.sqrt((1 + redshift) / 10)
             density = density_at(case, snapshot)
@@ -128,7 +137,7 @@ def field_arrays(cases, history_steps, auxiliary, snapshot_scope="last-three"):
             rows["amplitude"].append(amplitude)
             if auxiliary:
                 rows["aux"].append(thermal_targets(case, snapshot))
-    arrays = {key: torch.from_numpy(np.asarray(value, dtype=np.float32))
+    arrays = {key: torch.from_numpy(np.asarray(value, dtype=np.float64 if key == "teacher_mean" else np.float32))
               for key, value in rows.items() if value}
     if not all(torch.isfinite(value).all() for value in arrays.values()):
         raise ValueError("Nonfinite training arrays")
@@ -159,7 +168,8 @@ def training_component_scale(train, box, floor):
     with torch.no_grad():
         terms = decompose_power(train["density"][mask], train["truth"][mask],
                                 train["amplitude"][mask], box)["terms"]
-        scale = terms.square().mean(dim=0).sqrt().clamp_min(floor)
+        weights = train.get("sample_weight", torch.ones(len(train["truth"])))[mask]
+        scale = (terms.square()*weights[:, None, None]).mean(dim=0).sqrt().clamp_min(floor)
     if not torch.isfinite(scale).all() or not torch.all(scale > 0):
         raise ValueError("Invalid training component scales")
     return scale
@@ -167,13 +177,18 @@ def training_component_scale(train, box, floor):
 
 def field_loss(model, batch, power_weight, auxiliary_weight, power_floor, box, *,
                primary_spectra=False, component_indices=(), component_scale=None,
-               component_weight=0.):
-    """Combine field error with enabled chemistry and spectral objectives."""
+               component_weight=0., power_denominator: torch.Tensor | None = None):
+    """Combine field, chemistry and spectral errors.
+
+    ``power_denominator`` enables the stage-weighted relative-power objective;
+    its positive per-mode scales must come from training labels only.
+    """
     prediction, auxiliary = model(batch["inputs"], batch["base"])
-    loss = torch.mean((prediction - batch["truth"]) ** 2)
+    weights = batch.get("sample_weight", torch.ones(len(prediction), device=prediction.device))
+    loss = weighted_rows((prediction - batch["truth"]) ** 2, weights)
     if auxiliary is not None:
         # Temperature is log10(K); helium fractions have a simplex constraint.
-        loss = loss + auxiliary_weight * torch.mean((auxiliary - batch["aux"]) ** 2)
+        loss = loss + auxiliary_weight * weighted_rows((auxiliary - batch["aux"]) ** 2, weights)
     spectral_rows = batch["primary"].bool() if primary_spectra else torch.ones(
         len(prediction), dtype=torch.bool, device=prediction.device)
     if power_weight and spectral_rows.any():
@@ -182,16 +197,27 @@ def field_loss(model, batch, power_weight, auxiliary_weight, power_floor, box, *
         if primary_spectra:
             band = primary_band(k, prediction.shape[-1], box)
             predicted, truth = predicted[..., band], truth[..., band]
-        loss = loss + power_weight * power_loss(predicted, truth, floor=power_floor)
+        if power_denominator is None:
+            spectral_loss = power_loss(predicted, truth, floor=power_floor)
+        else:
+            denominator = power_denominator[band] if primary_spectra else power_denominator
+            spectral_loss = weighted_rows(relative_errors(predicted, truth, denominator),
+                                          weights[spectral_rows])
+        loss = loss + power_weight * spectral_loss
     if component_indices and spectral_rows.any():
         predicted = decompose_power(batch["density"][spectral_rows], prediction[spectral_rows],
                                     batch["amplitude"][spectral_rows], box)
         truth = decompose_power(batch["density"][spectral_rows], batch["truth"][spectral_rows],
                                 batch["amplitude"][spectral_rows], box)
         band = primary_band(predicted["k"], prediction.shape[-1], box)
-        loss = loss + component_weight * component_loss(
-            predicted["terms"][..., band], truth["terms"][..., band],
-            component_scale[..., band], component_indices)
+        if "sample_weight" in batch:
+            scaled = (torch.asinh(predicted["terms"][..., band]/component_scale[..., band])
+                      - torch.asinh(truth["terms"][..., band]/component_scale[..., band])).square()
+            penalty = weighted_rows(scaled[:, component_indices, :], weights[spectral_rows])
+        else:
+            penalty = component_loss(predicted["terms"][..., band], truth["terms"][..., band],
+                                     component_scale[..., band], component_indices)
+        loss = loss + component_weight * penalty
     if not torch.isfinite(loss):
         raise FloatingPointError("Nonfinite training/validation loss")
     return loss
@@ -248,6 +274,45 @@ def field_diagnostics(model, arrays, box, power_floor, component_scale, batch_si
     return result
 
 
+@torch.no_grad()
+def stage_relative_score(model: nn.Module, arrays: dict[str, torch.Tensor], box: float,
+                         floor: torch.Tensor, batch_size: int) -> torch.Tensor:
+    """Score all snapshots with the exact stage-relative spectral objective.
+
+    Parameters
+    ----------
+    model : torch.nn.Module
+        Field network to score without gradients.
+    arrays : dict of torch.Tensor
+        Full split arrays, including globally normalized ``sample_weight``.
+    box : float
+        Comoving box length in Mpc.
+    floor : torch.Tensor
+        Fixed training-only denominator floors for every shell.
+    batch_size : int
+        Maximum snapshots per forward pass.
+
+    Returns
+    -------
+    torch.Tensor
+        Stage-weighted mean absolute regularized fractional power error.
+    """
+    if batch_size < 1 or not arrays["primary"].bool().all():
+        raise ValueError("Stage scoring requires all snapshots and a positive batch size")
+    total = torch.zeros((), dtype=torch.float64)
+    count = len(arrays["truth"])
+    for start in range(0, count, batch_size):
+        batch = {key: value[start:start+batch_size] for key, value in arrays.items()}
+        prediction, _ = model(batch["inputs"], batch["base"])
+        k, predicted, _ = shell_power(batch["brightness"].double()*prediction.double(), box)
+        _, truth, _ = shell_power(batch["brightness"].double()*batch["truth"].double(), box)
+        band = primary_band(k, prediction.shape[-1], box)
+        score = weighted_rows(relative_errors(predicted[..., band], truth[..., band], floor[band]),
+                              batch["sample_weight"])
+        total += score*len(prediction)
+    return total/count
+
+
 def train_loop(model, train, validation, loss_function, args, seed, validation_function=None,
                diagnostic_function=None):
     """Optimize batches and retain the best validation-selected parameters."""
@@ -256,7 +321,7 @@ def train_loop(model, train, validation, loss_function, args, seed, validation_f
     best, best_state, stale = float("inf"), None, 0
     history = []
     diagnostic_scope = (f"{getattr(args, 'snapshot_scope', 'last-three')} snapshots and primary k bins; "
-                        "unweighted losses; equal snapshot weighting")
+                        "raw diagnostics retain equal snapshot weighting")
     for epoch in range(args.epochs):
         model.train()
         indices = torch.randperm(len(next(iter(train.values()))), generator=generator)
@@ -286,6 +351,8 @@ def train_loop(model, train, validation, loss_function, args, seed, validation_f
             if not np.isfinite(val_loss):
                 raise FloatingPointError("Nonfinite validation score")
         history.append({"epoch": epoch + 1, "train_loss": training_loss / count, "validation_loss": val_loss})
+        if getattr(args, "training_objective", "legacy") == "stage-relative":
+            history[-1]["selection_score"] = val_loss
         if val_loss < best:
             best, best_state, stale = val_loss, copy.deepcopy(model.state_dict()), 0
             best_epoch = epoch + 1
@@ -360,6 +427,9 @@ def fit_field(cases, arm, args, seed):
     auxiliary = arm in ("thermo", "spatial", "p21") or arm.startswith("thermo_")
     wide = arm in ("spatial", "p21")
     snapshot_scope = getattr(args, "snapshot_scope", "last-three")
+    stage_relative = getattr(args, "training_objective", "legacy") == "stage-relative"
+    if stage_relative and snapshot_scope != "all":
+        raise ValueError("stage-relative requires snapshot-scope all")
     train, names = field_arrays([c for c in cases if c["metadata"]["split"] == "train"],
                                 history_steps, auxiliary, snapshot_scope)
     validation, validation_names = field_arrays(
@@ -370,10 +440,22 @@ def fit_field(cases, arm, args, seed):
     mean, scale = normalization(train["inputs"])
     train["inputs"] = (train["inputs"] - mean) / scale
     validation["inputs"] = (validation["inputs"] - mean) / scale
-    model = FieldNet(len(names), width=args.width, wide=wide, auxiliary=auxiliary)
+    model = FieldNet(len(names), width=args.width, wide=wide, auxiliary=auxiliary,
+                     output_transform=getattr(args, "output_transform", "legacy"),
+                     prior_epsilon=getattr(args, "prior_epsilon", 1e-4))
     box = cases[0]["metadata"]["box_len_cMpc"]
     weight = args.power_weight if arm in ("p21", "thermo_p21", "thermo_components_p21") else 0.
     indices = COMPONENT_GROUPS.get(arm, ())
+    stage_counts = {}
+    power_denominator = None
+    if stage_relative:
+        for split, arrays in (("train", train), ("validation", validation)):
+            arrays["sample_weight"], stage_counts[split] = stage_weights(
+                arrays["teacher_mean"])
+        with torch.no_grad():
+            _, training_power, _ = shell_power(train["brightness"]*train["truth"], box)
+            power_denominator = denominator_floor(training_power, train["sample_weight"],
+                getattr(args, "relative_power_floor", 1e-4), args.power_floor)
     component_scale = training_component_scale(train, box, args.power_floor) if indices else None
     primary_spectra = arm.startswith("thermo_") or snapshot_scope == "all"
     diagnostic_function = None
@@ -382,10 +464,16 @@ def fit_field(cases, arm, args, seed):
                             else training_component_scale(train, box, args.power_floor))
 
         def diagnostic_function(network, batch):
-            return field_diagnostics(network, batch, box, args.power_floor, diagnostic_scale, args.batch_size)
+            metrics = field_diagnostics(network, batch, box, args.power_floor, diagnostic_scale, args.batch_size)
+            if stage_relative:
+                metrics["selection_score"] = float(stage_relative_score(network, batch, box,
+                                                                        power_denominator, args.batch_size))
+            return metrics
 
     def validation_score(network, batch):
         # All field arms select epochs on the SAME observable and physical bins.
+        if stage_relative:
+            return stage_relative_score(network, batch, box, power_denominator, args.batch_size)
         selected = {key: value[batch["primary"].bool()] for key, value in batch.items()}
         predicted, _ = network(selected["inputs"], selected["base"])
         k, pp, _ = shell_power(selected["brightness"] * predicted, box)
@@ -397,18 +485,28 @@ def fit_field(cases, arm, args, seed):
                         lambda m, b: field_loss(m, b, weight, args.auxiliary_weight, args.power_floor, box,
                                                primary_spectra=primary_spectra, component_indices=indices,
                                                component_scale=component_scale,
-                                               component_weight=args.component_weight),
+                                               component_weight=args.component_weight, power_denominator=power_denominator),
                         args, seed, validation_function=validation_score, diagnostic_function=diagnostic_function)
+    result.update(selection_metric=SELECTION_METRIC if stage_relative else "validation log-P21 MSE",
+                  stage_counts=stage_counts, stage_edges=list(STAGE_EDGES))
     checkpoint = {"kind": "field", "state_dict": model.state_dict(), "input_mean": mean, "input_scale": scale,
                   "feature_names": names, "history_steps": history_steps, "width": args.width,
                   "wide": wide, "auxiliary": auxiliary, "box_len_cMpc": box,
                   "grid_dimension": cases[0]["xhi_es"].shape[-1],
                   "power_weight": weight, "auxiliary_weight": args.auxiliary_weight, "power_floor": args.power_floor,
                   "primary_spectra": primary_spectra, "snapshot_scope": snapshot_scope,
+                  "training_objective": getattr(args, "training_objective", "legacy"),
+                  "output_transform": getattr(args, "output_transform", "legacy"),
+                  "prior_epsilon": getattr(args, "prior_epsilon", 1e-4),
+                  "power_denominator_floor": power_denominator,
+                  "relative_power_floor": getattr(args, "relative_power_floor", 1e-4),
+                  "selection_metric": result["selection_metric"],
+                  "stage_edges": list(STAGE_EDGES), "stage_counts": stage_counts,
                   "component_indices": list(indices),
                   "component_names": list(COMPONENT_NAMES), "component_scale": component_scale,
                   "component_weight": args.component_weight if indices else 0.,
-                  "component_scale_scope": f"RMS over {snapshot_scope} training snapshots only; fixed at inference",
+                  "component_scale_scope": f"RMS over {snapshot_scope} training snapshots only; fixed at inference"
+                                           + ("; stage weighted" if stage_relative else ""),
                   "component_units": "weighted signed contributions to P21, mK^2 cMpc^3"}
     return checkpoint, result
 
@@ -438,7 +536,9 @@ def predict_checkpoint(checkpoint, case):
             raise FloatingPointError("Nonfinite direct P21 prediction")
         return {"P21": power.reshape(checkpoint["output_shape"])}
     model = FieldNet(len(checkpoint["feature_names"]), width=checkpoint["width"],
-                     wide=checkpoint["wide"], auxiliary=checkpoint["auxiliary"])
+                     wide=checkpoint["wide"], auxiliary=checkpoint["auxiliary"],
+                     output_transform=checkpoint.get("output_transform", "legacy"),
+                     prior_epsilon=checkpoint.get("prior_epsilon", 1e-4))
     if (case["xhi_es"].shape[-1] != checkpoint["grid_dimension"]
             or case["metadata"]["box_len_cMpc"] != checkpoint["box_len_cMpc"]):
         raise ValueError("Field checkpoint requires its training grid and box")
@@ -496,6 +596,13 @@ def evaluate(checkpoint, cases, output, snapshot_scope="last-three"):
                    "k_cMpc_inv": k.tolist(), "primary_k": selected.tolist(), "P_teacher": truth.tolist(),
                    "P_predicted": power.tolist(), "fractional_power_error": errors,
                    "absolute_power_error": np.abs(power-truth).tolist()}
+            if checkpoint is not None and checkpoint.get("power_denominator_floor") is not None:
+                denominator = np.asarray(checkpoint["power_denominator_floor"], dtype=np.float64)
+                if denominator.shape != truth.shape:
+                    raise ValueError("Checkpoint spectral floor differs from evaluation shells")
+                row["regularized_fractional_power_error"] = (
+                    np.abs(power-truth)/np.maximum(truth, denominator)).tolist()
+                row["power_denominator_floor"] = denominator.tolist()
             if "xhi" in prediction:
                 row["field"] = field_metrics(1 - prediction["xhi"][j], 1 - case["xhi_rt"][j], density_at(case, j))
                 row["r21"] = spectra["r_nn"]
@@ -526,6 +633,16 @@ def evaluate(checkpoint, cases, output, snapshot_scope="last-three"):
         rows = [r for r in all_rows if r["primary_snapshot"]]
         summary[split] = summarize_records(rows)
         summary[split]["snapshot_scope"] = snapshot_scope
+        if rows and "regularized_fractional_power_error" in rows[0]:
+            stage_means = []
+            for low, high in itertools.pairwise(STAGE_EDGES):
+                stage = [r for r in rows if low <= r["teacher_xHI_mean"]
+                         and (r["teacher_xHI_mean"] < high or high == 1.)]
+                if stage:
+                    stage_means.append(float(np.mean([v for r in stage for v, use in
+                        zip(r["regularized_fractional_power_error"], r["primary_k"], strict=True) if use])))
+            summary[split]["selection_score"] = float(np.mean(stage_means))
+            summary[split]["selection_metric"] = SELECTION_METRIC
         summary[split]["by_snapshot"] = [
             {"snapshot": index, "redshift": next(r["redshift"] for r in all_rows if r["snapshot"] == index),
              "included_in_primary_summary": next(r["primary_snapshot"] for r in all_rows if r["snapshot"] == index),
@@ -549,6 +666,9 @@ def summarize_records(rows):
             "absolute_power_error": distribution(v for r in rows
                 for v, use in zip(r["absolute_power_error"], r["primary_k"], strict=True) if use),
             "absolute_power_error_units": "mK^2 cMpc^3",
+            "regularized_power_error": distribution(v for r in rows
+                if "regularized_fractional_power_error" in r
+                for v, use in zip(r["regularized_fractional_power_error"], r["primary_k"], strict=True) if use),
             "field_MAE": distribution(r["field"]["MAE"] for r in rows if "field" in r),
             "field_correlation": distribution(r["field"]["field_correlation"] for r in rows if "field" in r),
             "r21": distribution(v for r in rows if "r21" in r
@@ -601,6 +721,12 @@ def parser():
                           ("train-cases", 32), ("validation-cases", 8), ("test-cases", 8),
                           ("external-cases", 4), ("history-steps", 3), ("width", 16)):
         p.add_argument(f"--{name}", type=int, default=default)
+    p.add_argument("--training-objective", choices=("legacy", "stage-relative"), default="legacy",
+                   help="Stage-relative balances teacher stages and uses regularized percentage-power scoring")
+    p.add_argument("--output-transform", choices=("legacy", "logit"), default="legacy")
+    p.add_argument("--prior-epsilon", type=float, default=1e-4)
+    p.add_argument("--relative-power-floor", type=float, default=1e-4,
+                   help="Fraction of training-only per-k RMS power used as a denominator floor")
     p.add_argument("--learning-rate", type=float, default=1e-3)
     p.add_argument("--power-weight", type=float, default=.01)
     p.add_argument("--auxiliary-weight", type=float, default=.01)
@@ -627,6 +753,12 @@ def main(argv=None):
     for name in ("learning_rate", "power_weight", "auxiliary_weight", "component_weight", "power_floor"):
         if not np.isfinite(getattr(args, name)) or getattr(args, name) <= 0:
             raise ValueError(f"{name} must be finite and positive")
+    if not np.isfinite(args.prior_epsilon) or not np.finfo(np.float32).eps <= args.prior_epsilon < .5:
+        raise ValueError("prior-epsilon must be at least float32 epsilon and below one half")
+    if not np.isfinite(args.relative_power_floor) or args.relative_power_floor <= 0:
+        raise ValueError("relative-power-floor must be finite and positive")
+    if args.training_objective == "stage-relative" and (args.snapshot_scope != "all" or "direct_p21" in args.arms):
+        raise ValueError("stage-relative requires all snapshots and field-model arms")
     if args.output.exists():
         raise FileExistsError("Use a fresh output directory")
     torch.set_num_threads(args.threads)
@@ -641,10 +773,15 @@ def main(argv=None):
     write_json(args.output / "configuration.json", configuration | {"cases": inventory,
                "manifest_sha256": manifest["source_manifest_sha256"], "torch": str(torch.__version__),
                "convergence_certified": False, "scope": "exploratory existing-label model ablations",
-               "selection": "field arms: common primary-bin validation log-P21 MSE; direct arm: validation standardized log-P21 MSE",
+               "selection": (SELECTION_METRIC if args.training_objective == "stage-relative" else
+                             "field arms: common primary-bin validation log-P21 MSE; direct arm: validation standardized log-P21 MSE"),
                "primary_metrics": f"{args.snapshot_scope} snapshots, 0.1 <= k <= 0.6 kNyquist; no power floor in valid relative errors",
-               "snapshot_weighting": "equal per snapshot; field and chemistry objectives always use all snapshots",
-               "loss_power_floor_units": "mK^2 cMpc^3; used only in log-loss and direct-output transform",
+               "snapshot_weighting": ("equal aggregate weight per occupied teacher xHI stage, independently per split"
+                                      if args.training_objective == "stage-relative" else
+                                      "equal per snapshot; field and chemistry objectives always use all snapshots"),
+               "stage_edges": list(STAGE_EDGES),
+               "relative_power_floor_definition": "fraction times stage-weighted training-only per-k RMS P; lower bound power_floor",
+               "loss_power_floor_units": "mK^2 cMpc^3; additive log-loss floor or absolute minimum relative-error denominator",
                "direct_p21_scope": "six physical controls to P21; no ionization field output, no IC-seed input",
                "chemistry_supervision": "log10 gas TK plus helium simplex; never inference inputs",
                "component_names": list(COMPONENT_NAMES),
