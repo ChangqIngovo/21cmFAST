@@ -35,11 +35,20 @@ export CC=gcc CXX=g++ MPLBACKEND=Agg
 pc_python=$(cat "$run/python_path.txt")
 cd "$run/source"
 "$pc_python" -m research.pc_matched.prepare_run verify --run "$run" --cpus "$PBS_NCPUS"
+native_rebuild=$("$pc_python" -c 'import json,sys; print(int(json.load(open(sys.argv[1]))["native_rebuild"]))' "$run/run_manifest.json")
+if [[ $native_rebuild == 1 ]]; then
+    printf 'Building frozen native21cmFAST in the isolated run directory.\n'
+    "$pc_python" -m research.pc_matched.native_build --run "$run"
+    export PYTHONPATH="$run/native_build/source/src"
+fi
+"$pc_python" -m research.pc_matched.prepare_run register-native --run "$run" --cpus "$PBS_NCPUS"
 arguments=$("$pc_python" -m research.pc_matched.prepare_run arguments --run "$run")
 mapfile -t workflow_arguments <<< "$arguments"
 printf 'Job: %s\nRun: %s\nStart: %s\n' "$PBS_JOBID" "$run" "$(date)"
 export OMP_NUM_THREADS="$PBS_NCPUS" OMP_PROC_BIND=spread OMP_PLACES=cores
 "$pc_python" -m research.pc_matched.workflow run --root "$run/results" "${workflow_arguments[@]}"
+"$pc_python" -m research.pc_matched.prepare_run verify-native --run "$run" --cpus "$PBS_NCPUS"
+unset PYTHONPATH
 "$pc_python" -m research.pc_matched.prepare_run verify --run "$run" --cpus "$PBS_NCPUS"
 test -f "$run/results/COMPLETED"
 printf 'Calculations and independent audits completed; inspect convergence separately.\n' > "$run/COMPLETED"

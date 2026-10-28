@@ -1,6 +1,8 @@
 """Test frozen runtime selection and preparation without native simulations."""
 
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
@@ -86,6 +88,29 @@ def test_native_sources_must_match_archive(tmp_path: Path) -> None:
         prepare_run.native_sources(source, native)
 
 
+def test_base_fingerprint_records_mismatch_but_scientific_check_rejects_it(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Relax only source equality during dependency selection, retaining the guard."""
+    source = tmp_path / "source"
+    archived = source / "src/py21cmfast"
+    installed = tmp_path / "installed/py21cmfast"
+    archived.mkdir(parents=True)
+    installed.mkdir(parents=True)
+    (archived / "__init__.py").write_text("new source\n")
+    (installed / "__init__.py").write_text("old source\n")
+    (installed / "c_21cmfast.so").write_bytes(b"mock binary")
+    package = SimpleNamespace(__version__="1", __file__=str(installed / "__init__.py"))
+    monkeypatch.setattr(prepare_run.importlib, "import_module", lambda _: package)
+    monkeypatch.setattr(prepare_run.shutil, "which", lambda _: sys.executable)
+    monkeypatch.setattr(prepare_run.subprocess, "check_output", lambda *_, **__: "12.2\n")
+    python = str(Path(sys.executable).absolute())
+    fingerprint = prepare_run.runtime_fingerprint(source, python, require_native_match=False)
+    assert fingerprint["native_source_matches"] is False
+    assert fingerprint["native_source_mismatches"] == ["__init__.py"]
+    assert "c_21cmfast.so" in fingerprint["native_footprint"]
+    with pytest.raises(ValueError, match="Installed native source differs"):
+        prepare_run.runtime_fingerprint(source, python)
+
+
 def test_prepared_source_changes_are_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     """Preparation pins scripts, scientific source, runtime and configuration."""
     run = tmp_path / "run"
@@ -98,7 +123,7 @@ def test_prepared_source_changes_are_rejected(tmp_path: Path, monkeypatch: pytes
         "submit.pbs": "#PBS\n",
     }.items():
         (run / name).write_text(value)
-    monkeypatch.setattr(prepare_run, "runtime_fingerprint", lambda *_: {"test": True})
+    monkeypatch.setattr(prepare_run, "runtime_fingerprint", lambda *_, **__: {"test": True, "native_source_matches": True})
     prepare_run.prepare(run, {})
     prepare_run.verify(run, cpus=16)
     with pytest.raises(ValueError, match="CPU"):
@@ -115,8 +140,69 @@ def test_prepared_configuration_changes_are_rejected(tmp_path: Path, monkeypatch
     (run / "source/one.py").write_text("original\n")
     for name in ("python_path.txt", "commit.txt", "runtime.env", "submit.pbs"):
         (run / name).write_text("frozen\n")
-    monkeypatch.setattr(prepare_run, "runtime_fingerprint", lambda *_: {"test": True})
+    monkeypatch.setattr(prepare_run, "runtime_fingerprint", lambda *_, **__: {"test": True, "native_source_matches": True})
     prepare_run.prepare(run, {})
     (run / "experiment_config.json").write_text("{}\n")
     with pytest.raises(ValueError, match="experiment_config"):
         prepare_run.verify(run, cpus=16)
+
+
+def _prepared_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch, *, matches: bool) -> tuple[Path, dict]:
+    run = tmp_path / "run"
+    (run / "source").mkdir(parents=True)
+    (run / "source/one.py").write_text("original\n")
+    for name in ("python_path.txt", "commit.txt", "runtime.env", "submit.pbs"):
+        (run / name).write_text("frozen\n")
+    fingerprint = {"native_source_matches": matches, "native_package": "/existing/py21cmfast"}
+    monkeypatch.setattr(prepare_run, "runtime_fingerprint", lambda *_, **__: fingerprint.copy())
+    prepare_run.prepare(run, {})
+    return run, fingerprint
+
+
+def test_source_mismatch_schedules_build_but_pins_base_runtime(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A stale source may supply dependencies but must not supply scientific fields."""
+    run, fingerprint = _prepared_run(tmp_path, monkeypatch, matches=False)
+    manifest = prepare_run.verify(run)
+    assert manifest["native_rebuild"] is True
+    fingerprint["native_package"] = "/changed/runtime"
+    with pytest.raises(ValueError, match="runtime or compiler changed"):
+        prepare_run.verify(run)
+
+
+def test_scientific_runtime_registration_is_strict_and_resumable(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Pin matching rebuilt imports once and reject subsequent extension changes."""
+    run, fingerprint = _prepared_run(tmp_path, monkeypatch, matches=False)
+    fingerprint.update(native_source_matches=True, native_package=str(run / "native_build/source/src/py21cmfast"))
+    strict = []
+
+    def capture(*_args: object, require_native_match: bool = True) -> dict:
+        strict.append(require_native_match)
+        return fingerprint.copy()
+
+    monkeypatch.setattr(prepare_run, "runtime_fingerprint", capture)
+    prepare_run.register_scientific_runtime(run)
+    recorded = (run / "native_runtime/manifest.json").stat().st_mtime_ns
+    prepare_run.register_scientific_runtime(run)
+    assert (run / "native_runtime/manifest.json").stat().st_mtime_ns == recorded
+    prepare_run.verify_scientific_runtime(run)
+    assert strict
+    assert all(strict)
+    fingerprint["extension_sha256"] = "changed"
+    with pytest.raises(ValueError, match="Scientific runtime changed"):
+        prepare_run.verify_scientific_runtime(run)
+
+
+def test_rebuild_cannot_register_base_native_package(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """A scientific process must actually import from the isolated build directory."""
+    run, fingerprint = _prepared_run(tmp_path, monkeypatch, matches=False)
+    fingerprint["native_source_matches"] = True
+    with pytest.raises(ValueError, match="isolated native build"):
+        prepare_run.register_scientific_runtime(run)
+
+
+def test_unregistered_existing_results_are_rejected(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    """Existing fields cannot acquire an unrelated runtime identity after the fact."""
+    run, _ = _prepared_run(tmp_path, monkeypatch, matches=True)
+    (run / "results").mkdir()
+    with pytest.raises(ValueError, match="Existing results"):
+        prepare_run.register_scientific_runtime(run)

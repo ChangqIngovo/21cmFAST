@@ -87,3 +87,42 @@ def test_shell_bootstraps_before_loading_modern_preparation(tmp_path: Path) -> N
     assert result.returncode == 73, result.stdout + result.stderr
     assert "SELECTED_NATIVE_PREPARATION_REACHED" in result.stdout
     assert "SyntaxError" not in result.stderr
+
+
+@pytest.mark.parametrize("rebuild", [False, True])
+def test_shell_requires_build_dependencies_only_for_rebuild(tmp_path: Path, rebuild: bool) -> None:
+    """Missing build tools stop submission only when the frozen native code needs compilation."""
+    repo = tmp_path / "repo"
+    scripts = repo / "research/pc_matched"
+    scripts.mkdir(parents=True)
+    for name in ("gadi_prepare.sh", "runtime_select.py"):
+        shutil.copyfile(SOURCE / name, scripts / name)
+    for name in ("workflow.py", "gadi_run.pbs"):
+        (scripts / name).touch()
+    (scripts / "prepare_run.py").write_text(
+        "import json, pathlib, sys\n"
+        "run = pathlib.Path(sys.argv[-1])\n"
+        f"(run / 'run_manifest.json').write_text(json.dumps({{'native_rebuild': {rebuild!r}}}))\n"
+        "(run / 'experiment_config.json').write_text(json.dumps({'threads': 2}))\n"
+    )
+    (repo / "cffi.py").write_text("raise ModuleNotFoundError('Build dependency intentionally unavailable')\n")
+    for args in (["init", "-q"], ["add", "."],
+                 ["-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                  "commit", "-qm", "Build dependency fixture"]):
+        subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    submitted = tmp_path / "submitted"
+    qsub = binaries / "qsub"
+    qsub.write_text(f"#!/bin/bash\ntouch {shlex.quote(str(submitted))}\necho test.job\n")
+    qsub.chmod(0o700)
+    environment = {key: value for key, value in os.environ.items() if not key.startswith("PC_")}
+    environment.update(PATH=str(binaries) + os.pathsep + os.environ["PATH"],
+                       PC_PYTHON=sys.executable, PC_MATCHED_RUN_ROOT=str(tmp_path / "runs"))
+    result = subprocess.run(["bash", str(scripts / "gadi_prepare.sh"), "--submit"], cwd=repo,
+                            env=environment, capture_output=True, text=True, check=False)
+    assert result.returncode == (2 if rebuild else 0), result.stdout + result.stderr
+    assert submitted.exists() is not rebuild
+    if rebuild:
+        assert "required build dependencies cffi and setuptools" in result.stdout + result.stderr
+        assert "No job was submitted" in result.stdout + result.stderr

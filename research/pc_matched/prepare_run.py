@@ -17,6 +17,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from collections.abc import Mapping
 from pathlib import Path
 
@@ -143,7 +144,7 @@ def native_sources(archived: Path, installed: Path) -> dict[str, str]:
     return expected
 
 
-def runtime_fingerprint(source: Path, python: str) -> dict:
+def runtime_fingerprint(source: Path, python: str, *, require_native_match: bool = True) -> dict:
     """Capture imported package, compiler and executable identities.
 
     Parameters
@@ -152,6 +153,9 @@ def runtime_fingerprint(source: Path, python: str) -> dict:
         Frozen repository archive.
     python : str
         Selected absolute interpreter path.
+    require_native_match : bool, optional
+        Require imported native sources to match the archive. False is only
+        for recording and checking the dependency environment before a build.
 
     Returns
     -------
@@ -165,8 +169,13 @@ def runtime_fingerprint(source: Path, python: str) -> dict:
         module = importlib.import_module(name)
         versions[name] = str(module.__version__)
     native = Path(importlib.import_module("py21cmfast").__file__).resolve().parent
-    shared = native_sources(source / "src/py21cmfast", native)
+    shared = _footprint(source / "src/py21cmfast")
+    if not shared:
+        raise ValueError("No archived native sources found")
     footprint = _footprint(native)
+    mismatches = [name for name, sha in shared.items() if footprint.get(name) != sha]
+    if require_native_match and mismatches:
+        raise ValueError("Installed native source differs from archived source: " + mismatches[0])
     if not any(name.endswith((".so", ".pyd", ".dylib")) for name in footprint):
         raise ValueError("The selected runtime has no compiled native extension")
     compiler = shutil.which("g++")
@@ -182,6 +191,8 @@ def runtime_fingerprint(source: Path, python: str) -> dict:
         "compiler_version": subprocess.check_output(
             [compiler, "-dumpfullversion", "-dumpversion"], text=True).strip(),
         "native_package": str(native),
+        "native_source_matches": not mismatches,
+        "native_source_mismatches": mismatches,
         "native_shared_sources": shared,
         "native_footprint": footprint,
     }
@@ -207,10 +218,10 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict:
         raise FileExistsError("Use a fresh run directory")
     config = configuration(environment)
     python = (run / "python_path.txt").read_text().strip()
-    fingerprint = runtime_fingerprint(run / "source", python)
+    fingerprint = runtime_fingerprint(run / "source", python, require_native_match=False)
     _write_json(run / "experiment_config.json", config)
     manifest = {
-        "schema": 1,
+        "schema": 2,
         "experiment": "matched-photon-conservation",
         "run": str(run),
         "commit": (run / "commit.txt").read_text().strip(),
@@ -218,6 +229,7 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict:
         "configuration": config,
         "source_sha256": _footprint(run / "source"),
         "runtime": fingerprint,
+        "native_rebuild": not fingerprint["native_source_matches"],
         "scope": "Direct finite-volume discrete-ordinate radiative transfer with native effective H+He counts and a single H-opacity absorber, sharing prescribed native sources and frozen gas with matched ES; monochromatic, no recombination, heating or feedback; native ES is contextual",
         "completion_is_convergence": False,
     }
@@ -229,8 +241,28 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict:
     return manifest
 
 
+def _verify_prepared(run: Path, cpus: int | None = None) -> dict:
+    run = run.resolve()
+    if not (run / "PREPARED").is_file():
+        raise ValueError("Run has not been prepared")
+    for line in (run / "prepared.sha256").read_text().splitlines():
+        sha, name = line.split("  ", 1)
+        if Path(name).name != name or not (run / name).is_file() or _digest(run / name) != sha:
+            raise ValueError("Prepared file changed: " + name)
+    manifest = json.loads((run / "run_manifest.json").read_text())
+    if manifest.get("schema") != 2 or manifest.get("experiment") != "matched-photon-conservation":
+        raise ValueError("Unexpected preparation manifest")
+    if manifest["run"] != str(run):
+        raise ValueError("Prepared run moved")
+    if cpus is not None and cpus != manifest["configuration"]["threads"]:
+        raise ValueError("CPU allocation differs from prepared configuration")
+    if _footprint(run / "source") != manifest["source_sha256"]:
+        raise ValueError("Frozen source archive changed")
+    return manifest
+
+
 def verify(run: Path, *, cpus: int | None = None) -> dict:
-    """Reject changed prepared inputs or runtime before and after execution.
+    """Reject changed prepared inputs or base dependency environment.
 
     Parameters
     ----------
@@ -245,24 +277,90 @@ def verify(run: Path, *, cpus: int | None = None) -> dict:
         Verified preparation manifest.
     """
     run = run.resolve()
-    if not (run / "PREPARED").is_file():
-        raise ValueError("Run has not been prepared")
-    for line in (run / "prepared.sha256").read_text().splitlines():
-        sha, name = line.split("  ", 1)
-        if Path(name).name != name or not (run / name).is_file() or _digest(run / name) != sha:
-            raise ValueError("Prepared file changed: " + name)
-    manifest = json.loads((run / "run_manifest.json").read_text())
-    if manifest.get("schema") != 1 or manifest.get("experiment") != "matched-photon-conservation":
-        raise ValueError("Unexpected preparation manifest")
-    if manifest["run"] != str(run):
-        raise ValueError("Prepared run moved")
-    if cpus is not None and cpus != manifest["configuration"]["threads"]:
-        raise ValueError("CPU allocation differs from prepared configuration")
-    if _footprint(run / "source") != manifest["source_sha256"]:
-        raise ValueError("Frozen source archive changed")
-    if runtime_fingerprint(run / "source", manifest["python"]) != manifest["runtime"]:
+    manifest = _verify_prepared(run, cpus)
+    if runtime_fingerprint(run / "source", manifest["python"], require_native_match=False) != manifest["runtime"]:
         raise ValueError("Native runtime or compiler changed")
     return manifest
+
+
+def _scientific_fingerprint(run: Path, manifest: dict) -> dict:
+    fingerprint = runtime_fingerprint(run / "source", manifest["python"])
+    if manifest["native_rebuild"]:
+        expected = run / "native_build/source/src/py21cmfast"
+        if fingerprint["native_package"] != str(expected):
+            raise ValueError("Scientific imports must use the isolated native build")
+    elif fingerprint != manifest["runtime"]:
+        raise ValueError("Scientific runtime changed from the prepared base runtime")
+    return fingerprint
+
+
+def register_scientific_runtime(run: Path, *, cpus: int | None = None) -> dict:
+    """Atomically pin the exact native implementation used for scientific fields.
+
+    Parameters
+    ----------
+    run : pathlib.Path
+        Prepared run, with any required isolated native build completed.
+    cpus : int, optional
+        Allocated CPU count to compare with the frozen configuration.
+
+    Returns
+    -------
+    dict
+        Immutable scientific runtime identity; reused strictly on restart.
+    """
+    run = run.resolve()
+    destination = run / "native_runtime"
+    if destination.exists():
+        return verify_scientific_runtime(run, cpus=cpus)
+    if (run / "results").exists():
+        raise ValueError("Existing results have no registered scientific runtime")
+    manifest = _verify_prepared(run, cpus)
+    fingerprint = _scientific_fingerprint(run, manifest)
+    record = {
+        "schema": 1,
+        "run": str(run),
+        "prepared_manifest_sha256": _digest(run / "run_manifest.json"),
+        "runtime": fingerprint,
+    }
+    with tempfile.TemporaryDirectory(prefix=".native_runtime_", dir=run) as temporary:
+        staging = Path(temporary)
+        _write_json(staging / "manifest.json", record)
+        (staging / "manifest.sha256").write_text(_digest(staging / "manifest.json") + "\n")
+        staging.replace(destination)
+    return record
+
+
+def verify_scientific_runtime(run: Path, *, cpus: int | None = None) -> dict:
+    """Check scientific source and extension hashes against the registered run.
+
+    Parameters
+    ----------
+    run : pathlib.Path
+        Prepared run with a registered scientific runtime.
+    cpus : int, optional
+        Allocated CPU count to compare with the frozen configuration.
+
+    Returns
+    -------
+    dict
+        Verified scientific runtime identity.
+    """
+    run = run.resolve()
+    manifest = _verify_prepared(run, cpus)
+    directory = run / "native_runtime"
+    path = directory / "manifest.json"
+    if not path.is_file() or not (directory / "manifest.sha256").is_file():
+        raise ValueError("Scientific runtime registration is missing or incomplete")
+    if _digest(path) != (directory / "manifest.sha256").read_text().strip():
+        raise ValueError("Scientific runtime manifest changed")
+    record = json.loads(path.read_text())
+    if (record.get("schema") != 1 or record.get("run") != str(run)
+            or record.get("prepared_manifest_sha256") != _digest(run / "run_manifest.json")):
+        raise ValueError("Scientific runtime registration does not match prepared run")
+    if _scientific_fingerprint(run, manifest) != record["runtime"]:
+        raise ValueError("Scientific runtime changed")
+    return record
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -280,10 +378,10 @@ def main(argv: list[str] | None = None) -> None:
     selection.add_argument("--parent", type=Path)
     selection.add_argument("--python", type=Path)
     selection.add_argument("--runtime-env", type=Path)
-    for mode in ("prepare", "verify", "arguments"):
+    for mode in ("prepare", "verify", "register-native", "verify-native", "arguments"):
         command = modes.add_parser(mode)
         command.add_argument("--run", type=Path, required=True)
-        if mode == "verify":
+        if mode in ("verify", "register-native", "verify-native"):
             command.add_argument("--cpus", type=int)
     args = parser.parse_args(argv)
     if args.command == "select":
@@ -291,9 +389,14 @@ def main(argv: list[str] | None = None) -> None:
         sys.stdout.write("\n".join(result[name] for name in ("python", "parent", "runtime_env")) + "\n")
     elif args.command == "prepare":
         result = prepare(args.run, os.environ)
-        sys.stdout.write(json.dumps({"prepared": result["run"], "configuration": result["configuration"]}) + "\n")
+        sys.stdout.write(json.dumps({"prepared": result["run"], "configuration": result["configuration"],
+                                   "native_rebuild_on_compute_node": result["native_rebuild"]}) + "\n")
     elif args.command == "verify":
         verify(args.run, cpus=args.cpus)
+    elif args.command == "register-native":
+        register_scientific_runtime(args.run, cpus=args.cpus)
+    elif args.command == "verify-native":
+        verify_scientific_runtime(args.run, cpus=args.cpus)
     else:
         config = json.loads((args.run / "experiment_config.json").read_text())
         for key, value in config.items():

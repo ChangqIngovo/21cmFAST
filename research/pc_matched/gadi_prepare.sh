@@ -10,6 +10,7 @@ while (( $# )); do
         --help)
             echo 'Usage: bash research/pc_matched/gadi_prepare.sh [--parent RUN] [--submit]'
             echo 'Uses an existing native21cmFAST runtime; no C2-Ray or environment installation.'
+            echo 'Outdated native sources are rebuilt from the frozen archive inside the PBS job.'
             echo 'PC_PYTHON/PC_RUNTIME_ENV override interpreter/modules; explicit PC_PYTHON can run without modules.'
             echo 'Direct finite-volume photon-number RT with native effective atom counts and a single H-opacity absorber.'
             echo 'Defaults: 8^3 cells, 50 cMpc, seeds111/222, z20->4, 40 source intervals, 18 eV photons.'
@@ -58,6 +59,22 @@ fi
 PC_MODULES=()
 source "$run/runtime.env"
 if (( ${#PC_MODULES[@]} )); then
+    # Pin missing build dependencies using the versions already used by this repo.
+    # Existing module versions and all other runtime.env exports are preserved.
+    for pc_build_module in gcc/12.2.0 fftw3/3.3.10-nci1 gsl/2.7.1; do
+        pc_module_present=false
+        for pc_existing_module in "${PC_MODULES[@]}"; do
+            if [[ ${pc_existing_module%%/*} == "${pc_build_module%%/*}" ]]; then
+                pc_module_present=true
+                break
+            fi
+        done
+        if ! $pc_module_present; then
+            PC_MODULES+=("$pc_build_module")
+        fi
+    done
+    printf '\n' >> "$run/runtime.env"
+    declare -p PC_MODULES >> "$run/runtime.env"
     type module >/dev/null 2>&1 || { echo 'Runtime requires environment modules, but module is unavailable.' >&2; exit 2; }
     module --force purge
     module load "${PC_MODULES[@]}"
@@ -69,10 +86,18 @@ unset PYTHONPATH PYTHONHOME
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
 export CC=gcc CXX=g++ MPLBACKEND=Agg
-"$pc_python" -c 'import sys; sys.version_info >= (3, 11) or sys.exit("Selected native Python must be >=3.11; found " + sys.version.split()[0] + " at " + sys.executable + ". Set PC_PYTHON to a compatible existing native runtime.")'
+"$pc_python" -c 'import sys; sys.version_info >= (3, 12) or sys.exit("Selected native Python must be >=3.12; found " + sys.version.split()[0] + " at " + sys.executable + ". Set PC_PYTHON to a compatible existing native runtime.")'
 cp "$run/source/research/pc_matched/gadi_run.pbs" "$run/submit.pbs"
 cd "$run/source"
 "$pc_python" -m research.pc_matched.prepare_run prepare --run "$run"
+native_rebuild=$("$pc_python" -c 'import json,sys; print(int(json.load(open(sys.argv[1]))["native_rebuild"]))' "$run/run_manifest.json")
+if [[ $native_rebuild == 1 ]]; then
+    if ! "$pc_python" -c 'import cffi, setuptools' > "$run/build_dependencies.log" 2>&1; then
+        cat "$run/build_dependencies.log" >&2
+        echo 'Native sources differ, but the selected Python cannot import the required build dependencies cffi and setuptools. No job was submitted. Set PC_PYTHON to an existing native runtime with these packages.' >&2
+        exit 2
+    fi
+fi
 workers=$("$pc_python" -c 'import json,sys; print(json.load(open(sys.argv[1]))["threads"])' "$run/experiment_config.json")
 command=(qsub -P "${PC_PROJECT:-qp00}" -q "${PC_QUEUE:-normal}"
          -l "ncpus=$workers,mem=${PC_MEM:-64GB},walltime=${PC_WALLTIME:-12:00:00},storage=${PC_STORAGE:-gdata/qp00+scratch/qp00}"

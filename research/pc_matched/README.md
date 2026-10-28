@@ -95,9 +95,14 @@ one explicitly, set `PC_RUNTIME_PARENT`, or supply `PC_PYTHON` and, when needed,
 `PC_RUNTIME_ENV`. Discovery uses a standalone Python 3.6-compatible standard
 library entry point, so the login node does not need the scientific environment
 loaded first. After loading the recorded modules, preparation checks that the
-selected native Python is at least 3.11. The preparation freezes the branch
-commit, verifies native
-sources and compiled runtime, and creates a new output directory. Default PBS
+selected native Python is at least 3.12. The preparation freezes the branch
+commit and the existing dependency environment. If the installed native sources
+differ from the frozen checkout, the PBS job builds an isolated CFFI extension
+from a copy of that checkout before generating any histories. It reuses Python
+dependencies, requires no network access, and leaves the existing installation
+and frozen source archive unchanged. The imported scientific package must then
+match every archived native source file; its compiled extension is hashed and
+verified before and after the calculation. Default PBS
 resources are 16 CPUs, 64 GB, 12 hours on `normal`, project `qp00`. The walltime is
 a request limit, not a runtime estimate. Native generation uses the allocated
 threads; the RT kernel is serial and cases execute sequentially in this pilot.
@@ -124,6 +129,7 @@ not count as successful accuracy checks.
   photons at every stored snapshot.
 - `results/pairs/`: matched ES/direct-RT fields and an uncertified manifest.
 - `results/fixtures/`: native rates and separate native ES density/radius data.
+- `native_build/`: isolated native build and compilation log, when required.
 - `resubmit.sh`: repeat the frozen job safely after an interruption.
 
 ## Tests
