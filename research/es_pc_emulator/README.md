@@ -645,3 +645,66 @@ An interrupted native-free job can be resubmitted using its printed `resubmit.sh
 Completed training is reused; incomplete training is archived and restarted.
 These changes address the training procedure; teacher convergence remains
 uncertified and the model still has no hard photon-conservation constraint.
+
+## Test the fitting ceiling on one and two existing simulations
+
+This diagnostic asks whether the network can fit its own training simulations
+before more RT data are generated. From the updated branch on Gadi:
+
+```bash
+bash research/es_pc_emulator/fit_ceiling_prepare.sh \
+  --parent /g/data/qp00/sz4640/21cmfast_runs/history_retrain_14c884392e_20261028T011151_0sOB \
+  --submit
+```
+
+Omitting `--parent` chooses the latest completed `history_retrain_*`, falling
+back to a completed `full_history_*`. The preparation reuses the existing
+Python runtime and RT fields, freezes the checkout and writes a new
+`fit_ceiling_*` directory. No packages or simulations are generated. Original
+manifest/configuration hashes, split identities and the selected training-field
+checksums are checked before preparation and again in the job.
+
+The one-case experiment uses the first sorted training case; the two-case
+experiment adds the second sorted training case. Validation and test fields
+are not used for fitting or checkpoint selection. All snapshots of each chosen
+history are included. Each case count is tested with both initialization seeds
+11 and 23, using these controlled comparisons:
+
+| Arm | Hidden width | Learning rate | Optimized losses |
+| --- | ---: | --- | --- |
+| `joint_constant16` | 16 | Constant | Field, thermal/helium, six components and total P21 |
+| `joint_cosine16` | 16 | Cosine decay | Same joint losses |
+| `joint_cosine32` | 32 | Cosine decay | Same joint losses |
+| `field_cosine32` | 32 | Cosine decay | Field only |
+| `power_cosine32` | 32 | Cosine decay | Total P21 only |
+
+Each fit has the same fixed 400-epoch budget. The starting learning rate is
+`3e-4`; cosine runs end at `3e-6`. The output uses the corrected logit residual.
+Training retains the stage-balanced objectives and fixed training-only
+low-power denominator. Checkpoints are compared using the same **raw** mean
+relative P21 error on the fitted histories' active reionization phase,
+`0.1 <= teacher mean xHI < 0.9`. A mean error below 1% and every evaluated bin
+below 1% are separate outcomes. Field error and cross-correlation remain in
+the report, so a power-only fit cannot be mistaken for an accurate field.
+
+This is intentionally an **in-sample fitting diagnostic**, not held-out
+accuracy. If few histories cannot be fitted, optimizer settings, representation
+and competing objectives need attention. If they can, the next test is
+generalization on untouched histories. Neither outcome certifies teacher
+convergence or physical photon conservation.
+
+Default allocation is 16 CPUs, 64 GB and 12 h. There are 20 small fits in the
+default design; the walltime is an allocation limit, not an estimated duration.
+The job logs training progress and elapsed time. Overrides are `FIT_EPOCHS`,
+`FIT_DIAGNOSTIC_INTERVAL`, `FIT_SEEDS`, `FIT_CASE_COUNTS`, `FIT_ARMS`,
+`FIT_LEARNING_RATE`, `FIT_MIN_LEARNING_RATE`, `FIT_WORKERS`, `FIT_MEM`,
+`FIT_WALLTIME`, `FIT_RUN_ROOT`, `FIT_PROJECT` and `FIT_STORAGE`. List overrides
+are comma-separated. Outputs are:
+
+- `experiment/fit_ceiling_report.json`: experiment controls, selected cases,
+  stage-resolved scores, field diagnostics and fitting-target outcomes.
+- `experiment/learning_curves.png`: in-sample fitting progress.
+- `experiment/comparison.png`: controlled optimizer, width and loss comparisons.
+
+After interruption, use the printed `resubmit.sh`. Completed fits are reused;
+partial fits are archived and restarted without changing the source data.

@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#PBS -N es_pc_fit_ceiling
+#PBS -l jobfs=4GB
+#PBS -j oe
+#PBS -l wd
+set -euo pipefail
+: "${PBS_JOBID:?Submit with qsub}"
+: "${PBS_NCPUS:?Missing allocation}"
+: "${FIT_CEILING_RUN:?Use fit_ceiling_prepare.sh}"
+cd "$FIT_CEILING_RUN"
+exec 9>"$FIT_CEILING_RUN/run.lock"
+flock -n 9 || { echo 'This run already has an active job.' >&2; exit 2; }
+if [[ -e COMPLETED ]]; then
+    echo "Already completed: $FIT_CEILING_RUN"
+    exit 0
+fi
+exec > >(tee -a "$FIT_CEILING_RUN/run.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$FIT_CEILING_RUN/FAILED"; fi' EXIT
+module --force purge
+source "$FIT_CEILING_RUN/runtime.env"
+module load "${PC_MODULES[@]}"
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+python=$(cat "$FIT_CEILING_RUN/python_path.txt")
+cd "$FIT_CEILING_RUN/source"
+"$python" - <<'PY'
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+from research.es_pc_emulator.fit_ceiling_run import verify
+
+run = Path(os.environ['FIT_CEILING_RUN'])
+config = verify(run)
+command = [sys.executable, '-m', 'research.es_pc_emulator.fit_ceiling',
+           '--manifest', str(run/'dataset_manifest.json'), '--output', str(run/'experiment'),
+           '--threads', str(int(os.environ['PBS_NCPUS']))]
+for key, value in config['experiment'].items():
+    command += ['--'+key.replace('_', '-')]
+    command += [str(item) for item in value] if isinstance(value, list) else [str(value)]
+subprocess.run(command, check=True)
+PY
+rm -f "$FIT_CEILING_RUN/FAILED"
+touch "$FIT_CEILING_RUN/COMPLETED"
+printf 'Report: %s/experiment/fit_ceiling_report.json\n' "$FIT_CEILING_RUN"
+printf 'Figures: %s/experiment/{learning_curves,comparison}.png\n' "$FIT_CEILING_RUN"
