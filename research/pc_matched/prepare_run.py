@@ -1,0 +1,410 @@
+"""Freeze and verify a small native-source matched photon-conservation run.
+
+Preparation reuses an existing native Python environment. It never builds a
+new environment or runs native initial conditions on the login node.
+"""
+
+from __future__ import annotations
+
+import argparse
+import hashlib
+import importlib
+import json
+import math
+import os
+import platform
+import re
+import shutil
+import subprocess
+import sys
+from collections.abc import Mapping
+from pathlib import Path
+
+DEFAULTS = {
+    "dimension": 8,
+    "box_len": 50.0,
+    "seeds": [111, 222],
+    "z_start": 20.0,
+    "z_end": 4.0,
+    "base_intervals": 10,
+    "reference_z": 8.0,
+    "directions": [6, 26],
+    "refinements": [1, 2],
+    "cfl_values": [0.4, 0.2, 0.1],
+    "photon_energy_ev": 18.0,
+    "threads": 16,
+    "memory_gb": 48.0,
+}
+
+
+def _digest(path: Path) -> str:
+    with path.open("rb") as stream:
+        return hashlib.file_digest(stream, "sha256").hexdigest()
+
+
+def _write_json(path: Path, value: dict) -> None:
+    temporary = path.with_suffix(path.suffix + ".partial")
+    temporary.write_text(json.dumps(value, indent=2, sort_keys=True, allow_nan=False) + "\n")
+    temporary.replace(path)
+
+
+def _valid_path(path: Path) -> Path:
+    if not path.is_absolute() or any(c in str(path) for c in ("\n", "\r", ",")):
+        raise ValueError("Runtime and PBS paths must be absolute without commas or newlines")
+    return path
+
+
+def _read_pointer(path: Path) -> Path | None:
+    if not path.is_file():
+        return None
+    value = path.read_text().strip()
+    return _valid_path(Path(value)) if value else None
+
+
+def _ancestry(parent: Path) -> list[Path]:
+    chain = []
+    path = parent.resolve()
+    while True:
+        if path in chain:
+            raise ValueError("Cycle in runtime parent ancestry")
+        chain.append(path)
+        following = _read_pointer(path / "parent_run.txt")
+        if following is None:
+            following = _read_pointer(path / "runtime_parent.txt")
+        if following is None:
+            return chain
+        path = following.resolve()
+
+
+def _from_parent(parent: Path, python: Path | None, runtime_env: Path | None) -> dict:
+    if not any((parent / marker).is_file() for marker in ("COMPLETED", "training/COMPLETED")):
+        raise ValueError(f"Runtime parent is incomplete: {parent}")
+    chain = _ancestry(parent)
+    if python is None:
+        native = [_read_pointer(path / "native_python.txt") for path in chain]
+        python = next((path for path in native if path is not None), None)
+    if python is None:
+        for path in chain:
+            manifest = path / "run_manifest.json"
+            if manifest.is_file():
+                info = json.loads(manifest.read_text())
+                if info.get("python"):
+                    python = _valid_path(Path(info["python"]))
+                    break
+    if python is None:
+        candidates = [_read_pointer(path / "python_path.txt") for path in chain]
+        candidates.extend(path / "venv/bin/python" for path in chain)
+        python = next((path for path in candidates if path is not None and path.is_file()), None)
+    if runtime_env is None:
+        runtime_env = next((path / "runtime.env" for path in chain
+                            if (path / "runtime.env").is_file()), None)
+    if python is None or runtime_env is None:
+        raise ValueError("No native runtime found in parent chain; set PC_PYTHON and PC_RUNTIME_ENV")
+    return {"python": str(python), "parent": str(parent.resolve()), "runtime_env": str(runtime_env)}
+
+
+def select_runtime(root: Path, *, parent: Path | None = None, python: Path | None = None,
+                   runtime_env: Path | None = None) -> dict:
+    """Find a completed native runtime, following training-run ancestry.
+
+    Parameters
+    ----------
+    root : pathlib.Path
+        Directory containing previous prepared runs.
+    parent : pathlib.Path, optional
+        Explicit completed parent run.
+    python : pathlib.Path, optional
+        Explicit native Python interpreter; overrides parent pointers.
+    runtime_env : pathlib.Path, optional
+        Shell file defining the environment module array ``PC_MODULES``.
+
+    Returns
+    -------
+    dict
+        Absolute interpreter, parent and module-file paths. Explicit local
+        interpreters may use empty parent and module-file strings.
+    """
+    if python is not None:
+        python = _valid_path(python.absolute())
+    if runtime_env is not None:
+        runtime_env = _valid_path(runtime_env.absolute())
+    if parent is not None:
+        result = _from_parent(_valid_path(parent.absolute()), python, runtime_env)
+    elif python is not None:
+        result = {"python": str(python), "parent": "", "runtime_env": str(runtime_env or "")}
+    else:
+        candidates = []
+        for path in root.glob("*"):
+            markers = [path / name for name in ("COMPLETED", "training/COMPLETED")
+                       if (path / name).is_file()]
+            if path.is_dir() and markers:
+                candidates.append((max(marker.stat().st_mtime for marker in markers), path))
+        errors = []
+        for _, path in sorted(candidates, reverse=True):
+            try:
+                result = _from_parent(path, None, runtime_env)
+                if not os.access(result["python"], os.X_OK):
+                    raise ValueError("Python interpreter is missing or not executable")
+                break
+            except (OSError, ValueError) as error:
+                errors.append(f"{path.name}: {error}")
+        else:
+            detail = "; ".join(errors[:3])
+            raise ValueError(f"No completed native runtime under {root}; supply --parent or PC_PYTHON. {detail}")
+    if not os.access(result["python"], os.X_OK):
+        raise ValueError("Selected Python is missing or not executable: " + result["python"])
+    if result["runtime_env"] and not Path(result["runtime_env"]).is_file():
+        raise ValueError("Selected runtime.env is missing")
+    return result
+
+
+def configuration(environment: Mapping[str, str]) -> dict:
+    """Read and validate the small-run configuration from PC environment options.
+
+    Parameters
+    ----------
+    environment : mapping of str to str
+        Environment values, normally ``os.environ``.
+
+    Returns
+    -------
+    dict
+        Validated arguments for the matched workflow.
+    """
+    config = {}
+    for key, default in DEFAULTS.items():
+        value = environment.get("PC_" + key.upper())
+        if value is None:
+            config[key] = default.copy() if isinstance(default, list) else default
+        elif isinstance(default, list):
+            config[key] = [type(default[0])(item) for item in value.replace(",", " ").split()]
+        else:
+            config[key] = type(default)(value)
+    for key in ("dimension", "base_intervals", "threads"):
+        if config[key] < (4 if key == "dimension" else 1):
+            raise ValueError(f"Invalid {key}")
+    if config["threads"] > 32:
+        raise ValueError("threads must not exceed 32")
+    for key in ("seeds", "directions", "refinements"):
+        values = config[key]
+        if not values or len(values) != len(set(values)) or min(values) < 1:
+            raise ValueError(f"{key} must be distinct positive integers")
+    if len(config["directions"]) < 2 or not set(config["directions"]) <= {6, 26}:
+        raise ValueError("directions must contain both supported quadratures: 6 and 26")
+    cfl_values = config["cfl_values"]
+    if (len(cfl_values) < 2 or len(cfl_values) != len(set(cfl_values))
+            or any(not math.isfinite(value) or not 0 < value <= 1 for value in cfl_values)):
+        raise ValueError("cfl_values must contain at least two distinct finite values in (0, 1]")
+    for key in ("box_len", "z_start", "z_end", "reference_z", "memory_gb", "photon_energy_ev"):
+        if not math.isfinite(config[key]):
+            raise ValueError(f"Invalid {key}")
+    if config["box_len"] <= 0 or config["memory_gb"] <= 0:
+        raise ValueError("box_len and memory_gb must be positive")
+    if config["photon_energy_ev"] < 13.6:
+        raise ValueError("photon_energy_ev must reach the hydrogen ionization threshold")
+    allocation = environment.get("PC_MEM", "64GB")
+    matched = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)\s*(GB|GIB|MB|MIB|TB|TIB)", allocation.upper())
+    if matched is None:
+        raise ValueError("PC_MEM must specify a positive MB/GB/TB allocation")
+    factors = {"GB": 10**9, "GIB": 2**30, "MB": 10**6, "MIB": 2**20,
+               "TB": 10**12, "TIB": 2**40}
+    allocated_bytes = float(matched[1]) * factors[matched[2]]
+    if config["memory_gb"] * 2**30 + 2**30 > allocated_bytes:
+        raise ValueError("PC_MEMORY_GB must leave at least 1 GiB below PC_MEM")
+    if not config["z_start"] > config["z_end"] >= 0:
+        raise ValueError("redshift interval must descend to a nonnegative endpoint")
+    if not config["z_end"] <= config["reference_z"] <= config["z_start"]:
+        raise ValueError("reference_z must lie within the simulated interval")
+    return config
+
+
+def _footprint(directory: Path) -> dict[str, str]:
+    return {str(path.relative_to(directory)): _digest(path)
+            for path in sorted(directory.rglob("*"))
+            if path.is_file() and "__pycache__" not in path.parts
+            and path.suffix not in (".pyc", ".pyo")}
+
+
+def native_sources(archived: Path, installed: Path) -> dict[str, str]:
+    """Require every archived native package file to match the installed copy.
+
+    Parameters
+    ----------
+    archived, installed : pathlib.Path
+        Frozen and imported native-package directories.
+
+    Returns
+    -------
+    dict
+        SHA256 hashes of the shared native source files.
+    """
+    expected = _footprint(archived)
+    if not expected:
+        raise ValueError("No archived native sources found")
+    for relative, sha in expected.items():
+        path = installed / relative
+        if not path.is_file() or _digest(path) != sha:
+            raise ValueError("Installed native source differs from archived source: " + relative)
+    return expected
+
+
+def runtime_fingerprint(source: Path, python: str) -> dict:
+    """Capture imported package, compiler and executable identities.
+
+    Parameters
+    ----------
+    source : pathlib.Path
+        Frozen repository archive.
+    python : str
+        Selected absolute interpreter path.
+
+    Returns
+    -------
+    dict
+        Versions and content hashes needed to recheck the compute runtime.
+    """
+    if str(Path(sys.executable).absolute()) != python:
+        raise ValueError("Preparation must run with the selected native Python")
+    versions = {"python": platform.python_version()}
+    for name in ("numpy", "scipy", "h5py", "matplotlib", "py21cmfast"):
+        module = importlib.import_module(name)
+        versions[name] = str(module.__version__)
+    native = Path(importlib.import_module("py21cmfast").__file__).resolve().parent
+    shared = native_sources(source / "src/py21cmfast", native)
+    footprint = _footprint(native)
+    if not any(name.endswith((".so", ".pyd", ".dylib")) for name in footprint):
+        raise ValueError("The selected runtime has no compiled native extension")
+    compiler = shutil.which("g++")
+    if compiler is None:
+        raise ValueError("g++ is required by the frozen native runtime contract")
+    compiler_path = Path(compiler).resolve()
+    return {
+        "versions": versions,
+        "python_binary": str(Path(sys.executable).resolve()),
+        "python_sha256": _digest(Path(sys.executable).resolve()),
+        "compiler": str(compiler_path),
+        "compiler_sha256": _digest(compiler_path),
+        "compiler_version": subprocess.check_output(
+            [compiler, "-dumpfullversion", "-dumpversion"], text=True).strip(),
+        "native_package": str(native),
+        "native_shared_sources": shared,
+        "native_footprint": footprint,
+    }
+
+
+def prepare(run: Path, environment: Mapping[str, str]) -> dict:
+    """Write an immutable preparation manifest for an already archived checkout.
+
+    Parameters
+    ----------
+    run : pathlib.Path
+        Fresh prepared-run directory containing source and runtime pointers.
+    environment : mapping of str to str
+        Experiment configuration overrides.
+
+    Returns
+    -------
+    dict
+        Written manifest, including source and runtime fingerprints.
+    """
+    run = run.resolve()
+    if (run / "PREPARED").exists() or (run / "run_manifest.json").exists():
+        raise FileExistsError("Use a fresh run directory")
+    config = configuration(environment)
+    python = (run / "python_path.txt").read_text().strip()
+    fingerprint = runtime_fingerprint(run / "source", python)
+    _write_json(run / "experiment_config.json", config)
+    manifest = {
+        "schema": 1,
+        "experiment": "matched-photon-conservation",
+        "run": str(run),
+        "commit": (run / "commit.txt").read_text().strip(),
+        "python": python,
+        "configuration": config,
+        "source_sha256": _footprint(run / "source"),
+        "runtime": fingerprint,
+        "scope": "Direct finite-volume discrete-ordinate radiative transfer with native effective H+He counts and a single H-opacity absorber, sharing prescribed native sources and frozen gas with matched ES; monochromatic, no recombination, heating or feedback; native ES is contextual",
+        "completion_is_convergence": False,
+    }
+    _write_json(run / "run_manifest.json", manifest)
+    files = ("experiment_config.json", "run_manifest.json", "python_path.txt",
+             "commit.txt", "runtime.env", "submit.pbs")
+    (run / "prepared.sha256").write_text("".join(f"{_digest(run / name)}  {name}\n" for name in files))
+    (run / "PREPARED").write_text("Prepared; native simulations have not started.\n")
+    return manifest
+
+
+def verify(run: Path, *, cpus: int | None = None) -> dict:
+    """Reject changed prepared inputs or runtime before and after execution.
+
+    Parameters
+    ----------
+    run : pathlib.Path
+        Prepared run to verify.
+    cpus : int, optional
+        Allocated CPUs; must equal the frozen worker count.
+
+    Returns
+    -------
+    dict
+        Verified preparation manifest.
+    """
+    run = run.resolve()
+    if not (run / "PREPARED").is_file():
+        raise ValueError("Run has not been prepared")
+    for line in (run / "prepared.sha256").read_text().splitlines():
+        sha, name = line.split("  ", 1)
+        if Path(name).name != name or not (run / name).is_file() or _digest(run / name) != sha:
+            raise ValueError("Prepared file changed: " + name)
+    manifest = json.loads((run / "run_manifest.json").read_text())
+    if manifest.get("schema") != 1 or manifest.get("experiment") != "matched-photon-conservation":
+        raise ValueError("Unexpected preparation manifest")
+    if manifest["run"] != str(run):
+        raise ValueError("Prepared run moved")
+    if cpus is not None and cpus != manifest["configuration"]["threads"]:
+        raise ValueError("CPU allocation differs from prepared configuration")
+    if _footprint(run / "source") != manifest["source_sha256"]:
+        raise ValueError("Frozen source archive changed")
+    if runtime_fingerprint(run / "source", manifest["python"]) != manifest["runtime"]:
+        raise ValueError("Native runtime or compiler changed")
+    return manifest
+
+
+def main(argv: list[str] | None = None) -> None:
+    """Run runtime discovery, preparation, verification or argument emission.
+
+    Parameters
+    ----------
+    argv : list of str, optional
+        Command arguments; defaults to the current process arguments.
+    """
+    parser = argparse.ArgumentParser(description=__doc__)
+    modes = parser.add_subparsers(dest="command", required=True)
+    selection = modes.add_parser("select")
+    selection.add_argument("--root", type=Path, required=True)
+    selection.add_argument("--parent", type=Path)
+    selection.add_argument("--python", type=Path)
+    selection.add_argument("--runtime-env", type=Path)
+    for mode in ("prepare", "verify", "arguments"):
+        command = modes.add_parser(mode)
+        command.add_argument("--run", type=Path, required=True)
+        if mode == "verify":
+            command.add_argument("--cpus", type=int)
+    args = parser.parse_args(argv)
+    if args.command == "select":
+        result = select_runtime(args.root, parent=args.parent, python=args.python, runtime_env=args.runtime_env)
+        sys.stdout.write("\n".join(result[name] for name in ("python", "parent", "runtime_env")) + "\n")
+    elif args.command == "prepare":
+        result = prepare(args.run, os.environ)
+        sys.stdout.write(json.dumps({"prepared": result["run"], "configuration": result["configuration"]}) + "\n")
+    elif args.command == "verify":
+        verify(args.run, cpus=args.cpus)
+    else:
+        config = json.loads((args.run / "experiment_config.json").read_text())
+        for key, value in config.items():
+            sys.stdout.write("--" + key.replace("_", "-") + "\n")
+            sys.stdout.write("\n".join(str(item) for item in (value if isinstance(value, list) else [value])) + "\n")
+
+
+if __name__ == "__main__":
+    main()

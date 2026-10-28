@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+#PBS -N pc_matched
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=16
+#PBS -l mem=64GB
+#PBS -l walltime=12:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${PC_MATCHED_RUN:?Use gadi_prepare.sh --submit or the prepared resubmit.sh}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing allocated CPU count}"
+run=$(realpath "$PC_MATCHED_RUN")
+cd "$run"
+test -f PREPARED
+exec 9> "$run/run.lock"
+flock -n 9 || { echo 'Another process is already using this run.' >&2; exit 2; }
+exec > >(tee "$run/run_${PBS_JOBID}.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$run/FAILED"; fi' EXIT
+sha256sum --quiet -c prepared.sha256
+PC_MODULES=()
+source "$run/runtime.env"
+if (( ${#PC_MODULES[@]} )); then
+    type module >/dev/null 2>&1 || { echo 'Environment modules are unavailable.' >&2; exit 2; }
+    module --force purge
+    module load "${PC_MODULES[@]}"
+fi
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export CC=gcc CXX=g++ MPLBACKEND=Agg
+pc_python=$(cat "$run/python_path.txt")
+cd "$run/source"
+"$pc_python" -m research.pc_matched.prepare_run verify --run "$run" --cpus "$PBS_NCPUS"
+arguments=$("$pc_python" -m research.pc_matched.prepare_run arguments --run "$run")
+mapfile -t workflow_arguments <<< "$arguments"
+printf 'Job: %s\nRun: %s\nStart: %s\n' "$PBS_JOBID" "$run" "$(date)"
+export OMP_NUM_THREADS="$PBS_NCPUS" OMP_PROC_BIND=spread OMP_PLACES=cores
+"$pc_python" -m research.pc_matched.workflow run --root "$run/results" "${workflow_arguments[@]}"
+"$pc_python" -m research.pc_matched.prepare_run verify --run "$run" --cpus "$PBS_NCPUS"
+test -f "$run/results/COMPLETED"
+printf 'Calculations and independent audits completed; inspect convergence separately.\n' > "$run/COMPLETED"
+printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$run"

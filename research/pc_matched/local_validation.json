@@ -1,0 +1,216 @@
+{
+  "all_photon_ledgers_passed": true,
+  "cases": [
+    {
+      "fixture_sha256": "382be625123b699f23bcb3388f6888aff8105da411803fe7050c97ccb931c55b",
+      "matched_ES_vs_RT_active_P21": {
+        "count": 12,
+        "max": 0.4305411315118166,
+        "mean": 0.2419424472951889,
+        "median": 0.21266702946624838,
+        "undefined": 0
+      },
+      "refinements": [
+        {
+          "active_snapshots": 6,
+          "all_primary_power_bins_passed": false,
+          "coarse": {
+            "cfl": 0.4,
+            "directions": 6,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 1
+          },
+          "kind": "angular",
+          "max_P21_change": 0.10422171436460848,
+          "mean_P21_change": 0.03743473709338815
+        },
+        {
+          "active_snapshots": 6,
+          "all_primary_power_bins_passed": false,
+          "coarse": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 2
+          },
+          "kind": "spatial",
+          "max_P21_change": 0.0808705501101239,
+          "mean_P21_change": 0.010514482053772386
+        },
+        {
+          "active_snapshots": 6,
+          "all_primary_power_bins_passed": true,
+          "coarse": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.2,
+            "directions": 26,
+            "refinement": 1
+          },
+          "kind": "temporal",
+          "max_P21_change": 0.0016135132804806496,
+          "mean_P21_change": 0.0006126214310340402
+        },
+        {
+          "active_snapshots": 6,
+          "all_primary_power_bins_passed": true,
+          "coarse": {
+            "cfl": 0.2,
+            "directions": 26,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.1,
+            "directions": 26,
+            "refinement": 1
+          },
+          "kind": "temporal",
+          "max_P21_change": 0.0006997665915866591,
+          "mean_P21_change": 0.0004179693057740075
+        }
+      ],
+      "seed": 111
+    },
+    {
+      "fixture_sha256": "5a5e162503522989e61e705c652781a7f36e42f1834a3c8d54f9704b79d81293",
+      "matched_ES_vs_RT_active_P21": {
+        "count": 14,
+        "max": 0.5062636077945983,
+        "mean": 0.13168451313116306,
+        "median": 0.07012484977324257,
+        "undefined": 0
+      },
+      "refinements": [
+        {
+          "active_snapshots": 7,
+          "all_primary_power_bins_passed": false,
+          "coarse": {
+            "cfl": 0.4,
+            "directions": 6,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 1
+          },
+          "kind": "angular",
+          "max_P21_change": 0.07817989926954927,
+          "mean_P21_change": 0.01920462617101273
+        },
+        {
+          "active_snapshots": 7,
+          "all_primary_power_bins_passed": false,
+          "coarse": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 2
+          },
+          "kind": "spatial",
+          "max_P21_change": 0.07110905601248141,
+          "mean_P21_change": 0.007582909524651745
+        },
+        {
+          "active_snapshots": 7,
+          "all_primary_power_bins_passed": true,
+          "coarse": {
+            "cfl": 0.4,
+            "directions": 26,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.2,
+            "directions": 26,
+            "refinement": 1
+          },
+          "kind": "temporal",
+          "max_P21_change": 0.0029273256225180733,
+          "mean_P21_change": 0.0006477266314706052
+        },
+        {
+          "active_snapshots": 7,
+          "all_primary_power_bins_passed": true,
+          "coarse": {
+            "cfl": 0.2,
+            "directions": 26,
+            "refinement": 1
+          },
+          "fine": {
+            "cfl": 0.1,
+            "directions": 26,
+            "refinement": 1
+          },
+          "kind": "temporal",
+          "max_P21_change": 0.001403862470657491,
+          "mean_P21_change": 0.000485677946293133
+        }
+      ],
+      "seed": 222
+    }
+  ],
+  "configuration": {
+    "base_intervals": 10,
+    "box_len": 50.0,
+    "cfl_values": [
+      0.4,
+      0.2,
+      0.1
+    ],
+    "dimension": 8,
+    "directions": [
+      6,
+      26
+    ],
+    "memory_gb": 48.0,
+    "photon_energy_ev": 18.0,
+    "reference_z": 8.0,
+    "refinements": [
+      1,
+      2
+    ],
+    "seeds": [
+      111,
+      222
+    ],
+    "threads": 2,
+    "z_end": 4.0,
+    "z_start": 20.0
+  },
+  "continuum_benchmark": {
+    "expected_attenuation": 0.496585303791,
+    "grid": [
+      8,
+      16,
+      32,
+      64
+    ],
+    "measured_attenuation": 0.496585303801,
+    "relative_L1": [
+      0.060245,
+      0.032435,
+      0.016902,
+      0.008637
+    ],
+    "scope": "Collimated periodic sinusoid: quarter-box propagation, opticaldepth0.7; negligible-opacity-change limit"
+  },
+  "convergence_certified": false,
+  "maximum_global_photon_residual": 4.5602927891134746e-14,
+  "maximum_source_history_residual": 1.102633609417758e-16,
+  "scope": "Direct monoenergetic finite-volume discrete-ordinate RTE at physical c; periodic fixed density contrast; native effective H+He atom counts with a single H-opacity absorber; no recombination or heating feedback"
+}
