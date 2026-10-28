@@ -34,7 +34,7 @@ selection_arguments=(select --root "${PC_PARENT_ROOT:-$root}")
 [[ -z $parent ]] || selection_arguments+=(--parent "$parent")
 [[ -z ${PC_PYTHON:-} ]] || selection_arguments+=(--python "$PC_PYTHON")
 [[ -z ${PC_RUNTIME_ENV:-} ]] || selection_arguments+=(--runtime-env "$PC_RUNTIME_ENV")
-selection=$(python3 "$repo/research/pc_matched/prepare_run.py" "${selection_arguments[@]}")
+selection=$(python3 "$repo/research/pc_matched/runtime_select.py" "${selection_arguments[@]}")
 mapfile -t selected <<< "$selection"
 pc_python=${selected[0]}
 parent=${selected[1]:-}
@@ -69,6 +69,7 @@ unset PYTHONPATH PYTHONHOME
 export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
 export CC=gcc CXX=g++ MPLBACKEND=Agg
+"$pc_python" -c 'import sys; sys.version_info >= (3, 11) or sys.exit("Selected native Python must be >=3.11; found " + sys.version.split()[0] + " at " + sys.executable + ". Set PC_PYTHON to a compatible existing native runtime.")'
 cp "$run/source/research/pc_matched/gadi_run.pbs" "$run/submit.pbs"
 cd "$run/source"
 "$pc_python" -m research.pc_matched.prepare_run prepare --run "$run"

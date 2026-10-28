@@ -92,7 +92,11 @@ bash research/pc_matched/gadi_prepare.sh --submit
 
 The script discovers a completed native runtime from earlier runs. To choose
 one explicitly, set `PC_RUNTIME_PARENT`, or supply `PC_PYTHON` and, when needed,
-`PC_RUNTIME_ENV`. The preparation freezes the branch commit, verifies native
+`PC_RUNTIME_ENV`. Discovery uses a standalone Python 3.6-compatible standard
+library entry point, so the login node does not need the scientific environment
+loaded first. After loading the recorded modules, preparation checks that the
+selected native Python is at least 3.11. The preparation freezes the branch
+commit, verifies native
 sources and compiled runtime, and creates a new output directory. Default PBS
 resources are 16 CPUs, 64 GB, 12 hours on `normal`, project `qp00`. The walltime is
 a request limit, not a runtime estimate. Native generation uses the allocated
