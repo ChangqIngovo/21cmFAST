@@ -46,6 +46,70 @@ def test_case_matrix_is_one_parameter_at_a_time() -> None:
     assert triples == {(6, 1, 0.4), (26, 1, 0.4), (26, 2, 0.4), (26, 1, 0.2), (26, 1, 0.1)}
 
 
+def test_convergence_matrix_refines_each_axis_at_joint_fine_settings() -> None:
+    """Use three-level numerical axes while preserving the small pilot defaults."""
+    config = workflow.configuration("convergence")
+    assert config["base_intervals"] == 40
+    assert workflow.native_intervals(config) == 160
+    matrix = workflow.case_settings(config)
+    selections = {(row["directions"], row["refinement"], row["cfl"], row["source_stride"])
+                  for row in matrix}
+    assert selections == {
+        (24, 4, 0.4, 1), (96, 4, 0.4, 1), (384, 4, 0.4, 1),
+        (384, 1, 0.4, 1), (384, 2, 0.4, 1),
+        (384, 4, 0.2, 1), (384, 4, 0.1, 1),
+        (384, 4, 0.1, 4), (384, 4, 0.1, 2),
+    }
+    estimate = workflow.resource_estimate(config)
+    assert estimate["cases_per_seed"] == 9
+    assert estimate["total_cases"] == 18
+    assert estimate["finest_source_snapshots"] == 161
+    assert estimate["max_array_gib"] < config["memory_gb"]
+    for row in estimate["estimated_array_gib_by_case"]:
+        assert row["snapshots"] == 161
+    with pytest.raises(ValueError, match="three directions"):
+        workflow.configuration("convergence", directions=[24, 96])
+    with pytest.raises(ValueError, match="divide"):
+        workflow.configuration("convergence", source_strides=[1, 2, 3])
+    with pytest.raises(ValueError, match="nested"):
+        workflow.configuration("convergence", refinements=[1, 2, 3])
+    config["directions"].append(6)
+    assert workflow.CONVERGENCE_CONFIG["directions"] == [24, 96, 384]
+    assert workflow.configuration()["directions"] == [6, 26]
+
+
+def test_source_history_uses_physical_time_knots_on_identical_background() -> None:
+    """Change only emissivity sampling, retaining exact gas and all native times."""
+    times = np.array([0.0, 0.3, 0.9, 1.5, 3.0, 3.1, 5.0, 7.0, 9.0])
+    rates = (times**2 + 0.1)[:, None, None, None] * np.ones((1, 2, 2, 2))
+    history = {"capacity": np.full((2, 2, 2), 2.0), "times_seconds": times,
+               "redshifts": np.linspace(20, 4, len(times)), "rates": rates, "metadata": {}}
+    selected, definition = workflow.source_history(history, 4, "parent-fixture")
+    knots = [0, 4, 8]
+    assert definition["source_knot_indices"] == knots
+    assert definition["native_snapshot_indices"] == list(range(len(times)))
+    assert definition["parent_fixture_sha256"] == "parent-fixture"
+    assert selected["capacity"] is history["capacity"]
+    assert selected["times_seconds"] is history["times_seconds"]
+    assert selected["redshifts"] is history["redshifts"]
+    np.testing.assert_array_equal(selected["rates"][knots], rates[knots])
+    np.testing.assert_allclose(selected["rates"][:, 0, 0, 0],
+                               np.interp(times, times[knots], rates[knots, 0, 0, 0]), rtol=1e-15)
+    integrated = np.sum(0.5 * (selected["rates"][:-1] + selected["rates"][1:])
+                        * np.diff(times)[:, None, None, None], axis=0)
+    coarse_integral = np.sum(0.5 * (rates[knots[:-1]] + rates[knots[1:]])
+                             * np.diff(times[knots])[:, None, None, None], axis=0)
+    np.testing.assert_allclose(integrated, coarse_integral, rtol=1e-15)
+    finest, fine_definition = workflow.source_history(history, 1, "parent-fixture")
+    np.testing.assert_array_equal(finest["rates"], rates)
+    assert fine_definition["source_history_sha256"] != definition["source_history_sha256"]
+    assert fine_definition["arrays_sha256"]["capacity"] == definition["arrays_sha256"]["capacity"]
+    assert fine_definition["arrays_sha256"]["rates"] != definition["arrays_sha256"]["rates"]
+    np.testing.assert_array_equal(history["rates"], rates)
+    with pytest.raises(ValueError, match="divide"):
+        workflow.source_history(history, 3, "parent-fixture")
+
+
 def test_repeat_field_preserves_mean_atom_convention() -> None:
     """Refining a piecewise-constant source changes volume, not local density."""
     coarse = np.arange(8, dtype=float).reshape((2, 2, 2))
@@ -141,3 +205,85 @@ def test_completed_case_reuses_fields_and_rejects_corruption(
     with pytest.raises(ValueError, match="fields changed"):
         workflow._run_case(tmp_path, history, fixture, setting,
                            workflow.DEFAULT_CONFIG, {"solver": "hash"})
+
+
+def test_interrupted_directional_state_resumes_exactly(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Restarts preserve radiation, cumulative emission and every saved snapshot."""
+    module = ModuleType("research.pc_matched.rt")
+    calls = []
+    fail_at = [3]
+
+    def fake_interval(capacity: np.ndarray, ionized: np.ndarray,
+                      photons: np.ndarray, left: np.ndarray, right: np.ndarray,
+                      **kwargs: object) -> dict:
+        calls.append(kwargs)
+        if len(calls) == fail_at[0]:
+            raise RuntimeError("simulated interruption")
+        photons = np.roll(photons.copy(), 1, axis=1)
+        photons[0] += 0.5 * (left + right) * kwargs["dt_seconds"]
+        absorbed = np.minimum(0.4 * photons[0], capacity - ionized)
+        photons[0] -= absorbed
+        return {"ionized": ionized + absorbed, "photons": photons,
+                "steps": 1, "ledger": {"passed": True}}
+
+    module.evolve_interval = fake_interval
+    monkeypatch.setitem(sys.modules, "research.pc_matched.rt", module)
+    times = np.array([0.0, 0.1, 0.3, 0.6, 1.0])
+    rates = (times**2 + 0.1)[:, None, None, None] * np.arange(1, 9).reshape(1, 2, 2, 2)
+    history = {"capacity": np.ones((2, 2, 2)), "redshifts": np.linspace(20, 4, 5),
+               "times_seconds": times, "rates": rates,
+               "metadata": {"inputs": {"cosmo_params": {
+                   "OMb": 0.049, "hlittle": 0.6751, "Y_He": 0.245}}}}
+    fixture = {"seed": 111, "sha256": "input"}
+    setting = {"directions": 6, "refinement": 1, "cfl": 0.4, "source_stride": 2}
+    root = tmp_path / "restart"
+    with pytest.raises(RuntimeError, match="simulated"):
+        workflow._run_case(root, history, fixture, setting, workflow.DEFAULT_CONFIG, {"solver": "hash"})
+    folder = root / "cases" / workflow._case_id(111, setting)
+    receipt = json.loads((folder / "checkpoint.json").read_text())
+    assert receipt["node"] == 1
+    assert receipt["identity"]["source_history"]["source_knot_indices"] == [0, 2, 4]
+    with pytest.raises(ValueError, match="identity changed"):
+        workflow._run_case(root, history, fixture, setting, workflow.DEFAULT_CONFIG, {"solver": "different"})
+    fail_at[0] = -1
+    resumed = workflow._run_case(root, history, fixture, setting, workflow.DEFAULT_CONFIG, {"solver": "hash"})
+    assert len(calls) == 6  # Three original calls, then nodes 2/3/4 from checkpoint 1.
+    uninterrupted = workflow._run_case(tmp_path / "fresh", history, fixture, setting,
+                                       workflow.DEFAULT_CONFIG, {"solver": "hash"})
+    with np.load(resumed["path"], allow_pickle=False) as actual, np.load(
+        uninterrupted["path"], allow_pickle=False,
+    ) as expected:
+        for key in expected.files:
+            np.testing.assert_array_equal(actual[key], expected[key])
+        metadata = json.loads(str(actual["metadata"]))
+        assert metadata["native_snapshot_indices"] == list(range(5))
+        assert metadata["source_knot_indices"] == [0, 2, 4]
+    assert not (folder / "checkpoint.json").exists()
+    assert not list(folder.glob("checkpoint_*.npz"))
+
+
+def test_checkpoint_corruption_is_not_silently_restarted(tmp_path: Path) -> None:
+    """A committed but altered directional checkpoint fails closed."""
+    identity = {"setting": {"directions": 6}}
+    fields = np.ones((2, 2, 2, 2))
+    workflow._save_checkpoint(tmp_path, identity, 1, np.zeros((6, 2, 2, 2)),
+                              np.ones((2, 2, 2), dtype=np.longdouble), fields, fields, fields,
+                              [{"node": 1}])
+    node, arrays, _ = workflow._load_checkpoint(tmp_path, identity, 3, (2, 2, 2))
+    assert node == 1
+    assert arrays["emitted"].dtype == np.longdouble
+    receipt = json.loads((tmp_path / "checkpoint.json").read_text())
+    with (tmp_path / receipt["path"]).open("ab") as stream:
+        stream.write(b"changed")
+    with pytest.raises(ValueError, match="fields changed"):
+        workflow._load_checkpoint(tmp_path, identity, 3, (2, 2, 2))
+
+
+def test_estimate_cli_resolves_selected_profile_defaults(capsys: pytest.CaptureFixture) -> None:
+    """A dry resource estimate requires neither a run directory nor native import."""
+    workflow.main(["estimate", "--profile", "convergence", "--seeds", "111"])
+    result = json.loads(capsys.readouterr().out)
+    assert result["configuration"]["base_intervals"] == 40
+    assert result["resource_estimate"]["total_cases"] == 9

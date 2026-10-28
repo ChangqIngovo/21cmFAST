@@ -11,12 +11,19 @@ namespace {
 constexpr double light_speed = 2.99792458e10;
 
 bool absorb(const double* capacity, double* ionized, double* photons,
-            std::int64_t cells, int directions, double coefficient_dt) {
+            std::int64_t cells, int directions, double coefficient_dt, int threads) {
+    int invalid = 0;
+    // Each cell retains its serial directional summation order. Only the
+    // integer failure flag is reduced across threads, never physical counts.
+    #pragma omp parallel for num_threads(threads) schedule(static) reduction(|:invalid)
     for (std::int64_t cell = 0; cell < cells; ++cell) {
         const double neutral = capacity[cell] - ionized[cell];
         double radiation = 0.0;
         for (int d = 0; d < directions; ++d) radiation += photons[d * cells + cell];
-        if (!std::isfinite(radiation) || neutral < -1e-13 * capacity[cell]) return false;
+        if (!std::isfinite(radiation) || neutral < -1e-13 * capacity[cell]) {
+            invalid = 1;
+            continue;
+        }
         if (radiation <= 0 || neutral <= 0 || coefficient_dt == 0) continue;
         const double smaller = std::min(radiation, neutral);
         const double difference = std::abs(radiation - neutral);
@@ -30,7 +37,10 @@ bool absorb(const double* capacity, double* ionized, double* photons,
             const double product = smaller * coefficient_dt * phi;
             absorbed = std::isinf(product) ? smaller : smaller * (one_minus + product) / (1 + product);
         }
-        if (!std::isfinite(absorbed) || absorbed < 0 || absorbed > smaller * (1 + 1e-13)) return false;
+        if (!std::isfinite(absorbed) || absorbed < 0 || absorbed > smaller * (1 + 1e-13)) {
+            invalid = 1;
+            continue;
+        }
         // The exact expression lies in [0, smaller]. Restore only a possible
         // final-operation upward roundoff; larger violations were rejected.
         absorbed = std::min(absorbed, smaller);
@@ -41,13 +51,14 @@ bool absorb(const double* capacity, double* ionized, double* photons,
         }
         ionized[cell] += absorbed;
     }
-    return true;
+    return invalid == 0;
 }
 
 void inject(double* photons, const double* start, const double* end,
             const double* weights, std::int64_t cells, int directions,
-            double interval, double relative_start, double relative_end) {
+            double interval, double relative_start, double relative_end, int threads) {
     const double mean_fraction = 0.5 * (relative_start + relative_end);
+    #pragma omp parallel for num_threads(threads) schedule(static)
     for (int d = 0; d < directions; ++d) {
         const double factor = interval * weights[d];
         for (std::int64_t cell = 0; cell < cells; ++cell) {
@@ -59,7 +70,7 @@ void inject(double* photons, const double* start, const double* end,
 }
 
 extern "C" int rt_evolve(
-    int n, int nd, const double* capacity, double* ionized, double* photons,
+    int n, int nd, int threads, const double* capacity, double* ionized, double* photons,
     const double* rate_start, const double* rate_end, const double* vectors,
     const double* weights, double duration, double z_start, double z_end,
     double dx_cm, double hydrogen_density, double sigma, double cfl,
@@ -88,9 +99,11 @@ extern "C" int rt_evolve(
             // Upwind transport is first order; source integrals are exact for
             // the supplied linearly interpolated interval emissivity.
             inject(photons, rate_start, rate_end, weights, cells, nd, 0.5 * dt,
-                   time / duration, midpoint / duration);
-            if (!absorb(capacity, ionized, photons, cells, nd, reaction_half)) return 3;
+                   time / duration, midpoint / duration, threads);
+            if (!absorb(capacity, ionized, photons, cells, nd, reaction_half, threads)) return 3;
             const double transport_factor = light_speed * scale * dt / dx_cm;
+            int invalid_flux = 0;
+            #pragma omp parallel for num_threads(threads) schedule(static) reduction(|:invalid_flux)
             for (int d = 0; d < nd; ++d) {
                 const double vx = vectors[3*d];
                 const double vy = vectors[3*d+1];
@@ -99,7 +112,10 @@ extern "C" int rt_evolve(
                 const double ny = std::abs(vy) * transport_factor;
                 const double nz = std::abs(vz) * transport_factor;
                 const double stay = 1 - nx - ny - nz;
-                if (stay < -1e-14) return 4;
+                if (stay < -1e-14) {
+                    invalid_flux = 1;
+                    continue;
+                }
                 const double* src = photons + d * cells;
                 double* dest = temporary.data() + d * cells;
                 for (int x = 0; x < n; ++x) {
@@ -117,10 +133,11 @@ extern "C" int rt_evolve(
                     }
                 }
             }
+            if (invalid_flux) return 4;
             std::copy(temporary.begin(), temporary.end(), photons);
-            if (!absorb(capacity, ionized, photons, cells, nd, reaction_half)) return 3;
+            if (!absorb(capacity, ionized, photons, cells, nd, reaction_half, threads)) return 3;
             inject(photons, rate_start, rate_end, weights, cells, nd, 0.5 * dt,
-                   midpoint / duration, (time + dt) / duration);
+                   midpoint / duration, (time + dt) / duration, threads);
             time += dt;
         }
         return 0;

@@ -105,7 +105,62 @@ match every archived native source file; its compiled extension is hashed and
 verified before and after the calculation. Default PBS
 resources are 16 CPUs, 64 GB, 12 hours on `normal`, project `qp00`. The walltime is
 a request limit, not a runtime estimate. Native generation uses the allocated
-threads; the RT kernel is serial and cases execute sequentially in this pilot.
+threads; the RT kernel uses the same allocated thread count through OpenMP.
+Cases execute sequentially so their memory allocations do not overlap.
+
+## Successive refinement run
+
+Use the opt-in convergence profile for the next numerical study:
+
+```bash
+bash research/pc_matched/gadi_prepare.sh --convergence --submit
+```
+
+It retains the same two seeds, 50 cMpc box, native 8-cubed source grid, fixed
+density contrast and restricted physical model. Each seed generates one finest
+native source history with 160 intervals from z=20 to 4. The nine RT histories
+per seed isolate four numerical axes:
+
+| Axis | Levels | Other settings held fixed |
+| --- | --- | --- |
+| Angular | 24, 96, 384 directions | 32-cubed RT grid, CFL 0.4, 160 source intervals |
+| Spatial | 8-, 16-, 32-cubed RT grids | 384 directions, CFL 0.4, 160 source intervals |
+| Transport time step | CFL 0.4, 0.2, 0.1 | 32-cubed grid, 384 directions, 160 source intervals |
+| Source history | 40, 80, 160 emissivity intervals | 32-cubed grid, 384 directions, CFL 0.1 |
+
+Shared configurations are computed once, giving 18 histories in total. The
+jointly finest reference uses 32-cubed transport, 384 directions, CFL 0.1 and
+all native source samples. Angular weights are positive exact solid angles of
+cube-face cells, with directions through their centres; 24/96/384 form a common
+refinement family. Legacy 6/26 quadratures remain available for the pilot.
+
+Source-history arms all evolve on the identical 161-node time/redshift grid.
+Only the sampled emissivities change: every fourth/second/all native endpoint
+is retained and interpolated in physical time onto the common timeline. This
+keeps background evolution fixed and isolates source sampling from transport
+time steps. Spatial subdivision repeats the same source and gas densities;
+it does not add unresolved cosmological density or source modes.
+
+The convergence profile requests 8 CPUs, 32 GB and 24 hours by default. Explicit
+`PC_*` values override the selected profile. Preparation prints and freezes the
+case count and an RT-array memory estimate; the latter excludes the native
+generator, libraries and compression buffers. A timing estimate is not a
+convergence result or a guaranteed Gadi runtime.
+
+Full directional radiation and ionization state are checkpointed after the
+first interval, every eight intervals and at the final interval. The frozen
+run's `resubmit.sh` resumes the last verified checkpoint and reuses completed
+cases. Hash mismatches fail rather than silently mixing calculations.
+
+`matched_summary.json` and `self_convergence.png` show adjacent-level RT
+comparisons, with raw errors in every primary power bin. Passing these sampled
+checks does not automatically certify production training labels: source-grid,
+box-size and remaining discretization convergence must still be established.
+The report also compares ES and RT at mean xHI targets 0.8, 0.6, 0.4 and 0.2 by
+interpolating bracketed neutral-fraction fields before computing spectra. Both
+fields use the same 27 mK brightness normalization. Unreached targets are
+reported as unavailable, without extrapolation. These interpolated fields are
+diagnostics, not RT solutions or training labels.
 
 For a local actual-native run with a compatible installed environment:
 
@@ -124,7 +179,11 @@ not count as successful accuracy checks.
 
 - `results/matched_report.json`: independent ledger checks, field histories,
   ES/RT spectra and numerical sensitivity tests.
+- `results/matched_summary.json`: compact self-refinement and matched-mean-xHI
+  diagnostics for uploading or inspecting without the large checkpoint report.
 - `results/matched_comparison.png`: histories and physical comparisons.
+- `results/self_convergence.png`: separate spatial, angular, transport-time and
+  source-history refinement comparisons.
 - `results/cases/*/fields.npz`: ionized atoms, radiation inventory and emitted
   photons at every stored snapshot.
 - `results/pairs/`: matched ES/direct-RT fields and an uncertified manifest.

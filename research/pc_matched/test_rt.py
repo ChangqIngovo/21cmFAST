@@ -1,6 +1,6 @@
 """Analytic and conservation checks for the direct radiation solver."""
 
-from itertools import pairwise
+from itertools import pairwise, permutations, product
 
 import numpy as np
 import pytest
@@ -21,7 +21,7 @@ def _uniform_run(photon_total: float, coefficient_dt: float) -> dict:
     )
 
 
-@pytest.mark.parametrize("count", [6, 26])
+@pytest.mark.parametrize("count", [6, 24, 26, 96, 384])
 def test_angular_bank_is_positive_and_isotropic(count: int) -> None:
     """The quadrature has isotropic first and second angular moments."""
     vectors, weights = directions(count)
@@ -30,6 +30,66 @@ def test_angular_bank_is_positive_and_isotropic(count: int) -> None:
     np.testing.assert_allclose((vectors.T * weights) @ vectors, np.eye(3) / 3, atol=1e-15)
     assert np.all(weights > 0)
     assert weights.sum() == pytest.approx(1.0)
+
+
+@pytest.mark.parametrize("count", [24, 96, 384])
+def test_cubed_sphere_has_full_cubic_symmetry(count: int) -> None:
+    """Every signed coordinate permutation preserves directions and weights."""
+    vectors, weights = directions(count)
+    bank = {tuple(v.round(13)): w for v, w in zip(vectors, weights, strict=True)}
+    assert len(bank) == count
+    for permutation, signs in product(permutations(range(3)), product((-1, 1), repeat=3)):
+        transformed = vectors[:, permutation] * signs
+        for vector, weight in zip(transformed, weights, strict=True):
+            assert bank[tuple(vector.round(13))] == pytest.approx(weight, rel=2e-14)
+
+
+def test_cubed_sphere_continuum_angular_integrals_converge() -> None:
+    """Refinement recovers independently known smooth sphere integrals."""
+    axis = np.array([1.0, 2.0, 3.0]) / np.sqrt(14)
+    errors = []
+    for count in (24, 96, 384):
+        vectors, weights = directions(count)
+        actual = np.array([weights @ vectors[:, 0] ** 4,
+                           weights @ (vectors[:, 0] ** 2 * vectors[:, 1] ** 2),
+                           weights @ np.exp(2 * (vectors @ axis))])
+        exact = np.array([1 / 5, 1 / 15, np.sinh(2) / 2])
+        errors.append(np.abs(actual - exact))
+    for coarse, fine in pairwise(errors):
+        assert np.all(fine < 0.3 * coarse)
+    assert np.max(errors[-1]) < 6e-4
+
+
+@pytest.mark.parametrize("count", [24, 96, 384])
+def test_cubed_sphere_isotropic_source_uses_solid_angle_weights(count: int) -> None:
+    """The finite-volume kernel injects angular photon counts with their weights."""
+    capacity = np.ones((2, 2, 2))
+    zero = np.zeros_like(capacity)
+    result = evolve_interval(
+        capacity, zero, np.zeros((count, 2, 2, 2)), capacity / 1e10, capacity / 1e10,
+        dt_seconds=1e10, z_start=0, z_end=0, box_len_cMpc=10, cross_section_cm2=0,
+    )
+    expected = np.broadcast_to(result["weights"][:, None, None, None], result["photons"].shape)
+    np.testing.assert_allclose(result["photons"], expected, rtol=2e-15)
+    assert result["ledger"]["passed"]
+
+
+@pytest.mark.parametrize("count", [6, 26, 96, 384])
+def test_openmp_matches_serial_bitwise(count: int) -> None:
+    """Parallel flux/reaction updates preserve the serial count arithmetic."""
+    rng = np.random.default_rng(913)
+    capacity = np.exp(rng.normal(0, 0.2, (4, 4, 4)))
+    ionized = 0.2 * capacity
+    radiation = rng.uniform(0, 0.5 / count, (count, 4, 4, 4))
+    first = rng.uniform(0, 1e-13, capacity.shape)
+    last = rng.uniform(0, 1e-13, capacity.shape)
+    options = {"dt_seconds": 1e13, "z_start": 8, "z_end": 7.6, "box_len_cMpc": 1}
+    serial = evolve_interval(capacity, ionized, radiation, first, last, threads=1, **options)
+    parallel = evolve_interval(capacity, ionized, radiation, first, last, threads=8, **options)
+    np.testing.assert_array_equal(parallel["ionized"], serial["ionized"])
+    np.testing.assert_array_equal(parallel["photons"], serial["photons"])
+    assert parallel["ledger"] == serial["ledger"]
+    assert parallel["steps"] == serial["steps"]
 
 
 @pytest.mark.parametrize(("photons", "coefficient", "absorbed"), [
@@ -135,6 +195,10 @@ def test_invalid_input_rejected() -> None:
         evolve_interval(capacity, zero, np.zeros((6, 4, 4, 4)), -capacity, zero, **kwargs)
     with pytest.raises(ValueError, match="CFL"):
         evolve_interval(capacity, zero, np.zeros((6, 4, 4, 4)), zero, zero, cfl=1.1, **kwargs)
+    with pytest.raises(ValueError, match="Threads"):
+        evolve_interval(capacity, zero, np.zeros((6, 4, 4, 4)), zero, zero, threads=0, **kwargs)
+    with pytest.raises(ValueError, match="Angular direction count"):
+        evolve_interval(capacity, zero, np.zeros((25, 4, 4, 4)), zero, zero, **kwargs)
 
 
 def test_reaction_semigroup_and_photon_limited_absorption() -> None:

@@ -6,23 +6,33 @@ parent=${PC_RUNTIME_PARENT:-}
 while (( $# )); do
     case "$1" in
         --submit) submit=true; shift ;;
+        --convergence) export PC_PROFILE=convergence; shift ;;
         --parent) parent=${2:?Supply a completed runtime parent}; shift 2 ;;
         --help)
-            echo 'Usage: bash research/pc_matched/gadi_prepare.sh [--parent RUN] [--submit]'
+            echo 'Usage: bash research/pc_matched/gadi_prepare.sh [--convergence] [--parent RUN] [--submit]'
             echo 'Uses an existing native21cmFAST runtime; no C2-Ray or environment installation.'
             echo 'Outdated native sources are rebuilt from the frozen archive inside the PBS job.'
             echo 'PC_PYTHON/PC_RUNTIME_ENV override interpreter/modules; explicit PC_PYTHON can run without modules.'
             echo 'Direct finite-volume photon-number RT with native effective atom counts and a single H-opacity absorber.'
             echo 'Defaults: 8^3 cells, 50 cMpc, seeds111/222, z20->4, 40 source intervals, 18 eV photons.'
             echo 'Five RT histories per seed: 6/26 directions, spatial refinements1/2, CFL0.4/0.2/0.1.'
+            echo '--convergence or PC_PROFILE=convergence selects 18 histories: 24/96/384 directions, refinements1/2/4, 40/80/160 source intervals.'
             echo 'PC_DIMENSION/BOX_LEN/SEEDS/Z_START/Z_END/BASE_INTERVALS/REFERENCE_Z override the experiment.'
-            echo 'PC_DIRECTIONS/REFINEMENTS/CFL_VALUES/PHOTON_ENERGY_EV select the RT resolution study.'
-            echo 'PC_THREADS/MEM/MEMORY_GB/WALLTIME: 16/64GB/48/12:00:00.'
+            echo 'PC_DIRECTIONS/REFINEMENTS/CFL_VALUES/SOURCE_STRIDES/PHOTON_ENERGY_EV select the RT resolution study.'
+            echo 'PC_THREADS/MEM/MEMORY_GB/WALLTIME: pilot16/64GB/48/12:00:00; convergence8/32GB/24/24:00:00.'
             echo 'PC_MATCHED_RUN_ROOT/PARENT_ROOT/PROJECT/STORAGE/QUEUE override paths and allocation.'
             exit 0 ;;
         *) echo "Unknown argument: $1" >&2; exit 2 ;;
     esac
 done
+case ${PC_PROFILE:-pilot} in
+    pilot) pc_default_mem=64GB; pc_default_walltime=12:00:00 ;;
+    convergence) pc_default_mem=32GB; pc_default_walltime=24:00:00 ;;
+    *) echo 'PC_PROFILE must be pilot or convergence.' >&2; exit 2 ;;
+esac
+export PC_PROFILE=${PC_PROFILE:-pilot}
+export PC_MEM=${PC_MEM:-$pc_default_mem}
+export PC_WALLTIME=${PC_WALLTIME:-$pc_default_walltime}
 repo=$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)
 git -C "$repo" diff --quiet HEAD -- || { echo 'Commit tracked changes before preparing.' >&2; exit 2; }
 untracked=$(git -C "$repo" ls-files --others --exclude-standard -- research/pc_matched)

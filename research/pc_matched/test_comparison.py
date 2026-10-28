@@ -288,3 +288,233 @@ def test_balanced_counts_cannot_ionize_more_atoms_than_exist(tmp_path: Path) -> 
     _replace_case(root, fields)
     with pytest.raises(ValueError, match="exceeds local atom capacity"):
         build_report(root, make_plot=False)
+
+
+def _convergence_fixture(root: Path) -> Path:
+    _fixture(root)
+    with np.load(root / "history.npz") as archive:
+        history = {key: archive[key] for key in archive.files}
+    metadata = json.loads(str(history.pop("metadata").item()))
+    capacity = history["capacity"]
+    times = np.linspace(0, 2, 9)
+    pattern = history["rates"][0] / 0.1
+    history.update(
+        rates=np.stack([(0.08 + 0.32 * t + 0.1 * t**2) * pattern for t in times]),
+        times_seconds=times,
+        redshifts=10 - 2 * times,
+        native_xhi=np.stack(
+            [np.full_like(capacity, 1 - 0.45 * t) for t in times]
+        ).astype(np.float32),
+    )
+    metadata["array_sha256"] = {key: array_hash(history[key]) for key in ARRAY_KEYS}
+    fixture = root / "history.npz"
+    np.savez_compressed(fixture, **history, metadata=np.asarray(json.dumps(metadata)))
+    settings = [(384, f, 0.4, 1) for f in (1, 2, 4)]
+    settings += [(d, 4, 0.4, 1) for d in (24, 96)]
+    settings += [(384, 4, c, 1) for c in (0.2, 0.1)]
+    settings += [(384, 4, 0.1, s) for s in (4, 2)]
+    cases = []
+    for i, (directions, refinement, cfl, stride) in enumerate(settings):
+        nodes = np.arange(len(times))
+        knots = np.arange(0, len(times), stride)
+        coefficients = np.interp(
+            times, times[knots], 0.08 + 0.32 * times[knots] + 0.1 * times[knots] ** 2
+        )
+        rates = coefficients[:, None, None, None] * pattern
+        dt = np.diff(times)[:, None, None, None]
+        emitted = np.concatenate(
+            [
+                np.zeros_like(rates[:1]),
+                np.cumsum(0.5 * (rates[:-1] + rates[1:]) * dt, axis=0),
+            ]
+        )
+        ionized = np.minimum(0.8 * emitted, capacity)
+        setting = {
+            "directions": directions,
+            "refinement": refinement,
+            "cfl": cfl,
+            "source_stride": stride,
+        }
+        fields = {
+            "capacity": _refine(capacity, refinement),
+            "ionized": _refine(ionized, refinement),
+            "radiation": _refine(emitted - ionized, refinement),
+            "source_emitted": _refine(emitted, refinement),
+            "redshifts": history["redshifts"][nodes],
+            "times_seconds": times[nodes],
+            "metadata": np.asarray(
+                json.dumps(
+                    {
+                        "setting": setting,
+                        "seed": 111,
+                        "fixture_sha256": _digest(fixture),
+                        "box_len_cMpc": 50.0,
+                        "native_snapshot_indices": nodes.tolist(),
+                        "source_knot_indices": knots.tolist(),
+                    }
+                )
+            ),
+        }
+        path = root / f"case{i}.npz"
+        np.savez_compressed(path, **fields)
+        cases.append(
+            dict(
+                seed=111,
+                **setting,
+                path=str(path),
+                sha256=_digest(path),
+                case_id=f"case{i}",
+            )
+        )
+    _json(
+        root / "matrix.json",
+        {
+            "configuration": {"profile": "convergence"},
+            "cases": cases,
+            "fixtures": [
+                {"seed": 111, "path": str(fixture), "sha256": _digest(fixture)}
+            ],
+        },
+    )
+    return root
+
+
+def test_refinements_align_sampled_source_histories_by_physical_time(
+    tmp_path: Path,
+) -> None:
+    """Sampling changes emission while background and comparison times stay fixed."""
+    root = _convergence_fixture(tmp_path / "convergence")
+    matrix = json.loads((root / "matrix.json").read_text())
+    matrix["cases"].reverse()
+    _json(root / "matrix.json", matrix)
+    report = build_report(root, make_plot=False)
+    case = report["cases"][0]
+    assert case["selected_teacher"]["source_stride"] == 1
+    assert case["selected_teacher"]["cfl"] == 0.1
+    assert case["selected_teacher"]["refinement"] == 4
+    refinements = case["refinement_comparisons"]
+    assert len(refinements) == 8
+    assert {row["kind"] for row in refinements} == {
+        "spatial",
+        "angular",
+        "temporal",
+        "source_history",
+    }
+    for row in refinements:
+        keys = ("directions", "refinement", "cfl", "source_stride")
+        assert sum(row["coarse"][key] != row["fine"][key] for key in keys) == 1
+        assert all(
+            len(r["spectra"]["modes"]) == len(r["primary_bins"])
+            for r in row["checkpoints"]
+        )
+    source = next(
+        row
+        for row in refinements
+        if row["kind"] == "source_history" and row["coarse"]["source_stride"] == 4
+    )
+    assert [row["node_index"] for row in source["checkpoints"]] == list(range(9))
+    assert [row["time_seconds"] for row in source["checkpoints"]] == np.linspace(
+        0, 2, 9
+    ).tolist()
+    assert source["checkpoints"][4]["field_MAE"] > 0
+    assert report["summary"]["convergence_certified"] is False
+    assert (
+        case["self_convergence_summary"]["source_history"]["adjacent_comparisons"] == 2
+    )
+
+
+def test_false_subsampled_snapshot_indices_are_rejected(tmp_path: Path) -> None:
+    """A matching array index cannot replace matching physical time and redshift."""
+    root = _convergence_fixture(tmp_path / "convergence")
+    with np.load(root / "case7.npz") as archive:
+        fields = {key: archive[key] for key in archive.files}
+    metadata = json.loads(str(fields["metadata"].item()))
+    metadata["native_snapshot_indices"] = [0, 1, 2]
+    fields["metadata"] = np.asarray(json.dumps(metadata))
+    _replace_case(root, fields, 7)
+    with pytest.raises(ValueError, match="snapshot indices"):
+        build_report(root, make_plot=False)
+
+
+def test_matched_neutral_fraction_interpolates_fields_with_common_amplitude() -> None:
+    """Different matching epochs must not inject a redshift-amplitude difference."""
+    from research.pc_matched.comparison import _matched_mean_neutral
+
+    capacity = np.ones((8, 8, 8))
+    x, _, _ = np.indices(capacity.shape)
+    shape = 0.1 * np.cos(2 * np.pi * x / 8)
+    history = {
+        "capacity": capacity,
+        "redshifts": np.array([10.0, 8.0, 6.0]),
+        "times_seconds": np.array([0.0, 1.0, 2.0]),
+        "metadata": {"box_len_cMpc": 50.0},
+    }
+
+    def model(means: list[float], contrasts: tuple[float, ...] = (1, 1, 1)) -> dict:
+        return {
+            "fields": {
+                i: {
+                    "ionized": 1 - mean - contrasts[i] * shape,
+                    "time_seconds": float(i),
+                    "redshift": float(history["redshifts"][i]),
+                }
+                for i, mean in enumerate(means)
+            }
+        }
+
+    rows = _matched_mean_neutral(
+        model([0.9, 0.5, 0.3], (0, 4 / 3, 1)),
+        model([0.8, 0.7, 0.4]),
+        history,
+        targets=(0.6, 0.2),
+    )
+    assert rows[0]["available"] is True
+    assert rows[0]["field_MAE"] < 1e-14
+    assert rows[0]["common_brightness_amplitude_mK"] == 27
+    assert (
+        rows[0]["comparison_interpolation"]["time_seconds"]
+        != rows[0]["reference_interpolation"]["time_seconds"]
+    )
+    assert rows[0]["spectra"]["ratio_comparison"][0] == pytest.approx(1, abs=1e-14)
+    assert rows[0]["is_training_label"] is False
+    assert rows[1]["available"] is False
+    assert (
+        rows[1]["reason"]
+        == "Target is not bracketed in both saved histories; no extrapolation"
+    )
+
+
+def test_workflow_source_history_hash_is_independently_verified(tmp_path: Path) -> None:
+    """Real workflow hashes agree, while rehashing a false rate payload cannot pass."""
+    from research.pc_evolution.native_history import load_history
+    from research.pc_matched.workflow import source_history
+
+    root = _convergence_fixture(tmp_path / "convergence")
+    fixture = root / "history.npz"
+    history = load_history(fixture)
+    _, definition = source_history(history, 4, _digest(fixture))
+    with np.load(root / "case7.npz") as archive:
+        fields = {key: archive[key] for key in archive.files}
+    metadata = json.loads(str(fields["metadata"].item()))
+    metadata.update(
+        source_history=definition,
+        source_history_sha256=definition["source_history_sha256"],
+    )
+    fields["metadata"] = np.asarray(json.dumps(metadata))
+    _replace_case(root, fields, 7)
+    assert build_report(root, make_plot=False)["all_photon_ledgers_passed"]
+    definition["arrays_sha256"]["rates"] = "0" * 64
+    payload = {
+        key: value
+        for key, value in definition.items()
+        if key != "source_history_sha256"
+    }
+    digest = hashlib.sha256(
+        json.dumps(payload, sort_keys=True, allow_nan=False).encode()
+    ).hexdigest()
+    definition["source_history_sha256"] = digest
+    metadata["source_history_sha256"] = digest
+    fields["metadata"] = np.asarray(json.dumps(metadata))
+    _replace_case(root, fields, 7)
+    with pytest.raises(ValueError, match="independently reconstructed rates"):
+        build_report(root, make_plot=False)

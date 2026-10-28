@@ -126,3 +126,43 @@ def test_shell_requires_build_dependencies_only_for_rebuild(tmp_path: Path, rebu
     if rebuild:
         assert "required build dependencies cffi and setuptools" in result.stdout + result.stderr
         assert "No job was submitted" in result.stdout + result.stderr
+
+
+@pytest.mark.parametrize("overrides", [False, True])
+def test_convergence_flag_reaches_preparer_and_preserves_resources(tmp_path: Path, overrides: bool) -> None:
+    """Freeze the requested profile and submit its resolved resource overrides."""
+    repo = tmp_path / "repo"
+    scripts = repo / "research/pc_matched"
+    scripts.mkdir(parents=True)
+    for name in ("gadi_prepare.sh", "runtime_select.py"):
+        shutil.copyfile(SOURCE / name, scripts / name)
+    for name in ("workflow.py", "gadi_run.pbs"):
+        (scripts / name).touch()
+    (scripts / "prepare_run.py").write_text(
+        "import json, os, pathlib, sys\n"
+        "run = pathlib.Path(sys.argv[-1])\n"
+        "assert os.environ['PC_PROFILE'] == 'convergence'\n"
+        "(run / 'run_manifest.json').write_text(json.dumps({'native_rebuild': False}))\n"
+        "config = {'threads': int(os.environ.get('PC_THREADS', '8'))}\n"
+        "(run / 'experiment_config.json').write_text(json.dumps(config))\n"
+    )
+    for args in (["init", "-q"], ["add", "."],
+                 ["-c", "user.name=Test", "-c", "user.email=test@example.invalid",
+                  "commit", "-qm", "Convergence profile fixture"]):
+        subprocess.run(["git", *args], cwd=repo, check=True, capture_output=True)
+    binaries = tmp_path / "bin"
+    binaries.mkdir()
+    submitted = tmp_path / "qsub-arguments"
+    qsub = binaries / "qsub"
+    qsub.write_text(f'#!/bin/bash\nprintf "%s\\n" "$@" > {shlex.quote(str(submitted))}\necho test.job\n')
+    qsub.chmod(0o700)
+    environment = {key: value for key, value in os.environ.items() if not key.startswith("PC_")}
+    environment.update(PATH=str(binaries) + os.pathsep + os.environ["PATH"], PC_PROFILE="pilot",
+                       PC_PYTHON=sys.executable, PC_MATCHED_RUN_ROOT=str(tmp_path / "runs"))
+    if overrides:
+        environment.update(PC_THREADS="2", PC_MEM="8GB", PC_MEMORY_GB="6", PC_WALLTIME="01:00:00")
+    result = subprocess.run(["bash", str(scripts / "gadi_prepare.sh"), "--convergence", "--submit"],
+                            cwd=repo, env=environment, capture_output=True, text=True, check=False)
+    assert result.returncode == 0, result.stdout + result.stderr
+    expected = "ncpus=2,mem=8GB,walltime=01:00:00" if overrides else "ncpus=8,mem=32GB,walltime=24:00:00"
+    assert expected in submitted.read_text()

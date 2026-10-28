@@ -53,6 +53,8 @@ def test_missing_native_runtime_reports_parent_cycle(tmp_path: Path) -> None:
 def test_default_configuration_and_overrides() -> None:
     """Defaults are the small common-source experiment, not production scales."""
     config = prepare_run.configuration({})
+    assert config["profile"] == "pilot"
+    assert config["source_strides"] == [1]
     assert config["dimension"] == 8
     assert config["seeds"] == [111, 222]
     assert config["base_intervals"] == 10
@@ -68,12 +70,35 @@ def test_default_configuration_and_overrides() -> None:
         prepare_run.configuration({"PC_MEMORY_GB": "nan"})
     with pytest.raises(ValueError, match="PC_MEMORY_GB"):
         prepare_run.configuration({"PC_MEM": "32GB"})
-    with pytest.raises(ValueError, match="directions"):
+    with pytest.raises(ValueError, match="direction"):
         prepare_run.configuration({"PC_DIRECTIONS": "6,7"})
-    with pytest.raises(ValueError, match="cfl_values"):
+    with pytest.raises(ValueError, match=r"(?i)cfl"):
         prepare_run.configuration({"PC_CFL_VALUES": "0.4,0"})
-    with pytest.raises(ValueError, match="photon_energy_ev"):
+    with pytest.raises(ValueError, match=r"(?i)photon"):
         prepare_run.configuration({"PC_PHOTON_ENERGY_EV": "12"})
+
+
+def test_convergence_profile_and_explicit_overrides() -> None:
+    """Select a complete convergence matrix while preserving explicit resources."""
+    config = prepare_run.configuration({"PC_PROFILE": "convergence"})
+    assert config["profile"] == "convergence"
+    assert config["base_intervals"] == 40
+    assert config["directions"] == [24, 96, 384]
+    assert config["refinements"] == [1, 2, 4]
+    assert config["source_strides"] == [4, 2, 1]
+    assert config["threads"] == 8
+    assert config["memory_gb"] == 24
+    custom = prepare_run.configuration({"PC_PROFILE": "convergence", "PC_SEEDS": "321",
+                                        "PC_THREADS": "2", "PC_MEM": "8GB", "PC_MEMORY_GB": "6"})
+    assert custom["seeds"] == [321]
+    assert custom["threads"] == 2
+    assert custom["memory_gb"] == 6
+    with pytest.raises(ValueError, match=r"(?i)profile"):
+        prepare_run.configuration({"PC_PROFILE": "unknown"})
+    with pytest.raises(ValueError, match="stride"):
+        prepare_run.configuration({"PC_PROFILE": "convergence", "PC_SOURCE_STRIDES": "3,2,1"})
+    with pytest.raises(ValueError, match="array allocation"):
+        prepare_run.configuration({"PC_PROFILE": "convergence", "PC_DIMENSION": "128"})
 
 
 def test_native_sources_must_match_archive(tmp_path: Path) -> None:

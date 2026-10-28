@@ -26,22 +26,6 @@ if __package__:
 else:
     from runtime_select import select_runtime
 
-DEFAULTS = {
-    "dimension": 8,
-    "box_len": 50.0,
-    "seeds": [111, 222],
-    "z_start": 20.0,
-    "z_end": 4.0,
-    "base_intervals": 10,
-    "reference_z": 8.0,
-    "directions": [6, 26],
-    "refinements": [1, 2],
-    "cfl_values": [0.4, 0.2, 0.1],
-    "photon_energy_ev": 18.0,
-    "threads": 16,
-    "memory_gb": 48.0,
-}
-
 
 def _digest(path: Path) -> str:
     with path.open("rb") as stream:
@@ -67,38 +51,32 @@ def configuration(environment: Mapping[str, str]) -> dict:
     dict
         Validated arguments for the matched workflow.
     """
-    config = {}
-    for key, default in DEFAULTS.items():
+    if __package__:
+        from .workflow import configuration as scientific_configuration
+        from .workflow import resource_estimate
+    else:
+        from workflow import configuration as scientific_configuration
+        from workflow import resource_estimate
+    profile = environment.get("PC_PROFILE", "pilot")
+    defaults = scientific_configuration(profile=profile)
+    overrides = {}
+    for key, default in defaults.items():
+        if key == "profile":
+            continue
         value = environment.get("PC_" + key.upper())
         if value is None:
-            config[key] = default.copy() if isinstance(default, list) else default
-        elif isinstance(default, list):
-            config[key] = [type(default[0])(item) for item in value.replace(",", " ").split()]
+            continue
+        if isinstance(default, list):
+            overrides[key] = [type(default[0])(item) for item in value.replace(",", " ").split()]
         else:
-            config[key] = type(default)(value)
-    for key in ("dimension", "base_intervals", "threads"):
-        if config[key] < (4 if key == "dimension" else 1):
-            raise ValueError(f"Invalid {key}")
-    if config["threads"] > 32:
-        raise ValueError("threads must not exceed 32")
-    for key in ("seeds", "directions", "refinements"):
-        values = config[key]
-        if not values or len(values) != len(set(values)) or min(values) < 1:
-            raise ValueError(f"{key} must be distinct positive integers")
-    if len(config["directions"]) < 2 or not set(config["directions"]) <= {6, 26}:
-        raise ValueError("directions must contain both supported quadratures: 6 and 26")
-    cfl_values = config["cfl_values"]
-    if (len(cfl_values) < 2 or len(cfl_values) != len(set(cfl_values))
-            or any(not math.isfinite(value) or not 0 < value <= 1 for value in cfl_values)):
-        raise ValueError("cfl_values must contain at least two distinct finite values in (0, 1]")
-    for key in ("box_len", "z_start", "z_end", "reference_z", "memory_gb", "photon_energy_ev"):
-        if not math.isfinite(config[key]):
-            raise ValueError(f"Invalid {key}")
-    if config["box_len"] <= 0 or config["memory_gb"] <= 0:
-        raise ValueError("box_len and memory_gb must be positive")
-    if config["photon_energy_ev"] < 13.6:
-        raise ValueError("photon_energy_ev must reach the hydrogen ionization threshold")
-    allocation = environment.get("PC_MEM", "64GB")
+            overrides[key] = type(default)(value)
+            if isinstance(default, float) and not math.isfinite(overrides[key]):
+                raise ValueError(f"Invalid {key}")
+    config = scientific_configuration(profile=profile, **overrides)
+    estimate = resource_estimate(config)
+    if estimate["max_array_gib"] > config["memory_gb"]:
+        raise ValueError("Estimated RT array allocation exceeds PC_MEMORY_GB")
+    allocation = environment.get("PC_MEM", "32GB" if profile == "convergence" else "64GB")
     matched = re.fullmatch(r"([0-9]+(?:\.[0-9]+)?)\s*(GB|GIB|MB|MIB|TB|TIB)", allocation.upper())
     if matched is None:
         raise ValueError("PC_MEM must specify a positive MB/GB/TB allocation")
@@ -107,10 +85,6 @@ def configuration(environment: Mapping[str, str]) -> dict:
     allocated_bytes = float(matched[1]) * factors[matched[2]]
     if config["memory_gb"] * 2**30 + 2**30 > allocated_bytes:
         raise ValueError("PC_MEMORY_GB must leave at least 1 GiB below PC_MEM")
-    if not config["z_start"] > config["z_end"] >= 0:
-        raise ValueError("redshift interval must descend to a nonnegative endpoint")
-    if not config["z_end"] <= config["reference_z"] <= config["z_start"]:
-        raise ValueError("reference_z must lie within the simulated interval")
     return config
 
 
@@ -217,6 +191,10 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict:
     if (run / "PREPARED").exists() or (run / "run_manifest.json").exists():
         raise FileExistsError("Use a fresh run directory")
     config = configuration(environment)
+    if __package__:
+        from .workflow import resource_estimate
+    else:
+        from workflow import resource_estimate
     python = (run / "python_path.txt").read_text().strip()
     fingerprint = runtime_fingerprint(run / "source", python, require_native_match=False)
     _write_json(run / "experiment_config.json", config)
@@ -227,6 +205,7 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict:
         "commit": (run / "commit.txt").read_text().strip(),
         "python": python,
         "configuration": config,
+        "resource_estimate": resource_estimate(config),
         "source_sha256": _footprint(run / "source"),
         "runtime": fingerprint,
         "native_rebuild": not fingerprint["native_source_matches"],
@@ -390,7 +369,8 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "prepare":
         result = prepare(args.run, os.environ)
         sys.stdout.write(json.dumps({"prepared": result["run"], "configuration": result["configuration"],
-                                   "native_rebuild_on_compute_node": result["native_rebuild"]}) + "\n")
+                                   "native_rebuild_on_compute_node": result["native_rebuild"],
+                                   "resource_estimate": result["resource_estimate"]}) + "\n")
     elif args.command == "verify":
         verify(args.run, cpus=args.cpus)
     elif args.command == "register-native":
