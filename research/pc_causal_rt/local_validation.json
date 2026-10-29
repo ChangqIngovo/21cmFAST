@@ -1,0 +1,336 @@
+{
+  "Gadi_submission": "Not submitted from this runtime: gadi.nci.org.au DNS resolution failed",
+  "actual_native_continuous_run": {
+    "all_interval_ledgers_passed": true,
+    "all_native_history_audits_passed": true,
+    "all_saved_field_ledgers_passed": true,
+    "cases": [
+      {
+        "case_id": "seed111_d24_f1_cfl0.4_t2_s1",
+        "elapsed_seconds": 9.641598296000211,
+        "final_xHI_volume": 0.013061939806706793,
+        "maximum_photon_residual": 4.647703788124425e-16
+      },
+      {
+        "case_id": "seed111_d96_f1_cfl0.4_t2_s1",
+        "elapsed_seconds": 11.602168999000241,
+        "final_xHI_volume": 0.017033618135413254,
+        "maximum_photon_residual": 1.126439027621012e-15
+      },
+      {
+        "case_id": "seed111_d96_f2_cfl0.4_t2_s1",
+        "elapsed_seconds": 100.66325398799972,
+        "final_xHI_volume": 0.018924751687835112,
+        "maximum_photon_residual": 5.833805537478543e-15
+      },
+      {
+        "case_id": "seed222_d24_f1_cfl0.4_t2_s1",
+        "elapsed_seconds": 7.304612575000192,
+        "final_xHI_volume": 0.040528795720621846,
+        "maximum_photon_residual": 3.6078492696311795e-16
+      },
+      {
+        "case_id": "seed222_d96_f1_cfl0.4_t2_s1",
+        "elapsed_seconds": 10.787464357999852,
+        "final_xHI_volume": 0.04845935592251093,
+        "maximum_photon_residual": 7.617376601615759e-16
+      },
+      {
+        "case_id": "seed222_d96_f2_cfl0.4_t2_s1",
+        "elapsed_seconds": 99.61587648600016,
+        "final_xHI_volume": 0.05109961884180579,
+        "maximum_photon_residual": 5.2599790930289286e-15
+      }
+    ],
+    "completed_run_receipt_reuse_passed": true,
+    "configuration": {
+      "box_len": 50.0,
+      "checkpoint_stride": 4,
+      "dimension": 8,
+      "highres_dimension": null,
+      "max_steps": 1000000,
+      "native_inputs_json": null,
+      "photon_energy_ev": 18.0,
+      "seeds": [
+        111,
+        222
+      ],
+      "settings": [
+        {
+          "cfl": 0.4,
+          "directions": 24,
+          "refinement": 1,
+          "source_stride": 1,
+          "time_substeps": 2
+        },
+        {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 1,
+          "source_stride": 1,
+          "time_substeps": 2
+        },
+        {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 2,
+          "source_stride": 1,
+          "time_substeps": 2
+        }
+      ],
+      "source_intervals": 80,
+      "threads": 4,
+      "tolerance": 0.01,
+      "z_end": 5.0,
+      "z_start": 25.0
+    },
+    "continuous_cases": 6,
+    "convergence_certified": false,
+    "maximum_atom_residual": 6.223320470064462e-17,
+    "maximum_native_density_difference": 1.8752292607615573e-07,
+    "maximum_photon_residual": 5.8277063739468266e-15,
+    "native_snapshots": 162,
+    "numerical_comparisons": [
+      {
+        "axes": {
+          "cfl": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "directions": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "refinement": {
+            "adjacent_comparisons": 1,
+            "comparisons": [
+              {
+                "active_checkpoints": 2,
+                "axis": "refinement",
+                "checkpoints": [
+                  {
+                    "field_MAE": 0.0006304545338920026,
+                    "maximum_primary_power_error": 0.012470254112853518,
+                    "node": 72,
+                    "primary_bin_count": 1,
+                    "redshift": 7.0,
+                    "source_L1_relative_error": 0.0,
+                    "undefined_primary_bins": 0
+                  },
+                  {
+                    "field_MAE": 0.007766820673110746,
+                    "maximum_primary_power_error": 0.016629717352592888,
+                    "node": 76,
+                    "primary_bin_count": 1,
+                    "redshift": 6.0,
+                    "source_L1_relative_error": 0.0,
+                    "undefined_primary_bins": 0
+                  }
+                ],
+                "coarse": "seed111_d96_f1_cfl0.4_t2_s1",
+                "fine": "seed111_d96_f2_cfl0.4_t2_s1",
+                "passed": false,
+                "primary_power_band": {
+                  "bin_count": 1,
+                  "maximum_bound_cMpc_inv": 0.25132741228718347,
+                  "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+                  "minimum_bound_cMpc_inv": 0.12566370614359174,
+                  "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+                  "modes_per_bin": [
+                    18
+                  ],
+                  "shell_centres_cMpc_inv": [
+                    0.16036478039875368
+                  ]
+                },
+                "primary_power_bin_checks": 2,
+                "undefined_active_power_bins": 0,
+                "worst_field_MAE": 0.007766820673110746,
+                "worst_primary_power_error": 0.016629717352592888,
+                "worst_source_L1_relative_error": 0.0
+              }
+            ],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "source_stride": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "time_substeps": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          }
+        },
+        "finest_anchor": {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 2,
+          "source_stride": 1,
+          "time_substeps": 2
+        },
+        "numerical_convergence_certified": false,
+        "seed": 111
+      },
+      {
+        "axes": {
+          "cfl": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "directions": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "refinement": {
+            "adjacent_comparisons": 1,
+            "comparisons": [
+              {
+                "active_checkpoints": 2,
+                "axis": "refinement",
+                "checkpoints": [
+                  {
+                    "field_MAE": 0.000606363065216226,
+                    "maximum_primary_power_error": 0.0025659819392707117,
+                    "node": 72,
+                    "primary_bin_count": 1,
+                    "redshift": 7.0,
+                    "source_L1_relative_error": 0.0,
+                    "undefined_primary_bins": 0
+                  },
+                  {
+                    "field_MAE": 0.006307102385631681,
+                    "maximum_primary_power_error": 0.013088196373933103,
+                    "node": 76,
+                    "primary_bin_count": 1,
+                    "redshift": 6.0,
+                    "source_L1_relative_error": 0.0,
+                    "undefined_primary_bins": 0
+                  }
+                ],
+                "coarse": "seed222_d96_f1_cfl0.4_t2_s1",
+                "fine": "seed222_d96_f2_cfl0.4_t2_s1",
+                "passed": false,
+                "primary_power_band": {
+                  "bin_count": 1,
+                  "maximum_bound_cMpc_inv": 0.25132741228718347,
+                  "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+                  "minimum_bound_cMpc_inv": 0.12566370614359174,
+                  "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+                  "modes_per_bin": [
+                    18
+                  ],
+                  "shell_centres_cMpc_inv": [
+                    0.16036478039875368
+                  ]
+                },
+                "primary_power_bin_checks": 2,
+                "undefined_active_power_bins": 0,
+                "worst_field_MAE": 0.006307102385631681,
+                "worst_primary_power_error": 0.013088196373933103,
+                "worst_source_L1_relative_error": 0.0
+              }
+            ],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "source_stride": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          },
+          "time_substeps": {
+            "adjacent_comparisons": 0,
+            "comparisons": [],
+            "passed": false,
+            "two_adjacent_steps_available": false
+          }
+        },
+        "finest_anchor": {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 2,
+          "source_stride": 1,
+          "time_substeps": 2
+        },
+        "numerical_convergence_certified": false,
+        "seed": 222
+      }
+    ]
+  },
+  "analytic_radiation_benchmark": {
+    "MUSCL_MAE": [
+      0.0265,
+      0.00897,
+      0.0026,
+      0.000669
+    ],
+    "description": "traveling and attenuated smooth Fourier mode; normalized radiation-field MAE, not 21cm power error",
+    "grid": [
+      8,
+      16,
+      32,
+      64
+    ],
+    "old_upwind_MAE_first_three": [
+      0.06024,
+      0.03243,
+      0.0169
+    ]
+  },
+  "frozen_pbs_body": {
+    "completed_reuse_passed": true,
+    "configuration": {
+      "box_len": 50.0,
+      "checkpoint_stride": 2,
+      "dimension": 4,
+      "highres_dimension": null,
+      "max_steps": 1000000,
+      "native_inputs_json": null,
+      "photon_energy_ev": 18.0,
+      "seeds": [
+        111
+      ],
+      "settings": [
+        {
+          "cfl": 0.4,
+          "directions": 24,
+          "refinement": 1,
+          "source_stride": 1,
+          "time_substeps": 2
+        }
+      ],
+      "source_intervals": 4,
+      "threads": 2,
+      "tolerance": 0.01,
+      "z_end": 7.0,
+      "z_start": 10.0
+    },
+    "environment": "local PBS emulation, not a Gadi scheduler submission",
+    "first_execution_passed": true,
+    "maximum_atom_residual": 4.336808689807552e-17,
+    "maximum_photon_residual": 1.6699811155548527e-16,
+    "native_compilation_passed": true
+  },
+  "remaining_validation": "Full independent five-axis numerical ladders and production native-grid/volume validation remain pending; no 1% teacher claim.",
+  "scientific_commit_tested": "b71dde33464d3bf79f089e4effc2e9f44e621384",
+  "scope": "Continuous finite-c effective-atom RT with native instantaneous sources and native 2LPT mass advection; current restricted no-recombination/no-thermal native configuration",
+  "tests": {
+    "causal_rt": 126,
+    "native_snapshot_and_previous_matched": 151,
+    "total_passed": 277
+  }
+}

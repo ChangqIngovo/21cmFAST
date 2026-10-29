@@ -1,5 +1,9 @@
 # Direct RT with identical native snapshot inputs
 
+For continuous native source rates, conservative evolving gas, persistent ions
+and radiation, see [`pc_causal_rt`](../pc_causal_rt/README.md). The experiment
+below remains an independent cumulative-budget snapshot diagnostic.
+
 This experiment compares the **original 21cmFAST ES output** with direct
 finite-volume radiation transfer using exactly the same snapshot's additive
 `EmissivityFields.n_ion` and evolved density. It addresses the source-budget and
