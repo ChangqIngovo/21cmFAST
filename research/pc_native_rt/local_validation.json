@@ -1,0 +1,323 @@
+{
+  "convergence_certified": false,
+  "default_actual_native_run": {
+    "all_exhaustion_checks_passed": true,
+    "all_native_input_audits_passed": true,
+    "all_photon_ledgers_passed": true,
+    "cases": 12,
+    "configuration": {
+      "box_len": 50.0,
+      "dimension": 8,
+      "exhaustion_tolerance": 1e-06,
+      "highres_dimension": null,
+      "injection_box_crossings": 0.0,
+      "max_box_crossings": 20.0,
+      "max_steps": 1000000,
+      "native_inputs_json": null,
+      "photon_energy_ev": 18.0,
+      "redshifts": [
+        10.0,
+        9.0,
+        8.0,
+        7.0,
+        6.0,
+        5.0
+      ],
+      "seeds": [
+        111,
+        222
+      ],
+      "settings": [
+        {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 1
+        }
+      ],
+      "threads": 8
+    },
+    "maximum_ledger_relative_residual": 2.316643127516938e-16,
+    "snapshots": [
+      {
+        "capacity_sha256": "775ed72b0718945d5e974db1b0315b79cb1bacedb179734b602f38a792dab9fc",
+        "native_es_xHI_volume": 0.9158326372198644,
+        "redshift": 10.0,
+        "rt_xHI_volume": 0.9158326324018748,
+        "seed": 111,
+        "source_per_atom": 0.0915669982114127,
+        "source_sha256": "f474b43cf5d3b4c0a9052c0c7215e51f85d7a28f9bfccaf4394f2e076e0580fc"
+      },
+      {
+        "capacity_sha256": "a7da20e787dca19536d9b9c90e650cd0dff07d70969fd28f450e7c5d66eee4be",
+        "native_es_xHI_volume": 0.8430329045804683,
+        "redshift": 9.0,
+        "rt_xHI_volume": 0.8396809135601113,
+        "seed": 111,
+        "source_per_atom": 0.1754423189455115,
+        "source_sha256": "dbdb2077824a54ba0159bd32b1bc8bc5ad9a7f7e587a443a4f5dcbc7d7699ffa"
+      },
+      {
+        "capacity_sha256": "d9f825f710a043e68e9ff39e59c293ddfb8ea8f6242defb7bf9b2e9ac30a955a",
+        "native_es_xHI_volume": 0.7062090391700622,
+        "redshift": 8.0,
+        "rt_xHI_volume": 0.6891007667308564,
+        "seed": 111,
+        "source_per_atom": 0.33994179308906675,
+        "source_sha256": "ecabfb50e8c24a52c7da353b8c00d638f19590a8ed97abd39ecc6dfd1794f770"
+      },
+      {
+        "capacity_sha256": "2b4769336331945960d3a5f8f4f4c46681fb6f0877279d137cef3612ebab44d5",
+        "native_es_xHI_volume": 0.42427997910999693,
+        "redshift": 7.0,
+        "rt_xHI_volume": 0.3661581019915263,
+        "seed": 111,
+        "source_per_atom": 0.6704582162081627,
+        "source_sha256": "6fdc8abbc5c2fff37afec68c8ceaf68c021f25758a5cc5141b48d04acb68d6f8"
+      },
+      {
+        "capacity_sha256": "6123fbcc729aa012693017ac5dea4e0ce90426b83d8f439ffb6be2f8e8f5a9b2",
+        "native_es_xHI_volume": 0.024645924786454998,
+        "redshift": 6.0,
+        "rt_xHI_volume": 0.0,
+        "seed": 111,
+        "source_per_atom": 1.357555541846784,
+        "source_sha256": "91db84efc78b487a47fabdb88dd3aaa9d64e80f1379cd072d52cdad62bf71614"
+      },
+      {
+        "capacity_sha256": "27da1fd2ffbab5cb5a442c542991f0e9f49027c714f1adc8b25c5de1fd0aa510",
+        "native_es_xHI_volume": 0.0,
+        "redshift": 5.0,
+        "rt_xHI_volume": 0.0,
+        "seed": 111,
+        "source_per_atom": 2.8496767911785947,
+        "source_sha256": "92e9d99d5db81f8e200249071dd3ff4e8b4774c8af53e3a97e2927bd0b6705db"
+      },
+      {
+        "capacity_sha256": "9c709c9f17d202855e83750b57ffc7ecca76b17d9f0ee35b2bda3301c539c3b6",
+        "native_es_xHI_volume": 0.9098088549799286,
+        "redshift": 10.0,
+        "rt_xHI_volume": 0.9094948569508022,
+        "seed": 222,
+        "source_per_atom": 0.10161519137582119,
+        "source_sha256": "c4f23f0ee6fc1d52d310cf8f0923bf39adb9ac969cec4cd2a6124ca1672ae7aa"
+      },
+      {
+        "capacity_sha256": "342c1dbad22e9acbad8feb7438d41f48c4e4c9444cc129fb3b3074027d53f6d2",
+        "native_es_xHI_volume": 0.8325561400088191,
+        "redshift": 9.0,
+        "rt_xHI_volume": 0.8273358333528515,
+        "seed": 222,
+        "source_per_atom": 0.19526567305766065,
+        "source_sha256": "ef86b455d1936e73f6f13e26d2d2a1e0b0be09509fe76d1c0ebb6d0048416a81"
+      },
+      {
+        "capacity_sha256": "b551b005effae2803d9e8a55da2d79f53db38f74368399effb0e996f1d8b8595",
+        "native_es_xHI_volume": 0.6922160228277789,
+        "redshift": 8.0,
+        "rt_xHI_volume": 0.660147907436852,
+        "seed": 222,
+        "source_per_atom": 0.3801811475918306,
+        "source_sha256": "1ecd6eabec47809c6402954ae99a1eec6bb8fc1667190c6ae83d581243d3e3eb"
+      },
+      {
+        "capacity_sha256": "708873a791b52dc490be230975c775e5cec1636350eb51ebfa30fdfcb3461997",
+        "native_es_xHI_volume": 0.3418498866521986,
+        "redshift": 7.0,
+        "rt_xHI_volume": 0.28603061720569745,
+        "seed": 222,
+        "source_per_atom": 0.7553329102068058,
+        "source_sha256": "e4fc60e12b2aef1f9cf2a3d10e25bba7f5d4ab4e20f7040caaaca1154f5c0a51"
+      },
+      {
+        "capacity_sha256": "bb2f0eb2db6cc6270512278047e24a28a3591de791da7946609c1fdab968c001",
+        "native_es_xHI_volume": 0.016769721754826605,
+        "redshift": 6.0,
+        "rt_xHI_volume": 5.188375964764683e-07,
+        "seed": 222,
+        "source_per_atom": 1.5457692657770756,
+        "source_sha256": "4a97591ebc72b669d9e1b429fe9951c55557bb802bc9bcdcdcb8e98440d6a328"
+      },
+      {
+        "capacity_sha256": "e5cd37d264e3c1830fb4a23c9e3bfc2b68ebe6e50ca33471eb835e90b2846e8b",
+        "native_es_xHI_volume": 0.0,
+        "redshift": 5.0,
+        "rt_xHI_volume": 0.0,
+        "seed": 222,
+        "source_per_atom": 3.292888059938618,
+        "source_sha256": "77d78735538d5edb26433e1cd6c821595fd3e6dcae009ff49cd4fa5d0a307808"
+      }
+    ]
+  },
+  "existing_matched_tests_passed": 82,
+  "frozen_pbs_body_test": {
+    "completed_run_reuse_passed": true,
+    "dimension": 4,
+    "directions": 24,
+    "executed_on": "local validation environment, not Gadi scheduler",
+    "first_execution_passed": true,
+    "isolated_native_build_passed": true,
+    "maximum_ledger_relative_residual": 1.0696870866038767e-16,
+    "preparation_passed": true,
+    "redshift": 8,
+    "seed": 111,
+    "threads": 2
+  },
+  "injection_duration_test": {
+    "comparisons": [
+      {
+        "exhausted": true,
+        "field_MAE": 0.0009070605502142187,
+        "ledger": 1.4073989980130446e-16,
+        "power_ratio_first_two_bins": [
+          1.003253399248985,
+          1.012876855882484
+        ],
+        "redshift": 8,
+        "shared_source_sha256": "61a7e420a4ac92f0c2493cb7eec5146f4ea7df98b025ac61d89fb3b254382074"
+      },
+      {
+        "exhausted": true,
+        "field_MAE": 0.006065762063616192,
+        "ledger": 1.7866663141024632e-17,
+        "power_ratio_first_two_bins": [
+          1.0164752267178336,
+          1.0007242978398307
+        ],
+        "redshift": 7,
+        "shared_source_sha256": "74474ff371f578c0506ad546149e41763acf5d39dcc8f59698025fb0afc39722"
+      }
+    ],
+    "scope": "Pulse vs constant injection over one proper box light-crossing time, on exactly the same archived source and density arrays"
+  },
+  "native_code_version": "4.3.2.dev35+ge80aeabb3.d20261029",
+  "new_tests_passed": 69,
+  "refinement_run": {
+    "adjacent_comparisons": [
+      {
+        "absolute_volume_xHI_change": 3.1357025860323517e-06,
+        "comparison": "angle24-96",
+        "max_primary_power_change": 0.0047833205818081925,
+        "redshift": 8.0
+      },
+      {
+        "absolute_volume_xHI_change": 0.00015055850385425895,
+        "comparison": "angle24-96",
+        "max_primary_power_change": 0.016669411899274733,
+        "redshift": 7.0
+      },
+      {
+        "absolute_volume_xHI_change": 1.859699566564288e-06,
+        "comparison": "angle96-384",
+        "max_primary_power_change": 0.0019211458641761325,
+        "redshift": 8.0
+      },
+      {
+        "absolute_volume_xHI_change": 7.124389607970905e-05,
+        "comparison": "angle96-384",
+        "max_primary_power_change": 0.008327574077968247,
+        "redshift": 7.0
+      },
+      {
+        "absolute_volume_xHI_change": 3.1621014843885575e-05,
+        "comparison": "space8-16",
+        "max_primary_power_change": 0.0024246938667655815,
+        "redshift": 8.0
+      },
+      {
+        "absolute_volume_xHI_change": 4.878932694457605e-05,
+        "comparison": "space8-16",
+        "max_primary_power_change": 0.014425418110650678,
+        "redshift": 7.0
+      },
+      {
+        "absolute_volume_xHI_change": 4.6872715868229164e-05,
+        "comparison": "space16-32",
+        "max_primary_power_change": 0.0051720776326247275,
+        "redshift": 8.0
+      },
+      {
+        "absolute_volume_xHI_change": 0.00022672911213578173,
+        "comparison": "space16-32",
+        "max_primary_power_change": 0.023778064993249526,
+        "redshift": 7.0
+      },
+      {
+        "absolute_volume_xHI_change": 1.8972675395190208e-06,
+        "comparison": "cfl0.4-0.2",
+        "max_primary_power_change": 0.0001805387445814599,
+        "redshift": 8.0
+      },
+      {
+        "absolute_volume_xHI_change": 2.245783751742003e-06,
+        "comparison": "cfl0.4-0.2",
+        "max_primary_power_change": 0.0002101235597231632,
+        "redshift": 7.0
+      }
+    ],
+    "all_exhaustion_checks_passed": true,
+    "all_native_input_audits_passed": true,
+    "all_photon_ledgers_passed": true,
+    "cases": 18,
+    "configuration": {
+      "box_len": 50.0,
+      "dimension": 8,
+      "exhaustion_tolerance": 1e-06,
+      "highres_dimension": null,
+      "injection_box_crossings": 0.0,
+      "max_box_crossings": 20.0,
+      "max_steps": 1000000,
+      "native_inputs_json": null,
+      "photon_energy_ev": 18.0,
+      "redshifts": [
+        8.0,
+        7.0,
+        6.0
+      ],
+      "seeds": [
+        111
+      ],
+      "settings": [
+        {
+          "cfl": 0.4,
+          "directions": 24,
+          "refinement": 1
+        },
+        {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 1
+        },
+        {
+          "cfl": 0.4,
+          "directions": 384,
+          "refinement": 1
+        },
+        {
+          "cfl": 0.4,
+          "directions": 384,
+          "refinement": 2
+        },
+        {
+          "cfl": 0.4,
+          "directions": 384,
+          "refinement": 4
+        },
+        {
+          "cfl": 0.2,
+          "directions": 384,
+          "refinement": 4
+        }
+      ],
+      "threads": 4
+    },
+    "maximum_ledger_relative_residual": 1.3400742766865619e-15,
+    "scope": "One seed; primary k=0.16036 and0.28033 cMpc^-1; tests of sampled snapshots only"
+  },
+  "remaining_checks": [
+    "source-grid and box-size convergence",
+    "spatial and angular field convergence over full active range",
+    "RT opacity and emission-order assumptions",
+    "causal evolution and optional native history-dependent physics not implemented"
+  ],
+  "scope": "Local validation of independent native-input coeval RT; not causal time evolution or full native physics support"
+}

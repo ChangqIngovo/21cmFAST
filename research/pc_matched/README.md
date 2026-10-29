@@ -1,5 +1,12 @@
 # Direct radiation transfer with native 21cmFAST sources
 
+**Comparison scope:** this historical experiment integrates `n_ion H/t_STAR`
+and freezes density at z=8. Its RT and custom ES arms share inputs, but its
+original native ES arm does not share their cumulative photon budget or density
+history. Do not use that native/RT offset as a measurement of photon-loss or
+transport alone. See [`../pc_native_rt/README.md`](../pc_native_rt/README.md) for
+the explicitly separate native-input snapshot RT experiment and its limits.
+
 This branch tests a direct radiation-transfer teacher while retaining a shared
 21cmFAST source prescription. The teacher does **not** call excursion-set
 flagging, the previous opaque-front solver, `global-budget`, or C2-Ray. ES is
