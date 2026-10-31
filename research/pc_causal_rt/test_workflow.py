@@ -10,7 +10,7 @@ from research.pc_causal_rt.gas import deposit
 
 
 def small_config(**kwargs):
-    return w.configuration(dict(dimension=4, threads=1, seeds=[111], source_intervals=4,
+    return w.configuration(dict(dimension=4, threads=1, seeds=[111], source_intervals=4, source_mode="instantaneous",
         z_start=10., z_end=7., checkpoint_stride=2,
         settings=[dict(directions=24, refinement=1, cfl=.4, time_substeps=2, source_stride=1)]) | kwargs)
 

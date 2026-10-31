@@ -25,23 +25,48 @@ The independent global ledgers are
 
 \[
 \sum C(t)=\sum C(t_0),\qquad
-\sum I(t)+\sum_mq_m(t)=\int_{t_0}^t\sum j(t')\,dt'.
+\sum I(t)+\sum_mq_m(t)=\sum_p Q_p(t_0)+\int_{t_0}^t\sum j(t')\,dt'.
 \]
 
-The source is the native instantaneous escaped stellar photon rate,
-`j = n_ion * H(z) / t_STAR`, using its native SFR convention. Native `n_ion`
-is not itself a rate. Its independent coeval cumulative proxy generally does
-not equal this time integral. Neither quantity is rescaled to force agreement.
-Original native ES is therefore a contextual comparison. A separate static ES
-control receives the integrated emission-location map; this shares the emitted
-budget but does not become a causal radiation-transfer solution.
+The default `source_mode=native_cumulative` retains the native coeval photon
+budget. Let Q_p(t) be native `n_ion` on a persistent Lagrangian source cell p.
+The source is the positive proper-time increment of Q_p, deposited at that
+source's original 2LPT position. The unchanged native emissivity function exports
+Q_p using a temporary zero-displacement copy of the initial conditions; restoring
+the original displacements must reproduce every archived Eulerian source field
+within native float32 CIC rounding (L1 relative tolerance 1e-6). Source packets
+use the native low-resolution source grid; they are distinct from the high-
+resolution gas mass packets. No native physical parameter or native C routine
+is changed.
+
+Cumulative Q_p is interpolated linearly in proper time. Each interval emits
+(Q_p(t_new)-Q_p(t_old))/dt at midpoint source positions in each matter substep.
+Negative packet increments are rejected, never clipped. A translating constant
+source budget emits no new photons. The first-node Q_p is deposited once as an
+isotropic initial radiation inventory, with neutral initial gas; this is an
+explicit boundary condition, not a reconstruction of the pre-start radiation
+field. Subsequent steps inject only increments. The global ledger is therefore
+initial Q_p plus subsequent emission = ions + radiation, and its total at every
+native node agrees with that node's Q_p sum. At z_start=25 the initial stellar
+budget is tiny; starting later requires checking this boundary condition.
+
+The historical emission-location map and the current-location cumulative native
+source map are saved separately. They generally differ because sources move.
+The static additive ES diagnostic receives the current cumulative source map.
+Native ES and the original SCRIPT reference now use the same cumulative budget
+up to native float32 deposition rounding. Finite-c RT retains photons in flight;
+its ionization history is not forced to follow either coeval allocation model.
+
+`source_mode=instantaneous` preserves the former experimental convention,
+`j = n_ion * H(z) / t_STAR`, for explicit reproduction of older runs. Its time
+integral is not the native coeval cumulative budget. It is no longer the default
+for matching 21cmFAST photon counts.
 
 The native matter-Lambda clock is inverted analytically for intermediate
-redshifts; native growth is evaluated there. Source endpoints interpolate in
-proper time. The source's native Hubble convention includes radiation, as in
-the unchanged source code. Emission before the specified initial redshift is
-not supplied: initially gas is neutral and radiation is zero. Extending that
-initial condition earlier is a separate physical-history sensitivity test.
+redshifts; native growth is evaluated there. Cumulative source endpoints interpolate in
+proper time. The legacy instantaneous option retains its original native Hubble
+convention and zero initial radiation. For the default cumulative option, the
+first-node native photon inventory is included explicitly as described above.
 
 ## Gas motion without changing native smoothing
 
@@ -134,7 +159,33 @@ native extension inside the compute job.
 
 ## Gadi
 
-For the complete numerical ladders, submit each seed separately:
+For the first corrected-source check, reuse the existing native history and
+native binary, without rebuilding 21cmFAST or repeating native source histories:
+
+```bash
+PC_INPUT_RUN=/g/data/qp00/sz4640/21cmfast_runs/causal_rt_5c1b6d8719_20261029T121626_GyH1 \
+PC_MEM=8GB PC_WALLTIME=01:00:00 \
+bash research/pc_causal_rt/gadi_budget_prepare.sh --submit
+```
+
+This freezes a fresh `causal_budget_*` run and uses D96, f1, CFL0.4, four matter
+substeps, and every source knot. Old RT checkpoints are not resumed because
+those used a different source budget. The old native archives are read-only.
+The script additionally runs the original SCRIPT allocation as an external
+comparison, using unchanged native source/density and brightness functions.
+Results include `causal_rt_report.json`, `budget_script_comparison.json` and
+`budget_script_comparison.png`; the comparison includes same-redshift and
+matched-volume-neutral-fraction fields and spectra. A one-hour allocation is
+a limit, not a Gadi runtime measurement. Use the printed `resubmit.sh` for an
+interrupted corrected run. This small check cannot certify convergence.
+
+The archive launcher permits numerical overrides only; it rejects changes to
+native physical inputs. All optional physics that was already disabled in the
+old archive remains outside this experiment's validation scope. SCRIPT is a
+reference, not a replacement for 21cmFAST physical prescriptions.
+
+For the complete numerical ladders with newly generated native histories,
+submit each seed separately:
 
 ```bash
 for seed in 111 222; do
@@ -174,7 +225,7 @@ time/growth functions, interrupted continuous evolution, identical resumed and
 uninterrupted outputs, immutable archives and incomplete convergence matrices.
 Measured results are recorded in `local_validation.json` after integration tests.
 
-The checked implementation passes126 new and151 existing tests. Six actual
+The earlier instantaneous-source implementation passed126 causal and151 existing tests. Six actual
 continuous histories (two seeds, three numerical settings,162 native source
 snapshots) evolved from z=25 to5. Independent source reconstruction and atom/
 photon audits passed; maximum saved photon and atom residuals were5.83e-15 and
@@ -187,3 +238,20 @@ These are execution and consistency results. The preliminary8^3 to16^3
 transport comparison still changed the target power bin by1.66% and1.31% in
 the two seeds. The full five-axis Gadi matrix remains necessary; no1% teacher
 certification has been issued.
+
+## Native cumulative budget validation
+
+The corrected source interface passes164 causal RT tests, including moving
+sources with zero emission, source growth, initial inventory, refinement and
+bitwise restart equivalence. Two actual archived8³ histories (seeds111/222,
+81 native nodes each) were evolved with D96/f1/CFL0.4/t4/s1. All native source
+audits passed; the maximum saved photon-ledger residual was4.16e-15 and the
+maximum cumulative packet-budget residual was8.22e-17. Source totals agree with
+the original deposited float32 native grids within native roundoff.
+
+The local RT cases took20.09s and19.78s, excluding source export and comparison.
+For local seed222 atz7, mass-neutral fractions were0.37017 (RT),0.36242
+(SCRIPT) and0.39749 (native ES). Radiation in flight was0.007743 photons/atom.
+These are local validation data, not Gadi timings or a convergence certificate.
+The full frozen PBS workflow and receipt-preserving resume also passed locally.
+Exact measurements are saved in `native_budget_validation.json`.

@@ -1,7 +1,8 @@
 """Audit continuous RT fields and test successive numerical refinements.
 
-Convergence compares RT to RT at identical cosmic times. Native coeval ES uses
-its own cumulative-source convention and is a contextual comparison only.
+Convergence compares RT to RT at identical cosmic times. Native-cumulative RT
+shares the native coeval stellar photon budget, including its initial inventory.
+The explicitly named legacy instantaneous-rate mode has a different budget.
 """
 from __future__ import annotations
 
@@ -51,6 +52,8 @@ def _setting_key(setting):
 
 
 def _audit_case(root, case, box_len):
+    if case.get("source_mode", "instantaneous") not in ("instantaneous", "native_cumulative"):
+        raise ValueError("Unknown RT source convention")
     frames, rows = {}, []
     first_atoms = None
     previous_time = -np.inf
@@ -75,6 +78,14 @@ def _audit_case(root, case, box_len):
                 raise ValueError(f"Invalid saved {name}")
             if name in ("capacity", "ionized", "radiation", "cumulative_source") and (value < 0).any():
                 raise ValueError(f"Negative saved {name}")
+        if case.get("source_mode", "instantaneous") == "native_cumulative":
+            for name in ("source_native_current", "source_sampled_current"):
+                if (name not in arrays or arrays[name].shape != capacity.shape
+                        or not np.isfinite(arrays[name]).all() or (arrays[name] < 0).any()):
+                    raise ValueError(f"Invalid saved {name}")
+            if (str(arrays.get("source_mode", np.asarray("")).item()) != "native_cumulative"
+                    or str(arrays.get("source_budget_sha256", np.asarray("")).item()) != case.get("source_budget_sha256")):
+                raise ValueError("Saved checkpoint source identity differs from its case")
         matched = {"matched_es_xhi", "matched_es_brightness"}
         if matched & set(arrays):
             if not matched <= set(arrays):
@@ -124,6 +135,8 @@ def _audit_case(root, case, box_len):
     if not rows:
         raise ValueError("A case needs saved checkpoints")
     return {"case_id": case["case_id"], "seed": case["seed"], "setting": case["setting"],
+            "source_mode": case.get("source_mode", "instantaneous"),
+            "source_budget_sha256": case.get("source_budget_sha256"),
             "history_sha256": case["history_sha256"], "all_saved_field_ledgers_passed": True,
             "all_interval_ledgers_passed": case.get("all_ledgers_passed") is True,
             "checkpoints": rows}, frames
@@ -137,6 +150,11 @@ def audit_case(root, case, box_len):
 def _pair(coarse, fine, frame_map, axis, box_len, tolerance):
     if coarse["history_sha256"] != fine["history_sha256"]:
         raise ValueError("A convergence pair must use the same archived native history")
+    native_budget = coarse.get("source_mode", "instantaneous") == "native_cumulative"
+    if coarse.get("source_mode", "instantaneous") != fine.get("source_mode", "instantaneous"):
+        raise ValueError("A convergence pair must use the same source convention")
+    if native_budget and coarse.get("source_budget_sha256") != fine.get("source_budget_sha256"):
+        raise ValueError("A convergence pair must use the same native cumulative source archive")
     left, right = frame_map[coarse["case_id"]], frame_map[fine["case_id"]]
     if set(left) != set(right):
         raise ValueError("Convergence cases have different checkpoint nodes")
@@ -152,8 +170,12 @@ def _pair(coarse, fine, frame_map, axis, box_len, tolerance):
             raise ValueError("Numerical refinements changed the underlying coarse gas field")
         if not np.array_equal(aa["native_xhi"], bb["native_xhi"]):
             raise ValueError("Convergence pair has different native comparison fields")
-        if axis != "source_stride" and not np.allclose(aa["cumulative_source"], bb["cumulative_source"], rtol=2e-11, atol=2e-12):
-            raise ValueError("Numerical refinements changed the supplied source budget")
+        if axis != "source_stride":
+            same_source = (np.isclose(_sum(aa["cumulative_source"]), _sum(bb["cumulative_source"]),
+                                      rtol=2e-11, atol=0.) if native_budget else
+                           np.allclose(aa["cumulative_source"], bb["cumulative_source"], rtol=2e-11, atol=2e-12))
+            if not same_source:
+                raise ValueError("Numerical refinements changed the supplied source budget")
         if not (.05 <= a["xHI_mass"] <= .9 and .05 <= b["xHI_mass"] <= .9):
             continue
         active += 1
@@ -184,12 +206,14 @@ def _pair(coarse, fine, frame_map, axis, box_len, tolerance):
                        "source_L1_relative_error": source_error})
     passed = bool(active and eligible_bins and undefined == 0
                   and worst_field <= tolerance and worst_power <= tolerance
-                  and worst_source <= tolerance)
+                  and (native_budget or worst_source <= tolerance))
     return {"coarse": coarse["case_id"], "fine": fine["case_id"], "axis": axis,
             "active_checkpoints": active, "primary_power_bin_checks": eligible_bins,
             "undefined_active_power_bins": undefined, "worst_field_MAE": worst_field,
             "worst_primary_power_error": worst_power if eligible_bins and not undefined else None,
             "worst_source_L1_relative_error": worst_source,
+            "source_map_difference_role": ("Diagnostic: moving-emitter quadrature changes historical emission locations; each map is independently audited and global budgets must agree"
+                                           if native_budget else "Convergence criterion on the integrated endpoint-rate map"),
             "primary_power_band": next(iter(right.values()))[0]["primary_power_band"],
             "passed": passed, "checkpoints": values}
 
@@ -230,6 +254,9 @@ def _plot(root, report):
         cases = [case for case in report["cases"] if case["seed"] == seed]
         anchor = next(r["finest_anchor"] for r in report["seeds"] if r["seed"] == seed)
         reference = next((c for c in cases if c["setting"] == anchor), cases[0])
+        native_budget = reference.get("source_mode", "instantaneous") == "native_cumulative"
+        control_label = ("ES on current sampled source map" if native_budget else
+                         "ES on integrated emission-location map")
         for case in cases:
             points = case["checkpoints"]
             is_reference = case is reference
@@ -242,7 +269,7 @@ def _plot(root, report):
         points = reference["checkpoints"]
         if all("matched_es_xHI_volume" in p for p in points):
             row[0].plot([p["redshift"] for p in points], [p["matched_es_xHI_volume"] for p in points],
-                        "--", color="C2", label="ES on integrated emission-location map")
+                        "--", color="C2", label=control_label)
         row[0].plot([p["redshift"] for p in points], [p["native_xHI_volume"] for p in points],
                     "k--", label="Native coeval ES (cumulative proxy)")
         stage = min(points, key=lambda p: abs(p["xHI_volume"] - .5))
@@ -251,7 +278,7 @@ def _plot(root, report):
         row[2].plot(spectrum["k_cMpc_inv"], spectrum["Delta2_native_es"], "s--", color="black", label="Native coeval ES")
         if "Delta2_matched_es" in spectrum:
             row[2].plot(spectrum["k_cMpc_inv"], spectrum["Delta2_matched_es"], "^--", color="C2",
-                        label="ES on integrated emission-location map")
+                        label=control_label)
         row[2].set_title(f"Seed {seed}, same z={stage['redshift']:g}; different mean HI")
         row[2].set(xlabel=r"$k$ [cMpc$^{-1}$]", ylabel=r"$\Delta^2_{21}$ [mK$^2$]")
         row[0].set_ylabel("Volume-mean neutral fraction")
@@ -265,15 +292,72 @@ def _plot(root, report):
             panel.set_title(f"Seed {seed}")
         for panel in row:
             panel.grid(alpha=.2)
-    figure.suptitle("Continuous RT with static integrated-source ES control and contextual native coeval ES")
+    figure.suptitle("Continuous RT and native coeval ES: source convention recorded in report")
     figure.tight_layout()
     figure.savefig(root / "causal_rt_comparison.png", dpi=160)
     plt.close(figure)
 
 
 
+def _native_budget_history(history, budget, setting):
+    """Reconstruct emission locations directly from conserved packet increments.
+
+    This does not use workflow state, its source-rate helper, or its fine-grid
+    source arrays. The coarse CIC integral is independent of RT refinement.
+    """
+    from .gas import deposit
+    from .native_history import background_at_time
+
+    times = np.asarray(history["times_seconds"], dtype=float)
+    q = np.asarray(budget["cumulative"], dtype=float)
+    stride = setting["source_stride"]
+    substeps = setting["time_substeps"]
+    if (q.shape[0] != len(times) or not np.array_equal(budget["times_seconds"], times)
+            or not np.array_equal(budget["redshifts"], history["redshifts"])
+            or not np.array_equal(budget["growth_factors"], history["growth_factors"])
+            or type(stride) is not int or stride < 1 or (len(times) - 1) % stride
+            or type(substeps) is not int or substeps < 1):
+        raise ValueError("Native cumulative source archive and history coordinates differ")
+    sampled = q.copy()
+    for left in range(0, len(times) - 1, stride):
+        right = left + stride
+        for index in range(left + 1, right):
+            w = (times[index] - times[left]) / (times[right] - times[left])
+            sampled[index] = (1 - w) * q[left] + w * q[right]
+    if (np.diff(sampled, axis=0) < 0).any():
+        raise ValueError("A cumulative source packet decreases; no negative-photon clipping is allowed")
+    packets = budget["packets"]
+    n = packets["coarse_dimension"]
+    initial_growth = packets["growth_initial"]
+
+    def positions(growth):
+        return (packets["q"] + (growth - initial_growth) * packets["v1"]
+                + (3. / 7.) * (growth**2 - initial_growth**2) * packets["v2"])
+
+    # Count the initial cumulative stellar budget exactly once, including when
+    # it is initially present as radiation rather than ionized atoms.
+    emitted = deposit(sampled[0].ravel(), positions(history["growth_factors"][0]), n)
+    cumulative = [emitted.astype(np.longdouble)]
+    current_native, current_sampled = [], []
+    for node in range(len(times)):
+        endpoint = positions(history["growth_factors"][node])
+        current_native.append(deposit(q[node].ravel(), endpoint, n))
+        current_sampled.append(deposit(sampled[node].ravel(), endpoint, n))
+        if node == 0:
+            continue
+        increment = (sampled[node] - sampled[node - 1]).ravel() / substeps
+        step = np.zeros((n,) * 3, dtype=np.longdouble)
+        for sub in range(substeps):
+            growth = background_at_time(history, node, (sub + .5) / substeps)["growth_factor"]
+            step += deposit(increment, positions(growth), n)
+        cumulative.append(cumulative[-1] + step)
+    return {"cumulative": np.asarray(cumulative), "sampled": sampled,
+            "current_native": np.asarray(current_native),
+            "current_sampled": np.asarray(current_sampled)}
+
+
 def _history_sources(root, summary, cases, frames):
-    """Reintegrate original archived source rates without workflow bookkeeping.
+    """Reconstruct native packet budgets or explicitly legacy rate integrals.
 
     A missing archive prevents certification. A supplied but corrupt archive or
     source mismatch is an error, not an uncertified-success condition.
@@ -298,21 +382,40 @@ def _history_sources(root, summary, cases, frames):
                 or mass.ndim != 1 or not np.isfinite(mass).all() or (mass < 0).any()
                 or _sum(mass) <= 0):
             raise ValueError("Invalid archived native source timeline or atom inventory")
-        histories[seed] = (history, digest)
+        histories[seed] = (history, digest, path, row)
     cache = {}
     for case in cases:
         if case["seed"] not in histories:
             case["native_history_audit"] = {"passed": False, "reason": "Native rate/atom archive absent"}
             continue
-        history, digest = histories[case["seed"]]
+        history, digest, history_path, history_row = histories[case["seed"]]
         if digest != case["history_sha256"]:
             raise ValueError("Case does not use the same archived native history")
         stride = case["setting"]["source_stride"]
-        key = (case["seed"], stride)
+        native_budget = case.get("source_mode", "instantaneous") == "native_cumulative"
+        if native_budget and case.get("source_budget_sha256") != history_row.get("source_budget_sha256"):
+            raise ValueError("Native cumulative source archive differs from its case")
+        key = (case["seed"], stride, case["setting"]["time_substeps"] if native_budget else None,
+               case.get("source_mode", "instantaneous"))
         times = history["times_seconds"]
         if type(stride) is not int or stride < 1 or (len(times) - 1) % stride:
             raise ValueError("Source stride does not divide the original native history")
-        if key not in cache:
+        if native_budget and key not in cache:
+            from .native_history import load_history
+            from .source_budget import load_source_budget
+            if "source_budget_path" not in history_row or "source_budget_sha256" not in history_row:
+                raise ValueError("Native cumulative run is missing its source-budget archive")
+            budget_path = root / history_row["source_budget_path"]
+            if (_digest(budget_path) != history_row["source_budget_sha256"]
+                    or case.get("source_budget_sha256") != history_row["source_budget_sha256"]):
+                raise ValueError("Native cumulative source archive differs from its receipt or case")
+            budget = load_source_budget(budget_path)
+            if budget["metadata"]["history_sha256"] != digest:
+                raise ValueError("Source-budget archive references a different native history")
+            full_history = load_history(history_path)
+            reconstructed = _native_budget_history(full_history, budget, case["setting"])
+            cache[key] = {**reconstructed, "budget": budget, "history": full_history}
+        elif not native_budget and key not in cache:
             knots = np.arange(0, len(times), stride)
             upper = np.searchsorted(knots, np.arange(len(times)), side="right")
             upper = np.minimum(upper, len(knots) - 1)
@@ -322,9 +425,11 @@ def _history_sources(root, summary, cases, frames):
             rates = ((1 - weight) * history["rates"][left] + weight * history["rates"][right]).astype(np.longdouble)
             increments = (rates[:-1] + rates[1:]) * (np.diff(times).astype(np.longdouble)[:, None, None, None] / 2)
             cache[key] = np.concatenate((np.zeros_like(rates[:1]), np.cumsum(increments, axis=0)), axis=0)
-        cumulative = cache[key]
+        cumulative = cache[key]["cumulative"] if native_budget else cache[key]
         total_atoms = _sum(history["packet_mass"])
         maximum_source = maximum_atoms = maximum_density = 0.
+        maximum_budget = maximum_current = maximum_native_roundoff = maximum_sampling = 0.
+        maximum_native_map_roundoff = 0.
         for node, (point, arrays) in frames[case["case_id"]].items():
             if (not 0 <= node < len(times) or point["time_seconds"] != float(times[node])
                     or point["redshift"] != float(history["redshifts"][node])):
@@ -339,6 +444,57 @@ def _history_sources(root, summary, cases, frames):
             maximum_atoms = max(maximum_atoms, atom_error)
             if source_error > 2e-11 or atom_error > 2e-11:
                 raise ValueError("Saved source/atom inventory differs from independently integrated native history")
+            if native_budget:
+                reconstruction = cache[key]
+                target = _sum(reconstruction["sampled"][node])
+                budget_error = float(abs(_sum(arrays["cumulative_source"]) - target)
+                                     / max(target, np.longdouble(np.finfo(float).tiny)))
+                current_error = 0.
+                for field, expected_current in (("source_native_current", reconstruction["current_native"][node]),
+                                                ("source_sampled_current", reconstruction["current_sampled"][node])):
+                    if field not in arrays or arrays[field].shape != expected_current.shape:
+                        raise ValueError("Saved current-location source field is missing or inconsistent")
+                    error = float(_sum(np.abs(arrays[field] - expected_current))
+                                  / max(_sum(expected_current), np.longdouble(np.finfo(float).tiny)))
+                    current_error = max(current_error, error)
+                if budget_error > 2e-11 or current_error > 2e-11:
+                    raise ValueError("Saved source differs from native packet cumulative budget or current source map")
+                budget = reconstruction["budget"]
+                native_total = np.longdouble(budget["native_totals"][node])
+                native_record = reconstruction["history"]["records"][node]
+                native_root = Path(budget["metadata"]["native_archive_root"]).resolve()
+                native_path = (native_root / native_record["fields_path"]).resolve()
+                if not native_path.is_relative_to(native_root):
+                    raise ValueError("Archived native source path escapes its root")
+                with np.load(native_path, allow_pickle=False) as original:
+                    native_source = np.array(original["source"])
+                native_hash = hashlib.sha256(np.ascontiguousarray(native_source).tobytes()).hexdigest()
+                if native_hash != native_record["source_sha256"]:
+                    raise ValueError("Original native source array hash changed")
+                if native_source.shape != reconstruction["current_native"][node].shape:
+                    raise ValueError("Native source grid differs from current packet deposition")
+                native_map_roundoff = float(_sum(np.abs(native_source - reconstruction["current_native"][node]))
+                                           / max(_sum(native_source), np.longdouble(np.finfo(float).tiny)))
+                if (native_map_roundoff > 1e-6 or
+                        not np.isclose(native_total, _sum(native_source), rtol=2e-15, atol=0.)):
+                    raise ValueError("Native cumulative source deposition or total differs from original source beyond float roundoff")
+                native_roundoff = float(abs(_sum(budget["cumulative"][node]) - native_total)
+                                        / max(native_total, np.longdouble(np.finfo(float).tiny)))
+                if native_roundoff > 1e-6:
+                    raise ValueError("Native cumulative total differs from original native source beyond float roundoff")
+                sampling_difference = float(abs(target - _sum(budget["cumulative"][node]))
+                                            / max(_sum(budget["cumulative"][node]), np.longdouble(np.finfo(float).tiny)))
+                maximum_budget = max(maximum_budget, budget_error)
+                maximum_current = max(maximum_current, current_error)
+                maximum_native_roundoff = max(maximum_native_roundoff, native_roundoff)
+                maximum_native_map_roundoff = max(maximum_native_map_roundoff, native_map_roundoff)
+                maximum_sampling = max(maximum_sampling, sampling_difference)
+                point.update(source_budget_target_total=float(target),
+                             source_budget_relative_residual=budget_error,
+                             source_native_total=float(native_total),
+                             source_native_total_relative_roundoff=native_roundoff,
+                             source_native_map_L1_relative_roundoff=native_map_roundoff,
+                             source_sampling_relative_difference=sampling_difference)
             if "native_capacity" in history:
                 density_error = float(np.max(np.abs(arrays["capacity"] - history["native_capacity"][node])))
                 maximum_density = max(maximum_density, density_error)
@@ -348,6 +504,16 @@ def _history_sources(root, summary, cases, frames):
                                         "maximum_source_L1_relative_error": maximum_source,
                                         "maximum_atom_inventory_relative_error": maximum_atoms,
                                         "maximum_native_density_absolute_error": maximum_density}
+        if native_budget:
+            case["native_history_audit"].update(
+                source_mode="native_cumulative", source_budget_sha256=case["source_budget_sha256"],
+                initial_source_total=float(_sum(cache[key]["sampled"][0])),
+                maximum_native_cumulative_budget_relative_residual=maximum_budget,
+                maximum_current_source_L1_relative_error=maximum_current,
+                maximum_native_source_total_relative_roundoff=maximum_native_roundoff,
+                maximum_native_source_L1_relative_roundoff=maximum_native_map_roundoff,
+                maximum_source_sampling_relative_difference=maximum_sampling,
+                cumulative_map_definition="Initial photon inventory plus historical emission locations; not the current native source map")
 
 
 def build_report(root, *, make_plot=True):
@@ -370,9 +536,13 @@ def build_report(root, *, make_plot=True):
         raise ValueError("Cannot certify an empty run")
     _history_sources(root, summary, cases, frames)
     seeds = convergence(cases, frames, box_len, tolerance)
+    native_budget = all(c.get("source_mode", "instantaneous") == "native_cumulative" for c in cases)
     report = {"schema": 1, "scope": "Numerical convergence of the recorded continuous effective-atom, no-recombination RT equations; not full H/He/thermal physics validation",
-              "native_es_comparison": "Context only: native coeval cumulative n_ion differs from the integrated instantaneous RT source history",
-              "matched_es_comparison": "Static ES on the integrated emission-location map and current gas; shares accumulated emission budget, but is not a causal ES history",
+              "source_modes": sorted({c.get("source_mode", "instantaneous") for c in cases}),
+              "native_es_comparison": ("Shared original native cumulative stellar budget, allowing native float32 deposition roundoff and declared source-knot interpolation; finite-c propagation and spatial allocation differ"
+                                       if native_budget else "Context only: legacy native coeval cumulative n_ion differs from the integrated instantaneous RT source history"),
+              "matched_es_comparison": ("Static ES on the current-location sampled native cumulative source map and current gas; shares its total budget, but is not a causal ES history"
+                                        if native_budget else "Static ES on the integrated emission-location map and current gas; shares accumulated emission budget, but is not a causal ES history"),
               "all_native_history_audits_passed": all(c["native_history_audit"]["passed"] for c in cases),
               "actual_primary_power_bands": {c["case_id"]: c["checkpoints"][0]["primary_power_band"] for c in cases},
               "tolerance": tolerance,
@@ -382,6 +552,8 @@ def build_report(root, *, make_plot=True):
               "all_interval_ledgers_passed": all(c["all_interval_ledgers_passed"] for c in cases),
               "maximum_saved_photon_ledger_relative_residual": max(p["photon_ledger_relative_residual"] for c in cases for p in c["checkpoints"]),
               "maximum_saved_atom_ledger_relative_residual": max(p["atom_ledger_relative_residual"] for c in cases for p in c["checkpoints"]),
+              "maximum_native_cumulative_budget_relative_residual": (max(c["native_history_audit"].get("maximum_native_cumulative_budget_relative_residual", 0.) for c in cases)
+                                                                      if native_budget else None),
               "convergence_certified": bool(all(s["numerical_convergence_certified"] for s in seeds)
                                             and all(c["all_interval_ledgers_passed"] for c in cases)
                                             and all(c["native_history_audit"]["passed"] for c in cases)),

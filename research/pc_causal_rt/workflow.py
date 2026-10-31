@@ -1,8 +1,9 @@
-"""Continuous finite-c RT with native source rates and conservative 2LPT gas.
+"""Continuous finite-c RT with native cumulative sources and 2LPT gas.
 
 Ionized atoms and directional photons persist through every proper-time step.
-The native coeval ES is context; its cumulative proxy is not the integral of
-the native instantaneous source rate. No global history or field is fitted.
+The default source is the increment of the native cumulative source on its
+Lagrangian grid, deposited along the native source trajectories. The previous
+instantaneous SFR-rate convention remains an explicit legacy mode.
 """
 from __future__ import annotations
 
@@ -21,7 +22,7 @@ from research.pc_native_rt.workflow import (
 )
 
 LOGGER = logging.getLogger(__name__)
-SCOPE = "Continuous finite-c effective-atom RT with native instantaneous sources and native 2LPT mass advection; current restricted no-recombination/no-thermal native configuration"
+SCOPE = "Continuous finite-c effective-atom RT with an explicit native source convention and native 2LPT mass advection; current restricted no-recombination/no-thermal native configuration"
 
 
 def refinement_ladder():
@@ -40,7 +41,7 @@ DEFAULT_CONFIG = dict(
     dimension=8, highres_dimension=None, box_len=50., threads=8, seeds=[111, 222],
     z_start=25., z_end=5., source_intervals=160, checkpoint_stride=4,
     settings=refinement_ladder(), photon_energy_ev=18., native_inputs_json=None,
-    max_steps=1_000_000, tolerance=.01,
+    max_steps=1_000_000, tolerance=.01, source_mode="native_cumulative",
 )
 
 
@@ -49,6 +50,8 @@ def configuration(overrides=None):
     if not isinstance(overrides, dict) or set(overrides) - set(DEFAULT_CONFIG):
         raise ValueError("Unknown causal RT configuration keys")
     cfg = json.loads(json.dumps(DEFAULT_CONFIG | overrides, allow_nan=False))
+    if cfg["source_mode"] not in ("native_cumulative", "instantaneous"):
+        raise ValueError("source_mode must be native_cumulative or instantaneous")
     for name, minimum in (("dimension", 4), ("threads", 1), ("source_intervals", 1),
                           ("checkpoint_stride", 1), ("max_steps", 1)):
         if type(cfg[name]) is not int or cfg[name] < minimum:
@@ -118,11 +121,62 @@ def _positions(history, growth, factor):
     return positions_at_growth(history["packets"], growth) * factor + (factor - 1) / 2
 
 
+def _current_source_map(history, node, *, sampled=False):
+    """Current source locations, distinct from historical emission locations."""
+    from .gas import deposit
+    from .source_budget import source_positions
+    budget = history["source_budget"]
+    values = history["sampled_cumulative"] if sampled else budget["cumulative"]
+    n = int(budget["packets"]["coarse_dimension"])
+    return deposit(np.asarray(values[node], float).ravel(),
+                   source_positions(budget, float(history["growth_factors"][node])), n)
+
+
+def _audit_native_budget(history, node, source):
+    """Check counts against packet budgets, independently of the emission map."""
+    expected = np.asarray(history["sampled_cumulative"][node]).sum(dtype=np.longdouble)
+    native = np.asarray(history["source_budget"]["cumulative"][node]).sum(dtype=np.longdouble)
+    actual = np.asarray(source).sum(dtype=np.longdouble)
+    tiny = np.longdouble(np.finfo(float).tiny)
+    relative = float(abs(actual - expected) / max(expected, tiny))
+    if not np.isfinite(relative) or relative > 2e-11:
+        raise RuntimeError("Injected photon inventory differs from native cumulative packet budget")
+    return {"source_budget_target_total": float(expected),
+            "source_native_total": float(native),
+            "source_budget_relative_residual": relative,
+            "source_sampling_relative_difference": float(abs(expected - native) / max(native, tiny))}
+
+
+def _initial_state(history, setting, config):
+    from .gas import deposit
+    factor = setting["refinement"]
+    n = config["dimension"] * factor
+    capacity = deposit(history["packets"]["mass"] * factor**3,
+                       _positions(history, history["growth_factors"][0], factor), n, cloud_width=factor)
+    state = dict(capacity=capacity, ionized=np.zeros_like(capacity),
+                 photons=np.zeros((setting["directions"], n, n, n)),
+                 cumulative_source=np.zeros((config["dimension"],) * 3, dtype=np.longdouble))
+    if config["source_mode"] == "native_cumulative":
+        from .source_budget import source_initial_map
+        from .transport import directions
+        initial = source_initial_map(history["source_budget"], factor=factor)
+        _, weights = directions(setting["directions"])
+        state["photons"] = weights[:, None, None, None] * initial[None, ...]
+        state["cumulative_source"] = _restrict(initial, config["dimension"]).astype(np.longdouble)
+    state["audit"] = audit_state(capacity, state["ionized"], state["photons"], state["cumulative_source"],
+                                 factor, history["packets"]["mass"].sum(dtype=np.longdouble))
+    if config["source_mode"] == "native_cumulative":
+        state["audit"].update(_audit_native_budget(history, 0, state["cumulative_source"]))
+    return state
+
+
 def advance_node(history, node, setting, config, ionized, photons, cumulative_source):
     """Strang gas motion / fixed-midpoint RT / gas motion, retaining both states.
 
-    Source knots are interpolated in proper time; the native time/growth
-    functions supply the background at each split boundary. Matter
+    Cumulative source knots are interpolated in proper time, and packet
+    increments are emitted at their midpoint positions in each matter step.
+    Legacy instantaneous rates use their original endpoint interpolation.
+    Native time/growth functions supply each split boundary. Matter
     splitting is refined independently of the internal radiation CFL steps.
     All atom clouds retain their original native physical width at every f.
     """
@@ -133,7 +187,8 @@ def advance_node(history, node, setting, config, ionized, photons, cumulative_so
     factor = setting["refinement"]
     n = config["dimension"] * factor
     times = history["times_seconds"]
-    rates = history["sampled_rates"]
+    native_cumulative = config["source_mode"] == "native_cumulative"
+    rates = None if native_cumulative else history["sampled_rates"]
     duration = float(times[node] - times[node - 1])
     mass = history["packets"]["mass"] * factor**3
     physics = opacity_parameters(history["metadata"], config["photon_energy_ev"])
@@ -144,12 +199,18 @@ def advance_node(history, node, setting, config, ionized, photons, cumulative_so
         background = [background_at_time(history, node, float(x)) for x in fractions]
         old, mid, new = (_positions(history, value["growth_factor"], factor) for value in background)
         first = remap_ions(ionized, mass, old, mid, n, cloud_width=factor)
-        a, b = fractions[0], fractions[-1]
-        left = (1 - a) * rates[node - 1] + a * rates[node]
-        right = (1 - b) * rates[node - 1] + b * rates[node]
+        if native_cumulative:
+            from .source_budget import source_rate
+            left = source_rate(history["source_budget"], history["sampled_cumulative"], node,
+                               background[1]["growth_factor"], dimensionfactor=factor)
+            right = left
+        else:
+            a, b = fractions[0], fractions[-1]
+            left = _repeat((1 - a) * rates[node - 1] + a * rates[node], factor)
+            right = _repeat((1 - b) * rates[node - 1] + b * rates[node], factor)
         dt = duration / setting["time_substeps"]
         result = evolve_interval(
-            first["capacity"], first["ionized"], photons, _repeat(left, factor), _repeat(right, factor),
+            first["capacity"], first["ionized"], photons, left, right,
             dt_seconds=dt, z_start=background[0]["redshift"], z_end=background[-1]["redshift"],
             box_len_cMpc=config["box_len"], hydrogen_density_z0_cm3=physics["hydrogen_density_z0_cm3"],
             cross_section_cm2=physics["cross_section_cm2"], cfl=setting["cfl"],
@@ -157,7 +218,8 @@ def advance_node(history, node, setting, config, ionized, photons, cumulative_so
         )
         last = remap_ions(result["ionized"], mass, mid, new, n, cloud_width=factor)
         ionized, photons = last["ionized"], result["photons"]
-        emitted += (left.astype(np.longdouble) + right) * (np.longdouble(dt) / 2)
+        emitted += _restrict((left.astype(np.longdouble) + right) * (np.longdouble(dt) / 2),
+                             config["dimension"])
         for remap in (first, last):
             gas_error = max(gas_error, remap["audit"]["ion_relative_residual"],
                             remap["audit"]["mass_relative_residual"])
@@ -169,6 +231,8 @@ def advance_node(history, node, setting, config, ionized, photons, cumulative_so
     audit.update(maximum_gas_substep_residual=gas_error, maximum_rt_substep_residual=rt_error,
                  maximum_rt_substep_ion_fraction_excess=ion_excess,
                  radiation_steps=steps, matter_substeps=setting["time_substeps"])
+    if native_cumulative:
+        audit.update(_audit_native_budget(history, node, emitted))
     return dict(capacity=last["capacity"], ionized=ionized, photons=photons,
                 cumulative_source=emitted, audit=audit)
 
@@ -203,13 +267,20 @@ def _checkpoint(root, folder, history, node, setting, config, state):
     capacity, ions = (_restrict(state[k], n) for k in ("capacity", "ionized"))
     radiation = _restrict(state["photons"].sum(axis=0), n)
     source = np.asarray(state["cumulative_source"], dtype=float)
+    source_fields = {"source_mode": np.asarray(config["source_mode"])}
+    matched_source = source
+    if config["source_mode"] == "native_cumulative":
+        source_fields.update(source_native_current=_current_source_map(history, node),
+                             source_sampled_current=_current_source_map(history, node, sampled=True),
+                             source_budget_sha256=np.asarray(history["source_budget"]["sha256"]))
+        matched_source = source_fields["source_sampled_current"]
     coeval = Coeval.from_file(Path(history["metadata"]["native_archive_root"]) / history["records"][node]["h5_path"])
     rt_box = _native_box(coeval, ions, capacity)
     brightness = brightness_temperature(ionized_box=rt_box, perturbed_field=coeval.perturbed_field,
                                         regenerate=True, write=False).get("brightness_temp")
     maximum_radius = min(n / 2, coeval.inputs.astro_params.R_BUBBLE_MAX * n / config["box_len"])
-    threshold, filtering = es_threshold(source, capacity, maximum_radius)
-    es_ions = es_map(source, capacity, threshold, 1.)
+    threshold, filtering = es_threshold(matched_source, capacity, maximum_radius)
+    es_ions = es_map(matched_source, capacity, threshold, 1.)
     es_box = _native_box(coeval, es_ions, capacity)
     matched_brightness = brightness_temperature(ionized_box=es_box, perturbed_field=coeval.perturbed_field,
                                                 regenerate=True, write=False).get("brightness_temp")
@@ -220,13 +291,15 @@ def _checkpoint(root, folder, history, node, setting, config, state):
                cumulative_source=source, rt_xhi=xhi, rt_brightness=np.asarray(brightness),
                native_xhi=history["native_xhi"][node], native_brightness=history["native_brightness"][node],
                native_capacity=history["native_capacity"][node], matched_es_xhi=matched_xhi,
-               matched_es_brightness=np.asarray(matched_brightness))
+               matched_es_brightness=np.asarray(matched_brightness), **source_fields)
     density_difference = float(np.max(np.abs(capacity - history["native_capacity"][node])))
     return dict(node=node, redshift=float(history["redshifts"][node]),
                 time_seconds=float(history["times_seconds"][node]), fields_path=str(path.relative_to(root)),
                 fields_sha256=_digest(path), rt_xHI_volume=float(xhi.mean()),
                 matched_es_xHI_volume=float(matched_xhi.mean()),
                 native_es_xHI_volume=float(history["native_xhi"][node].mean()),
+                source_mode=config["source_mode"],
+                matched_es_source="current cumulative source" if config["source_mode"] == "native_cumulative" else "historical emission-location map",
                 maximum_native_density_roundoff=density_difference, matched_es_filtering=filtering,
                 **state["audit"])
 
@@ -237,19 +310,38 @@ def _case_id(seed, setting):
 
 
 def run_case(root, history, seed, setting, config, sources):
-    from .gas import deposit
+    root = Path(root).resolve()
+    budget_digest = None
+    if config["source_mode"] == "native_cumulative":
+        from .source_budget import build_source_budget, sampled_cumulative
+        budget = history.get("source_budget")
+        if budget is None:
+            archive_root = Path(history["metadata"]["native_archive_root"]).resolve()
+            if not archive_root.is_relative_to(root):
+                raise ValueError("External native histories require an explicitly verified source budget")
+            budget = build_source_budget(history, root / "source_budgets" / f"seed{seed}.npz")
+        budget_path = budget.get("path", budget["metadata"].get("archive_path"))
+        if not budget_path:
+            raise ValueError("Native cumulative source budget must have a verified archive")
+        budget_digest = _digest(Path(budget_path))
+        if budget_digest != budget["sha256"]:
+            raise ValueError("Native cumulative source budget archive changed")
+        history = history | {"source_budget": budget,
+            "sampled_cumulative": sampled_cumulative(budget, history["times_seconds"], setting["source_stride"])}
+    else:
+        history = history | {"sampled_rates": sample_rates(history["rates"], history["times_seconds"], setting["source_stride"])}
     folder = root / "cases" / _case_id(seed, setting)
     folder.mkdir(parents=True, exist_ok=True)
     history_digest = _digest(Path(history["metadata"]["native_archive_root"]) / "history.npz")
+    if budget_digest is not None and history["source_budget"]["metadata"]["history_sha256"] != history_digest:
+        raise ValueError("Source budget belongs to a different native history")
     identity = dict(configuration=config, setting=setting, seed=seed, history_sha256=history_digest,
-                    source_hashes=sources, native_runtime=_runtime_identity())
+                    source_hashes=sources, native_runtime=_runtime_identity(),
+                    source_mode=config["source_mode"], source_budget_sha256=budget_digest)
     completed = _receipt(folder, "receipt.json", identity)
     if completed is not None:
         return completed["record"]
-    sampled = sample_rates(history["rates"], history["times_seconds"], setting["source_stride"])
-    history = history | {"sampled_rates": sampled}
     factor = setting["refinement"]
-    n = config["dimension"] * factor
     restart = _receipt(folder, "restart.json", identity)
     checkpoints = []
     start_node = 0
@@ -261,14 +353,10 @@ def run_case(root, history, seed, setting, config, sources):
             state = {k: np.array(saved[k]) for k in ("capacity", "ionized", "photons", "cumulative_source")}
         audit_state(state["capacity"], state["ionized"], state["photons"], state["cumulative_source"],
                     factor, history["packets"]["mass"].sum(dtype=np.longdouble))
+        if config["source_mode"] == "native_cumulative":
+            _audit_native_budget(history, start_node, state["cumulative_source"])
     else:
-        capacity = deposit(history["packets"]["mass"] * factor**3,
-                           _positions(history, history["growth_factors"][0], factor), n, cloud_width=factor)
-        state = dict(capacity=capacity, ionized=np.zeros_like(capacity),
-                     photons=np.zeros((setting["directions"], n, n, n)),
-                     cumulative_source=np.zeros((config["dimension"],) * 3, dtype=np.longdouble))
-        state["audit"] = audit_state(capacity, state["ionized"], state["photons"], state["cumulative_source"],
-                                     factor, history["packets"]["mass"].sum(dtype=np.longdouble))
+        state = _initial_state(history, setting, config)
         checkpoints.append(_checkpoint(root, folder, history, 0, setting, config, state))
     for node in range(start_node + 1, len(history["redshifts"])):
         state = advance_node(history, node, setting, config, state["ionized"], state["photons"], state["cumulative_source"])
@@ -288,6 +376,7 @@ def run_case(root, history, seed, setting, config, sources):
                 if old.name != state_file:
                     old.unlink()
     record = dict(case_id=folder.name, seed=seed, setting=setting, history_sha256=history_digest,
+                  source_mode=config["source_mode"], source_budget_sha256=budget_digest,
                   checkpoints=checkpoints, all_ledgers_passed=True, elapsed_seconds=time.monotonic() - start_clock,
                   scope=SCOPE, convergence_certified=False)
     _write_json(folder / "case.json", record)
@@ -321,9 +410,17 @@ def run(root, config=None):
         cases, histories = [], []
         for seed in config["seeds"]:
             history = build_native_history(root / "histories" / f"seed{seed}", config, seed)
-            histories.append(dict(seed=seed, path=f"histories/seed{seed}/history.npz",
-                                  sha256=_digest(root / "histories" / f"seed{seed}" / "history.npz"),
-                                  metadata=history["metadata"]))
+            row = dict(seed=seed, path=f"histories/seed{seed}/history.npz",
+                       sha256=_digest(root / "histories" / f"seed{seed}" / "history.npz"),
+                       metadata=history["metadata"])
+            if config["source_mode"] == "native_cumulative":
+                from .source_budget import build_source_budget
+                budget_path = root / "source_budgets" / f"seed{seed}.npz"
+                budget = build_source_budget(history, budget_path)
+                history = history | {"source_budget": budget}
+                row.update(source_budget_path=str(budget_path.relative_to(root)),
+                           source_budget_sha256=budget["sha256"])
+            histories.append(row)
             for setting in config["settings"]:
                 cases.append(run_case(root, history, seed, setting, config, identity["source_hashes"]))
         if _source_hashes() != identity["source_hashes"]:

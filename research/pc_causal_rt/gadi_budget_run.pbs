@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+#PBS -N causal_budget
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=1
+#PBS -l mem=8GB
+#PBS -l walltime=01:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${PC_CAUSAL_BUDGET_RUN:?Use gadi_budget_prepare.sh --submit or the prepared resubmit.sh}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing allocated CPU count}"
+run=$(realpath "$PC_CAUSAL_BUDGET_RUN")
+cd "$run"
+test -f PREPARED
+exec 9> "$run/run.lock"
+flock -n 9 || { echo 'Another process is already using this run.' >&2; exit 2; }
+exec > >(tee "$run/run_${PBS_JOBID}.log") 2>&1
+rm -f "$run/FAILED" "$run/COMPLETED" "$run/results/COMPLETED"
+trap 'status=$?; if (( status != 0 )); then rm -f "$run/COMPLETED" "$run/results/COMPLETED"; printf "%s\n" "$status" > "$run/FAILED"; fi' EXIT
+sha256sum --quiet -c prepared.sha256
+PC_MODULES=()
+source "$run/runtime.env"
+if (( ${#PC_MODULES[@]} )); then
+    type module >/dev/null 2>&1 || { echo 'Environment modules are unavailable.' >&2; exit 2; }
+    module --force purge
+    module load "${PC_MODULES[@]}"
+fi
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export MPLBACKEND=Agg
+pc_python=$(cat "$run/python_path.txt")
+input_run=$(cat "$run/input_run.txt")
+export SCRIPT_FC=$("$pc_python" -c 'import json,sys; print(json.load(open(sys.argv[1]))["runtime"]["gfortran"])' "$run/run_manifest.json")
+cd "$run/source"
+"$pc_python" -m research.pc_causal_rt.budget_prepare verify --run "$run" --cpus "$PBS_NCPUS"
+export OMP_NUM_THREADS="$PBS_NCPUS"
+export PYTHONPATH="$input_run/native_build/source/src"
+printf 'Job: %s\nRun: %s\nInput: %s\nStart: %s\n' "$PBS_JOBID" "$run" "$input_run" "$(date)"
+"$pc_python" -m research.pc_causal_rt.archive_run --input-run "$input_run" --output "$run/results" --config "$run/experiment_config.json"
+"$pc_python" -m research.pc_causal_rt.budget_prepare verify --run "$run" --cpus "$PBS_NCPUS"
+test -f "$run/results/COMPLETED"
+printf 'Corrected native cumulative budget RT and original SCRIPT comparison completed; inspect their separate diagnostics.\n' > "$run/COMPLETED"
+printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$run"

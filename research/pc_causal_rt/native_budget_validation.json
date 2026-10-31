@@ -1,0 +1,125 @@
+{
+  "schema": 1,
+  "execution": "local; not Gadi",
+  "native_dimension": 8,
+  "box_len_cMpc": 50.0,
+  "source_intervals": 80,
+  "source_mode": "native_cumulative",
+  "settings": [
+    {
+      "cfl": 0.4,
+      "directions": 96,
+      "refinement": 1,
+      "source_stride": 1,
+      "time_substeps": 4
+    }
+  ],
+  "seeds": [
+    111,
+    222
+  ],
+  "native_inputs_reused": true,
+  "all_native_history_audits_passed": true,
+  "maximum_saved_photon_ledger_relative_residual": 4.154164587390175e-15,
+  "maximum_native_cumulative_budget_relative_residual": 8.215915899366276e-17,
+  "convergence_certified": false,
+  "tests": {
+    "count": 164,
+    "command": "python -m pytest research/pc_causal_rt -q --confcutdir=research/pc_causal_rt --import-mode=importlib"
+  },
+  "frozen_pbs_smoke": {
+    "real_native_export": true,
+    "real_rt": true,
+    "real_script_reference": true,
+    "nodes": 5,
+    "selected_checkpoints": 3,
+    "completed": true,
+    "resume_receipts_identical": true
+  },
+  "cases": [
+    {
+      "case_id": "seed111_d96_f1_cfl0.4_t4_s1",
+      "history_sha256": "e0e508ed9ba1427bda0c74d967e3535900612be4195c682825028aa5dc910669",
+      "source_budget_sha256": "c28c52af8732f065add4d25180fd57321b0a239de5c63780d281bcafb4eb34a3",
+      "elapsed_rt_seconds": 20.089894685999752,
+      "saved_checkpoints": 21,
+      "maximum_native_source_relative_difference": 8.869174578362657e-09,
+      "z7": [
+        {
+          "redshift": 7.0,
+          "rt_xHI_mass": 0.3540319088588814,
+          "script_xHI_mass": 0.34506642024706236,
+          "native_es_xHI_mass": 0.4060651047082682,
+          "rt_emitted_per_atom": 0.654933585410372,
+          "native_source_per_atom": 0.6549335801054611,
+          "rt_radiation_per_atom": 0.008965494269253258,
+          "field_MAE_rt_vs_script": 0.03512422650949047
+        }
+      ],
+      "matched_mean_xHI": [
+        {
+          "target": 0.8,
+          "available": true,
+          "field_MAE": 0.0021422776943021077
+        },
+        {
+          "target": 0.6,
+          "available": true,
+          "field_MAE": 0.014020460595596033
+        },
+        {
+          "target": 0.4,
+          "available": true,
+          "field_MAE": 0.03810721745064044
+        },
+        {
+          "target": 0.2,
+          "available": true,
+          "field_MAE": 0.021061278324816742
+        }
+      ]
+    },
+    {
+      "case_id": "seed222_d96_f1_cfl0.4_t4_s1",
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "elapsed_rt_seconds": 19.782565075999628,
+      "saved_checkpoints": 21,
+      "maximum_native_source_relative_difference": 1.1171469384136114e-08,
+      "z7": [
+        {
+          "redshift": 7.0,
+          "rt_xHI_mass": 0.3701680831509796,
+          "script_xHI_mass": 0.3624248263446661,
+          "native_es_xHI_mass": 0.3974933204152627,
+          "rt_emitted_per_atom": 0.6375751693187154,
+          "native_source_per_atom": 0.6375751741661714,
+          "rt_radiation_per_atom": 0.007743252469695121,
+          "field_MAE_rt_vs_script": 0.0297166527986263
+        }
+      ],
+      "matched_mean_xHI": [
+        {
+          "target": 0.8,
+          "available": true,
+          "field_MAE": 0.0019114409468976585
+        },
+        {
+          "target": 0.6,
+          "available": true,
+          "field_MAE": 0.012350768239171243
+        },
+        {
+          "target": 0.4,
+          "available": true,
+          "field_MAE": 0.03385050777292581
+        },
+        {
+          "target": 0.2,
+          "available": true,
+          "field_MAE": 0.016925253886462592
+        }
+      ]
+    }
+  ]
+}
