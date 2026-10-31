@@ -353,4 +353,6 @@ def build_native_history(root, config, seed):
     paths += [root / "history.npz", manifest_path]
     _json_write(root / "history_receipt.json", {"identity": identity,
                 "files": {str(path.relative_to(root)): _file_hash(path) for path in paths}})
-    return result
+    # Return the same JSON-normalized metadata on fresh and cached builds.
+    # Native input tuples otherwise differ from their archived JSON lists.
+    return load_history(root / "history.npz")

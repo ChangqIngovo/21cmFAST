@@ -120,11 +120,16 @@ def test_history_rejects_invalid_native_fields(name, value):
 def test_actual_native_packets_rates_and_restart(tmp_path):
     pytest.importorskip("py21cmfast")
     from research.pc_causal_rt.native_history import build_native_history
+    from research.pc_causal_rt.source_budget import build_source_budget
     from research.pc_evolution.native_history import rate_from_nion
     config = {"dimension": 4, "highres_dimension": 12, "box_len": 50., "threads": 1,
               "z_start": 10., "z_end": 9., "source_intervals": 1, "native_inputs_json": None}
     history = build_native_history(tmp_path, config, 111)
     metadata = history["metadata"]
+    # A first build must be usable immediately, before a cached restart has
+    # converted native tuples (notably node_redshifts) into JSON lists.
+    assert metadata == load_history(tmp_path / "history.npz")["metadata"]
+    build_source_budget(history, tmp_path / "source_budget.npz")
     background = background_at_time(history, 1, .5)
     from research.pc_evolution.native_history import native_time_interval
     from py21cmfast.wrapper.cfuncs import get_growth_factor
@@ -145,6 +150,7 @@ def test_actual_native_packets_rates_and_restart(tmp_path):
                                       cosmo=metadata["cosmology"])
             np.testing.assert_array_equal(history["rates"][i], expected)
     reused = build_native_history(tmp_path, config, 111)
+    assert reused["metadata"] == metadata
     assert reused["metadata"]["array_sha256"] == metadata["array_sha256"]
     # Native archives are also protected, not just the aggregate history NPZ.
     with (tmp_path / history["records"][0]["fields_path"]).open("ab") as stream:

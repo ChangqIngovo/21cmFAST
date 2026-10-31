@@ -19,6 +19,7 @@ import itertools
 import json
 import logging
 import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import numpy as np
@@ -31,7 +32,7 @@ from research.pc_causal_rt.source_budget import load_source_budget, source_posit
 from research.pc_causal_rt.workflow import _positions
 from research.pc_field_emulator.evaluation import shell_spectra
 from research.pc_native_rt.workflow import _receipt, _restrict, _runtime_identity
-from research.pc_script_reference.kernel import provenance, run
+from research.pc_script_reference.kernel import build, provenance, run
 from research.pc_script_reference.run import _native_snapshot, digest, write_json
 
 LOGGER = logging.getLogger(__name__)
@@ -179,21 +180,15 @@ def _source_hashes() -> dict:
     return {name: digest(repo / name) for name in files}
 
 
-def _solve_node(
+def _prepare_allocation(
     history: dict,
     budget: dict,
     node: int,
     factor: int,
-    native: object,
     native_fields: dict,
     reference_inputs: tuple[np.ndarray, np.ndarray],
-    output: Path,
-    timeout: float,
-) -> tuple[dict, dict]:
-    """Run original SCRIPT and audit refined inputs at one native source node."""
-    from py21cmfast.drivers.single_field import brightness_temperature
-    from research.pc_reconsidered.native_driver import _native_box
-
+) -> dict:
+    """Prepare and audit one allocation without starting concurrent native calls."""
     dimension = history["metadata"]["dimension"]
     growth = history["growth_factors"][node]
     capacity = deposit(
@@ -229,12 +224,65 @@ def _solve_node(
         > 3e-6 * max(float(native_fields["source"].max()), 1.0)
     ):
         raise ValueError("Refined clouds do not preserve the original native inputs")
-    fraction, ledger = run(
-        source, capacity, build_dir=output / "build", timeout_seconds=timeout
-    )
+    return {
+        "node": node,
+        "factor": factor,
+        "capacity": capacity,
+        "source": source,
+        "source_restricted": src_out,
+        "audits": audits,
+    }
+
+
+def _run_allocation_batch(
+    tasks: list[dict], build_dir: Path, timeout: float, workers: int
+) -> list[tuple[np.ndarray, dict]]:
+    """Run at most ``workers`` independent Fortran processes in input order.
+
+    Only SCRIPT allocation runs in parallel. The executable must already be
+    built; every invocation independently verifies that cached binary. Native
+    21cmFAST and deposition calls occur outside this batch. On failure, pending
+    work is cancelled and running subprocesses finish or reach their timeout
+    before the exception is propagated, so no worker survives the benchmark.
+    """
+
+    def allocation(task: dict) -> tuple[np.ndarray, dict]:
+        return run(
+            task["source"],
+            task["capacity"],
+            build_dir=build_dir,
+            timeout_seconds=timeout,
+        )
+
+    if workers == 1:
+        return [allocation(task) for task in tasks]
+    with ThreadPoolExecutor(max_workers=workers) as executor:
+        futures = [executor.submit(allocation, task) for task in tasks]
+        try:
+            return [future.result() for future in futures]
+        except BaseException:
+            for future in futures:
+                future.cancel()
+            raise
+
+
+def _finish_allocation(
+    history: dict,
+    native: object,
+    prepared: dict,
+    fraction: np.ndarray,
+    ledger: dict,
+    output: Path,
+) -> tuple[dict, dict]:
+    """Evaluate native brightness serially and publish one audited result."""
+    from py21cmfast.drivers.single_field import brightness_temperature
+    from research.pc_reconsidered.native_driver import _native_box
+
+    node, factor = prepared["node"], prepared["factor"]
+    dimension = history["metadata"]["dimension"]
     if not ledger["passed"]:
         raise ValueError(f"SCRIPT ledger failed at factor={factor}, node={node}")
-    atoms, ions, xhi = _restrict_ionization(capacity, fraction, dimension)
+    atoms, ions, xhi = _restrict_ionization(prepared["capacity"], fraction, dimension)
     brightness = np.asarray(
         brightness_temperature(
             ionized_box=_native_box(native, ions, atoms),
@@ -248,7 +296,7 @@ def _solve_node(
     np.savez_compressed(
         path,
         capacity=atoms,
-        source=src_out,
+        source=prepared["source_restricted"],
         ionized=ions,
         xhi=xhi,
         brightness=brightness,
@@ -262,7 +310,7 @@ def _solve_node(
             np.sum(atoms - ions, dtype=np.longdouble)
             / np.sum(atoms, dtype=np.longdouble)
         ),
-        **audits,
+        **prepared["audits"],
         "fields_path": str(path.relative_to(output)),
         "fields_sha256": digest(path),
         "ledger": ledger,
@@ -315,6 +363,7 @@ def benchmark(
     seed: int,
     factors: tuple[int, ...],
     timeout: float = 120.0,
+    workers: int = 1,
 ) -> dict:
     """Run same-input SCRIPT spatial comparisons with native RT diagnostics.
 
@@ -330,6 +379,10 @@ def benchmark(
         Increasing positive integer allocation-grid refinements.
     timeout : float
         Maximum seconds for each original SCRIPT executable invocation.
+    workers : int
+        Maximum simultaneous SCRIPT subprocesses and prepared grids. Native
+        snapshot loading, deposition and brightness remain serial between
+        allocation batches, preserving archived native thread settings.
 
     Returns
     -------
@@ -338,6 +391,8 @@ def benchmark(
         sensitivity diagnostics. No RT-versus-SCRIPT acceptance threshold.
     """
     started = time.perf_counter()
+    if type(workers) is not int or workers < 1:
+        raise ValueError("workers must be a positive integer")
     rt_root, output = rt_root.resolve(), output.resolve()
     if (
         output.exists()
@@ -386,12 +441,39 @@ def benchmark(
         "box_len_cMpc": box_len,
         "source_node_count": count,
         "rt_checkpoint_nodes": rt_nodes,
+        "execution": {
+            "workers": workers,
+            "parallel_unit": "Independent coeval SCRIPT subprocesses",
+            "batch_capacity": workers,
+            "native_calls": "Serial between allocation batches; archived native thread settings retained",
+        },
     }
     rt_pairs = _rt_pairs(rt_root, cases, box_len)
     output.mkdir(parents=True)
+    build(output / "build")
     write_json(output / "identity.json", identity)
     frames = {factor: [] for factor in factors}
     rows = []
+    batch = []
+    allocation_wall_seconds = 0.0
+
+    def finish_batch() -> None:
+        nonlocal allocation_wall_seconds
+        batch_start = time.perf_counter()
+        allocations = _run_allocation_batch(
+            [prepared for _, prepared in batch], output / "build", timeout, workers
+        )
+        allocation_wall_seconds += time.perf_counter() - batch_start
+        for (native, prepared), (fraction, ledger) in zip(
+            batch, allocations, strict=True
+        ):
+            result = _finish_allocation(
+                history, native, prepared, fraction, ledger, output
+            )
+            frames[prepared["factor"]].append(result)
+            rows.append(result[0])
+        batch.clear()
+
     for node, growth in enumerate(history["growth_factors"]):
         native, fields, _ = _native_snapshot(
             Path(history["metadata"]["native_archive_root"]),
@@ -411,21 +493,16 @@ def benchmark(
             ),
         )
         for factor in factors:
-            result = _solve_node(
-                history,
-                budget,
-                node,
-                factor,
-                native,
-                fields,
-                reference,
-                output,
-                timeout,
+            prepared = _prepare_allocation(
+                history, budget, node, factor, fields, reference
             )
-            frames[factor].append(result)
-            rows.append(result[0])
+            batch.append((native, prepared))
+            if len(batch) == workers:
+                finish_batch()
         if node % 8 == 0:
             LOGGER.info("Completed native node %d/%d", node + 1, count)
+    if batch:
+        finish_batch()
     comparisons = {}
     for name, nodes in (
         ("rt_saved_nodes", set(rt_nodes)),
@@ -465,6 +542,8 @@ def benchmark(
         "checkpoints": rows,
         "comparisons_by_sampling": comparisons,
         "rt_spatial_comparisons": rt_pairs,
+        "allocation_wall_seconds": allocation_wall_seconds,
+        "allocation_timing_scope": "Sum of bounded allocation batch wall times, including executable verification, process launch, I/O and independent ledgers; excludes compilation, deposition and native brightness",
         "total_elapsed_seconds": time.perf_counter() - started,
     }
     write_json(output / "report.json", report)
@@ -493,10 +572,16 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=222)
     parser.add_argument("--factors", type=int, nargs="+", default=[1, 2, 4])
     parser.add_argument("--timeout", type=float, default=120.0)
+    parser.add_argument("--workers", type=int, default=1)
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO)
     result = benchmark(
-        args.rt_root, args.output, args.seed, tuple(args.factors), args.timeout
+        args.rt_root,
+        args.output,
+        args.seed,
+        tuple(args.factors),
+        args.timeout,
+        args.workers,
     )
     LOGGER.info(
         "Saved %d solves to %s", result["audit_summary"]["solve_count"], args.output
