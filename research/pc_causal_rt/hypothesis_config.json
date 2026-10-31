@@ -1,0 +1,13 @@
+{
+  "checkpoint_stride": 1,
+  "settings": [
+    {"directions": 96, "refinement": 1, "cfl": 0.4, "time_substeps": 4, "source_stride": 1},
+    {"directions": 96, "refinement": 2, "cfl": 0.4, "time_substeps": 4, "source_stride": 1},
+    {"directions": 96, "refinement": 3, "cfl": 0.4, "time_substeps": 4, "source_stride": 1},
+    {"directions": 24, "refinement": 1, "cfl": 0.4, "time_substeps": 4, "source_stride": 1},
+    {"directions": 384, "refinement": 1, "cfl": 0.4, "time_substeps": 4, "source_stride": 1},
+    {"directions": 96, "refinement": 1, "cfl": 0.2, "time_substeps": 4, "source_stride": 1},
+    {"directions": 96, "refinement": 1, "cfl": 0.1, "time_substeps": 4, "source_stride": 1},
+    {"directions": 96, "refinement": 1, "cfl": 0.4, "time_substeps": 8, "source_stride": 1}
+  ]
+}

@@ -213,6 +213,63 @@ bash research/pc_causal_rt/gadi_prepare.sh --submit
 environment values overriding it. Output is written to a fresh `causal_rt_*`
 run under the standard21cmFAST run directory. Plot: `results/causal_rt_comparison.png`.
 
+## RT--native ES hypothesis check
+
+`hypothesis_config.json` selects eight cases without a Cartesian product:
+RT grids at native refinement factors1,2,3; angular directions24,96,384
+on the native grid; CFL0.4,0.2,0.1 on that grid; and matter substeps4,8.
+Every source stride is1. This diagnoses numerical sensitivity of the current
+comparison, with no change to the archived native physical inputs. It is not
+the full common-anchor convergence matrix above. Saving every native node
+reduces the interpolation interval in matched-neutral-fraction comparisons.
+
+```bash
+cd /g/data/qp00/sz4640/21cmFAST
+unset PC_DIRECTIONS PC_REFINEMENTS PC_CFL_VALUES PC_TIME_SUBSTEPS PC_SOURCE_STRIDES
+unset PC_MAX_STEPS PC_CHECKPOINT_STRIDE PC_TOLERANCE
+PC_INPUT_RUN=/g/data/qp00/sz4640/21cmfast_runs/causal_rt_5c1b6d8719_20261029T121626_GyH1 \
+PC_CONFIG_JSON=/g/data/qp00/sz4640/21cmFAST/research/pc_causal_rt/hypothesis_config.json \
+PC_MEM=8GB PC_WALLTIME=01:00:00 \
+bash research/pc_causal_rt/gadi_budget_prepare.sh --submit
+```
+
+The budget PBS workflow also writes `hypothesis/hypothesis_report.json`,
+outside the completed RT input directory. It compares RT directly with the
+original native ES fields, at identical redshifts and at volume-neutral
+fractions0.8,0.6,0.4,0.2. Fields are interpolated before computing spectra;
+the bracket nodes, redshifts and weights are saved. SCRIPT remains a separate
+comparison. For each numerical pair the report records the RT--RT change,
+both RT--ES differences, all spectral shells and cross correlations. Ratios
+whose reference-model difference vanishes are undefined, never set to zero.
+
+The same-time mass-neutral history admits the exact no-recombination identity
+
+```
+xHI_RT - xHI_ES = radiation/atoms - (emitted - native_ES_ions)/atoms.
+```
+
+This separates the RT radiation inventory from the native ES allocation
+deficit. The inventory can depend on numerical resolution; this identity
+alone does not establish a converged finite-light-speed effect. Persistent
+field differences and shrinking refinement changes support a difference in
+modeling assumptions. A single refinement difference is not an error bound.
+
+Already completed corrected runs can be compared without rerunning RT:
+
+```bash
+python -m research.pc_causal_rt.hypothesis \
+  --input-roots /path/to/baseline/results /path/to/refined/results \
+  --output-dir /path/to/separate/hypothesis
+```
+
+The analysis checks completion and case receipts, native histories, cumulative
+source-budget hashes, native binaries and scientific implementation hashes.
+Different seeds may be present in different input roots; comparisons for a
+given seed require the identical archived history. The photon-energy and
+other physical configuration must agree. Comparison cases must save the same
+checkpoint nodes; the supplied configuration reruns its baseline at the same
+dense cadence as the refinements. The analysis does not alter inputs.
+
 ## Tests
 
 ```bash
@@ -255,3 +312,24 @@ For local seed222 atz7, mass-neutral fractions were0.37017 (RT),0.36242
 These are local validation data, not Gadi timings or a convergence certificate.
 The full frozen PBS workflow and receipt-preserving resume also passed locally.
 Exact measurements are saved in `native_budget_validation.json`.
+
+## Local hypothesis validation
+
+`hypothesis_validation.json` records the fixed-source refinement experiment
+using the frozen6f90f73c solver and two local80-interval native histories.
+For seed222 at matched volume-neutral fraction0.4, RT--native ES field MAE
+is0.07274,0.07296,0.07417 for RT grids8^3,16^3,24^3. The corresponding
+successive RT--RT differences decrease from0.01689 to0.00687. Seed111 also
+retains its RT--ES difference under8^3 to16^3 refinement (0.07877 to0.07858).
+Matched fields use the recorded saved-node interpolation brackets; these
+local runs saved every fourth native node, whereas the Gadi hypothesis
+configuration above saves every node.
+
+The spatial comparisons do not establish1% power convergence: the worst
+active first-shell changes for seed222 are1.706% and1.665%. Higher-k changes
+are also recorded. Angular refinement24 to96 to384 passes both pair checks
+on the native RT grid. Radiation CFL0.4 to0.2 changes its first-shell power
+by up to1.084%;0.2 to0.1 reduces that change to0.418%. Thus the persistent
+neutral-field difference supports a difference in ionization modeling,
+while numerical contributions to power remain measurable. These are local
+fixed-source results, not a rerun of the user's Gadi native realization.

@@ -1,0 +1,4039 @@
+{
+  "all_saved_field_and_native_history_audits_passed": true,
+  "analysis_sha256": {
+    "hypothesis.py": "a52adbd15525484d5a84144b60912a3adfb81d5e24b2eb43e54d49e39e509da1",
+    "report.py": "40d51fc9d4c02693820b0a81910334f8092ab34da19567ed6734f0151dc0a351",
+    "script_comparison.py": "ea24fe24f6613695d42573279bee907081fb06b24b995101d108808f7351f8d8"
+  },
+  "box_len_cMpc": 50.0,
+  "cases": [
+    {
+      "case_id": "seed111_d96_f1_cfl0.4_t4_s1",
+      "elapsed_seconds": 20.089894685999752,
+      "history_sha256": "e0e508ed9ba1427bda0c74d967e3535900612be4195c682825028aa5dc910669",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9801083151915129,
+              0.9915299102299057,
+              0.9970620430468954,
+              0.9959091993672256
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.4481595030836611,
+              1.1416786552947396,
+              0.972646506141991,
+              0.8914548347842377
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006710912625655061,
+          "native_es_interpolation": {
+            "later_weight": 0.31548359634472056,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.68451640365528,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.28053205099383416,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.719467949006166,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9935172805800172,
+              0.9833075140603864,
+              0.9571053015491349,
+              0.9539687327354129
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9859343337054602,
+              0.9864225849428618,
+              0.8426780439888668,
+              0.8251050850172
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.03746308894120606,
+          "native_es_interpolation": {
+            "later_weight": 0.41585373606595194,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.584146263934048,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.31503700664514445,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.684962993354856,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9934977978886499,
+              0.9556284999715253,
+              0.8519733844959286,
+              0.8203014977080779
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.1408750068636826,
+              1.1340577972001136,
+              0.8291096373058303,
+              0.778366327677406
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07877254977139139,
+          "native_es_interpolation": {
+            "later_weight": 0.11511491976380192,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.884885080236198,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.9816636713294564,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.018336328670544,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9760490650568445,
+              0.9311629270881068,
+              0.8019555101566941,
+              0.7196142895686712
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9212759940902269,
+              1.1117201179817597,
+              0.7769438758145496,
+              0.6895879143447906
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.05461330985740176,
+          "native_es_interpolation": {
+            "later_weight": 0.5872206058045374,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.4127793941954625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.49302757183122076,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.50697242816878,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 111,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 96,
+        "refinement": 1,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "c28c52af8732f065add4d25180fd57321b0a239de5c63780d281bcafb4eb34a3",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9931145063851182,
+            0.9520255504382492,
+            0.8478431803228329,
+            0.8206079662128847
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.948211376636123,
+            0.9087502191165608,
+            0.6640212352912834,
+            0.6214205027122742
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.06099868891148197,
+        "emitted_per_atom": 0.654933585410372,
+        "field_MAE_rt_vs_native_es": 0.08250743351159348,
+        "history_decomposition_residual": 1.5660283942016406e-16,
+        "native_es_xHI_mass": 0.40606510350110997,
+        "native_es_xHI_volume": 0.4487665889937489,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.008965494269253258,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.05203319464222855,
+        "rt_xHI_mass": 0.3540319088588814,
+        "rt_xHI_volume": 0.3944987713087574
+      }
+    },
+    {
+      "case_id": "seed222_d96_f1_cfl0.4_t4_s1",
+      "elapsed_seconds": 19.782565075999628,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.979422125279877,
+              0.9926671158360191,
+              0.9972324198652603,
+              0.998299357628935
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.218872309970902,
+              1.159303133324877,
+              0.9981662050009341,
+              0.9299851285984762
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006072834501926342,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3126999547216865,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.687300045278313,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9877188667262277,
+              0.9724238821001412,
+              0.9453919403374086,
+              0.9434110285231602
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9514507766144322,
+              1.022947960721095,
+              0.8827532032638818,
+              0.9304409608887382
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.033662601716205116,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3501558648486085,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.649844135151391,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9768143090209817,
+              0.8950341475441876,
+              0.7743920488873094,
+              0.7603548035800988
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.0052293578690443,
+              1.0378558906285709,
+              0.8143261906115321,
+              0.9041989044895057
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.0727384259939359,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.02617839718986298,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.973821602810137,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.946767452275563,
+              0.8021661028796927,
+              0.6350491664684631,
+              0.527053988569365
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.711151852827196,
+              0.7813647181226665,
+              0.6166271379452479,
+              0.9063804675089856
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07331807892311881,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.5130891985949303,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.48691080140507,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 96,
+        "refinement": 1,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9753595901993762,
+            0.890558334602862,
+            0.7724486306916044,
+            0.7642132618688033
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.899394129109424,
+            0.9022563640393386,
+            0.6999736245827475,
+            0.7548462448832433
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.0350684877447976,
+        "emitted_per_atom": 0.6375751693187154,
+        "field_MAE_rt_vs_native_es": 0.07469885028734709,
+        "history_decomposition_residual": -2.100455361942269e-16,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.007743252469695121,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.027325235275102687,
+        "rt_xHI_mass": 0.3701680831509796,
+        "rt_xHI_volume": 0.41075285128788297
+      }
+    },
+    {
+      "case_id": "seed111_d96_f2_cfl0.4_t4_s1",
+      "elapsed_seconds": 142.00150533000124,
+      "history_sha256": "e0e508ed9ba1427bda0c74d967e3535900612be4195c682825028aa5dc910669",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.979468570746761,
+              0.9912878747003045,
+              0.9972770601838443,
+              0.9958992502072782
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.467611874016829,
+              1.149692844602117,
+              0.9675305704862367,
+              0.8868608215344103
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006982492182768992,
+          "native_es_interpolation": {
+            "later_weight": 0.31548359634472056,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.68451640365528,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.2805016634525,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.7194983365475,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9929883237210213,
+              0.9828569626040061,
+              0.9636273295969413,
+              0.9603815022090263
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.000110159620426,
+              0.9984414244990741,
+              0.820190892856491,
+              0.7945625152067852
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.03711696921123493,
+          "native_es_interpolation": {
+            "later_weight": 0.41585373606595194,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.584146263934048,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3155581217791532,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.684441878220847,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.993082062387981,
+              0.9547174767886796,
+              0.8749649280397668,
+              0.8554400509032191
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.157892310836783,
+              1.1518074996118777,
+              0.79218949200622,
+              0.6752258760298201
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.0785783519045389,
+          "native_es_interpolation": {
+            "later_weight": 0.11511491976380192,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.884885080236198,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.9831173499837402,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.01688265001626,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9741436786452582,
+              0.930902957239878,
+              0.8184304286695906,
+              0.753812129989561
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.931450293770637,
+              1.1253767549141744,
+              0.7397249309688725,
+              0.5950451793332118
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.05397739419794979,
+          "native_es_interpolation": {
+            "later_weight": 0.5872206058045374,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.4127793941954625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.49359649846621156,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.506403501533788,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 111,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 96,
+        "refinement": 2,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "c28c52af8732f065add4d25180fd57321b0a239de5c63780d281bcafb4eb34a3",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9928978786735894,
+            0.9511012972789638,
+            0.8715548989089672,
+            0.8563081926639927
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.9608384567978978,
+            0.921981668505109,
+            0.6336331017144174,
+            0.5374290943798763
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.06099868891148196,
+        "emitted_per_atom": 0.6549335854103719,
+        "field_MAE_rt_vs_native_es": 0.08180259274625339,
+        "history_decomposition_residual": 2.6516535820385323e-16,
+        "native_es_xHI_mass": 0.40606510350110997,
+        "native_es_xHI_volume": 0.4487665889937489,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.009347607731746962,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.051651081179734736,
+        "rt_xHI_mass": 0.35441402232137525,
+        "rt_xHI_volume": 0.39494197689045035
+      }
+    },
+    {
+      "case_id": "seed222_d96_f2_cfl0.4_t4_s1",
+      "elapsed_seconds": 117.9230040399998,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9784525181274651,
+              0.9920752277088905,
+              0.9974301598465324,
+              0.9981958740648132
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.2322522549212191,
+              1.1771477115741447,
+              0.99653178860316,
+              0.9242037971094385
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006271558009621451,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.31259913707428727,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.687400862925712,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.988054680818193,
+              0.9734062855196995,
+              0.9554652449181806,
+              0.9503255228195996
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9544534267061238,
+              1.0360183121479585,
+              0.861368310956578,
+              0.8963674957469111
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.034867488032567076,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3512913900159852,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.6487086099840145,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9773347497854726,
+              0.8989956185422756,
+              0.8178283635274752,
+              0.7797335373681736
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9882593275281455,
+              1.0414417567106709,
+              0.7699878477253747,
+              0.8049045484263749
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07296404746536655,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.02868833255560659,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.971311667444394,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9481357594891485,
+              0.8031823045974031,
+              0.6744155935029941,
+              0.5508346528679259
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.6991463652984122,
+              0.7840643889206698,
+              0.5830530913404165,
+              0.8068465436979236
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.0723372376746845,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.5143441662778018,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.485655833722198,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 96,
+        "refinement": 2,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9757855001972707,
+            0.8947628038165752,
+            0.8153907605679315,
+            0.78277897586551
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.8887863209797748,
+            0.9100587872230367,
+            0.6652864880595751,
+            0.6754301508716353
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.035068487744797594,
+        "emitted_per_atom": 0.6375751693187153,
+        "field_MAE_rt_vs_native_es": 0.0746465128228754,
+        "history_decomposition_residual": 3.0318019687662623e-16,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.008716704312168597,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.026351783432628697,
+        "rt_xHI_mass": 0.3711415349934536,
+        "rt_xHI_volume": 0.4118142645732191
+      }
+    },
+    {
+      "case_id": "seed222_d96_f3_cfl0.4_t4_s1",
+      "elapsed_seconds": 701.150191314,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9792582368733186,
+              0.9926102989948429,
+              0.9975593901779252,
+              0.9975923835145134
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.2227593864376407,
+              1.1561414107649604,
+              0.9785154652842409,
+              0.919612433991903
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.00641721711502086,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.31218507415125124,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.687814925848748,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9878798669864814,
+              0.9725306763899713,
+              0.9560743319837482,
+              0.9506466100827555
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9434497906701892,
+              1.0235062994062254,
+              0.8490452621276933,
+              0.8895426348567737
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.035949863044514654,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.351824813820316,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.648175186179684,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9768042229187505,
+              0.8960310584343583,
+              0.8226323549461458,
+              0.7802562634485661
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9698979412373309,
+              1.037127063453962,
+              0.7547765016292369,
+              0.7802515584308382
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.0741672230823619,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.029777768210389913,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.97022223178961,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9481144363006148,
+              0.802027937729484,
+              0.6783067958008965,
+              0.5602081182763283
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.6861565597590381,
+              0.7808160101132111,
+              0.5715346986917506,
+              0.7821340733700984
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07224327080224802,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.5148888841051926,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.485111115894807,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 96,
+        "refinement": 3,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9752022690071331,
+            0.8916572427953947,
+            0.8201876725358064,
+            0.7825107341005693
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.874233139668933,
+            0.9083248881131587,
+            0.6536089428537488,
+            0.6562140106504238
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.03506848774479757,
+        "emitted_per_atom": 0.6375751693187153,
+        "field_MAE_rt_vs_native_es": 0.07684766049402919,
+        "history_decomposition_residual": 1.069355378986031e-15,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.009342717381135436,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.02572577036366107,
+        "rt_xHI_mass": 0.3717675480624212,
+        "rt_xHI_volume": 0.4122766793976526
+      }
+    },
+    {
+      "case_id": "seed222_d384_f1_cfl0.4_t4_s1",
+      "elapsed_seconds": 48.299110504000055,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.979461067505806,
+              0.992668435046425,
+              0.9971552826556693,
+              0.998274298195228
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.2188857227650538,
+              1.1595985087118954,
+              0.9991955636740427,
+              0.9305020457776012
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006085399528915675,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.31290655549705637,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.687093444502944,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9877147207414756,
+              0.9721947753348349,
+              0.9440105151994679,
+              0.9426118611751736
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9509567893674625,
+              1.021445448828169,
+              0.8865022770786629,
+              0.9318916595866394
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.03381571766404328,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3503612130268821,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.649638786973118,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9767407790495485,
+              0.8940422720765986,
+              0.769624328027108,
+              0.7571888124651974
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.0039942030188778,
+              1.035842655784211,
+              0.8199817177595379,
+              0.9070632546895635
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.0731067405164368,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.02639541286151974,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.973604587138481,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9467844885034216,
+              0.8016631305683956,
+              0.6309280060989337,
+              0.523961929661581
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.7102780396487919,
+              0.7798490253459698,
+              0.6209096374633187,
+              0.9092517285341287
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07357503174411452,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.5131977064307587,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.486802293569241,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 384,
+        "refinement": 1,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9752765866493538,
+            0.8895313901034829,
+            0.7677145998579168,
+            0.7611102587762488
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.8986895219114384,
+            0.9009076691484685,
+            0.7051492251311314,
+            0.7575751013197839
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.0350684877447976,
+        "emitted_per_atom": 0.6375751693187154,
+        "field_MAE_rt_vs_native_es": 0.07499926278370667,
+        "history_decomposition_residual": 4.937863269313669e-17,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.00785083867383876,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.02721764907095879,
+        "rt_xHI_mass": 0.37027566935512346,
+        "rt_xHI_volume": 0.41084440776479847
+      }
+    },
+    {
+      "case_id": "seed222_d96_f1_cfl0.2_t4_s1",
+      "elapsed_seconds": 35.01827551600036,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9790439252709698,
+              0.9921880327067345,
+              0.9967178584339139,
+              0.9983359983011048
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.2253679277724374,
+              1.1730477122639855,
+              1.0104625761380068,
+              0.9344959592469044
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006216559868493203,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.31279057162071455,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.687209428379285,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9876643523041976,
+              0.9721630386962633,
+              0.9442431470851956,
+              0.9430812529029494
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9592269634259156,
+              1.0329918686873407,
+              0.8876302010160497,
+              0.9311386518355244
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.033934478563783926,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3502276952026259,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.649772304797374,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9767248087821105,
+              0.894279214966215,
+              0.7729951140700717,
+              0.7595828280292333
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.0160571958456668,
+              1.0542295015201553,
+              0.8270296016192527,
+              0.9168576063903677
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07335505619349916,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.026270598848431803,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.9737294011515685,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9463727027742261,
+              0.801056497864343,
+              0.6336899791186369,
+              0.5210842513303822
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.7188120320478975,
+              0.7936918263218641,
+              0.6262464625625126,
+              0.9190697110924403
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07382135866475918,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.5131352994242147,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.486864700575785,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.2,
+        "directions": 96,
+        "refinement": 1,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9753036512913226,
+            0.8898520799764879,
+            0.7710771651372264,
+            0.7639160096137485
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.9092541386066847,
+            0.916664291555089,
+            0.7110277814273605,
+            0.7655589909005461
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.0350684877447976,
+        "emitted_per_atom": 0.6375751693187154,
+        "field_MAE_rt_vs_native_es": 0.07346085479859812,
+        "history_decomposition_residual": 7.842678058627567e-17,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.007634348915207929,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.027434138829589592,
+        "rt_xHI_mass": 0.3700591795964927,
+        "rt_xHI_volume": 0.41079174514700423
+      }
+    },
+    {
+      "case_id": "seed222_d96_f1_cfl0.1_t4_s1",
+      "elapsed_seconds": 57.65158888900078,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9789940504813273,
+              0.9920602543473009,
+              0.9964666525563441,
+              0.9983070152191816
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.2270841647118857,
+              1.1770232478544813,
+              1.0149875160214075,
+              0.9363083395859644
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006269526638952059,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.31248036650683053,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.687519633493169,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9876550374669252,
+              0.9720727310610632,
+              0.9433219053302553,
+              0.9427732808442612
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9620411950331694,
+              1.0352127990644702,
+              0.8891495543444401,
+              0.9312711428946991
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.03412526445831393,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.35027538139372166,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.649724618606278,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9767195824602739,
+              0.8940316587376166,
+              0.771137593513224,
+              0.7587977471004124
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.020108532873568,
+              1.0584001961600746,
+              0.8311291072372526,
+              0.920935948540114
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.0736441610201336,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.026372449064192394,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.973627550935808,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9462097243803985,
+              0.8008157034646204,
+              0.6321634663808283,
+              0.5180014490713731
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.7216781598736177,
+              0.7968317937018464,
+              0.6293507056107674,
+              0.9231578930687673
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07402535933244149,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.513186224532095,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.486813775467905,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.1,
+        "directions": 96,
+        "refinement": 1,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9753155723291778,
+            0.8896077228329154,
+            0.769224640176169,
+            0.7633505180600827
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.9130705462556614,
+            0.9204832146839538,
+            0.7147017155111485,
+            0.7691251459846559
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.0350684877447976,
+        "emitted_per_atom": 0.6375751693187154,
+        "field_MAE_rt_vs_native_es": 0.07314399984854075,
+        "history_decomposition_residual": 5.781963788504575e-15,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.007635150504009767,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.02743333724078205,
+        "rt_xHI_mass": 0.3700599811853002,
+        "rt_xHI_volume": 0.41083471766543356
+      }
+    },
+    {
+      "case_id": "seed222_d96_f1_cfl0.4_t8_s1",
+      "elapsed_seconds": 38.395647010000175,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9794427875707458,
+              0.9926631909972334,
+              0.9972214792888999,
+              0.9983067401895143
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.2189263374808563,
+              1.1597100458555172,
+              0.9987413583946118,
+              0.9304492634992755
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.0060627149449391,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.31225806335853734,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.687741936641462,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9877250770287743,
+              0.9724261492281318,
+              0.9454072623476528,
+              0.9434232915881138
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9515109735523936,
+              1.0234309415202953,
+              0.8833497956773997,
+              0.9310543473928908
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.03364017194265499,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.34993652605599834,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.650063473944002,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9768277675156971,
+              0.8950217281926106,
+              0.7744290087519432,
+              0.7603745866441485
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.005942255012236,
+              1.0388831721857839,
+              0.8153430628679681,
+              0.9054132821140342
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07272613126302567,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.02597198475124375,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.974028015248756,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9467937422657885,
+              0.8022014118781636,
+              0.6350760044753017,
+              0.5269204603377716
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.711656193573203,
+              0.782138121801956,
+              0.6173971377762383,
+              0.9075977750655285
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07332196851790501,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.5129859923756195,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.4870140076243805,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 96,
+        "refinement": 1,
+        "source_stride": 1,
+        "time_substeps": 8
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9753715921871658,
+            0.8905411605033273,
+            0.772485849478777,
+            0.7642461142433987
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.8996505410330335,
+            0.9027666930644679,
+            0.7005506986617949,
+            0.7555396972030529
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.0350684877447976,
+        "emitted_per_atom": 0.6375751693187154,
+        "field_MAE_rt_vs_native_es": 0.07466546385559761,
+        "history_decomposition_residual": 6.823629660444863e-16,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.007650405289589329,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.02741808245520759,
+        "rt_xHI_mass": 0.37007523597087466,
+        "rt_xHI_volume": 0.4106658060526569
+      }
+    },
+    {
+      "case_id": "seed222_d24_f1_cfl0.4_t4_s1",
+      "elapsed_seconds": 16.87715340899922,
+      "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+      "matched_mean_xHI": [
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.979197057650172,
+              0.9926834715037589,
+              0.9975133647003411,
+              0.9983438377119157
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.2193905623336803,
+              1.1572020889090768,
+              0.9929353157027012,
+              0.9272719418638158
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.006056440040081811,
+          "native_es_interpolation": {
+            "later_weight": 0.3429848631284475,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.657015136871552,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3136699238353028,
+            "nodes": [
+              64,
+              68
+            ],
+            "redshift_linear_diagnostic": 8.686330076164698,
+            "redshifts": [
+              9.0,
+              8.0
+            ]
+          },
+          "target_xHI_volume": 0.8
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.987737092498733,
+              0.9730389742663418,
+              0.9503487161259037,
+              0.9460746458680592
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.9513871436149931,
+              1.0265090630334446,
+              0.8725639738419344,
+              0.923312715996097
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.03311696783273309,
+          "native_es_interpolation": {
+            "later_weight": 0.4073399142227421,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.592660085777258,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.3504160308170158,
+            "nodes": [
+              68,
+              72
+            ],
+            "redshift_linear_diagnostic": 7.649583969182984,
+            "redshifts": [
+              8.0,
+              7.0
+            ]
+          },
+          "target_xHI_volume": 0.6
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9770475671163967,
+              0.8977309056729021,
+              0.7936272731155948,
+              0.7708409136585902
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              1.0039636967647512,
+              1.0429993146287397,
+              0.7994720074691212,
+              0.8874444466489577
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07115318700213305,
+          "native_es_interpolation": {
+            "later_weight": 0.1026379094104478,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.897362090589552,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.02608769397315724,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.973912306026843,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.4
+        },
+        {
+          "available": true,
+          "brightness_spectra": {
+            "k_cMpc_inv": [
+              0.16036478039875368,
+              0.28033098430515146,
+              0.3938500551132633,
+              0.4660159544705517
+            ],
+            "modes": [
+              18,
+              62,
+              98,
+              75
+            ],
+            "r_rt": [
+              0.9466003059329137,
+              0.803383699609272,
+              0.6525908964306479,
+              0.5376158583823027
+            ],
+            "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+            "ratio_rt": [
+              0.7102564579281874,
+              0.7852370187767035,
+              0.6053791975704688,
+              0.8895855861449685
+            ]
+          },
+          "field_MAE_rt_vs_native_es": 0.07239476768019053,
+          "native_es_interpolation": {
+            "later_weight": 0.6204788426363753,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.379521157363625,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "rt_interpolation": {
+            "later_weight": 0.5130438469865773,
+            "nodes": [
+              72,
+              76
+            ],
+            "redshift_linear_diagnostic": 6.4869561530134225,
+            "redshifts": [
+              7.0,
+              6.0
+            ]
+          },
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "seed": 222,
+      "setting": {
+        "cfl": 0.4,
+        "directions": 24,
+        "refinement": 1,
+        "source_stride": 1,
+        "time_substeps": 4
+      },
+      "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+      "z7": {
+        "brightness_spectra": {
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "modes": [
+            18,
+            62,
+            98,
+            75
+          ],
+          "r_rt": [
+            0.9756351797405225,
+            0.8933659849347388,
+            0.7914538163942993,
+            0.7744625554091088
+          ],
+          "ratio_definition": "P_comparison / P_native_ES; null for undefined native power",
+          "ratio_rt": [
+            0.8980943841085253,
+            0.9065588741865674,
+            0.687077336727343,
+            0.7407212170459512
+          ]
+        },
+        "emitted_minus_native_ions_per_atom": 0.0350684877447976,
+        "emitted_per_atom": 0.6375751693187154,
+        "field_MAE_rt_vs_native_es": 0.07387667706110396,
+        "history_decomposition_residual": 5.972429311090072e-17,
+        "native_es_xHI_mass": 0.39749331842608226,
+        "native_es_xHI_volume": 0.4396407092699519,
+        "node": 72,
+        "primary_power_band": {
+          "bin_count": 1,
+          "maximum_bound_cMpc_inv": 0.25132741228718347,
+          "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "minimum_bound_cMpc_inv": 0.12566370614359174,
+          "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+          "modes_per_bin": [
+            18
+          ],
+          "shell_centres_cMpc_inv": [
+            0.16036478039875368
+          ]
+        },
+        "radiation_per_atom": 0.007679917215677874,
+        "redshift": 7.0,
+        "rt_minus_native_es_mass": -0.027388570529119666,
+        "rt_xHI_mass": 0.3701047478969626,
+        "rt_xHI_volume": 0.4107145967092599
+      }
+    }
+  ],
+  "cases_completed": 10,
+  "comparisons": [
+    {
+      "active_checkpoints": 3,
+      "axis": "refinement",
+      "coarse": "seed111_d96_f1_cfl0.4_t4_s1",
+      "fine": "seed111_d96_f2_cfl0.4_t4_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            0.9867455617676852,
+            0.9930292779110484,
+            1.0052876217163693,
+            1.0051800836594393
+          ],
+          "P_fine_over_P_native_ES": [
+            1.467611874016829,
+            1.149692844602117,
+            0.9675305704862367,
+            0.8868608215344103
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0009344953095841795,
+          "field_MAE_coarse_vs_native_es": 0.006710912625655061,
+          "field_MAE_fine_vs_native_es": 0.006982492182768992,
+          "field_numerical_change_over_fine_model_difference": 0.13383406456082764,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9858257355166293,
+            0.9879623989336759,
+            1.027416972473395,
+            1.038439479872098
+          ],
+          "P_fine_over_P_native_ES": [
+            1.000110159620426,
+            0.9984414244990741,
+            0.820190892856491,
+            0.7945625152067852
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.007273114457900697,
+          "field_MAE_coarse_vs_native_es": 0.03746308894120606,
+          "field_MAE_fine_vs_native_es": 0.03711696921123493,
+          "field_numerical_change_over_fine_model_difference": 0.19595119462769064,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9853032066852552,
+            0.9845896971345078,
+            1.0466051944290626,
+            1.1527495543476936
+          ],
+          "P_fine_over_P_native_ES": [
+            1.157892310836783,
+            1.1518074996118777,
+            0.79218949200622,
+            0.6752258760298201
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0178004772880697,
+          "field_MAE_coarse_vs_native_es": 0.07877254977139139,
+          "field_MAE_fine_vs_native_es": 0.0785783519045389,
+          "field_numerical_change_over_fine_model_difference": 0.22653156825806997,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9890769268650684,
+            0.9878648311574054,
+            1.0503145740903024,
+            1.1588832886899787
+          ],
+          "P_fine_over_P_native_ES": [
+            0.931450293770637,
+            1.1253767549141744,
+            0.7397249309688725,
+            0.5950451793332118
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.009114452419052031,
+          "field_MAE_coarse_vs_native_es": 0.05461330985740176,
+          "field_MAE_fine_vs_native_es": 0.05397739419794979,
+          "field_numerical_change_over_fine_model_difference": 0.16885684376735294,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": false,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.018034596624114038,
+      "worst_primary_power_error": 0.01314173061292323
+    },
+    {
+      "active_checkpoints": 3,
+      "axis": "directions",
+      "coarse": "seed222_d24_f1_cfl0.4_t4_s1",
+      "fine": "seed222_d96_f1_cfl0.4_t4_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            1.0004251900371668,
+            0.9981876660595453,
+            0.9947595007003588,
+            0.9970825482567134
+          ],
+          "P_fine_over_P_native_ES": [
+            1.218872309970902,
+            1.159303133324877,
+            0.9981662050009341,
+            0.9299851285984762
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0002787312021180868,
+          "field_MAE_coarse_vs_native_es": 0.006056440040081811,
+          "field_MAE_fine_vs_native_es": 0.006072834501926342,
+          "field_numerical_change_over_fine_model_difference": 0.04589804020341267,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9999331200299552,
+            1.0034812155154396,
+            0.9884574427096114,
+            0.9923388530897947
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9514507766144322,
+            1.022947960721095,
+            0.8827532032638818,
+            0.9304409608887382
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.002165764318263604,
+          "field_MAE_coarse_vs_native_es": 0.03311696783273309,
+          "field_MAE_fine_vs_native_es": 0.033662601716205116,
+          "field_numerical_change_over_fine_model_difference": 0.06433740138454624,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9987409230596127,
+            1.0049558171289596,
+            0.9817589274253159,
+            0.9814703847158417
+          ],
+          "P_fine_over_P_native_ES": [
+            1.0052293578690443,
+            1.0378558906285709,
+            0.8143261906115321,
+            0.9041989044895057
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.005118513003642078,
+          "field_MAE_coarse_vs_native_es": 0.07115318700213305,
+          "field_MAE_fine_vs_native_es": 0.0727384259939359,
+          "field_numerical_change_over_fine_model_difference": 0.07036876222849256,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9987409230596125,
+            1.0049558171289596,
+            0.9817589274253158,
+            0.9814703847158417
+          ],
+          "P_fine_over_P_native_ES": [
+            0.711151852827196,
+            0.7813647181226665,
+            0.6166271379452479,
+            0.9063804675089856
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.002559256501821051,
+          "field_MAE_coarse_vs_native_es": 0.07239476768019053,
+          "field_MAE_fine_vs_native_es": 0.07331807892311881,
+          "field_numerical_change_over_fine_model_difference": 0.0349062133025155,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": true,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.005262643986470827,
+      "worst_primary_power_error": 0.0014451339616655678
+    },
+    {
+      "active_checkpoints": 3,
+      "axis": "directions",
+      "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+      "fine": "seed222_d384_f1_cfl0.4_t4_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            0.9999889958558861,
+            0.9997452778829921,
+            0.9989698126067297,
+            0.999444474967604
+          ],
+          "P_fine_over_P_native_ES": [
+            1.2188857227650538,
+            1.1595985087118954,
+            0.9991955636740427,
+            0.9305020457776012
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 6.959557799650111e-05,
+          "field_MAE_coarse_vs_native_es": 0.006072834501926342,
+          "field_MAE_fine_vs_native_es": 0.006085399528915675,
+          "field_numerical_change_over_fine_model_difference": 0.011436484599870138,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.0005194633999073,
+            1.001470966359143,
+            0.9957709371857052,
+            0.998443275371147
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9509567893674625,
+            1.021445448828169,
+            0.8865022770786629,
+            0.9318916595866394
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0005717309424251013,
+          "field_MAE_coarse_vs_native_es": 0.033662601716205116,
+          "field_MAE_fine_vs_native_es": 0.03381571766404328,
+          "field_numerical_change_over_fine_model_difference": 0.016907254434319775,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.0012302410177794,
+            1.0019435720600207,
+            0.9931028618986061,
+            0.9968421714965864
+          ],
+          "P_fine_over_P_native_ES": [
+            1.0039942030188778,
+            1.035842655784211,
+            0.8199817177595379,
+            0.9070632546895635
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0013339137369807162,
+          "field_MAE_coarse_vs_native_es": 0.0727384259939359,
+          "field_MAE_fine_vs_native_es": 0.0731067405164368,
+          "field_numerical_change_over_fine_model_difference": 0.018246111474232784,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.0012302410177796,
+            1.0019435720600207,
+            0.9931028618986062,
+            0.9968421714965864
+          ],
+          "P_fine_over_P_native_ES": [
+            0.7102780396487919,
+            0.7798490253459698,
+            0.6209096374633187,
+            0.9092517285341287
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0006669568684903573,
+          "field_MAE_coarse_vs_native_es": 0.07331807892311881,
+          "field_MAE_fine_vs_native_es": 0.07357503174411452,
+          "field_numerical_change_over_fine_model_difference": 0.009064989204625238,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": true,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.0013906308656127858,
+      "worst_primary_power_error": 0.0007840385147552809
+    },
+    {
+      "active_checkpoints": 3,
+      "axis": "refinement",
+      "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+      "fine": "seed222_d96_f2_cfl0.4_t4_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            0.9891418782989587,
+            0.9848408334197881,
+            1.0016401046273347,
+            1.0062554725560742
+          ],
+          "P_fine_over_P_native_ES": [
+            1.2322522549212191,
+            1.1771477115741447,
+            0.99653178860316,
+            0.9242037971094385
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.001260985598439499,
+          "field_MAE_coarse_vs_native_es": 0.006072834501926342,
+          "field_MAE_fine_vs_native_es": 0.006271558009621451,
+          "field_numerical_change_over_fine_model_difference": 0.20106416882455203,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9968540632704795,
+            0.9873840536662282,
+            1.024826653169485,
+            1.0380128298978923
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9544534267061238,
+            1.0360183121479585,
+            0.861368310956578,
+            0.8963674957469111
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.008236649540078484,
+          "field_MAE_coarse_vs_native_es": 0.033662601716205116,
+          "field_MAE_fine_vs_native_es": 0.034867488032567076,
+          "field_numerical_change_over_fine_model_difference": 0.23622721351148826,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.0171716369056132,
+            0.9965568251330487,
+            1.0575831722762088,
+            1.123361653574024
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9882593275281455,
+            1.0414417567106709,
+            0.7699878477253747,
+            0.8049045484263749
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.016887997078535846,
+          "field_MAE_coarse_vs_native_es": 0.0727384259939359,
+          "field_MAE_fine_vs_native_es": 0.07296404746536655,
+          "field_numerical_change_over_fine_model_difference": 0.2314564181291064,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.0171716369056134,
+            0.9965568251330486,
+            1.057583172276209,
+            1.123361653574024
+          ],
+          "P_fine_over_P_native_ES": [
+            0.6991463652984122,
+            0.7840643889206698,
+            0.5830530913404165,
+            0.8068465436979236
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.00844399853926793,
+          "field_MAE_coarse_vs_native_es": 0.07331807892311881,
+          "field_MAE_fine_vs_native_es": 0.0723372376746845,
+          "field_numerical_change_over_fine_model_difference": 0.11673100619686828,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": false,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.017186732922242643,
+      "worst_primary_power_error": 0.017060088269747364
+    },
+    {
+      "active_checkpoints": 3,
+      "axis": "refinement",
+      "coarse": "seed222_d96_f2_cfl0.4_t4_s1",
+      "fine": "seed222_d96_f3_cfl0.4_t4_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            1.0077634803616065,
+            1.018169317882391,
+            1.0184118943012164,
+            1.0049927153524938
+          ],
+          "P_fine_over_P_native_ES": [
+            1.2227593864376407,
+            1.1561414107649604,
+            0.9785154652842409,
+            0.919612433991903
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0007748033026342017,
+          "field_MAE_coarse_vs_native_es": 0.006271558009621451,
+          "field_MAE_fine_vs_native_es": 0.00641721711502086,
+          "field_numerical_change_over_fine_model_difference": 0.12073820921854271,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.0116631919840886,
+            1.0122246563103634,
+            1.0145140069423428,
+            1.007672325780356
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9434497906701892,
+            1.0235062994062254,
+            0.8490452621276933,
+            0.8895426348567737
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.003654978381018131,
+          "field_MAE_coarse_vs_native_es": 0.034867488032567076,
+          "field_MAE_fine_vs_native_es": 0.035949863044514654,
+          "field_numerical_change_over_fine_model_difference": 0.10166877065685564,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.018931256073593,
+            1.004160235913948,
+            1.0201534441828846,
+            1.0315962073118012
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9698979412373309,
+            1.037127063453962,
+            0.7547765016292369,
+            0.7802515584308382
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.006872236327142773,
+          "field_MAE_coarse_vs_native_es": 0.07296404746536655,
+          "field_MAE_fine_vs_native_es": 0.0741672230823619,
+          "field_numerical_change_over_fine_model_difference": 0.09265867106162555,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            1.018931256073593,
+            1.004160235913948,
+            1.0201534441828846,
+            1.0315962073118012
+          ],
+          "P_fine_over_P_native_ES": [
+            0.6861565597590381,
+            0.7808160101132111,
+            0.5715346986917506,
+            0.7821340733700984
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0034361181635713684,
+          "field_MAE_coarse_vs_native_es": 0.0723372376746845,
+          "field_MAE_fine_vs_native_es": 0.07224327080224802,
+          "field_numerical_change_over_fine_model_difference": 0.047563158830073976,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": false,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.006970097386474415,
+      "worst_primary_power_error": 0.01664679666153246
+    },
+    {
+      "active_checkpoints": 3,
+      "axis": "time_substeps",
+      "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+      "fine": "seed222_d96_f1_cfl0.4_t8_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            0.9999556761485144,
+            0.999649125630933,
+            0.9994241217820375,
+            0.9995011711879337
+          ],
+          "P_fine_over_P_native_ES": [
+            1.2189263374808563,
+            1.1597100458555172,
+            0.9987413583946118,
+            0.9304492634992755
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 1.6902253045067524e-05,
+          "field_MAE_coarse_vs_native_es": 0.006072834501926342,
+          "field_MAE_fine_vs_native_es": 0.0060627149449391,
+          "field_numerical_change_over_fine_model_difference": 0.00278790165768503,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9999367354243571,
+            0.9995280768055704,
+            0.9993246249487606,
+            0.999341191514899
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9515109735523936,
+            1.0234309415202953,
+            0.8833497956773997,
+            0.9310543473928908
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 4.952508176939053e-05,
+          "field_MAE_coarse_vs_native_es": 0.033662601716205116,
+          "field_MAE_fine_vs_native_es": 0.03364017194265499,
+          "field_numerical_change_over_fine_model_difference": 0.0014722006134158258,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.99929131404945,
+            0.9990111673913713,
+            0.9987528289590653,
+            0.9986587587695941
+          ],
+          "P_fine_over_P_native_ES": [
+            1.005942255012236,
+            1.0388831721857839,
+            0.8153430628679681,
+            0.9054132821140342
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.00015833656549205902,
+          "field_MAE_coarse_vs_native_es": 0.0727384259939359,
+          "field_MAE_fine_vs_native_es": 0.07272613126302567,
+          "field_numerical_change_over_fine_model_difference": 0.0021771619463629866,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9992913140494503,
+            0.9990111673913712,
+            0.9987528289590654,
+            0.9986587587695936
+          ],
+          "P_fine_over_P_native_ES": [
+            0.711656193573203,
+            0.782138121801956,
+            0.6173971377762383,
+            0.9075977750655285
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 7.916828274651377e-05,
+          "field_MAE_coarse_vs_native_es": 0.07331807892311881,
+          "field_MAE_fine_vs_native_es": 0.07332196851790501,
+          "field_numerical_change_over_fine_model_difference": 0.0010797348236385811,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": true,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.0001376759419702433,
+      "worst_primary_power_error": 0.0005586896006108955
+    },
+    {
+      "active_checkpoints": 3,
+      "axis": "cfl",
+      "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+      "fine": "seed222_d96_f1_cfl0.2_t4_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            0.994699046992895,
+            0.9882830179920121,
+            0.9878309484908688,
+            0.9951729800393535
+          ],
+          "P_fine_over_P_native_ES": [
+            1.2253679277724374,
+            1.1730477122639855,
+            1.0104625761380068,
+            0.9344959592469044
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.00042382563851707457,
+          "field_MAE_coarse_vs_native_es": 0.006072834501926342,
+          "field_MAE_fine_vs_native_es": 0.006216559868493203,
+          "field_numerical_change_over_fine_model_difference": 0.06817687716080877,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.991893277495338,
+            0.9902768760619491,
+            0.9945055973235417,
+            0.9992507120766484
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9592269634259156,
+            1.0329918686873407,
+            0.8876302010160497,
+            0.9311386518355244
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0015483990919287053,
+          "field_MAE_coarse_vs_native_es": 0.033662601716205116,
+          "field_MAE_fine_vs_native_es": 0.033934478563783926,
+          "field_numerical_change_over_fine_model_difference": 0.0456290816143912,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.98934327907829,
+            0.9844686466580814,
+            0.9846397142462031,
+            0.9861933829063175
+          ],
+          "P_fine_over_P_native_ES": [
+            1.0160571958456668,
+            1.0542295015201553,
+            0.8270296016192527,
+            0.9168576063903677
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.003425845897436659,
+          "field_MAE_coarse_vs_native_es": 0.0727384259939359,
+          "field_MAE_fine_vs_native_es": 0.07335505619349916,
+          "field_numerical_change_over_fine_model_difference": 0.046702246241892495,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9893432790782902,
+            0.9844686466580814,
+            0.9846397142462031,
+            0.9861933829063175
+          ],
+          "P_fine_over_P_native_ES": [
+            0.7188120320478975,
+            0.7936918263218641,
+            0.6262464625625126,
+            0.9190697110924403
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.001712922948718336,
+          "field_MAE_coarse_vs_native_es": 0.07331807892311881,
+          "field_MAE_fine_vs_native_es": 0.07382135866475918,
+          "field_numerical_change_over_fine_model_difference": 0.023203622633080182,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": false,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.0035266839242146476,
+      "worst_primary_power_error": 0.010844063368652734
+    },
+    {
+      "active_checkpoints": 3,
+      "axis": "cfl",
+      "coarse": "seed222_d96_f1_cfl0.2_t4_s1",
+      "fine": "seed222_d96_f1_cfl0.1_t4_s1",
+      "matched_mean_xHI": [
+        {
+          "P_coarse_over_P_fine": [
+            0.9986013698254745,
+            0.9966223814204667,
+            0.9955418763167281,
+            0.9980643338711888
+          ],
+          "P_fine_over_P_native_ES": [
+            1.2270841647118857,
+            1.1770232478544813,
+            1.0149875160214075,
+            0.9363083395859644
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.00018625494911349538,
+          "field_MAE_coarse_vs_native_es": 0.006216559868493203,
+          "field_MAE_fine_vs_native_es": 0.006269526638952059,
+          "field_numerical_change_over_fine_model_difference": 0.02970797634965111,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.8
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.997074728585654,
+            0.997854614646248,
+            0.9982912286004455,
+            0.9998577309517366
+          ],
+          "P_fine_over_P_native_ES": [
+            0.9620411950331694,
+            1.0352127990644702,
+            0.8891495543444401,
+            0.9312711428946991
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0005907310037256675,
+          "field_MAE_coarse_vs_native_es": 0.033934478563783926,
+          "field_MAE_fine_vs_native_es": 0.03412526445831393,
+          "field_numerical_change_over_fine_model_difference": 0.017310664491619724,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.6
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9960285235371095,
+            0.9960594351219408,
+            0.9950675465673112,
+            0.9955715246470601
+          ],
+          "P_fine_over_P_native_ES": [
+            1.020108532873568,
+            1.0584001961600746,
+            0.8311291072372526,
+            0.920935948540114
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0012136516811271276,
+          "field_MAE_coarse_vs_native_es": 0.07335505619349916,
+          "field_MAE_fine_vs_native_es": 0.0736441610201336,
+          "field_numerical_change_over_fine_model_difference": 0.016479944428932077,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.4
+        },
+        {
+          "P_coarse_over_P_fine": [
+            0.9960285235371095,
+            0.9960594351219408,
+            0.9950675465673113,
+            0.9955715246470601
+          ],
+          "P_fine_over_P_native_ES": [
+            0.7216781598736177,
+            0.7968317937018464,
+            0.6293507056107674,
+            0.9231578930687673
+          ],
+          "available": true,
+          "field_MAE_coarse_vs_fine": 0.0006068258405635658,
+          "field_MAE_coarse_vs_native_es": 0.07382135866475918,
+          "field_MAE_fine_vs_native_es": 0.07402535933244149,
+          "field_numerical_change_over_fine_model_difference": 0.008197539951658504,
+          "k_cMpc_inv": [
+            0.16036478039875368,
+            0.28033098430515146,
+            0.3938500551132633,
+            0.4660159544705517
+          ],
+          "target_xHI_volume": 0.2
+        }
+      ],
+      "passed": true,
+      "primary_power_band": {
+        "bin_count": 1,
+        "maximum_bound_cMpc_inv": 0.25132741228718347,
+        "maximum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "minimum_bound_cMpc_inv": 0.12566370614359174,
+        "minimum_tested_shell_cMpc_inv": 0.16036478039875368,
+        "modes_per_bin": [
+          18
+        ],
+        "shell_centres_cMpc_inv": [
+          0.16036478039875368
+        ]
+      },
+      "worst_field_MAE": 0.0012507040372603559,
+      "worst_primary_power_error": 0.004179751131637377
+    }
+  ],
+  "convergence_certified": false,
+  "full_report_sha256": "101775b54436c04bb0ee3695896f5a5faaf749dbc20efc0ff30ecc8b965de203",
+  "hypothesis_status": "unresolved_numerical_sensitivity",
+  "input_provenance": [
+    {
+      "completion_sha256": "e566b3e7f340300448bce2d104b5724da8d51bc33a40d0c8e7cada9661769df9",
+      "manifest_sha256": "39358d360e04f6caf04e283798bc33fc88524a8cd189315a4357f81eddd4e51f",
+      "root": "/workspace/scratch/c8ee7ea91934/native_budget_rt_validation",
+      "summary_sha256": "4e57eb65a2f21cc5adda1c15c4d3b979e1724c8dc76e7acc4874e36be02faf01"
+    },
+    {
+      "completion_sha256": "2378f33f4f196bceec1167f666ea0f9f9e1822936a5fde39596760cffc31249a",
+      "manifest_sha256": "033680af0734a26b706889f09e937ca8698a34123336b2bdae064017f41f8cc1",
+      "root": "/workspace/scratch/c8ee7ea91934/hypothesis_native_f2_seed111",
+      "summary_sha256": "9dadf85c730b087e05651b48831ee9bfc442f6aa5a54e84882797a1767c6b7ad"
+    },
+    {
+      "completion_sha256": "1a174d81bf316fd9ff486b9c1906b8959d7d0d8423fe38274b5149d6e25a7ec8",
+      "manifest_sha256": "2461bc564ff7cf40db8be2194abcdba2f6dc18ca3ff613f410d3c9382d10f03c",
+      "root": "/workspace/scratch/c8ee7ea91934/hypothesis_native_f2_seed222",
+      "summary_sha256": "0f82732f267a2375137dece250f702b0bec508394c1e14dc7284163ca62f82b6"
+    },
+    {
+      "completion_sha256": "99332161746c9791955022cb0c7be716f3cdec9cfe57ef0071b6bb4d9de42a71",
+      "manifest_sha256": "58af016415e50a890feb34bcf30ec5022c5bfd59ee36b31febe99d747d5dc127",
+      "root": "/workspace/scratch/c8ee7ea91934/hypothesis_native_f3_seed222",
+      "summary_sha256": "23b1a8842f200f993c2419cc323db90907404358355cf5401441484815674ee6"
+    },
+    {
+      "completion_sha256": "f89a40c31624b044f40b16ca0776e7b39e0c32b049cc7133c3837a90f910a9ce",
+      "manifest_sha256": "8f67a9ae911dc41e1130951e640f454509165d6439173a4074c5908dae56d56b",
+      "root": "/workspace/scratch/c8ee7ea91934/hypothesis_native_controls_seed222",
+      "summary_sha256": "99313cee390afdd7d71dec6be883dbb47ecece7b82c4efda83db71b2f131dc47"
+    },
+    {
+      "completion_sha256": "a8ef61d5215a39507c36e8e2670f91d3341dcc12717f2aedd37487b218b40b7b",
+      "manifest_sha256": "29081c453f9e7fb056153da5592cd173a3785926ad5d088e2198d123a8ab1042",
+      "root": "/workspace/scratch/c8ee7ea91934/hypothesis_native_d24_seed222",
+      "summary_sha256": "51ece0226455dceb0e77993dd0da3243f79b29ec4d918d5cd8d6fabe792113ea"
+    }
+  ],
+  "interpretation": "RT-native ES neutral-field differences persist while successive spatial field changes decrease. Numerical power changes remain above1%; the residual is not exclusively attributed to physical assumptions.",
+  "maximum_history_decomposition_absolute_residual": 1.4067956868868414e-14,
+  "maximum_saved_photon_ledger_relative_residual": 1.7859066308253852e-14,
+  "maximum_source_budget_relative_residual": 8.215915899366276e-17,
+  "native_grid_dimension": 8,
+  "native_mass_packet_dimension": 24,
+  "physical_model_authority": "21cmFAST",
+  "refinement_pairs": 8,
+  "saved_checkpoint_stride": 4,
+  "scope": "Local fixed-native-source numerical sensitivity experiment; not the Gadi native realization",
+  "seeds": [
+    111,
+    222
+  ],
+  "solver_commit": "6f90f73c137572e16908beda5ee1b7fcacaf63b0",
+  "source_intervals": 80,
+  "tests": {
+    "causal_rt_suite_passed": 182,
+    "new_hypothesis_tests": 18
+  }
+}
