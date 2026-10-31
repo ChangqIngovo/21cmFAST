@@ -146,18 +146,39 @@ Keep the native thread count fixed when comparing separate runs: native initial
 conditions can depend on that count even for the same seed. Actual initial
 conditions, source arrays and trajectories are archived and hashed.
 
-Each axis must pass both adjacent comparisons at the finest settings of every
-other axis. Checks use the same cosmic timestamps, active mass-neutral fractions
-0.05--0.9, neutral-field MAE<=0.01 and every defined target power bin within1%.
-The primary band is explicitly limited to the lesser of four fundamental modes
-and half the native-grid Nyquist. At8^3 this includes only one shell. It is a
-small numerical validation, not a claim of1% accuracy on all21cm scales. Higher
-native resolution and larger volumes remain necessary for a production teacher.
+The original strict certification profile requires each axis to pass both
+adjacent comparisons at the finest settings of every other axis. Its default
+checks use the same cosmic timestamps, active mass-neutral fractions 0.05--0.9,
+neutral-field MAE <= 0.01 and every defined target power bin within 1%. This legacy
+profile and its recorded `tolerance` and certification results remain unchanged.
+The primary band runs from the fundamental to the lesser of four fundamental
+modes and half the native-grid Nyquist. At 8^3 in 50 cMpc its bounds are
+0.12566--0.25133 cMpc^-1 and it contains only one shell, centred at
+0.16036 cMpc^-1. It does not certify accuracy on all 21cm scales.
+
+The current working goal is spatial-refinement stability comparable to original
+SCRIPT using the same archived 21cmFAST inputs, refinement grids, output
+averaging and spectral bands. A 5% large-scale power difference is a provisional
+reference, not a universal cutoff or evidence that this goal has been reached.
+Every assessment must state its actual k range and active epochs. Neutral-field
+MAE remains a diagnostic without a new arbitrary threshold; higher-k changes
+must be reported alongside SCRIPT's measured refinement changes. Neither
+RT--SCRIPT field agreement nor a per-bin requirement that RT change less than
+SCRIPT establishes a true-error bound. The first same-input benchmark is recorded
+in `script_refinement_validation.json`, with details and a reproduction command
+in `NUMERICAL_IMPROVEMENTS.md`. It shows mixed, comparable spatial sensitivities
+at matched volume-neutral fraction 0.4 for one local seed222 history; it does not
+establish convergence across all epochs, seeds or numerical axes.
+Photon, atom and source-budget audits remain strict;
+angular, temporal and source-sampling sensitivity still need to be assessed.
+Higher native resolution and larger volumes remain necessary for a production
+teacher.
 
 `COMPLETED` means the histories and independent photon/atom audits succeeded.
-`summary.json` and `causal_rt_report.json` contain the separate numerical
-certification. Missing comparison steps, active epochs or defined power bins
-cannot pass. The report also saves contextual ES and same-budget static ES
+`summary.json` and `causal_rt_report.json` contain the separate original-profile
+numerical certification, not a SCRIPT-level assessment. Missing comparison
+steps, active epochs or defined power bins cannot pass that certification.
+The report also saves contextual ES and same-budget static ES
 comparisons; their difference from RT is never used as a numerical error target.
 
 Native archives and source histories are hashed. Every saved checkpoint carries

@@ -3,8 +3,9 @@
 Physical inputs remain the archived 21cmFAST sources, cumulative photon budgets,
 gas trajectories, physical light speed and recorded effective-atom opacity.
 Numerical changes are tested against independent solutions and then against
-the same native histories. SCRIPT is an external comparison, not a convergence
-target. Case-to-case changes measure numerical sensitivity, not a true-error
+the same native histories. Original SCRIPT supplies an external benchmark for
+spatial-refinement stability on matched inputs; its field is not a known exact
+solution. Case-to-case changes measure numerical sensitivity, not a true-error
 bound.
 
 ## 1. Continuous source--absorption coupling
@@ -114,6 +115,85 @@ photon state are bitwise identical to the coupled-source baseline. The maximum
 photon residual is 4.03e-15. This confirms no regression on that trajectory;
 the new analytic test covers the previously failing corner. Exact comparison
 and input hashes are recorded in `source_free_validation.json`.
+
+## 3. Acceptance-goal update: SCRIPT-comparable refinement stability
+
+This is a change to the working acceptance goal, not a solver improvement.
+The aim is now spatial-refinement stability comparable to original SCRIPT on
+the same archived 21cmFAST inputs, refinement grids, output averaging and
+spectral bands. Changing the goal does not by itself establish a new pass or
+accuracy claim.
+
+A 5% large-scale power difference is a provisional literature reference only
+([Maity & Choudhury 2023, Appendix C](https://academic.oup.com/mnras/article/521/3/4140/7079143)),
+not a measured error for these inputs or a replacement universal cutoff. Reports must
+identify the tested k range and epochs, compare higher-k refinement changes
+with SCRIPT explicitly, and retain neutral-field MAE as a diagnostic without
+inventing a new absolute threshold. The native 8^3, 50 cMpc primary band contains
+only the shell at k=0.16036 cMpc^-1, within bounds 0.12566--0.25133 cMpc^-1; it
+cannot establish a result for larger-scale modes absent from the box.
+
+The original strict profile (default MAE <= 0.01 and primary power changes <= 1%)
+and all historical reports retain their original meaning. Physics, solver,
+configuration defaults, photon/atom/source-budget audits and saved results are
+unchanged. Other numerical sensitivities remain part of the assessment; meeting
+the new spatial goal alone would not certify all numerical axes or a true-error
+bound.
+
+### Same-input SCRIPT spatial benchmark
+
+Unmodified original SCRIPT was run at all 81 archived nodes of the local
+seed222 history, on 8^3, 16^3 and 32^3 allocation grids. Source and gas clouds
+retain their physical width when the grid changes. The factor cubed conversion
+of packet counts only changes cell-volume units; restricted source and atom
+fields agree to roundoff. Ion and atom counts are restricted conservatively
+before neutral fractions and native 21cmFAST brightness are computed. All 243
+SCRIPT photon ledgers pass their original audit, with maximum relative residual
+7.59e-9. This does not alter the RT audit tolerance.
+
+Using the same 21 saved-node cadence as the existing RT comparison, at matched
+volume-neutral fraction 0.4, the 8^3 to 16^3 changes are:
+
+| Diagnostic | RT | Original SCRIPT |
+| --- | ---: | ---: |
+| Neutral-field MAE | 0.01688 | 0.03292 |
+| Power change, k=0.1604 cMpc^-1 | 1.77% | 0.40% |
+| Power change, k=0.2803 cMpc^-1 | 0.27% | 4.00% |
+| Power change, k=0.3939 cMpc^-1 | 5.80% | 14.63% |
+| Power change, k=0.4660 cMpc^-1 | 12.39% | 14.62% |
+
+Power changes are absolute ratios relative to the finer result. These are each
+method's refinement changes, not RT--SCRIPT field differences or errors relative
+to a known solution. The result is mixed: RT has the larger first-shell change
+but the smaller MAE and changes in the other three shells. This is evidence of
+comparable spatial sensitivity in this example, not an overall precision ranking.
+The RT data retain their recorded coupled-source kernel identity; the later
+positive-tail correction separately reproduced the native-grid trajectory
+bitwise, as documented above.
+
+SCRIPT 16^3 to 32^3 at the same matched fraction gives MAE 0.01771 and power
+changes of 0.35%, 3.92%, 0.06% and 4.95%. Finer allocation therefore still changes
+SCRIPT's field. Its full 81-node output also exposes a sampling limitation:
+at matched fraction 0.2, 21-node interpolation gives MAE 0.01646 for 8^3 to 16^3,
+whereas 81 nodes give 0.03219. At fraction 0.4 the corresponding MAEs are 0.03292
+and 0.03270. Late-stage matched-fraction comparisons need denser RT output;
+the sparse result must not be treated as a convergence certificate.
+
+The reproducible driver is `benchmarks/script_refinement_benchmark.py`; input,
+implementation and result hashes, all tested stages and both output cadences
+are recorded in `script_refinement_validation.json`. This benchmark leaves
+the native physical inputs, RT equations and historical result files unchanged.
+
+From the repository root, with the archive's native extension and a Fortran
+compiler available, select a completed native-cumulative RT archive and a new
+output directory:
+
+```bash
+uv run --no-sync python -m research.pc_causal_rt.benchmarks.script_refinement_benchmark \
+  --rt-root /path/to/completed/rt/results \
+  --output /path/to/new/script_refinement_results \
+  --seed 222 --factors 1 2 4
+```
 
 ## Remaining front-resolution error
 
