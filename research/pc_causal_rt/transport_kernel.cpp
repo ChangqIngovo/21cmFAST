@@ -94,61 +94,200 @@ bool stream(double* photons, int n, int nd, const double* directions,
     return invalid == 0;
 }
 
-bool absorb(const double* capacity, double* ionized, double* photons,
-            std::int64_t cells, int directions, double coefficient_dt, int threads) {
+// Positive moments of a Gaussian on [0,1]. Long-double intermediates are
+// essential when a tiny stellar source irradiates a mostly neutral cell.
+struct Moments {
+    long double zeroth;
+    long double first;
+};
+
+Moments gaussian_quadrature(long double a, long double b, long double centre = 0) {
+    // Sixteen-point Gauss-Legendre, used only when the exponent varies by <=4.
+    // The remaining (possibly extremely stiff) cases use analytic moments.
+    constexpr long double x[8] = {
+        .095012509837637440185L, .281603550779258913230L,
+        .458016777657227386342L, .617876244402643748447L,
+        .755404408355003033895L, .865631202387831743880L,
+        .944575023073232576078L, .989400934991649932596L};
+    constexpr long double w[8] = {
+        .189450610455068496285L, .182603415044923588867L,
+        .169156519395002538189L, .149595988816576732081L,
+        .124628971255533872052L, .095158511682492784810L,
+        .062253523938647892863L, .027152459411754094852L};
+    Moments result{0, 0};
+    for (int i = 0; i < 8; ++i)
+        for (int sign : {-1, 1}) {
+            const long double u = .5L * (1 + sign * x[i]);
+            const long double delta = u - centre;
+            const long double value = .5L * w[i] * std::exp(-a * u - b * delta * delta);
+            result.zeroth += value;
+            result.first += u * value;
+        }
+    return result;
+}
+
+Moments infinite_decreasing_moments(long double a, long double b) {
+    // Integrals of exp(-a*u-b*u*u) and u*exp(-a*u-b*u*u), from 0 to infinity.
+    // a,b>=0 and at least one is positive. Large a/sqrt(b) needs the moment
+    // expansions: subtracting 1-a*J would otherwise lose the first moment.
+    if (b == 0) return {1 / a, 1 / (a * a)};
+    const long double root_b = std::sqrt(b);
+    if (a >= 24 * root_b) {
+        const long double r = b / (a * a);
+        long double sum0 = 1, sum1 = 1, term0 = 1, term1 = 1;
+        const long double epsilon = std::numeric_limits<long double>::epsilon();
+        for (int j = 1; j < 64; ++j) {
+            term0 *= -2 * r * (2 * j - 1);
+            term1 *= -2 * r * (2 * j + 1);
+            sum0 += term0;
+            sum1 += term1;
+            if (std::abs(term0) <= epsilon * std::abs(sum0)
+                    && std::abs(term1) <= epsilon * std::abs(sum1)) break;
+        }
+        return {sum0 / a, sum1 / (a * a)};
+    }
+    constexpr long double sqrt_pi = 1.7724538509055160272981674833411451828L;
+    const long double x = a / (2 * root_b);
+    const long double erfcx = std::exp(x * x) * std::erfc(x);
+    const long double zeroth = sqrt_pi * erfcx / (2 * root_b);
+    return {zeroth, (1 - a * zeroth) / (2 * b)};
+}
+
+Moments decreasing_moments(long double a, long double b) {
+    // On [0,1], exp(-a*u-b*u*u) decreases from one. The finite upper-limit
+    // correction is safe here: its exponent exceeds four in this branch.
+    if (a + b <= 4) return gaussian_quadrature(a, b);
+    const auto full = infinite_decreasing_moments(a, b);
+    const long double tail = std::exp(-a - b);
+    if (tail == 0) return full;
+    const auto beyond = infinite_decreasing_moments(a + 2 * b, b);
+    return {full.zeroth - tail * beyond.zeroth,
+            full.first - tail * (beyond.zeroth + beyond.first)};
+}
+
+struct ReactionMoments {
+    long double inverse_peak;
+    long double source_early; // integral (1-s)*F(s)/max(F) ds
+    long double source_late;  // integral s*F(s)/max(F) ds
+};
+
+ReactionMoments reaction_moments(long double difference, long double emitted,
+                                long double coefficient) {
+    // F(s)=exp[-coefficient*(difference*s+emitted*s*s/2)]. Dividing by
+    // its maximum prevents overflow, including when the neutral capacity is
+    // much larger than the radiation. Both first moments stay nonnegative.
+    const long double b = .5L * coefficient * emitted;
+    if (difference >= 0) {
+        const auto m = decreasing_moments(coefficient * difference, b);
+        return {1, m.zeroth - m.first, m.first};
+    }
+    if (difference + emitted <= 0) {
+        const auto m = decreasing_moments(-coefficient * (difference + emitted), b);
+        const long double peak = -coefficient * (difference + .5L * emitted);
+        return {std::exp(-peak), m.first, m.zeroth - m.first};
+    }
+    const long double centre = -difference / emitted;
+    const long double peak = b * centre * centre;
+    long double zeroth, early, late;
+    if (b <= 4) {
+        const auto m = gaussian_quadrature(0, b, centre);
+        zeroth = m.zeroth;
+        late = m.first;
+        early = zeroth - late;
+    } else {
+        constexpr long double sqrt_pi = 1.7724538509055160272981674833411451828L;
+        const long double root_b = std::sqrt(b);
+        const long double left = centre, right = 1 - centre;
+        zeroth = sqrt_pi * (std::erf(root_b * left) + std::erf(root_b * right))
+            / (2 * root_b);
+        // Compute the smaller moment with a sum of positive terms, then the
+        // larger by subtraction. This also handles a peak close to an edge.
+        if (left <= right) {
+            const long double difference_exp = std::exp(-b * left * left)
+                * (-std::expm1(-b * (right * right - left * left)));
+            late = left * zeroth + difference_exp / (2 * b);
+            early = zeroth - late;
+        } else {
+            const long double difference_exp = std::exp(-b * right * right)
+                * (-std::expm1(-b * (left * left - right * right)));
+            early = right * zeroth + difference_exp / (2 * b);
+            late = zeroth - early;
+        }
+    }
+    return {std::exp(-peak), early, late};
+}
+
+bool source_absorb(const double* capacity, double* ionized, double* photons,
+                   const double* first, const double* last, const double* weights,
+                   std::int64_t cells, int directions, double duration,
+                   double first_fraction, double last_fraction,
+                   double coefficient_dt, int threads) {
+    const long double mean = .5L * (first_fraction + last_fraction);
     int invalid = 0;
     #pragma omp parallel for num_threads(threads) schedule(static) reduction(|:invalid)
     for (std::int64_t cell = 0; cell < cells; ++cell) {
         const double neutral_difference = capacity[cell] - ionized[cell];
-        double radiation = 0;
+        long double radiation = 0;
         for (int d = 0; d < directions; ++d) radiation += photons[d * cells + cell];
-        if (!std::isfinite(radiation)
+        const long double emitted = static_cast<long double>(duration)
+            * ((1 - mean) * first[cell] + mean * last[cell]);
+        if (!std::isfinite(radiation) || !std::isfinite(emitted) || emitted < 0
                 || neutral_difference < -ion_bound_tolerance * capacity[cell]) {
             invalid = 1;
             continue;
         }
-        // Preserve the ion count, including permitted accumulated roundoff.
-        // A tiny excess creates no negative opacity and absorbs no photons.
-        const double neutral = std::max(neutral_difference, 0.);
-        if (radiation <= 0 || neutral == 0 || coefficient_dt == 0) continue;
-        const double smaller = std::min(radiation, neutral);
-        const double difference = std::abs(radiation - neutral);
-        const double argument = coefficient_dt * difference;
-        double absorbed;
-        if (argument > 700) {
-            absorbed = smaller;
-        } else {
-            const double one_minus = -std::expm1(-argument);
-            const double phi = argument == 0 ? 1 : one_minus / argument;
-            const double product = smaller * coefficient_dt * phi;
-            absorbed = std::isinf(product) ? smaller
-                : smaller * (one_minus + product) / (1 + product);
+        // Permitted accumulated ion roundoff is preserved, never made into
+        // negative opacity or used to change the photon inventory.
+        const long double neutral = std::max(neutral_difference, 0.);
+        if (neutral == 0 || coefficient_dt == 0) {
+            for (int d = 0; d < directions; ++d)
+                photons[d * cells + cell] += static_cast<double>(weights[d] * emitted);
+            continue;
         }
-        if (!std::isfinite(absorbed) || absorbed < 0 || absorbed > smaller * (1 + 1e-13)) {
+        long double survival, source_surviving, absorbed;
+        if (emitted == 0) {
+            // Source-free exact coupled reaction, including equal inventories.
+            if (radiation == 0) continue;
+            const long double smaller = std::min(radiation, neutral);
+            const long double difference = std::abs(radiation - neutral);
+            const long double argument = coefficient_dt * difference;
+            if (argument > 700) {
+                absorbed = smaller;
+            } else {
+                const long double one_minus = -std::expm1(-argument);
+                const long double phi = argument == 0 ? 1 : one_minus / argument;
+                const long double product = smaller * coefficient_dt * phi;
+                absorbed = std::isinf(product) ? smaller
+                    : smaller * (one_minus + product) / (1 + product);
+            }
+            survival = 1 - absorbed / radiation;
+            source_surviving = 0;
+        } else {
+            const auto m = reaction_moments(radiation - neutral, emitted, coefficient_dt);
+            const long double moment = m.source_early + m.source_late;
+            const long double optical = coefficient_dt * neutral;
+            const long double denominator = m.inverse_peak + optical * moment;
+            survival = m.inverse_peak / denominator;
+            source_surviving = emitted * (m.inverse_peak + optical * m.source_early) / denominator;
+            // This positive expression retains absorption of arbitrarily weak
+            // sources. Subtracting the final neutral fraction from its initial
+            // value would lose those ion increments to cancellation.
+            absorbed = optical * (radiation * moment + emitted * m.source_late) / denominator;
+        }
+        if (!std::isfinite(absorbed) || !std::isfinite(survival)
+                || !std::isfinite(source_surviving) || absorbed < 0
+                || absorbed > neutral * (1 + 1e-12L)
+                || survival < 0 || survival > 1 || source_surviving < 0
+                || source_surviving > emitted * (1 + 1e-12L)) {
             invalid = 1;
             continue;
         }
-        absorbed = std::min(absorbed, smaller);
-        const double fraction = absorbed / radiation;
-        for (int d = 0; d < directions; ++d) {
-            double& value = photons[d * cells + cell];
-            value = std::fma(-fraction, value, value);
-        }
-        ionized[cell] += absorbed;
+        for (int d = 0; d < directions; ++d)
+            photons[d * cells + cell] = static_cast<double>(
+                survival * photons[d * cells + cell] + weights[d] * source_surviving);
+        ionized[cell] += static_cast<double>(absorbed);
     }
     return invalid == 0;
-}
-
-void inject(double* photons, const double* first, const double* last,
-            const double* weights, std::int64_t cells, int directions,
-            double duration, double first_fraction, double last_fraction, int threads) {
-    const double mean = 0.5 * (first_fraction + last_fraction);
-    #pragma omp parallel for num_threads(threads) schedule(static)
-    for (int d = 0; d < directions; ++d) {
-        const double factor = duration * weights[d];
-        for (std::int64_t cell = 0; cell < cells; ++cell)
-            photons[d * cells + cell] += factor * ((1 - mean) * first[cell] + mean * last[cell]);
-    }
 }
 }
 
@@ -178,13 +317,13 @@ extern "C" int causal_rt_evolve(
             const double scale = 1 + z_mid;
             const double reaction_half = 0.5 * dt * light_speed * sigma * hydrogen_density
                 * scale * scale * scale;
-            inject(photons, rate_start, rate_end, weights, cells, nd, 0.5 * dt,
-                   time / duration, midpoint / duration, threads);
-            if (!absorb(capacity, ionized, photons, cells, nd, reaction_half, threads)) return 3;
+            if (!source_absorb(capacity, ionized, photons, rate_start, rate_end, weights,
+                               cells, nd, 0.5 * dt, time / duration, midpoint / duration,
+                               reaction_half, threads)) return 3;
             if (!stream(photons, n, nd, vectors, light_speed * scale * dt / dx_cm, threads)) return 4;
-            if (!absorb(capacity, ionized, photons, cells, nd, reaction_half, threads)) return 3;
-            inject(photons, rate_start, rate_end, weights, cells, nd, 0.5 * dt,
-                   midpoint / duration, (time + dt) / duration, threads);
+            if (!source_absorb(capacity, ionized, photons, rate_start, rate_end, weights,
+                               cells, nd, 0.5 * dt, midpoint / duration, (time + dt) / duration,
+                               reaction_half, threads)) return 3;
             time += dt;
         }
         return 0;

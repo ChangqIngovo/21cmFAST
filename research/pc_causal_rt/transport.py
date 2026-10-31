@@ -1,7 +1,7 @@
 """Second-order, positive photon-number transport with carried radiation/ions.
 
 This finite-interval kernel evolves the same effective single-absorber equation
-as ``pc_matched.rt``, using physical c, exact coupled absorption, and an explicit
+as ``pc_matched.rt``, using physical c, coupled source/absorption evolution, and an explicit
 radiation reservoir. MUSCL/SSPRK2 replaces donor-cell streaming. Gas capacity is
 held fixed within one call; the history driver is responsible for conservative
 gas/ion advection between calls. This is not multifrequency H/He chemistry.
@@ -74,9 +74,13 @@ def evolve_interval(
     MUSCL with monotonized-central slopes and SSPRK2 is second order in smooth
     regions. A multidimensional Courant sum <=0.5 preserves nonnegative cell
     averages in both Euler stages. Limiting near extrema/discontinuities lowers
-    the local order; numerical convergence must still be measured. Reaction and
-    injection use symmetric splitting, with the original exact local coupled
-    photon/neutral reaction. Redshifting of photon frequency, recombination,
+    the local order; numerical convergence must still be measured. Each local
+    half-step couples continuous injection and absorption, using the exact
+    constant-source Riccati solution with positive scaled Gaussian moments.
+    Linear endpoint rates use their exact mean within each half-step; their
+    time variation is thus second-order, while native cumulative emission is
+    constant within each matter step. Symmetric local/streaming splitting is
+    retained. Redshifting of photon frequency, recombination,
     helium chemistry and heating are not added by this kernel.
 
     ``ledger.relative_residual`` is normalized by initial ions plus incoming
@@ -151,4 +155,4 @@ def evolve_interval(
         raise RuntimeError(f"Causal RT photon/ion ledger or bounds failed: {ledger}")
     return {"ionized": ions, "photons": radiation, "steps": used.value,
             "ledger": ledger, "directions": vectors, "weights": weights,
-            "transport": "MUSCL-MC + SSPRK2, symmetric exact reaction/source splitting"}
+            "transport": "MUSCL-MC + SSPRK2, symmetric coupled source/absorption with exact constant-source reaction"}

@@ -91,7 +91,12 @@ initial masses and native clipping that breaches this audit are rejected.
 Each matter step moves gas halfway, evolves radiation/absorption through the
 full interval on that midpoint density, then completes the gas motion.
 `time_substeps` independently refines this splitting; the radiation CFL controls
-its inner substeps. The reaction update is analytically coupled and conservative.
+its inner substeps. Continuous source injection and absorption are now solved
+together in each reaction half step, rather than leaving a final half-step
+source injection unabsorbed. The constant-source local solve is analytic and
+conservative, including optically thick cells. Generic linear source endpoints
+use the half-step mean rate, preserving the exact emitted budget and second-order
+time accuracy; the native-cumulative source is constant within each matter step.
 Radiation streaming uses MUSCL with monotonized-central slopes and SSPRK2,
 with CFL <= 0.5 to preserve positive cell averages. No field is clipped or
 globally normalized to repair a photon budget.

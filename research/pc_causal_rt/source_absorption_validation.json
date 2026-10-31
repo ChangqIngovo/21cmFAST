@@ -1,0 +1,632 @@
+{
+  "benchmark": {
+    "coupled_update": {
+      "kernel_sha256": "0a938bb2ce1f70da143b27352dc6531968f0cb515dec13417edc580d11ffd6f6",
+      "linear_emission": [
+        {
+          "absolute_ion_errors": [
+            0.0001465339817601774,
+            3.66519812946553e-05,
+            9.16415143997762e-06
+          ],
+          "q0": 0.0,
+          "q1": 0.8,
+          "successive_ratios": [
+            0.2501261540455592,
+            0.25003154307824454
+          ]
+        },
+        {
+          "absolute_ion_errors": [
+            0.0001483504616370812,
+            3.710034184117861e-05,
+            9.275880857417818e-06
+          ],
+          "q0": 0.8,
+          "q1": 0.0,
+          "successive_ratios": [
+            0.2500857862642817,
+            0.2500214390780163
+          ]
+        }
+      ],
+      "mp80_ions": "0.39973868346722512226390563563989092880876175374188738021744648224544710950757623",
+      "mp80_photons": "0.00026131653277489994055485686323987966387160807451886978255351775455289049242377207",
+      "rows": [
+        {
+          "absolute_ion_error_vs_mp80": 0.0,
+          "cfl": 0.4,
+          "ions": 0.39973868346722513,
+          "ledger": 1.1316360175317453e-16,
+          "photons": 0.00026131653277489987,
+          "relative_ion_error_vs_mp80": 0.0,
+          "steps": 11
+        },
+        {
+          "absolute_ion_error_vs_mp80": 1.6653345369377348e-16,
+          "cfl": 0.2,
+          "ions": 0.39973868346722496,
+          "ledger": 3.9071935790946366e-16,
+          "photons": 0.00026131653277489987,
+          "relative_ion_error_vs_mp80": 4.1660579919188053e-16,
+          "steps": 21
+        },
+        {
+          "absolute_ion_error_vs_mp80": 3.3306690738754696e-16,
+          "cfl": 0.1,
+          "ions": 0.3997386834672248,
+          "ledger": 8.074595679585794e-16,
+          "photons": 0.0002613165327748997,
+          "relative_ion_error_vs_mp80": 8.332115983837611e-16,
+          "steps": 41
+        },
+        {
+          "absolute_ion_error_vs_mp80": 7.216449660063518e-16,
+          "cfl": 0.05,
+          "ions": 0.3997386834672244,
+          "ledger": 1.6402623616990075e-15,
+          "photons": 0.00026131653277489965,
+          "relative_ion_error_vs_mp80": 1.805291796498149e-15,
+          "steps": 80
+        },
+        {
+          "absolute_ion_error_vs_mp80": 1.27675647831893e-15,
+          "cfl": 0.025,
+          "ions": 0.39973868346722385,
+          "ledger": 3.1675644095521815e-15,
+          "photons": 0.0002613165327748994,
+          "relative_ion_error_vs_mp80": 3.1939777938044173e-15,
+          "steps": 160
+        },
+        {
+          "absolute_ion_error_vs_mp80": 1.1102230246251565e-16,
+          "cfl": 0.0125,
+          "ions": 0.39973868346722524,
+          "ledger": 3.035088456601609e-16,
+          "photons": 0.00026131653277490003,
+          "relative_ion_error_vs_mp80": 2.7773719946125367e-16,
+          "steps": 321
+        }
+      ]
+    },
+    "physical": {
+      "T_Myr": 10.19238680364823,
+      "T_seconds": 321647265794809.4,
+      "exact_ions": 0.3997386834672244,
+      "exact_photons": 0.0002613165327755907,
+      "kT": 2548.965093320783,
+      "photons_emitted": 0.4
+    },
+    "rows": [
+      {
+        "absolute_ion_error": 0.019738683467169837,
+        "cfl": 0.4,
+        "ions": 0.38000000000005457,
+        "ledger": 1.565316886525947e-16,
+        "photon_ratio_to_reference": 76.53553254941075,
+        "photons": 0.019999999999945384,
+        "q_dt_half": 0.020000000000000004,
+        "relative_ion_error": 0.04937896751938511,
+        "steps": 11
+      },
+      {
+        "absolute_ion_error": 0.009738683467198028,
+        "cfl": 0.2,
+        "ions": 0.3900000000000264,
+        "ledger": 2.3676264941652203e-16,
+        "photon_ratio_to_reference": 38.26776627470843,
+        "photons": 0.00999999999997349,
+        "q_dt_half": 0.010000000000000002,
+        "relative_ion_error": 0.02436262455944304,
+        "steps": 21
+      },
+      {
+        "absolute_ion_error": 0.004738683467214677,
+        "cfl": 0.1,
+        "ions": 0.39500000000000973,
+        "ledger": 7.430850639672526e-16,
+        "photon_ratio_to_reference": 19.133883137366848,
+        "photons": 0.004999999999990046,
+        "q_dt_half": 0.005000000000000001,
+        "relative_ion_error": 0.011854453079478394,
+        "steps": 41
+      },
+      {
+        "absolute_ion_error": 0.0022386834900430808,
+        "cfl": 0.05,
+        "ions": 0.39749999997718133,
+        "ledger": 2.03274354813876e-15,
+        "photon_ratio_to_reference": 9.566941656021394,
+        "photons": 0.0025000000228178787,
+        "q_dt_half": 0.0025000000000000005,
+        "relative_ion_error": 0.005600367396583564,
+        "steps": 80
+      },
+      {
+        "absolute_ion_error": 0.000988855758285112,
+        "cfl": 0.025,
+        "ions": 0.3987498277089393,
+        "ledger": 3.3158968192753546e-15,
+        "photon_ratio_to_reference": 4.784130103750246,
+        "photons": 0.0012501722910593415,
+        "q_dt_half": 0.0012500000000000002,
+        "relative_ion_error": 0.0024737554787243672,
+        "steps": 160
+      },
+      {
+        "absolute_ion_error": 0.0003741987084603937,
+        "cfl": 0.0125,
+        "ions": 0.399364484758764,
+        "ledger": 1.0482879755219221e-16,
+        "photon_ratio_to_reference": 2.431974871570258,
+        "photons": 0.0006355152412361024,
+        "q_dt_half": 0.0006250000000000001,
+        "relative_ion_error": 0.0009361083226038973,
+        "steps": 321
+      }
+    ],
+    "uniform_spatial_refinement": [
+      {
+        "cfl": 0.4,
+        "dimension": 4,
+        "ion_error": 0.019738683467169837,
+        "ions_per_atom": 0.38000000000005457,
+        "photons_per_atom": 0.019999999999945384,
+        "steps": 11
+      },
+      {
+        "cfl": 0.4,
+        "dimension": 8,
+        "ion_error": 0.009738683467198028,
+        "ions_per_atom": 0.3900000000000264,
+        "photons_per_atom": 0.009999999999973492,
+        "steps": 21
+      },
+      {
+        "cfl": 0.4,
+        "dimension": 16,
+        "ion_error": 0.004738683467214788,
+        "ions_per_atom": 0.3950000000000096,
+        "photons_per_atom": 0.004999999999990045,
+        "steps": 41
+      }
+    ]
+  },
+  "improvement": 1,
+  "name": "Continuous source-absorption coupling",
+  "native_validation": {
+    "all_native_history_audits_passed": true,
+    "cases": [
+      {
+        "case_id": "seed222_d96_f1_cfl0.4_t4_s1",
+        "elapsed_seconds": 24.64651915200011,
+        "setting": {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 1,
+          "source_stride": 1,
+          "time_substeps": 4
+        }
+      },
+      {
+        "case_id": "seed222_d96_f1_cfl0.2_t4_s1",
+        "elapsed_seconds": 33.96415143200102,
+        "setting": {
+          "cfl": 0.2,
+          "directions": 96,
+          "refinement": 1,
+          "source_stride": 1,
+          "time_substeps": 4
+        }
+      },
+      {
+        "case_id": "seed222_d96_f1_cfl0.1_t4_s1",
+        "elapsed_seconds": 56.24118164200081,
+        "setting": {
+          "cfl": 0.1,
+          "directions": 96,
+          "refinement": 1,
+          "source_stride": 1,
+          "time_substeps": 4
+        }
+      },
+      {
+        "case_id": "seed222_d96_f2_cfl0.4_t4_s1",
+        "elapsed_seconds": 187.12505292900096,
+        "setting": {
+          "cfl": 0.4,
+          "directions": 96,
+          "refinement": 2,
+          "source_stride": 1,
+          "time_substeps": 4
+        }
+      }
+    ],
+    "comparisons": [
+      {
+        "active_redshifts": [
+          9.0,
+          8.0,
+          7.0
+        ],
+        "after": {
+          "passed": false,
+          "worst_field_MAE": 0.0035490560937019044,
+          "worst_primary_power_error": 0.011067995112305495
+        },
+        "axis": "cfl",
+        "before": {
+          "passed": false,
+          "worst_field_MAE": 0.0035266839242146476,
+          "worst_primary_power_error": 0.010844063368652734
+        },
+        "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+        "fine": "seed222_d96_f1_cfl0.2_t4_s1"
+      },
+      {
+        "active_redshifts": [
+          9.0,
+          8.0,
+          7.0
+        ],
+        "after": {
+          "passed": true,
+          "worst_field_MAE": 0.0012438060692661246,
+          "worst_primary_power_error": 0.0040798992797254074
+        },
+        "axis": "cfl",
+        "before": {
+          "passed": true,
+          "worst_field_MAE": 0.0012507040372603559,
+          "worst_primary_power_error": 0.004179751131637377
+        },
+        "coarse": "seed222_d96_f1_cfl0.2_t4_s1",
+        "fine": "seed222_d96_f1_cfl0.1_t4_s1"
+      },
+      {
+        "active_redshifts": [
+          9.0,
+          8.0,
+          7.0
+        ],
+        "after": {
+          "passed": false,
+          "worst_field_MAE": 0.017166909751109797,
+          "worst_primary_power_error": 0.01686084639624086
+        },
+        "axis": "refinement",
+        "before": {
+          "passed": false,
+          "worst_field_MAE": 0.017186732922242643,
+          "worst_primary_power_error": 0.017060088269747364
+        },
+        "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+        "fine": "seed222_d96_f2_cfl0.4_t4_s1"
+      }
+    ],
+    "completion_sha256": "ce9cd0e871f83d7227a5c120c63491911f2c28821698bc29771dd2dbe6d0a304",
+    "convergence_certified": false,
+    "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+    "kernel_sha256": "0a938bb2ce1f70da143b27352dc6531968f0cb515dec13417edc580d11ffd6f6",
+    "manifest_sha256": "1ceafb1195422a7c76274b698adf448fcdc1697f4293f3d8b8a8d9958199e6f7",
+    "matched_xHI_0_4": [
+      {
+        "P_coarse_over_fine": [
+          0.9898102536957728,
+          0.9847969276457925,
+          0.9848826283188445,
+          0.9863044483308447
+        ],
+        "P_fine_over_native_es": [
+          1.0164302774451481,
+          1.0542605684151596,
+          0.8251695347897398,
+          0.9146623608352779
+        ],
+        "axis": "cfl",
+        "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+        "coarse_interpolation": {
+          "later_weight": 0.025759832741199445,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.974240167258801,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "field_MAE_coarse_vs_fine": 0.003414650276804031,
+        "field_MAE_coarse_vs_native_es": 0.07271908247885353,
+        "field_MAE_fine_vs_native_es": 0.07333927209386805,
+        "fine": "seed222_d96_f1_cfl0.2_t4_s1",
+        "fine_interpolation": {
+          "later_weight": 0.026192120529938422,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.973807879470061,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "k_cMpc_inv": [
+          0.16036478039875368,
+          0.28033098430515146,
+          0.3938500551132633,
+          0.4660159544705517
+        ],
+        "native_es_interpolation": {
+          "later_weight": 0.1026379094104478,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.897362090589552,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "target_xHI_volume": 0.4
+      },
+      {
+        "P_coarse_over_fine": [
+          0.9961851855135457,
+          0.9961674508601285,
+          0.9948776631197513,
+          0.9954200593079334
+        ],
+        "P_fine_over_native_es": [
+          1.0203226189527863,
+          1.0583166188624926,
+          0.8294180936801431,
+          0.9188707343020569
+        ],
+        "axis": "cfl",
+        "coarse": "seed222_d96_f1_cfl0.2_t4_s1",
+        "coarse_interpolation": {
+          "later_weight": 0.026192120529938422,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.973807879470061,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "field_MAE_coarse_vs_fine": 0.0012038438260962622,
+        "field_MAE_coarse_vs_native_es": 0.07333927209386805,
+        "field_MAE_fine_vs_native_es": 0.07362880847981924,
+        "fine": "seed222_d96_f1_cfl0.1_t4_s1",
+        "fine_interpolation": {
+          "later_weight": 0.026321715436069613,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.97367828456393,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "k_cMpc_inv": [
+          0.16036478039875368,
+          0.28033098430515146,
+          0.3938500551132633,
+          0.4660159544705517
+        ],
+        "native_es_interpolation": {
+          "later_weight": 0.1026379094104478,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.897362090589552,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "target_xHI_volume": 0.4
+      },
+      {
+        "P_coarse_over_fine": [
+          1.017698287089224,
+          0.9973045530337434,
+          1.0579554671028573,
+          1.1239427960751318
+        ],
+        "P_fine_over_native_es": [
+          0.9885769913788232,
+          1.0410386331388057,
+          0.7681751883733539,
+          0.8026525534599556
+        ],
+        "axis": "refinement",
+        "coarse": "seed222_d96_f1_cfl0.4_t4_s1",
+        "coarse_interpolation": {
+          "later_weight": 0.025759832741199445,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.974240167258801,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "field_MAE_coarse_vs_fine": 0.016882692944509992,
+        "field_MAE_coarse_vs_native_es": 0.07271908247885353,
+        "field_MAE_fine_vs_native_es": 0.07296674374880817,
+        "fine": "seed222_d96_f2_cfl0.4_t4_s1",
+        "fine_interpolation": {
+          "later_weight": 0.02863821238489845,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.971361787615101,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "k_cMpc_inv": [
+          0.16036478039875368,
+          0.28033098430515146,
+          0.3938500551132633,
+          0.4660159544705517
+        ],
+        "native_es_interpolation": {
+          "later_weight": 0.1026379094104478,
+          "nodes": [
+            72,
+            76
+          ],
+          "redshift_linear_diagnostic": 6.897362090589552,
+          "redshifts": [
+            7.0,
+            6.0
+          ]
+        },
+        "target_xHI_volume": 0.4
+      }
+    ],
+    "maximum_native_cumulative_budget_relative_residual": 5.07815808439132e-17,
+    "maximum_photon_ledger_relative_residual": 1.0837679157510603e-14,
+    "scope": "Local seed222; same archived80-interval native history and cumulative source budget",
+    "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+    "timing_scope": "Measured case elapsed time on a shared local host; no controlled speedup claim",
+    "z7_implementation_comparisons": [
+      {
+        "P_coarse_over_fine": [
+          1.0000205192869223,
+          1.0004967677496561,
+          1.0028685787469656,
+          1.003149038018443
+        ],
+        "P_fine_over_native_es": [
+          0.8993756745619067,
+          0.9018083747224067,
+          0.6979714385481393,
+          0.7524766672500816
+        ],
+        "case_id": "seed222_d96_f1_cfl0.4_t4_s1",
+        "field_MAE_coarse_vs_fine": 0.0003652619335773755,
+        "field_MAE_coarse_vs_native_es": 0.07469885028734709,
+        "field_MAE_fine_vs_native_es": 0.07479828181744791,
+        "k_cMpc_inv": [
+          0.16036478039875368,
+          0.28033098430515146,
+          0.3938500551132633,
+          0.4660159544705517
+        ],
+        "new_radiation_per_atom": 0.0075802211512973556,
+        "new_xHI_mass": 0.37000505183258203,
+        "old_radiation_per_atom": 0.007743252469695121,
+        "old_xHI_mass": 0.3701680831509796,
+        "redshift": 7.0
+      },
+      {
+        "P_coarse_over_fine": [
+          0.9997941279463061,
+          1.0001317600434447,
+          1.002415742831334,
+          1.0025616728778364
+        ],
+        "P_fine_over_native_es": [
+          0.9094413671686579,
+          0.9165435277400551,
+          0.7093142605871839,
+          0.7636028900875713
+        ],
+        "case_id": "seed222_d96_f1_cfl0.2_t4_s1",
+        "field_MAE_coarse_vs_fine": 0.00030813083795568476,
+        "field_MAE_coarse_vs_native_es": 0.07346085479859812,
+        "field_MAE_fine_vs_native_es": 0.07350908381271,
+        "k_cMpc_inv": [
+          0.16036478039875368,
+          0.28033098430515146,
+          0.3938500551132633,
+          0.4660159544705517
+        ],
+        "new_radiation_per_atom": 0.007610141787503463,
+        "new_xHI_mass": 0.3700349724687882,
+        "old_radiation_per_atom": 0.007634348915207929,
+        "old_xHI_mass": 0.3700591795964927,
+        "redshift": 7.0
+      },
+      {
+        "P_coarse_over_fine": [
+          0.9998943782628864,
+          1.0001831634666936,
+          1.0021672833646342,
+          1.0023519686256857
+        ],
+        "P_fine_over_native_es": [
+          0.9131669965401109,
+          0.9203146466628223,
+          0.7131561041502363,
+          0.7673204324017994
+        ],
+        "case_id": "seed222_d96_f1_cfl0.1_t4_s1",
+        "field_MAE_coarse_vs_fine": 0.00027528432370549155,
+        "field_MAE_coarse_vs_native_es": 0.07314399984854075,
+        "field_MAE_fine_vs_native_es": 0.07318862152501661,
+        "k_cMpc_inv": [
+          0.16036478039875368,
+          0.28033098430515146,
+          0.3938500551132633,
+          0.4660159544705517
+        ],
+        "new_radiation_per_atom": 0.007622439046449895,
+        "new_xHI_mass": 0.3700472697277403,
+        "old_radiation_per_atom": 0.007635150504009767,
+        "old_xHI_mass": 0.3700599811853002,
+        "redshift": 7.0
+      },
+      {
+        "P_coarse_over_fine": [
+          0.9997818447331707,
+          1.000490483079722,
+          1.002463125789469,
+          1.0029091598057578
+        ],
+        "P_fine_over_native_es": [
+          0.8889802567048823,
+          0.909612637615185,
+          0.6636518301215745,
+          0.6734709163514387
+        ],
+        "case_id": "seed222_d96_f2_cfl0.4_t4_s1",
+        "field_MAE_coarse_vs_fine": 0.00029472466446521934,
+        "field_MAE_coarse_vs_native_es": 0.0746465128228754,
+        "field_MAE_fine_vs_native_es": 0.07470106825387449,
+        "k_cMpc_inv": [
+          0.16036478039875368,
+          0.28033098430515146,
+          0.3938500551132633,
+          0.4660159544705517
+        ],
+        "new_radiation_per_atom": 0.008704552842679996,
+        "new_xHI_mass": 0.37112938352396485,
+        "old_radiation_per_atom": 0.008716704312168597,
+        "old_xHI_mass": 0.3711415349934536,
+        "redshift": 7.0
+      }
+    ]
+  },
+  "new_tests": 17,
+  "physical_changes": [],
+  "reference_solver_commit": "28df1608dcaac3c13302d6041c7362ddd1508286",
+  "status": "Local stiff-source defect removed; native power convergence remains unresolved",
+  "tests_passed": 199
+}
