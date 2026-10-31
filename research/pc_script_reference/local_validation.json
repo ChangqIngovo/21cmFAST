@@ -1,0 +1,106 @@
+{
+  "schema": 1,
+  "native_input_run": "local causal_rt_validation_final (not Gadi)",
+  "dimensions": 8,
+  "box_len_cMpc": 50,
+  "source_intervals": 80,
+  "seeds": [
+    111,
+    222
+  ],
+  "snapshots": 42,
+  "all_script_ledgers_passed": true,
+  "maximum_relative_photon_residual": 7.160887287960143e-09,
+  "sum_kernel_subprocess_seconds": 0.07701785199606093,
+  "elapsed_seconds_including_audit_and_native_brightness": 2.6947669130004215,
+  "upstream_commit": "793c33fd7c252f26ab033d4e00c4dfa594f445a4",
+  "native_runtime": {
+    "native_extension_sha256": "180dcd0e3dec9c119f3bdf13f2b39043a1a05b9e6e4291864364d91cd3d3fb47",
+    "native_package_version": "4.3.2.dev35+ge80aeabb3.d20261029",
+    "python_version": [
+      3,
+      12,
+      14
+    ]
+  },
+  "histories": [
+    {
+      "seed": 111,
+      "sha256": "e0e508ed9ba1427bda0c74d967e3535900612be4195c682825028aa5dc910669"
+    },
+    {
+      "seed": 222,
+      "sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64"
+    }
+  ],
+  "representative_snapshots": [
+    {
+      "redshift": 8.0,
+      "source_per_atom": 0.3337812535126596,
+      "script_xHI_mass": 0.6662187461612826,
+      "native_es_xHI_mass": 0.6815777230907443,
+      "field_MAE_script_vs_native_es": 0.013856820589353447,
+      "context_causal_integrated_photons_per_atom": 0.09902038970987069,
+      "seed": 111
+    },
+    {
+      "redshift": 7.0,
+      "source_per_atom": 0.6549335801054611,
+      "script_xHI_mass": 0.34506642024706236,
+      "native_es_xHI_mass": 0.4060651047082682,
+      "field_MAE_script_vs_native_es": 0.08260063401758089,
+      "context_causal_integrated_photons_per_atom": 0.21200397163737583,
+      "seed": 111
+    },
+    {
+      "redshift": 6.0,
+      "source_per_atom": 1.315761386370107,
+      "script_xHI_mass": 0.0,
+      "native_es_xHI_mass": 0.02031983812504439,
+      "field_MAE_script_vs_native_es": 0.025132631781161763,
+      "context_causal_integrated_photons_per_atom": 0.4667089425963619,
+      "seed": 111
+    },
+    {
+      "redshift": 8.0,
+      "source_per_atom": 0.3250878979732008,
+      "script_xHI_mass": 0.6749121017541124,
+      "native_es_xHI_mass": 0.684957036848121,
+      "field_MAE_script_vs_native_es": 0.009294847060118627,
+      "context_causal_integrated_photons_per_atom": 0.09646597764043296,
+      "seed": 222
+    },
+    {
+      "redshift": 7.0,
+      "source_per_atom": 0.6375751741661714,
+      "script_xHI_mass": 0.3624248263446661,
+      "native_es_xHI_mass": 0.3974933204152627,
+      "field_MAE_script_vs_native_es": 0.07101113146200078,
+      "context_causal_integrated_photons_per_atom": 0.20647817642780356,
+      "seed": 222
+    },
+    {
+      "redshift": 6.0,
+      "source_per_atom": 1.2801827540543307,
+      "script_xHI_mass": 0.0,
+      "native_es_xHI_mass": 0.039836782112247796,
+      "field_MAE_script_vs_native_es": 0.05342172353994101,
+      "context_causal_integrated_photons_per_atom": 0.4543568436493648,
+      "seed": 222
+    }
+  ],
+  "tests": {
+    "count": 21,
+    "command": "SCRIPT_FC=gfortran python -m pytest research/pc_script_reference -q --confcutdir=research/pc_script_reference --import-mode=importlib"
+  },
+  "gadi_executed": false,
+  "scope": "Original SCRIPT coeval model comparison, not causal RT accuracy/convergence certification",
+  "frozen_pbs_local_validation": {
+    "checkpoints": 3,
+    "all_script_ledgers_passed": true,
+    "elapsed_audit_and_brightness_seconds": 0.74,
+    "resume_preserved_receipts": true,
+    "compiler_stub": false,
+    "science_stub": false
+  }
+}

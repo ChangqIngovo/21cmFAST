@@ -1,0 +1,24 @@
+{
+  "project": "SCRIPT",
+  "repository": "https://bitbucket.org/rctirthankar/script",
+  "commit": "793c33fd7c252f26ab033d4e00c4dfa594f445a4",
+  "retrieved_utc": "2026-10-31",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2018 Tirthankar Roy Choudhury",
+  "files": {
+    "pc.f90": {
+      "upstream_path": "fortran/pc.f90",
+      "sha256": "36634ea4d62b45738383e88d4bc39f57d6eee821d3f3d18f985465c7e53f22ea"
+    },
+    "sort_grid_points.f90": {
+      "upstream_path": "fortran/sort_grid_points.f90",
+      "sha256": "a51f94743585c59114f09493b6143e37654936d5f08ecd10e2d9f925db4a2ec9"
+    },
+    "LICENSE": {
+      "upstream_path": "LICENSE",
+      "sha256": "54a6ff13527b3d1350d48874e251331f47d02fd2a9a163e21acea6a42cfc479f"
+    }
+  },
+  "modifications": "None. The files listed above are unmodified upstream bytes.",
+  "scope": "Original photon allocation and periodic shell ordering only. Native 21cmFAST supplies the source and atom grids; the rest of the SCRIPT simulation is not used."
+}
