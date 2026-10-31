@@ -1,0 +1,263 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-31",
+  "scope": "Rejected scratch streaming candidates only; separate continuous source/absorption improvement is not rejected by this record.",
+  "decision": "Retain published MUSCL-MC+SSPRK2 streaming; do not promote these prototype kernels.",
+  "tracked_prototype_code_edits": false,
+  "physical_inputs_changed": false,
+  "interpretation": "Native f1/f2 power/field differences measure numerical self-convergence, not errors relative to an established true field. Passing photon ledgers alone cannot certify convergence.",
+  "source_reference": {
+    "MP5": "https://ntrs.nasa.gov/api/citations/19970010128/downloads/19970010128.pdf",
+    "verified_parts": "Eq2.1, Eq2.10, AppendixA; alpha = 4 sufficient CFL<=0.2. Monotone-data preservation is not a universal extrema bound."
+  },
+  "trials": [
+    {
+      "name": "Unsplit piecewise-linear characteristic remap",
+      "status": "rejected",
+      "failure": "Fixed-grid temporal error converges only linearly. Better finite-CFL spatial pairs cannot establish an improved time-accurate solver.",
+      "kernel_sha256": "5246a00ba2da208f79149cfb4436c92234bd77fd3c8b1ffe041811e1e2941afb",
+      "evidence_metrics": {
+        "smooth_oblique_L1_N32_old": 0.0012749441811429135,
+        "smooth_oblique_L1_N32_new": 0.0007645153545775953,
+        "sharp_cube_relative_L1_N32_old": 0.28489598140839534,
+        "sharp_cube_relative_L1_N32_new": 0.2722256469689095,
+        "native_f1_f2_worst_field_MAE": 0.016108211416746,
+        "native_f1_f2_worst_primary_power_change": 0.014495959178848494,
+        "native_CFL4_to2_worst_primary_power_change": 0.00786421061336573,
+        "fixed_grid_time_error_CFL_4_2_1": [
+          0.002194908054045104,
+          0.0011686719756189752,
+          0.0006127628590067021
+        ],
+        "reason_not_promoted": "Fixed-grid temporal error converges only linearly; reduction in finite-CFL spatial error partly compensates spatial diffusion.",
+        "frozen_source": "/workspace/scratch/c8ee7ea91934/rt_coupled_unsplit_frozen",
+        "native_roots": [
+          "/workspace/scratch/c8ee7ea91934/rt_coupled_unsplit_native_seed222",
+          "/workspace/scratch/c8ee7ea91934/rt_coupled_unsplit_temporal_seed222"
+        ]
+      },
+      "evidence_files": [
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_unsplit_prototype/benchmark.json",
+          "sha256": "dc1c9f61e7a2440ac18f23399e26e1d3d2c277da808d90df66ceb06227f87cbf"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_unsplit_prototype/time_order.py",
+          "sha256": "01028e45bfe716ba164129d4fef821a8876b5963e1ccfedfad841199736975bb"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_unsplit_prototype/native_temporal_pair.json",
+          "sha256": "10b61a95ac42ca8971f1aa848d474205bb28c4eda1b54b0a05b436d0274da9ce"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/rt_coupled_unsplit_native_seed222/numerical_pairs.json",
+          "sha256": "003bce1af22fc1cf0bdae2634b8234e6e1ac49ec6d497e7c19716009b281b8ec"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/rt_coupled_unsplit_temporal_seed222/summary.json",
+          "sha256": "b58192c3533f9451b2dc469f0545679368b572d400df9d45fc90718af5ae1057"
+        }
+      ]
+    },
+    {
+      "name": "Parabolic reconstruction with hard smooth-extremum detector, SSPRK3",
+      "status": "rejected",
+      "failure": "Unit sharp cube develops 16.78% overshoot despite passing positivity/conservation and existing smooth tests.",
+      "evidence_metrics": {
+        "existing_transport_tests_passed": 24,
+        "smooth_oblique_L1_N32": 0.00025931356454239536,
+        "sharp_cube_N16_maximum": 1.1678358795023465,
+        "initial_sharp_cube_maximum": 1.0,
+        "reason_not_promoted": "Creates a 16.78 percent overshoot in no-source vacuum advection despite passing positivity and ledger tests.",
+        "source_sha256": "28d061c0a8cbf7c9c0f9b142b2ad4ec09766dbb3d74a19ea075271f480e71bee"
+      },
+      "evidence_files": [
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_parabolic_prototype/candidate_assessment.json",
+          "sha256": "d02c4fbe0ec946b72275cdb9b2c5cf1610da4d8aafdd6503489e8003c9a4098c"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_parabolic_prototype/benchmark.py",
+          "sha256": "1e49bc87194c8e3e530b0c80970d1c90f4438296bdcc45ea43d798965f92f08a"
+        }
+      ]
+    },
+    {
+      "name": "WENO3-JS reconstruction, SSPRK3",
+      "status": "rejected",
+      "failure": "Fails both existing smooth-accuracy tests; smooth and sharp-wave errors exceed retained MUSCL on tested grids.",
+      "evidence_metrics": {
+        "existing_transport_tests_passed": 22,
+        "existing_transport_tests_failed": 2,
+        "smooth_oblique_L1_N32": 0.005140335269309019,
+        "sharp_cube_relative_L1_N32": 0.39075367582514486,
+        "reason_not_promoted": "Too diffusive on the tested grids and fails both existing smooth accuracy tests.",
+        "source_sha256": "e361086223009606c9d822edfc53e65f1be825e18baa28f23566480932494844"
+      },
+      "evidence_files": [
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_parabolic_prototype/benchmark.json",
+          "sha256": "1af0bb95e217019f1b6bce8da4a232d84ad9d3acc5915ce431630364504522cb"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_parabolic_prototype/test_transport.py",
+          "sha256": "50991f036fe94c176b7901e4a2ca6a687f25efa0ad58c807fbd6e7a7aa9f0ada"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_parabolic_prototype/candidate_assessment.json",
+          "sha256": "d02c4fbe0ec946b72275cdb9b2c5cf1610da4d8aafdd6503489e8003c9a4098c"
+        }
+      ]
+    },
+    {
+      "name": "Published MP5(alpha4), SSPRK3, positivity face cap",
+      "status": "rejected",
+      "failure": "At the published sufficient CFL 0.2, unit sharp cube develops 16.03% overshoot. Independent NumPy implementation reproduces C++ to 1.11e-15; unmodified MP5 also overshoots.",
+      "kernel_sha256": "4e810102bfc0b1ec510e7fb5c98ae36c6dac8dde881d12beca2031f48eeed8eb",
+      "evidence_metrics": {
+        "cfl": 0.2,
+        "existing_tests_passed": 41,
+        "N32_smooth_L1_old": 0.0012343892375440797,
+        "N32_smooth_L1_candidate": 1.614900419810505e-06,
+        "N16_unit_cube_maximum": 1.160278413569076,
+        "independent_original_MP5_without_positive_cap_maximum": 1.1617964060814683,
+        "fixed_grid_time_orders": [
+          2.9958850641902757,
+          2.997306511546775,
+          2.9931336135484212
+        ]
+      },
+      "evidence_files": [
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_mp5_prototype/benchmark.json",
+          "sha256": "f265a5b1079263f6e3c882a2fe3a63666fb8e2a048f35dfdfdf095ede8a84158"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_mp5_prototype/time_order.json",
+          "sha256": "8755b3dcc804234f28b965b18647b9f78d713ea5c38a096e7bca5cad644a8d70"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_mp5_prototype/independent_sharp_reference.json",
+          "sha256": "8b5ebd377fb14ec77d9442cddc1617bcd2c402fe91cfbdecae3f4ed1be5e00e6"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_mp5_prototype/test_sharp_maximum.py",
+          "sha256": "0d8b750677552801146beea27d6b92a2f9fc1d79b4699263aa99548c9d3c80dc"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_mp5_prototype/candidate_assessment.json",
+          "sha256": "1e29a292161f28db839a92d12d2af1a7dd09da9f767b47f4fc15c5dae844e7a6"
+        }
+      ]
+    },
+    {
+      "name": "MP5 with global-stage upper-bound face limiter, SSPRK3",
+      "status": "rejected",
+      "failure": "A distant bright cube changes the limiter around a disjoint weak cube: weak local maximum rises from 0.9884624 to 1.1568949. Global positivity/upper-bound proof does not guarantee local-front accuracy or locality.",
+      "kernel_sha256": "b89771e34aca6a40375aba1119c7c78f6ac97e1c50e6c151cbe45294b21f4cfc",
+      "evidence_metrics": {
+        "cfl": 0.4,
+        "existing_and_single_cube_tests_passed": 42,
+        "N32_smooth_L1_old": 0.0012749441811429135,
+        "N32_smooth_L1_candidate": 0.0006944479520422934,
+        "N32_sharp_relative_L1_old": 0.28489598140839534,
+        "N32_sharp_relative_L1_candidate": 0.2230478488563607,
+        "runtime_ratio_approximate": 1.9,
+        "N16_positive_sin4_background_minimum": 0.9888209608568854,
+        "short_smooth_temporal_order": "approximately3",
+        "long_flight_temporal_orders": [
+          2.9165094403569443,
+          3.209385264407247,
+          1.3365047331326187,
+          2.757409853532052
+        ],
+        "remote_bright_cube": {
+          "N": 32,
+          "ordinates": 24,
+          "beam_index": 5,
+          "box_cMpc": 10,
+          "flight_fraction_of_box": 0.1,
+          "weak_cube_slice": "[4:8,4:8,4:8]",
+          "weak_amplitude": 1,
+          "bright_cube_slice": "[20:24,20:24,20:24]",
+          "bright_amplitude": 10,
+          "weak_measurement_region": "[:16,:16,:16]",
+          "source": 0,
+          "capacity": 0,
+          "cross_section": 0,
+          "weak_alone_maximum": 0.9884624106264874,
+          "weak_with_remote_bright_maximum": 1.1568949051105968,
+          "global_with_remote_bright_maximum": 9.884624106264877,
+          "strong_alone_contribution_in_weak_region": 1.822481380229685e-27,
+          "retained_MUSCL_weak_maximum": 0.9667462442063819
+        }
+      },
+      "evidence_files": [
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_bounded_mp5_prototype/benchmark.json",
+          "sha256": "ba661fc3ba53aea8e4af4d2b5dcac3a6812fee8252f4bbc48919490e19779384"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_bounded_mp5_prototype/time_order_independent.json",
+          "sha256": "7949511d4e275072c50b9fefeffe23a6bef7b40ba91eb7e6e6da9ee37cfef404"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_bounded_mp5_prototype/time_order_short_smooth.json",
+          "sha256": "2d7f2207f2f589b40f852e24cdf12eb5884dc92a32d5b9e79ab01fc27bc53139"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_bounded_mp5_prototype/flat_extrema.json",
+          "sha256": "6327cef71adc72e8300d4dacb645f5b6ee722b85ee96cb078d9841a1b38f6405"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/streaming_bounded_mp5_prototype/candidate_assessment.json",
+          "sha256": "a51b73ed4b305529a6afdd586f39538f67faeb6c22c574899057e1c57275883b"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/bounded_mp5_remote_front_rejection.json",
+          "sha256": "0d61bbe60573f5a6448f4a9c133df945b810a5d38fb7360830ee08ef725b0307"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/rt_bounded_mp5_native_seed222/numerical_pairs.json",
+          "sha256": "5c9e3d96d661267ce927fe4c4146a117d9cc287f64c9350ccb0bdcf0f62b385b"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/rt_bounded_mp5_native_seed222/matched_numerical_pairs.json",
+          "sha256": "124148740f3ea2b42f92d7e4531027b13e8f73466466cd89ec46b03768a99017"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/rt_bounded_mp5_native_seed222/candidate_status.json",
+          "sha256": "e7f8861d6055d08ebf3180d8ad48429d43e0bc3ba67b94aa94a2290b928ad74b"
+        },
+        {
+          "path": "/workspace/scratch/c8ee7ea91934/rt_bounded_mp5_native_seed222/completion.json",
+          "sha256": "7256f184f44ba7b509dfee7b52679dc051c7028d51227978ceb083b5ece12192"
+        }
+      ],
+      "native_evaluation": {
+        "root": "/workspace/scratch/c8ee7ea91934/rt_bounded_mp5_native_seed222",
+        "status": "completed_sealed_and_rejected",
+        "comparison": "Native seed222, D96, refinement1->2, CFL0.4, time_substeps4; identical saved source budget and history",
+        "history_sha256": "676990eb3915f1bdf085e34923e9159e23fdc2da616320f807504fcbe5f1ce64",
+        "source_budget_sha256": "cb3be1b613e555e9cfa7619097b45292424954cccbd47d35167f97ebd355fc5f",
+        "worst_field_MAE": 0.01638782891976944,
+        "retained_MUSCL_worst_field_MAE": 0.017166909751109797,
+        "worst_primary_power_error": 0.014690245304212035,
+        "retained_MUSCL_worst_primary_power_error": 0.01686084639624086,
+        "pair_passed": false,
+        "matched_xHI_04_field_MAE": 0.01609746705970199,
+        "matched_xHI_04_first_shell_Pcoarse_over_Pfine": 1.0172523047150976,
+        "matched_xHI_04_highest_shell_Pcoarse_over_Pfine": 1.1321739792123562,
+        "retained_MUSCL_matched_xHI_04_highest_shell_Pcoarse_over_Pfine": 1.1239427960751318,
+        "elapsed_seconds_f1_f2": [
+          33.38474233099987,
+          347.7325711699996
+        ],
+        "maximum_photon_residual": 8.590790724421309e-15,
+        "maximum_source_budget_residual": 5.07815808439132e-17,
+        "completion_sha256": "7256f184f44ba7b509dfee7b52679dc051c7028d51227978ceb083b5ece12192",
+        "disposition": "Analytic nonlocal-front failure overrides partial improvement in native primary-shell self-convergence; no further candidate runs."
+      }
+    }
+  ]
+}

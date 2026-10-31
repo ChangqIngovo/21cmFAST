@@ -251,16 +251,20 @@ bool source_absorb(const double* capacity, double* ionized, double* photons,
             const long double smaller = std::min(radiation, neutral);
             const long double difference = std::abs(radiation - neutral);
             const long double argument = coefficient_dt * difference;
-            if (argument > 700) {
-                absorbed = smaller;
-            } else {
-                const long double one_minus = -std::expm1(-argument);
-                const long double phi = argument == 0 ? 1 : one_minus / argument;
-                const long double product = smaller * coefficient_dt * phi;
-                absorbed = std::isinf(product) ? smaller
-                    : smaller * (one_minus + product) / (1 + product);
-            }
-            survival = 1 - absorbed / radiation;
+            const long double one_minus = -std::expm1(-argument);
+            const long double phi = argument == 0 ? 1 : one_minus / argument;
+            const long double product = smaller * coefficient_dt * phi;
+            absorbed = std::isinf(product) ? smaller
+                : smaller * (one_minus + product) / (1 + product);
+            // Direct surviving inventory avoids subtracting two nearly equal
+            // photon totals. In opaque cells 1-absorbed/radiation can become
+            // negative by one long-double ulp even though the exact tail is
+            // positive. This expression also preserves the equal-count limit.
+            const long double surviving_smaller = std::isinf(product) ? 0.L
+                : smaller * std::exp(-argument) / (1 + product);
+            const long double remaining = surviving_smaller
+                + std::max(radiation - neutral, 0.L);
+            survival = remaining / radiation;
             source_surviving = 0;
         } else {
             const auto m = reaction_moments(radiation - neutral, emitted, coefficient_dt);

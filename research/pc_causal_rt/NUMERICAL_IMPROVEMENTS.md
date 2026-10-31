@@ -54,31 +54,118 @@ Midpoint expansion factors and photon streaming are unchanged in this step.
 
 ### Independent verification
 
-A homogeneous test at redshift7, physical18eV opacity and0.4 emitted photons
-per atom has reference ionization0.3997386834672251 and radiation inventory
-0.0002613165327749 photons per atom. The old CFL0.4 result was0.3800 and0.0200.
+A homogeneous test at redshift 7, physical 18 eV opacity and 0.4 emitted photons
+per atom has reference ionization 0.3997386834672251 and radiation inventory
+0.0002613165327749 photons per atom. The old CFL 0.4 result was 0.3800 and 0.0200.
 The coupled update agrees with the independent high-precision solution to
-double-precision roundoff at CFL0.4,0.2 and0.1. For linear sources, halving the
+double-precision roundoff at CFL 0.4, 0.2 and 0.1. For linear sources, halving the
 timestep reduces the error by approximately four.
 
 Seventeen new tests check weak and stiff absorption, front completion,
-anisotropic incoming radiation, varying emission, a1e-30 source, and transparent
-or fully ionized limits. The full causal RT suite passes199 tests after this
+anisotropic incoming radiation, varying emission, a 1e-30 source, and transparent
+or fully ionized limits. The full causal RT suite passes 199 tests after this
 change. Numerical refinement of the native fields is reported separately;
 homogeneous agreement alone does not establish spatial convergence.
 
 ### Native-history result
 
 Four complete local seed222 histories reuse the exact earlier source and gas
-archives. All audits pass, with maximum photon residual1.08e-14. The change
-in the first power shell under CFL0.4 to0.2 is1.107% (previously1.084%);
-CFL0.2 to0.1 gives0.408% (previously0.418%). Spatial8^3 to16^3 refinement
-gives1.686% (previously1.706%). Thus this fixes an identified local integration
-error but does not resolve the native-field convergence problem. Atz7 the
-mass-neutral fraction changes0.37016808 to0.37000505, with the source and atom
+archives. All audits pass, with maximum photon residual 1.08e-14. The change
+in the first power shell under CFL 0.4 to 0.2 is 1.107% (previously 1.084%);
+CFL 0.2 to 0.1 gives 0.408% (previously 0.418%). Spatial 8^3 to 16^3 refinement
+gives 1.686% (previously 1.706%). Thus this fixes an identified local integration
+error but does not resolve the native-field convergence problem. At z=7 the
+mass-neutral fraction changes 0.37016808 to 0.37000505, with the source and atom
 inventories unchanged.
 
-Measured RT times are24.65,33.96,56.24s for the three native-grid CFL cases,
-and187.13s for16^3/CFL0.4. These are local case timings under shared load,
+Measured RT times are 24.65, 33.96 and 56.24 s for the three native-grid CFL cases,
+and 187.13 s for 16^3/CFL 0.4. These are local case timings under shared load,
 not controlled speedup measurements or Gadi estimates. Exact benchmark and
 native refinement results are in `source_absorption_validation.json`.
+
+## 2. Positive source-free absorption tail
+
+The independent travelling-front benchmark exposed a roundoff failure in the
+source-free reaction. The previous expression `1 - absorbed / photons` could
+become slightly negative when almost all photons were absorbed. For a valid
+front-cell state with 0.1999934282541434 photons and 0.5999801257685806 neutral
+atoms, this produced a survival fraction of about -1.08e-19 and aborted the run.
+
+The update now evaluates the surviving inventory directly. With initial
+photons `P`, neutral atoms `N`, and the integrated absorption coefficient `C`,
+
+```text
+m = min(P, N)
+d = abs(P - N)
+phi = (1 - exp(-C*d)) / (C*d), with phi(0) = 1
+remaining = m * exp(-C*d) / (1 + m*C*phi) + max(P - N, 0)
+survival = remaining / P.
+```
+
+Every term is nonnegative. The same analytic absorption equation and directional
+attenuation are retained, with no clipping of fields or global normalization.
+This is a robustness correction at the opaque limit; it is not evidence of
+improved native-field spatial convergence. A regression test uses the exact
+previously failing state through the public solver interface.
+
+The causal RT suite passes 202 tests. A complete seed222 D96/f1/CFL0.4 native
+history was repeated: all 21 saved checkpoint fields and the final full angular
+photon state are bitwise identical to the coupled-source baseline. The maximum
+photon residual is 4.03e-15. This confirms no regression on that trajectory;
+the new analytic test covers the previously failing corner. Exact comparison
+and input hashes are recorded in `source_free_validation.json`.
+
+## Remaining front-resolution error
+
+An independent source-free plane wave provides a known solution of the actual
+transport and absorption equations: the ion fraction is a travelling logistic
+profile, photons are proportional to that fraction, and the front speed is
+`c_comoving * P0 / (1 + P0)`. The benchmark uses exact cell averages and compares
+only the causal window unaffected by the periodic trailing boundary. Its
+cross-section is varied to test resolved and unresolved front widths; this
+does not change the production opacity or native inputs.
+
+With the final retained solver at CFL 0.2:
+
+| Grid | Smooth-front ion-fraction MAE | Thin-front ion-fraction MAE |
+| --- | ---: | ---: |
+| 16^3 | 0.00417884 | 0.0264113 |
+| 32^3 | 0.00110877 | 0.0125529 |
+| 64^3 | 0.000265895 | 0.00612180 |
+
+The smooth front approaches second-order spatial convergence; the unresolved
+thin front remains approximately first order. On 32^3 cells, reducing CFL from
+0.2 to 0.1 to 0.05 changes the thin-front MAE only from 0.0125529 to 0.0122640 to
+0.0120934. Thus smaller timesteps alone do not remove this spatial limitation.
+These are analytic front tests, not cosmological-field power-spectrum errors.
+The reproducible driver is `benchmarks/front_benchmark.py`, with results and implementation
+hashes in `front_convergence_validation.json`.
+
+From the repository root, write a fresh report without overwriting the recorded
+validation data:
+
+```bash
+uv run --no-sync python research/pc_causal_rt/benchmarks/front_benchmark.py \
+  --repo . --transport-module research/pc_causal_rt/transport.py \
+  --output /tmp/front_validation.json
+```
+
+## Propagation candidates that were not adopted
+
+The retained propagation method remains MUSCL-MC with SSPRK2. Several isolated
+prototypes improved selected benchmarks but failed broader checks:
+
+| Candidate | Reason it was not adopted |
+| --- | --- |
+| Conservative characteristic remap | Fixed-grid temporal convergence fell to first order. |
+| Parabolic reconstruction with smooth-extremum switching | A sharp oblique pulse developed a 16.8% overshoot. |
+| WENO3-JS with SSPRK3 | Smooth and discontinuous transport errors were larger than the retained method. |
+| Published MP5 with SSPRK3 | The tested multidimensional implementation produced a 16.0% sharp-pulse overshoot. |
+| MP5 with a global intensity bound | A distant bright pulse allowed a weaker front to overshoot by 15.7%, even though global positivity, maximum and photon budgets passed. |
+
+The last candidate reduced the N32 single-pulse L1 error by about 22%, but
+that result did not justify the nonlocal limiter behavior. Two new regression
+tests now cover both a single sharp pulse and separated pulses of unequal
+brightness. Candidate evidence is recorded separately in
+`rejected_streaming_candidates.json`; none of these experimental propagation
+kernels is used by the production solver.

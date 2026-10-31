@@ -101,6 +101,11 @@ Radiation streaming uses MUSCL with monotonized-central slopes and SSPRK2,
 with CFL <= 0.5 to preserve positive cell averages. No field is clipped or
 globally normalized to repair a photon budget.
 
+The source-free absorption update also computes its surviving radiation directly,
+avoiding a subtractive roundoff failure in very opaque cells. Measured changes,
+limitations and rejected propagation candidates are documented in
+[`NUMERICAL_IMPROVEMENTS.md`](NUMERICAL_IMPROVEMENTS.md).
+
 The common local ion-capacity tolerance is2e-11 relative to cell capacity.
 This admits floating-point accumulation during repeated conservative remaps;
 the unmodified ion counts are retained and the excess is reported. It is not
