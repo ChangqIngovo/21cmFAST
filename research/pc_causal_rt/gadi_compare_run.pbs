@@ -1,0 +1,82 @@
+#!/usr/bin/env bash
+#PBS -N pc_compare
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=32
+#PBS -l mem=128GB
+#PBS -l walltime=48:00:00
+#PBS -l jobfs=10GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${PC_COMPARE_RUN:?Use gadi_compare_prepare.sh --submit or its resubmit.sh}"
+: "${PBS_JOBID:?Launch using qsub}"
+: "${PBS_NCPUS:?Missing allocated CPU count}"
+campaign=$(realpath "$PC_COMPARE_RUN")
+cd "$campaign"
+test -f PREPARED
+# The existing RT child uses descriptor 9 for its own separate run lock.
+exec 8> "$campaign/run.lock"
+flock -n 8 || { echo 'Another process is using this comparison.' >&2; exit 2; }
+exec > >(tee "$campaign/run_${PBS_JOBID}.log") 2>&1
+rm -f "$campaign/FAILED" "$campaign/COMPLETED"
+trap 'status=$?; if (( status != 0 )); then rm -f "$campaign/COMPLETED"; printf "%s\n" "$status" > "$campaign/FAILED"; fi' EXIT
+sha256sum --quiet -c prepared.sha256
+run=$(cat "$campaign/run_path.txt")
+script_output=$(cat "$campaign/script_output_path.txt")
+script_timeout=$(cat "$campaign/script_timeout.txt")
+[[ $run = "$campaign"/causal_rt_* && -f $run/PREPARED ]] || {
+    echo 'Prepared native RT child is missing or outside this comparison.' >&2; exit 2;
+}
+[[ $script_output == "$campaign/script" ]] || {
+    echo 'Unexpected SCRIPT output path.' >&2; exit 2;
+}
+printf 'Job: %s\nComparison: %s\nStart: %s\n' "$PBS_JOBID" "$campaign" "$(date)"
+export PC_CAUSAL_RT_RUN="$run"
+# Reuse native generation, build provenance, checksums and RT checkpoints.
+# A failed monotonic-source audit stops here, before a misleading comparison.
+bash "$run/submit.pbs"
+test -f "$run/COMPLETED"
+
+# The child ran in a separate shell. Restore its exact module and native binary
+# environment before evaluating SCRIPT brightness and the common-input report.
+PC_MODULES=()
+source "$run/runtime.env"
+if (( ${#PC_MODULES[@]} )); then
+    type module >/dev/null 2>&1 || { echo 'Environment modules are unavailable.' >&2; exit 2; }
+    module --force purge
+    module load "${PC_MODULES[@]}"
+fi
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
+export CC=gcc CXX=g++ MPLBACKEND=Agg
+if [[ -n ${PBS_JOBFS:-} && -d $PBS_JOBFS ]]; then export TMPDIR="$PBS_JOBFS"; fi
+pc_python=$(cat "$run/python_path.txt")
+cd "$run/source"
+"$pc_python" -m research.pc_causal_rt.prepare_run verify --run "$run" --cpus "$PBS_NCPUS"
+export PYTHONPATH="$run/native_build/source/src"
+export OMP_NUM_THREADS="$PBS_NCPUS" OMP_PROC_BIND=spread OMP_PLACES=cores
+"$pc_python" -m research.pc_causal_rt.prepare_run verify-native --run "$run" --cpus "$PBS_NCPUS"
+command -v "${SCRIPT_FC:-gfortran}" >/dev/null || { echo 'SCRIPT requires gfortran in the selected runtime.' >&2; exit 2; }
+"$pc_python" -m research.pc_script_reference.run --input-run "$run" --output "$script_output" --timeout "$script_timeout"
+test -f "$script_output/COMPLETED"
+"$pc_python" - "$run/results" "$script_output" <<'PY'
+import sys
+from research.pc_causal_rt.script_comparison import build_comparison
+report = build_comparison(sys.argv[1], sys.argv[2])
+if not report["all_same_time_budgets_shared"]:
+    raise SystemExit("RT and SCRIPT do not share the audited native source budgets")
+print("Completed original ES / PC RT / original SCRIPT comparison", flush=True)
+PY
+"$pc_python" -m research.pc_causal_rt.prepare_run verify-native --run "$run" --cpus "$PBS_NCPUS"
+unset PYTHONPATH
+export OMP_NUM_THREADS=1
+"$pc_python" -m research.pc_causal_rt.prepare_run verify --run "$run" --cpus "$PBS_NCPUS"
+cd "$campaign"
+sha256sum --quiet -c prepared.sha256
+sha256sum "$run/results/budget_script_comparison.json" "$script_output/completion.json" \
+    "$script_output/script_report.json" > comparison.sha256
+printf 'Original native ES, continuous PC RT and original SCRIPT completed with shared-input audits.\n' > "$campaign/COMPLETED"
+printf 'Finished: %s\nRT/native results: %s/results\nSCRIPT results: %s\n' "$(date)" "$run" "$script_output"

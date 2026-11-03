@@ -4,8 +4,9 @@ The unchanged native emissivity function is evaluated on a temporary copy of
 the initial conditions with only source displacements zeroed. This exposes
 the source packet counts before native CIC deposition. The original packet
 trajectories then reproduce every archived native Eulerian source field.
-Emission is the nonnegative change of these cumulative packet budgets, never
-the difference of advected Eulerian maps or n_ion divided by an SFR timescale.
+Emission follows nonnegative increments, with strict rejection by default or an
+explicit bounded causal envelope for slightly decreasing coeval proxies. Raw
+native counts remain separately archived. Moving Eulerian maps are not differenced.
 """
 from __future__ import annotations
 
@@ -20,6 +21,90 @@ SCHEMA = 1
 NATIVE_DEPOSITION_TOLERANCE = 1e-6
 ARRAYS = ("cumulative", "times_seconds", "redshifts", "growth_factors", "native_totals")
 PACKET_ARRAYS = ("q", "v1", "v2")
+ENVELOPE_GLOBAL_LIMIT = 1e-5
+ENVELOPE_PACKET_LIMIT = 1e-3
+
+
+def validate_source_policy(policy):
+    if policy not in ("strict", "bounded_envelope"):
+        raise ValueError("source_monotonicity must be strict or bounded_envelope")
+    return policy
+
+
+def _budget_arrays(budget):
+    return ARRAYS + (("native_cumulative",) if "native_cumulative" in budget else ())
+
+
+def _monotonicity_audit(native, emitted, policy):
+    """Audit a causal running maximum, using only one time slice of workspace.
+
+    A declining coeval proxy cannot withdraw previously emitted photons. The
+    envelope emits nothing until the proxy exceeds its previous maximum; this
+    avoids counting a rebound twice, unlike clipping individual increments.
+    Bounds apply both to the whole box and to each individual source packet.
+    """
+    validate_source_policy(policy)
+    native, emitted = np.asarray(native), np.asarray(emitted)
+    if (native.shape != emitted.shape or native.ndim != 4 or len(native) < 2
+            or not np.isfinite(native).all() or np.any(native < 0)):
+        raise ValueError("Invalid raw native source history")
+    peak = native[0].copy()
+    affected = np.zeros(peak.shape, dtype=bool)
+    negative_variation = np.longdouble(0)
+    negative_intervals = 0
+    max_packet = 0.
+    rows = []
+    for node, raw in enumerate(native):
+        if node:
+            delta = raw - native[node - 1]
+            negative = delta < 0
+            negative_intervals += bool(np.any(negative))
+            affected |= negative
+            negative_variation -= delta[negative].sum(dtype=np.longdouble)
+            if policy == "strict" and np.any(negative):
+                raise ValueError(f"Native cumulative source decreases at node {node}; "
+                                 "strict policy does not repair source histories")
+            np.maximum(peak, raw, out=peak)
+        if not np.array_equal(emitted[node], peak):
+            raise ValueError("Emission history differs from the causal running maximum")
+        extra = emitted[node] - raw
+        packet_fraction = np.divide(extra, peak, out=np.zeros_like(extra, dtype=float), where=peak > 0)
+        max_packet = max(max_packet, float(packet_fraction.max()))
+        raw_total = raw.sum(dtype=np.longdouble)
+        added = extra.sum(dtype=np.longdouble)
+        rows.append({"node": node, "native_total": float(raw_total),
+                     "emitted_total": float(emitted[node].sum(dtype=np.longdouble)),
+                     "added_photons": float(added),
+                     "added_fraction": float(added / max(raw_total, np.finfo(float).tiny))})
+    negative_fraction = float(negative_variation / max(rows[-1]["native_total"], np.finfo(float).tiny))
+    max_global = max(row["added_fraction"] for row in rows)
+    if policy == "bounded_envelope" and (
+            max_global > ENVELOPE_GLOBAL_LIMIT or negative_fraction > ENVELOPE_GLOBAL_LIMIT
+            or max_packet > ENVELOPE_PACKET_LIMIT):
+        raise ValueError("Source envelope correction exceeds its explicit bound: "
+                         f"global={max_global:.6g}, negative_variation={negative_fraction:.6g}, "
+                         f"packet={max_packet:.6g}")
+    return {"policy": policy, "changed": bool(np.any(affected)),
+            "affected_packets": int(np.count_nonzero(affected)),
+            "affected_packet_fraction": float(np.mean(affected)),
+            "intervals_with_negative_increments": int(negative_intervals),
+            "total_negative_variation": float(negative_variation),
+            "negative_variation_over_final_native_total": negative_fraction,
+            "max_added_photons_over_native_total": max_global,
+            "final_added_photons_over_native_total": rows[-1]["added_fraction"],
+            "max_packet_added_fraction": max_packet,
+            "limits": {"global_fraction": ENVELOPE_GLOBAL_LIMIT,
+                       "packet_fraction": ENVELOPE_PACKET_LIMIT},
+            "per_node": rows}
+
+
+def prepare_emission_history(native, policy="strict"):
+    """Return an audited emission history without modifying native input bytes."""
+    validate_source_policy(policy)
+    native = np.asarray(native)
+    emitted = (np.maximum.accumulate(native, axis=0) if policy == "bounded_envelope"
+               else native)
+    return emitted, _monotonicity_audit(native, emitted, policy)
 
 
 def _digest(path):
@@ -28,7 +113,7 @@ def _digest(path):
 
 
 def _array_hash(value):
-    return hashlib.sha256(np.ascontiguousarray(value).tobytes()).hexdigest()
+    return hashlib.sha256(memoryview(np.ascontiguousarray(value)).cast("B")).hexdigest()
 
 
 def _write_json(path, value):
@@ -65,16 +150,31 @@ def _validate_budget(budget, check_hashes=True):
         raise ValueError("Invalid native source timeline")
     if q.shape != (len(times), n, n, n) or not np.isfinite(q).all() or np.any(q < 0):
         raise ValueError("Native cumulative packet budgets must be finite and nonnegative")
-    increments = np.diff(q, axis=0)
-    if np.any(increments < 0):
-        node, i, j, k = np.unravel_index(np.argmin(increments), increments.shape)
-        raise ValueError("Native cumulative source decreases on a persistent packet: "
-                         f"node={node + 1}, packet=({i},{j},{k}), delta={increments[node, i, j, k]:.17g}; "
-                         "a nonnegative emitted-photon history cannot represent these inputs; no clipping is allowed")
+    for node in range(1, len(q)):
+        delta = q[node] - q[node - 1]
+        if np.any(delta < 0):
+            i, j, k = np.unravel_index(np.argmin(delta), delta.shape)
+            raise ValueError("Native cumulative source decreases on a persistent packet: "
+                             f"node={node}, packet=({i},{j},{k}), delta={delta[i, j, k]:.17g}; "
+                             "a nonnegative emitted-photon history cannot represent these inputs; no clipping is allowed")
     totals = np.asarray(budget["native_totals"])
     if totals.shape != times.shape or not np.isfinite(totals).all() or np.any(totals < 0):
         raise ValueError("Invalid archived native source totals")
-    counts = q.sum(axis=(1, 2, 3), dtype=np.longdouble)
+    policy = validate_source_policy(metadata.get("emission_policy", "strict"))
+    if policy == "bounded_envelope":
+        if "native_cumulative" not in budget:
+            raise ValueError("Bounded source history requires the original native cumulative array")
+        native = np.asarray(budget["native_cumulative"])
+        audit = _monotonicity_audit(native, q, policy)
+        if metadata.get("monotonicity_audit") != audit:
+            raise ValueError("Recorded source correction differs from its independent audit")
+    else:
+        if "native_cumulative" in budget:
+            raise ValueError("Unexpected repaired source array under strict policy")
+        native = q
+        if "monotonicity_audit" in metadata and metadata["monotonicity_audit"] != _monotonicity_audit(native, q, policy):
+            raise ValueError("Recorded source correction differs from its independent audit")
+    counts = native.sum(axis=(1, 2, 3), dtype=np.longdouble)
     scale = np.maximum(totals, np.finfo(float).tiny)
     if np.any(np.abs(counts - totals) / scale > NATIVE_DEPOSITION_TOLERANCE):
         raise ValueError("Packet source budget differs from the native coeval total")
@@ -87,7 +187,7 @@ def _validate_budget(budget, check_hashes=True):
             raise ValueError(f"Invalid native source packet {name}")
     if check_hashes:
         hashes = metadata["array_sha256"]
-        for name in ARRAYS:
+        for name in _budget_arrays(budget):
             if _array_hash(budget[name]) != hashes[name]:
                 raise ValueError(f"Source-budget array checksum failed: {name}")
         for name in PACKET_ARRAYS:
@@ -114,7 +214,7 @@ def sampled_cumulative(budget, times, stride):
             or stride < 1 or (len(times) - 1) % stride):
         raise ValueError("Source stride must divide the original native timeline")
     q = np.asarray(budget["cumulative"], dtype=float)
-    if np.any(np.diff(q, axis=0) < 0):
+    if any(np.any(q[node] < q[node - 1]) for node in range(1, len(q))):
         raise ValueError("Native cumulative source decreases; no clipping is allowed")
     sampled = q.copy()
     for left in range(0, len(times) - 1, stride):
@@ -135,7 +235,8 @@ counts independently of refinement. Source clouds retain one native-cell width.
     from .gas import deposit
     if type(node) is not int or not 1 <= node < len(budget["times_seconds"]):
         raise ValueError("Source rate requires a valid right-endpoint node")
-    if np.shape(sampled) != np.shape(budget["cumulative"]) or not np.isfinite(sampled).all():
+    if (np.shape(sampled) != np.shape(budget["cumulative"])
+            or not np.isfinite(sampled[node - 1:node + 1]).all()):
         raise ValueError("Sampled cumulative sources must match the native source grid")
     delta = np.asarray(sampled[node], float) - sampled[node - 1]
     if np.any(delta < 0):
@@ -158,7 +259,7 @@ def source_initial_map(budget, factor=1):
 
 def _save_budget(path, budget):
     path.parent.mkdir(parents=True, exist_ok=True)
-    arrays = {name: budget[name] for name in ARRAYS}
+    arrays = {name: budget[name] for name in _budget_arrays(budget)}
     arrays.update({f"packet_{name}": budget["packets"][name] for name in PACKET_ARRAYS})
     temporary = path.with_suffix(path.suffix + ".tmp")
     with temporary.open("wb") as stream:
@@ -178,6 +279,8 @@ def load_source_budget(path):
         raise ValueError("Saved source-budget file checksum failed")
     with np.load(path, allow_pickle=False) as saved:
         budget = {name: np.array(saved[name], copy=True) for name in ARRAYS}
+        if "native_cumulative" in saved:
+            budget["native_cumulative"] = np.array(saved["native_cumulative"], copy=True)
         metadata = json.loads(str(saved["metadata"].item()))
         budget["packets"] = {name: np.array(saved[f"packet_{name}"], copy=True) for name in PACKET_ARRAYS}
     if metadata["identity"] != receipt["identity"]:
@@ -188,7 +291,7 @@ def load_source_budget(path):
     return _validate_budget(budget)
 
 
-def build_source_budget(history, output_path):
+def build_source_budget(history, output_path, *, policy="strict"):
     """Export native cumulative source packets without editing input archives."""
     from py21cmfast.drivers.coeval import Coeval
     from py21cmfast.drivers.single_field import compute_emissivity_fields
@@ -198,6 +301,7 @@ def build_source_budget(history, output_path):
     from research.pc_native_rt.workflow import _input_dict, _runtime_identity
     from research.pc_reconsidered.native_driver import from_native_coeval
 
+    validate_source_policy(policy)
     validate_history(history)
     root = Path(history.get("_archive_root", history["metadata"]["native_archive_root"])).resolve()
     output_path = Path(output_path).resolve()
@@ -217,7 +321,8 @@ def build_source_budget(history, output_path):
         raise ValueError("Native source export requires the original archived native binary")
     identity = {"schema": SCHEMA, "history_sha256": top["files"]["history.npz"],
                 "history_receipt_sha256": _digest(root / "history_receipt.json"),
-                "native_runtime": runtime, "exporter_sha256": _digest(__file__)}
+                "native_runtime": runtime, "exporter_sha256": _digest(__file__),
+                "emission_policy": policy}
     # Verify all source receipts even on a cached export, so changing an input
     # source does not become invisible behind an existing source-budget file.
     for record in history["records"]:
@@ -299,6 +404,10 @@ def build_source_budget(history, output_path):
                        "deposition_L1_relative_error": error, "total_relative_error": total_error,
                        "maximum_absolute_deposition_error": float(difference.max()),
                        "native_source_sha256": record["source_sha256"]})
+    emitted, monotonicity_audit = prepare_emission_history(cumulative, policy)
+    if policy == "bounded_envelope":
+        budget["native_cumulative"] = cumulative
+        budget["cumulative"] = emitted
     metadata = {"schema": SCHEMA, "seed": history["metadata"]["seed"], "dimension": n,
                 "growth_initial": packets["growth_initial"], "native_archive_root": str(root),
                 "archive_path": str(output_path), "history_sha256": identity["history_sha256"],
@@ -309,9 +418,16 @@ def build_source_budget(history, output_path):
                 "count_units": "native mean-cell effective photon count; fine RT arrays multiply counts by refinement cubed",
                 "native_float_deposition_tolerance": NATIVE_DEPOSITION_TOLERANCE,
                 "export_audits": audits,
-                "array_sha256": {name: _array_hash(budget[name]) for name in ARRAYS}
+                "emission_policy": policy,
+                "monotonicity_audit": monotonicity_audit,
+                "array_sha256": {name: _array_hash(budget[name]) for name in _budget_arrays(budget)}
                     | {f"packet_{name}": _array_hash(packets[name]) for name in PACKET_ARRAYS}}
     budget["metadata"] = metadata
+    if policy == "bounded_envelope":
+        metadata["source_convention"] = (
+            "bounded causal running maximum of native cumulative L-INTEGRAL packet n_ion; "
+            "original native_cumulative is retained separately; emission pauses during "
+            "declines and resumes only above the previous maximum")
     _validate_budget(budget)
     _save_budget(output_path, budget)
     return load_source_budget(output_path)

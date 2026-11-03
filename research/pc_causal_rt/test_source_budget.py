@@ -6,6 +6,7 @@ from research.pc_causal_rt.source_budget import (
     ARRAYS, PACKET_ARRAYS, _array_hash, _save_budget, _validate_budget,
     load_source_budget, sampled_cumulative, source_initial_map, source_positions,
     source_rate,
+    prepare_emission_history,
 )
 
 
@@ -108,3 +109,116 @@ def test_mismatched_native_total_rejected():
     budget["native_totals"][-1] *= 1.01
     with pytest.raises(ValueError, match="native coeval total"):
         _validate_budget(budget, check_hashes=False)
+
+
+def repaired_fixture():
+    raw = np.ones((3, 4, 4, 4))
+    raw[1, 0, 0, 0] -= 1e-4
+    budget = fixture(raw)
+    emitted, audit = prepare_emission_history(raw, "bounded_envelope")
+    budget["native_cumulative"] = raw
+    budget["cumulative"] = emitted
+    budget["metadata"].update(emission_policy="bounded_envelope", monotonicity_audit=audit)
+    budget["metadata"]["array_sha256"].update(
+        cumulative=_array_hash(emitted), native_cumulative=_array_hash(raw))
+    return budget
+
+
+def test_envelope_pauses_and_does_not_count_rebound_as_new_emission():
+    budget = repaired_fixture()
+    original = budget["native_cumulative"].copy()
+    sampled = sampled_cumulative(budget, budget["times_seconds"], 1)
+    for node in (1, 2):
+        assert not source_rate(budget, sampled, node, .3).any()
+    assert source_initial_map(budget).sum() == 64
+    np.testing.assert_array_equal(budget["native_cumulative"], original)
+    # Clipping each negative increment would incorrectly emit the rebound.
+    assert np.maximum(np.diff(original, axis=0), 0).sum() > 0
+    assert budget["metadata"]["monotonicity_audit"]["final_added_photons_over_native_total"] == 0
+    assert budget["metadata"]["monotonicity_audit"]["max_added_photons_over_native_total"] > 0
+
+
+def test_envelope_emits_only_above_previous_peak():
+    raw = np.ones((3, 4, 4, 4))
+    raw[:, 0, 0, 0] = [1., 1. - 1e-4, 1. + 2e-4]
+    before = raw.copy()
+    emitted, audit = prepare_emission_history(raw, "bounded_envelope")
+    np.testing.assert_allclose(np.diff(emitted[:, 0, 0, 0]), [0, 2e-4], rtol=1e-12)
+    np.testing.assert_array_equal(raw, before)
+    assert audit["affected_packets"] == 1
+    assert audit["total_negative_variation"] == pytest.approx(1e-4)
+
+
+def test_envelope_is_causal_and_preserves_monotone_inputs_exactly():
+    raw = fixture()["cumulative"]
+    emitted, audit = prepare_emission_history(raw, "bounded_envelope")
+    np.testing.assert_array_equal(emitted, raw)
+    assert not audit["changed"]
+    first, _ = prepare_emission_history(raw[:2], "bounded_envelope")
+    np.testing.assert_array_equal(first, emitted[:2])
+
+
+def test_envelope_original_and_correction_survive_roundtrip(tmp_path):
+    budget = repaired_fixture()
+    _validate_budget(budget)
+    path = tmp_path / "corrected.npz"
+    _save_budget(path, budget)
+    saved = load_source_budget(path)
+    for name in ("native_cumulative", "cumulative", "native_totals"):
+        np.testing.assert_array_equal(saved[name], budget[name])
+    assert saved["metadata"]["monotonicity_audit"] == budget["metadata"]["monotonicity_audit"]
+
+
+def test_envelope_global_bound_rejects_material_budget_changes():
+    raw = np.ones((3, 4, 4, 4))
+    raw[1] -= 1e-4
+    with pytest.raises(ValueError, match="explicit bound"):
+        prepare_emission_history(raw, "bounded_envelope")
+
+
+def test_envelope_packet_bound_catches_locally_large_globally_tiny_changes():
+    raw = np.ones((3, 4, 4, 4))
+    raw[:, 0, 0, 0] = [0.01, 0.0099, 0.01]
+    with pytest.raises(ValueError, match="explicit bound"):
+        prepare_emission_history(raw, "bounded_envelope")
+
+
+def test_envelope_cannot_hide_repeated_oscillations_under_small_peak_correction():
+    raw = np.ones((31, 4, 4, 4))
+    raw[1::2, 0, 0, 0] -= 1e-4
+    with pytest.raises(ValueError, match="explicit bound"):
+        prepare_emission_history(raw, "bounded_envelope")
+
+
+def test_repaired_arrays_cannot_pass_as_strict_native_input():
+    budget = repaired_fixture()
+    budget["metadata"]["emission_policy"] = "strict"
+    with pytest.raises(ValueError, match="Unexpected repaired"):
+        _validate_budget(budget, check_hashes=False)
+
+
+def test_envelope_validation_recomputes_correction():
+    budget = repaired_fixture()
+    budget["metadata"]["monotonicity_audit"]["affected_packets"] = 0
+    with pytest.raises(ValueError, match="independent audit"):
+        _validate_budget(budget, check_hashes=False)
+
+
+def test_envelope_validation_rejects_added_photons_not_required_by_history():
+    budget = repaired_fixture()
+    budget["cumulative"][-1, 1, 1, 1] += 1e-6
+    with pytest.raises(ValueError, match="causal running maximum"):
+        _validate_budget(budget, check_hashes=False)
+
+
+def test_strict_policy_remains_default():
+    with pytest.raises(ValueError, match="decreases"):
+        prepare_emission_history(repaired_fixture()["native_cumulative"])
+
+
+@pytest.mark.parametrize("invalid", [np.nan, np.inf, -1.])
+def test_envelope_rejects_invalid_raw_input(invalid):
+    raw = np.ones((3, 4, 4, 4))
+    raw[1, 0, 0, 0] = invalid
+    with pytest.raises(ValueError, match="Invalid raw"):
+        prepare_emission_history(raw, "bounded_envelope")

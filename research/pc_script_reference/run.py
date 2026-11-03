@@ -133,7 +133,7 @@ def plot_report(output, report):
     plt.close(fig)
 
 
-def _run_unlocked(input_run, output):
+def _run_unlocked(input_run, output, *, timeout_seconds=120):
     from research.pc_causal_rt.native_history import load_history
     from research.pc_native_rt.workflow import _runtime_identity
     from research.pc_reconsidered.native_driver import _native_box
@@ -171,7 +171,8 @@ def _run_unlocked(input_run, output):
               "native_early_epoch_caveat": "Native low-emissivity early exit can include RECFAST residual ions outside the stellar n_ion budget; source-minus-ions is not solely photon loss at those epochs",
               "brightness": "original archived native binary brightness_temperature, real-space, saturated spin temperature",
               "context_rate_integral": "trapezoidal original source-stride-1 rates, shown only as context; not SCRIPT input",
-              "identity": identity, "seeds": []}
+              "identity": identity, "execution": {"timeout_seconds_per_snapshot": timeout_seconds},
+              "seeds": []}
     started = time.perf_counter()
     for receipt_path in histories:
         history_root = receipt_path.parent
@@ -208,7 +209,10 @@ def _run_unlocked(input_run, output):
                 if row["ledger"].get("passed") is not True:
                     raise ValueError("Saved SCRIPT ledger did not pass")
             else:
-                qi, ledger = kernel.run(fields["source"], fields["capacity"], build_dir=output / "_build")
+                qi, ledger = kernel.run(
+                    fields["source"], fields["capacity"], build_dir=output / "_build",
+                    timeout_seconds=timeout_seconds,
+                )
                 if not np.isfinite(qi).all() or (qi < 0).any() or (qi > 1).any():
                     raise ValueError("Original SCRIPT returned invalid ionized fractions; no clipping applied")
                 if ledger.get("passed") is not True:
@@ -245,23 +249,33 @@ def _run_unlocked(input_run, output):
     return report
 
 
-def run(input_run, output):
+def run(input_run, output, *, timeout_seconds=120):
+    """Run resumable snapshots with an operational per-snapshot time limit."""
     import fcntl
+    if (isinstance(timeout_seconds, (bool, np.bool_))
+            or not np.isfinite(timeout_seconds) or timeout_seconds <= 0):
+        raise ValueError("timeout_seconds must be finite and positive")
+    timeout_seconds = float(timeout_seconds)
     input_run, output = Path(input_run).resolve(), Path(output).resolve()
     if output.is_relative_to(input_run) or input_run.is_relative_to(output):
         raise ValueError("Reference output must be separate from the readonly input run")
     output.mkdir(parents=True, exist_ok=True)
     with (output / "reference.lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
-        return _run_unlocked(input_run, output)
+        return _run_unlocked(input_run, output, timeout_seconds=timeout_seconds)
 
 
 def main():
+    """Run the reference on archived inputs with a configurable timeout."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input-run", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
+    parser.add_argument(
+        "--timeout", type=float, default=120,
+        help="Maximum seconds for each original SCRIPT snapshot (default: 120)",
+    )
     args = parser.parse_args()
-    run(args.input_run, args.output)
+    run(args.input_run, args.output, timeout_seconds=args.timeout)
 
 
 if __name__ == "__main__":

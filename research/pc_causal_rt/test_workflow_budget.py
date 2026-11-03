@@ -154,3 +154,38 @@ def test_native_budget_restart_preserves_radiation_and_source_history(tmp_path, 
         for key in ("capacity", "ionized", "photons", "cumulative_source"):
             np.testing.assert_array_equal(a[key], b[key])
     assert resumed_case["checkpoints"][-1]["total_emitted"] == pytest.approx(.8, rel=1e-14)
+
+
+def test_source_adapter_policy_is_explicit_and_validated():
+    assert w.configuration()["source_monotonicity"] == "strict"
+    assert w.configuration({"source_monotonicity": "bounded_envelope"})["source_monotonicity"] == "bounded_envelope"
+    with pytest.raises(ValueError):
+        w.configuration({"source_monotonicity": "clip"})
+    with pytest.raises(ValueError, match="only to native_cumulative"):
+        w.configuration({"source_mode": "instantaneous", "source_monotonicity": "bounded_envelope"})
+
+
+def test_bounded_source_evolution_counts_rebound_only_above_previous_peak(monkeypatch):
+    history, setting, cfg = fixture(monkeypatch, amounts=(.2, .2 - 1e-7, .20000005))
+    budget = history["source_budget"]
+    budget["native_cumulative"] = budget["cumulative"].copy()
+    budget["cumulative"] = np.maximum.accumulate(budget["cumulative"], axis=0)
+    budget["metadata"]["emission_policy"] = "bounded_envelope"
+    history["sampled_cumulative"] = budget["cumulative"]
+    cfg["source_monotonicity"] = "bounded_envelope"
+    first = w._initial_state(history, setting, cfg)
+    middle = w.advance_node(history, 1, setting, cfg, first["ionized"], first["photons"], first["cumulative_source"])
+    assert middle["audit"]["total_emitted"] == pytest.approx(.2, rel=1e-13)
+    assert middle["audit"]["source_sampling_relative_difference"] == 0
+    assert middle["audit"]["source_envelope_relative_difference"] == pytest.approx(1e-7 / (.2 - 1e-7))
+    final = w.advance_node(history, 2, setting, cfg, middle["ionized"], middle["photons"], middle["cumulative_source"])
+    assert final["audit"]["total_emitted"] == pytest.approx(.20000005, rel=1e-13)
+    assert final["audit"]["photon_ledger_relative_residual"] < 2e-10
+    assert final["audit"]["source_envelope_relative_difference"] == 0
+
+
+def test_case_rejects_budget_with_different_policy(monkeypatch, tmp_path):
+    history, setting, cfg = fixture(monkeypatch)
+    cfg["source_monotonicity"] = "bounded_envelope"
+    with pytest.raises(ValueError, match="policy differs"):
+        w.run_case(tmp_path, history, 111, setting, cfg, {})

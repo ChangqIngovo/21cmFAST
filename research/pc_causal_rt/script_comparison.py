@@ -10,7 +10,7 @@ from pathlib import Path
 
 import numpy as np
 
-from research.pc_causal_rt.report import _audit_case, _digest, _load, _primary_band, _sum
+from research.pc_causal_rt.report import _audit_case, _digest, _history_sources, _load, _primary_band, _sum
 from research.pc_field_emulator.evaluation import shell_spectra
 
 
@@ -146,9 +146,37 @@ def _same_time(rt_point, rt, script_point, script, case, box_len):
     native_source = _sum(script["source"])
     emitted = _sum(rt["cumulative_source"])
     difference = float(abs(emitted - native_source) / max(native_source, np.longdouble(np.finfo(float).tiny)))
-    shared = difference <= BUDGET_ROUNDOFF_TOLERANCE
-    if case["setting"]["source_stride"] == 1 and not shared:
+    from .source_budget import validate_source_policy
+    policy = validate_source_policy(case.get("source_monotonicity", "strict"))
+    envelope_difference = float(rt_point.get("source_envelope_relative_difference", 0.))
+    sampling_difference = float(rt_point.get("source_sampling_relative_difference", 0.))
+    if (not np.isfinite(envelope_difference) or envelope_difference < 0
+            or not np.isfinite(sampling_difference) or sampling_difference < 0):
+        raise ValueError("Invalid audited source-approximation differences")
+    if policy == "bounded_envelope":
+        audit = case.get("native_history_audit", {})
+        if (audit.get("passed") is not True
+                or audit.get("source_monotonicity") != policy
+                or not isinstance(audit.get("source_monotonicity_audit"), dict)
+                or rt_point.get("source_monotonicity") != policy
+                or "source_envelope_relative_difference" not in rt_point
+                or "source_sampling_relative_difference" not in rt_point):
+            raise ValueError("Bounded source comparison requires an independently audited source budget")
+        expected = np.longdouble(rt_point["source_budget_target_total"])
+        original = np.longdouble(rt_point["source_native_total"])
+        if (not np.isfinite(expected) or expected < 0 or not np.isfinite(original) or original < 0
+                or abs(emitted - expected) > 2e-11 * max(expected, np.longdouble(np.finfo(float).tiny))):
+            raise ValueError("RT emitted budget differs from independently audited source budget")
+        if not np.isclose(native_source, original, rtol=2e-15, atol=0.):
+            raise ValueError("SCRIPT source differs from independently audited native source")
+    elif envelope_difference != 0:
+        raise ValueError("Strict source policy cannot contain an envelope correction")
+    elif case["setting"]["source_stride"] == 1 and difference > BUDGET_ROUNDOFF_TOLERANCE:
         raise ValueError("Corrected RT emitted budget differs from native coeval SCRIPT budget")
+    # A known source-history approximation is never relabelled as native rounding,
+    # even when its total contribution happens to be below the rounding tolerance.
+    shared = (difference <= BUDGET_ROUNDOFF_TOLERANCE
+              and envelope_difference == 0 and sampling_difference == 0)
     current_difference = None
     if "source_native_current" in rt:
         current_difference = float(_sum(np.abs(rt["source_native_current"] - script["source"]))
@@ -171,6 +199,9 @@ def _same_time(rt_point, rt, script_point, script, case, box_len):
         "native_source_per_atom": float(native_source / atoms_script),
         "source_budget_shared_within_native_roundoff": bool(shared),
         "source_budget_relative_difference": difference,
+        "source_monotonicity": policy,
+        "source_envelope_relative_difference": envelope_difference,
+        "source_sampling_relative_difference": sampling_difference,
         "current_native_source_L1_relative_difference": current_difference,
         "field_MAE_rt_vs_script": float(np.mean(np.abs(rt["rt_xhi"] - script["script_xhi"]))),
         "field_MAE_rt_vs_native_es": float(np.mean(np.abs(rt["rt_xhi"] - script["native_es_xhi"]))),
@@ -235,13 +266,14 @@ def build_comparison(rt_root, script_root, *, make_plot=True):
         "reference": "original SCRIPT allocation on archived native coeval sources",
         "comparison_is_truth_error": False, "convergence_certified": False,
         "source_budget_relative_roundoff_tolerance": BUDGET_ROUNDOFF_TOLERANCE,
-        "source_scope": "RT retains moving emitters, finite light speed and radiation in flight; SCRIPT allocates a coeval cumulative budget",
+        "source_scope": "RT retains moving emitters, finite light speed and radiation in flight; SCRIPT allocates the original coeval cumulative budget. Any declared RT source-envelope correction and source-knot sampling difference are audited and reported separately from native rounding.",
         "geometry_scope": "SCRIPT uses full periodic redistribution; native ES retains its filter and R_BUBBLE_MAX",
         "matched_xHI_scope": "First saved bracket at the requested volume-neutral fraction; convex interpolation of xHI and native brightness fields before recomputing spectra. Different epochs and evolving density remain; no extrapolation or exact-RT claim.",
         "script_report_sha256": _digest(script_root / "script_report.json"),
         "script_provenance": script_report["identity"]["script_provenance"],
         "cases": [],
     }
+    audited_cases, frames_by_case = [], {}
     for case in summary["cases"]:
         if case.get("source_mode") != "native_cumulative":
             raise ValueError("This comparison requires native-cumulative RT cases")
@@ -250,7 +282,18 @@ def build_comparison(rt_root, script_root, *, make_plot=True):
         _checked_files(folder, receipt, rt_root, ("case.json",))
         if receipt["record"] != case or json.loads((folder / "case.json").read_text()) != case:
             raise ValueError("RT case differs from its receipt")
-        _, rt_frames = _audit_case(rt_root, case, box_len)
+        audited, rt_frames = _audit_case(rt_root, case, box_len)
+        audited_cases.append(audited)
+        frames_by_case[case["case_id"]] = rt_frames
+    # This verifies native receipts, the source sidecar (including its bounded
+    # envelope), and independently reconstructed emitted counts. A case ledger
+    # alone cannot establish that its photons came from the declared source.
+    _history_sources(rt_root, summary, audited_cases, frames_by_case)
+    if not all(case["native_history_audit"]["passed"] for case in audited_cases):
+        raise ValueError("RT comparison requires verified original native source histories")
+    report["all_source_history_audits_passed"] = True
+    for case in audited_cases:
+        rt_frames = frames_by_case[case["case_id"]]
         if case["seed"] not in script_seeds:
             raise ValueError("SCRIPT reference is missing an RT seed")
         history_sha, script_frames = script_seeds[case["seed"]]
@@ -262,6 +305,8 @@ def build_comparison(rt_root, script_root, *, make_plot=True):
         comparisons = [_same_time(*rt_frames[node], *script_frames[node], case, box_len) for node in common]
         report["cases"].append({"case_id": case["case_id"], "seed": case["seed"],
             "setting": case["setting"], "history_sha256": history_sha,
+            "source_monotonicity": case.get("source_monotonicity", "strict"),
+            "native_history_audit": case["native_history_audit"],
             "shared_saved_checkpoints": len(common),
             "rt_nodes_without_script_checkpoint": sorted(set(rt_frames) - set(script_frames)),
             "script_nodes_without_rt_checkpoint": sorted(set(script_frames) - set(rt_frames)),

@@ -28,3 +28,11 @@ def test_archive_accepts_only_requested_numerical_changes():
         "settings": [dict(directions=24, refinement=1, cfl=.4, time_substeps=2, source_stride=1)]})
     assert corrected["checkpoint_stride"] == 2
     assert corrected["settings"][0]["directions"] == 24
+
+
+def test_archive_allows_explicit_source_history_approximation_only():
+    original = configuration()
+    corrected = archive_configuration(original, {"source_monotonicity": "bounded_envelope"})
+    assert corrected["source_monotonicity"] == "bounded_envelope"
+    for key in set(original) - {"source_monotonicity", "settings"}:
+        assert corrected[key] == original[key]

@@ -14,12 +14,14 @@ from research.pc_causal_rt.workflow import (
 
 
 NUMERICAL_OVERRIDES = {"settings", "max_steps", "checkpoint_stride", "tolerance"}
+# This changes the source-history approximation, not archived native physics.
+SOURCE_ADAPTER_OVERRIDES = {"source_monotonicity"}
 QUICK_SETTINGS = [dict(directions=96, refinement=1, cfl=.4,
                        time_substeps=4, source_stride=1)]
 
 
 def archive_configuration(original, supplied=None):
-    """Keep every archived physical/native input; change only numerical controls."""
+    """Keep native physical inputs; permit explicit source adapter and numerical controls."""
     base = configuration(original | {"source_mode": "native_cumulative",
                                      "settings": QUICK_SETTINGS})
     if supplied is None:
@@ -28,7 +30,7 @@ def archive_configuration(original, supplied=None):
         raise ValueError("Archive configuration must be a dictionary")
     candidate = configuration(base | supplied)
     for key, value in candidate.items():
-        if key not in NUMERICAL_OVERRIDES and value != base[key]:
+        if key not in NUMERICAL_OVERRIDES | SOURCE_ADAPTER_OVERRIDES and value != base[key]:
             raise ValueError(f"Archive physical configuration cannot be changed: {key}")
     return candidate
 
@@ -96,7 +98,7 @@ def run(input_run, output, config=None):
             history["metadata"] = history["metadata"] | {"native_archive_root": str(original_history_root)}
             budget_path = output / "histories" / f"seed{seed}" / "source_budget.npz"
             budget_path.parent.mkdir(parents=True, exist_ok=True)
-            history["source_budget"] = build_source_budget(history, budget_path)
+            history["source_budget"] = build_source_budget(history, budget_path, policy=config["source_monotonicity"])
             histories.append({"seed": seed, "path": str(history_path),
                 "sha256": _digest(history_path), "metadata": history["metadata"],
                 "source_budget_path": str(budget_path.relative_to(output)),

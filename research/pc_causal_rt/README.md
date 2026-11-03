@@ -28,8 +28,9 @@ The independent global ledgers are
 \sum I(t)+\sum_mq_m(t)=\sum_p Q_p(t_0)+\int_{t_0}^t\sum j(t')\,dt'.
 \]
 
-The default `source_mode=native_cumulative` retains the native coeval photon
-budget. Let Q_p(t) be native `n_ion` on a persistent Lagrangian source cell p.
+The default `source_mode=native_cumulative`, `source_monotonicity=strict`
+retains the native coeval photon budget and rejects decreasing packet counts.
+Let Q_p(t) be native `n_ion` on a persistent Lagrangian source cell p.
 The source is the positive proper-time increment of Q_p, deposited at that
 source's original 2LPT position. The unchanged native emissivity function exports
 Q_p using a temporary zero-displacement copy of the initial conditions; restoring
@@ -50,11 +51,31 @@ initial Q_p plus subsequent emission = ions + radiation, and its total at every
 native node agrees with that node's Q_p sum. At z_start=25 the initial stellar
 budget is tiny; starting later requires checking this boundary condition.
 
+For small decreases in this coeval proxy, explicitly setting
+`source_monotonicity=bounded_envelope` uses
+`E_p(t_i) = max(Q_p(t_0), ..., Q_p(t_i))` as the cumulative emitted count.
+Emission pauses during a decline and resumes only above the previous maximum.
+For example, Q = [100, 99.9995, 99.9998, 100.2] gives E = [100, 100, 100, 100.2].
+The rebound is not emitted twice. This is a causal source-history approximation;
+it changes the source budget by a measured amount and is not an exact native
+coeval history or a new stellar-physics prescription.
+
+Both original `native_cumulative` and accepted `cumulative` arrays are archived
+and hashed. The policy fails if added counts exceed 1e-5 of the native total at
+any node, if integrated negative variation exceeds 1e-5 of the final native
+total, or if an individual packet correction exceeds 1e-3 of its running peak.
+These are explicit acceptance bounds on source adaptation, not accuracy or
+convergence claims. All correction measurements are independently recomputed
+on load and reported separately from native float32 deposition roundoff and
+source-knot interpolation. The photon ledger closes on E, while native ES and
+original SCRIPT continue to use unmodified native Q.
+
 The historical emission-location map and the current-location cumulative native
 source map are saved separately. They generally differ because sources move.
 The static additive ES diagnostic receives the current cumulative source map.
-Native ES and the original SCRIPT reference now use the same cumulative budget
-up to native float32 deposition rounding. Finite-c RT retains photons in flight;
+With the strict policy, native ES and original SCRIPT share the RT cumulative
+budget up to native float32 deposition rounding. With the bounded envelope,
+their budget difference is reported explicitly. Finite-c RT retains photons in flight;
 its ionization history is not forced to follow either coeval allocation model.
 
 `source_mode=instantaneous` preserves the former experimental convention,
@@ -189,6 +210,36 @@ artifacts are rejected. The launcher freezes the selected commit and builds its
 native extension inside the compute job.
 
 ## Gadi
+
+For a larger, single-resolution three-way comparison, use:
+
+```bash
+bash research/pc_causal_rt/gadi_compare_prepare.sh --submit
+```
+
+This freezes one campaign containing original native ES, continuous PC RT and
+the original SCRIPT allocator on the same archived native inputs. Defaults are
+256 cMpc, HII_DIM=128 (2 cMpc cells), DIM=384, seed222, D96/f1/CFL0.4/t4/s1,
+32 threads, and source/output nodes every0.125 in redshift from25 to5.75.
+It requests128GB and48hours in the normal queue. These are allocation limits,
+not measured requirements or a guarantee of completion within one job.
+Use the printed campaign `resubmit.sh` to resume the same calculation.
+
+The campaign uses the existing restricted no-recombination, saturated-spin
+temperature baseline. Here PC means this continuous RT solver, not the native
+21cmFAST global photon-conservation correction. Native source-budget and gas
+audits run before RT; a negative source increment is a failure, never clipped.
+The SCRIPT timeout is operational and configurable through
+`PC_SCRIPT_TIMEOUT` (default14400 seconds per snapshot).
+
+Outputs include the native ES and RT report, the SCRIPT-versus-ES report, and
+`budget_script_comparison.json/png` with the joint comparison. The native128³
+input resolution remains the physical/output resolution. A finer RT grid
+alone would not add density or source information. This single-resolution
+campaign measures model differences; it does not determine a trusted k cutoff.
+Native archives are retained at every source node and can occupy hundreds of
+GB at this resolution. Gas deposition and remapping also contain serial work;
+32 transport threads do not imply32-fold speedup of the full pipeline.
 
 For the first corrected-source check, reuse the existing native history and
 native binary, without rebuilding 21cmFAST or repeating native source histories:

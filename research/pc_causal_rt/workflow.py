@@ -42,6 +42,7 @@ DEFAULT_CONFIG = dict(
     z_start=25., z_end=5., source_intervals=160, checkpoint_stride=4,
     settings=refinement_ladder(), photon_energy_ev=18., native_inputs_json=None,
     max_steps=1_000_000, tolerance=.01, source_mode="native_cumulative",
+    source_monotonicity="strict",
 )
 
 
@@ -52,6 +53,10 @@ def configuration(overrides=None):
     cfg = json.loads(json.dumps(DEFAULT_CONFIG | overrides, allow_nan=False))
     if cfg["source_mode"] not in ("native_cumulative", "instantaneous"):
         raise ValueError("source_mode must be native_cumulative or instantaneous")
+    from .source_budget import validate_source_policy
+    validate_source_policy(cfg["source_monotonicity"])
+    if cfg["source_mode"] != "native_cumulative" and cfg["source_monotonicity"] != "strict":
+        raise ValueError("source_monotonicity applies only to native_cumulative sources")
     for name, minimum in (("dimension", 4), ("threads", 1), ("source_intervals", 1),
                           ("checkpoint_stride", 1), ("max_steps", 1)):
         if type(cfg[name]) is not int or cfg[name] < minimum:
@@ -126,7 +131,7 @@ def _current_source_map(history, node, *, sampled=False):
     from .gas import deposit
     from .source_budget import source_positions
     budget = history["source_budget"]
-    values = history["sampled_cumulative"] if sampled else budget["cumulative"]
+    values = history["sampled_cumulative"] if sampled else budget.get("native_cumulative", budget["cumulative"])
     n = int(budget["packets"]["coarse_dimension"])
     return deposit(np.asarray(values[node], float).ravel(),
                    source_positions(budget, float(history["growth_factors"][node])), n)
@@ -135,7 +140,9 @@ def _current_source_map(history, node, *, sampled=False):
 def _audit_native_budget(history, node, source):
     """Check counts against packet budgets, independently of the emission map."""
     expected = np.asarray(history["sampled_cumulative"][node]).sum(dtype=np.longdouble)
-    native = np.asarray(history["source_budget"]["cumulative"][node]).sum(dtype=np.longdouble)
+    budget = history["source_budget"]
+    accepted = np.asarray(budget["cumulative"][node]).sum(dtype=np.longdouble)
+    native = np.asarray(budget.get("native_cumulative", budget["cumulative"])[node]).sum(dtype=np.longdouble)
     actual = np.asarray(source).sum(dtype=np.longdouble)
     tiny = np.longdouble(np.finfo(float).tiny)
     relative = float(abs(actual - expected) / max(expected, tiny))
@@ -144,7 +151,9 @@ def _audit_native_budget(history, node, source):
     return {"source_budget_target_total": float(expected),
             "source_native_total": float(native),
             "source_budget_relative_residual": relative,
-            "source_sampling_relative_difference": float(abs(expected - native) / max(native, tiny))}
+            "source_sampling_relative_difference": float(abs(expected - accepted) / max(accepted, tiny)),
+            "source_envelope_relative_difference": float(abs(accepted - native) / max(native, tiny)),
+            "source_monotonicity": budget["metadata"].get("emission_policy", "strict")}
 
 
 def _initial_state(history, setting, config):
@@ -272,7 +281,8 @@ def _checkpoint(root, folder, history, node, setting, config, state):
     if config["source_mode"] == "native_cumulative":
         source_fields.update(source_native_current=_current_source_map(history, node),
                              source_sampled_current=_current_source_map(history, node, sampled=True),
-                             source_budget_sha256=np.asarray(history["source_budget"]["sha256"]))
+                             source_budget_sha256=np.asarray(history["source_budget"]["sha256"]),
+                             source_monotonicity=np.asarray(config.get("source_monotonicity", "strict")))
         matched_source = source_fields["source_sampled_current"]
     coeval = Coeval.from_file(Path(history["metadata"]["native_archive_root"]) / history["records"][node]["h5_path"])
     rt_box = _native_box(coeval, ions, capacity)
@@ -319,7 +329,10 @@ def run_case(root, history, seed, setting, config, sources):
             archive_root = Path(history["metadata"]["native_archive_root"]).resolve()
             if not archive_root.is_relative_to(root):
                 raise ValueError("External native histories require an explicitly verified source budget")
-            budget = build_source_budget(history, root / "source_budgets" / f"seed{seed}.npz")
+            budget = build_source_budget(history, root / "source_budgets" / f"seed{seed}.npz",
+                                         policy=config.get("source_monotonicity", "strict"))
+        if budget["metadata"].get("emission_policy", "strict") != config.get("source_monotonicity", "strict"):
+            raise ValueError("Source budget monotonicity policy differs from configuration")
         budget_path = budget.get("path", budget["metadata"].get("archive_path"))
         if not budget_path:
             raise ValueError("Native cumulative source budget must have a verified archive")
@@ -377,6 +390,7 @@ def run_case(root, history, seed, setting, config, sources):
                     old.unlink()
     record = dict(case_id=folder.name, seed=seed, setting=setting, history_sha256=history_digest,
                   source_mode=config["source_mode"], source_budget_sha256=budget_digest,
+                  source_monotonicity=config.get("source_monotonicity", "strict"),
                   checkpoints=checkpoints, all_ledgers_passed=True, elapsed_seconds=time.monotonic() - start_clock,
                   scope=SCOPE, convergence_certified=False)
     _write_json(folder / "case.json", record)
@@ -416,7 +430,7 @@ def run(root, config=None):
             if config["source_mode"] == "native_cumulative":
                 from .source_budget import build_source_budget
                 budget_path = root / "source_budgets" / f"seed{seed}.npz"
-                budget = build_source_budget(history, budget_path)
+                budget = build_source_budget(history, budget_path, policy=config["source_monotonicity"])
                 history = history | {"source_budget": budget}
                 row.update(source_budget_path=str(budget_path.relative_to(root)),
                            source_budget_sha256=budget["sha256"])

@@ -8,7 +8,7 @@ from research.pc_causal_rt import report
 from research.pc_causal_rt.gas import deposit
 
 
-def _fixture(monkeypatch, tmp_path, *, constant=False):
+def _fixture(monkeypatch, tmp_path, *, constant=False, bounded=False):
     from research.pc_causal_rt import native_history, source_budget
     n = 4
     growth = np.array([.1, .5, .9])
@@ -17,7 +17,7 @@ def _fixture(monkeypatch, tmp_path, *, constant=False):
     v1 = np.zeros_like(coordinates)
     v1[0, 0] = 1.
     q = np.zeros((3, n, n, n))
-    q[:, 0, 0, 0] = [1., 1., 1.] if constant else [1., 3., 4.]
+    q[:, 0, 0, 0] = [1., .999995, 2.] if bounded else ([1., 1., 1.] if constant else [1., 3., 4.])
     packets = dict(q=coordinates, v1=v1, v2=np.zeros_like(v1),
                    growth_initial=.01, coarse_dimension=n)
     history = dict(times_seconds=times, redshifts=np.array([10., 9., 8.]),
@@ -26,6 +26,11 @@ def _fixture(monkeypatch, tmp_path, *, constant=False):
     budget = dict(cumulative=q, times_seconds=times, redshifts=history["redshifts"],
                   growth_factors=growth, native_totals=q.sum(axis=(1, 2, 3)),
                   packets=packets, metadata={"native_archive_root": str(tmp_path)})
+    if bounded:
+        budget["native_cumulative"] = q.copy()
+        budget["cumulative"] = np.maximum.accumulate(q, axis=0)
+        budget["metadata"].update(emission_policy="bounded_envelope",
+                                   monotonicity_audit={"changed": True})
     for node, g in enumerate(growth):
         source = deposit(q[node].ravel(), coordinates + (g - .01) * v1, n)
         path = tmp_path / f"source{node}.npz"
@@ -64,8 +69,8 @@ def test_decreasing_packet_budget_cannot_be_audited_as_positive_emission(monkeyp
         report._native_budget_history(history, budget, {"source_stride": 1, "time_substeps": 1})
 
 
-def _auditable_case(monkeypatch, tmp_path):
-    history, budget = _fixture(monkeypatch, tmp_path)
+def _auditable_case(monkeypatch, tmp_path, *, bounded=False):
+    history, budget = _fixture(monkeypatch, tmp_path, bounded=bounded)
     history_path = tmp_path / "history.npz"
     np.savez(history_path, **{key: value for key, value in history.items() if key != "records"})
     digest = report._digest(history_path)
@@ -77,7 +82,8 @@ def _auditable_case(monkeypatch, tmp_path):
     rebuilt = report._native_budget_history(history, budget, setting)
     case = {"case_id": "native", "seed": 111, "setting": setting,
             "source_mode": "native_cumulative", "source_budget_sha256": budget_hash,
-            "history_sha256": digest}
+            "history_sha256": digest,
+            "source_monotonicity": budget["metadata"].get("emission_policy", "strict")}
     points = {}
     for node in range(len(history["times_seconds"])):
         points[node] = ({"redshift": float(history["redshifts"][node]),
@@ -146,3 +152,28 @@ def test_temporal_refinement_source_location_difference_is_diagnostic():
     with pytest.raises(ValueError, match="supplied source budget"):
         report._pair(coarse, fine, {"a": {1: (point, arrays)}, "b": {1: (point, moved)}},
                      "time_substeps", 50., .01)
+
+
+def test_bounded_source_audit_separates_native_roundoff_from_envelope(monkeypatch, tmp_path):
+    summary, case, frames = _auditable_case(monkeypatch, tmp_path, bounded=True)
+    report._history_sources(tmp_path, summary, [case], frames)
+    audit = case["native_history_audit"]
+    assert audit["passed"]
+    assert audit["source_monotonicity"] == "bounded_envelope"
+    assert audit["source_monotonicity_audit"] == {"changed": True}
+    assert audit["maximum_native_source_total_relative_roundoff"] < 1e-14
+    assert audit["maximum_native_source_L1_relative_roundoff"] < 1e-14
+    assert audit["maximum_source_sampling_relative_difference"] == 0
+    assert audit["maximum_source_envelope_relative_difference"] == pytest.approx(5e-6 / .999995)
+    point, arrays = frames["native"][1]
+    assert arrays["source_native_current"].sum() == pytest.approx(.999995)
+    assert arrays["source_sampled_current"].sum() == pytest.approx(1.)
+    assert point["source_native_total"] == pytest.approx(.999995)
+    assert point["source_budget_target_total"] == pytest.approx(1.)
+
+
+def test_budget_cannot_hide_its_envelope_policy(monkeypatch, tmp_path):
+    summary, case, frames = _auditable_case(monkeypatch, tmp_path, bounded=True)
+    case["source_monotonicity"] = "strict"
+    with pytest.raises(ValueError, match="monotonicity policy"):
+        report._history_sources(tmp_path, summary, [case], frames)

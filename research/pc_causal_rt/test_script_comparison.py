@@ -76,3 +76,57 @@ def test_original_native_comparison_field_must_match():
     args[1]["native_xhi"] = args[1]["native_xhi"] + .01
     with pytest.raises(ValueError, match="original native fields"):
         _same_time(*args, {"setting": {"source_stride": 1}}, 50.)
+
+
+def _audited_envelope_inputs(fraction):
+    point, rt, script_point, script = _same_time_inputs()
+    rt["cumulative_source"] *= 1 + fraction
+    point = point | {
+        "source_monotonicity": "bounded_envelope",
+        "source_envelope_relative_difference": fraction,
+        "source_sampling_relative_difference": 0.,
+        "source_budget_target_total": float(rt["cumulative_source"].sum()),
+        "source_native_total": float(script["source"].sum()),
+    }
+    case = {"setting": {"source_stride": 1}, "source_monotonicity": "bounded_envelope",
+            "native_history_audit": {"passed": True, "source_monotonicity": "bounded_envelope",
+                                     "source_monotonicity_audit": {"changed": True}}}
+    return (point, rt, script_point, script), case
+
+
+def test_verified_envelope_above_native_roundoff_is_compared_and_disclosed():
+    args, case = _audited_envelope_inputs(3.25e-6)
+    row = _same_time(*args, case, 50.)
+    assert not row["source_budget_shared_within_native_roundoff"]
+    assert row["source_envelope_relative_difference"] == 3.25e-6
+    assert row["source_budget_relative_difference"] == pytest.approx(3.25e-6)
+    assert row["current_native_source_L1_relative_difference"] == 0
+
+
+def test_unrecorded_extra_photons_rejected_even_with_envelope_policy():
+    args, case = _audited_envelope_inputs(3.25e-6)
+    args[1]["cumulative_source"] *= 1 + 1e-7
+    with pytest.raises(ValueError, match="emitted budget differs from independently audited"):
+        _same_time(*args, case, 50.)
+
+
+def test_known_tiny_envelope_is_not_called_native_roundoff():
+    args, case = _audited_envelope_inputs(1e-8)
+    row = _same_time(*args, case, 50.)
+    assert row["source_budget_relative_difference"] < 1e-6
+    assert not row["source_budget_shared_within_native_roundoff"]
+    assert row["source_envelope_relative_difference"] == 1e-8
+
+
+def test_envelope_budget_cannot_skip_native_history_audit():
+    args, case = _audited_envelope_inputs(3.25e-6)
+    del case["native_history_audit"]
+    with pytest.raises(ValueError, match="independently audited source budget"):
+        _same_time(*args, case, 50.)
+
+
+def test_envelope_budget_cannot_change_original_script_source():
+    args, case = _audited_envelope_inputs(3.25e-6)
+    args[3]["source"] *= 1 + 1e-7
+    with pytest.raises(ValueError, match="SCRIPT source differs from independently audited"):
+        _same_time(*args, case, 50.)
