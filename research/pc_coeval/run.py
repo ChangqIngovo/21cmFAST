@@ -298,6 +298,7 @@ def _run(input_run, output, *, threads, redshifts, tolerance, max_iterations,
                 raise RuntimeError("Mass-mean history failed analytic common-budget check")
             temporary = folder / "fields.tmp.npz"
             np.savez(temporary, source=source, capacity=capacity, pc_xhi=1-qi_pc, script_xhi=1-qi_script,
+                     pc_remaining_source=pc["remaining_source"],
                      native_es_xhi=fields["native_es_xhi"], **{name+"_brightness": tb for name, tb in temperatures.items()})
             temporary.replace(folder / "fields.npz")
             write_json(folder / "metrics.json", row)

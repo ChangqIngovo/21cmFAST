@@ -1,5 +1,10 @@
 # Same-input coeval PC / SCRIPT comparison
 
+For independent photon-budget and geometric MFP checks of existing outputs,
+see [VALIDATION.md](VALIDATION.md). This postprocessing does not rerun either
+allocator. New comparisons also save `pc_remaining_source` for a direct audit
+of the unabsorbed photon reservoir.
+
 This module replaces the **comparison experiment**, not the causal RT solver.
 It retains the archived 21cmFAST source, density and brightness physics, while
 explicitly replacing finite-speed propagation through an evolving universe with
