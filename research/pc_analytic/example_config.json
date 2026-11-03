@@ -1,0 +1,32 @@
+{
+  "input_run": "/g/data/qp00/sz4640/21cmfast_runs/pc_compare_873f8b6152_20261031T110335_IuGe/causal_rt_873f8b6152_20261031T110336_JIAc",
+  "redshifts": [
+    8.0,
+    7.5
+  ],
+  "seeds": [
+    222
+  ],
+  "coarsen_to": 16,
+  "sigma_cm2": 2.7173135802469135e-18,
+  "threads": 8,
+  "c2ray_cache_directory": "/g/data/qp00/sz4640/21cmfast_runs/analytic_c2ray_cache",
+  "brightness": "native",
+  "analytic": {
+    "directions": 96,
+    "exposure_steps": 32,
+    "boundary": "source_periodic_cube",
+    "exhaustion_tolerance": 1e-07,
+    "max_sweeps": 10000,
+    "transport_mode": "characteristic"
+  },
+  "c2ray": {
+    "upstream": "/absolute/pinned/pyC2Ray",
+    "exposure_steps": 32,
+    "timeout": 1800,
+    "tolerance": 1e-06,
+    "max_iterations": 2000
+  },
+  "script_timeout_seconds": 300,
+  "mfp_rays": 4096
+}
