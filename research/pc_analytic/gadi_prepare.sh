@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Freeze a small same-input analytic-PC / SCRIPT / C2-Ray comparison.
+# Freeze a same-input analytic-PC / SCRIPT / C2-Ray comparison.
 set -euo pipefail
 submit=false
 input_run=${PC_INPUT_RUN:-}
@@ -12,8 +12,11 @@ while (( $# )); do
         --help)
             echo 'Usage: bash research/pc_analytic/gadi_prepare.sh --input-run RUN [--c2ray-source DIR] [--submit]'
             echo 'Default pilot: z=8,7.5,7; 8 CPUs, 32GB, 4h; actual C2-Ray is required.'
-            echo 'N>16 is rejected unless PC_COARSEN_TO=16 explicitly requests conservative block averages.'
-            echo 'This changes source/density resolution for all three methods; it is not a high-resolution certification.'
+            echo 'For native N>16, explicitly set PC_COARSEN_TO to a divisor of N: e.g. 16, 32, 64, or N itself.'
+            echo 'Smaller grids use conservative block averages shared by all three methods; choosing N keeps native resolution.'
+            echo 'PC_C2_TIMEOUT=1800 and PC_SCRIPT_TIMEOUT=900 set positive finite per-snapshot backend limits in seconds.'
+            echo 'For larger grids, increase backend limits and PC_WALLTIME to cover all requested snapshots.'
+            echo 'PC_GRID_REFERENCE_RUN optionally pins a completed coarse run (or its results directory) for automatic grid comparison.'
             echo 'PC_SEEDS, PC_REDSHIFTS, PC_DIRECTIONS, PC_EXPOSURE_STEPS, PC_C2_EXPOSURE_STEPS select the pilot.'
             echo 'PC_C2_TOLERANCE=1e-6 and PC_C2_MAX_ITERATIONS=2000 control the declared C2-Ray opacity iteration.'
             echo 'PC_BOUNDARY=source_periodic_cube (default) matches the C2-Ray domain; periodic/open are explicit alternatives.'
@@ -42,7 +45,7 @@ repo=$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel)
 git -C "$repo" diff --quiet HEAD -- || { echo 'Commit tracked changes before preparing.' >&2; exit 2; }
 untracked=$(git -C "$repo" ls-files --others --exclude-standard -- research/pc_analytic)
 [[ -z $untracked ]] || { echo 'Commit analytic comparison files before preparing.' >&2; exit 2; }
-for pc_code in compare.py c2ray_reference.py c2ray_driver.F90; do
+for pc_code in compare.py c2ray_reference.py c2ray_driver.F90 grid_compare.py; do
     git -C "$repo" cat-file -e "HEAD:research/pc_analytic/$pc_code" || {
         echo "Commit missing analytic source file: $pc_code" >&2; exit 2;
     }

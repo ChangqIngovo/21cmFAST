@@ -1,4 +1,4 @@
-"""Freeze a small same-input analytic-PC, SCRIPT and C²-Ray experiment."""
+"""Freeze a same-input analytic-PC, SCRIPT and C²-Ray experiment."""
 
 from __future__ import annotations
 
@@ -64,14 +64,17 @@ def _numbers(value: str, name: str, *, integers: bool = False) -> list[int | flo
 def configuration(
     original: dict[str, Any], environment: Mapping[str, str]
 ) -> dict[str, Any]:
-    """Create explicit pilot controls without silently reducing the source grid.
+    """Create explicit controls without silently changing the source grid.
 
     Parameters
     ----------
     original
         Archived configuration containing the original dimension.
     environment
-        PC-prefixed numerical and snapshot-selection overrides.
+        PC-prefixed numerical and snapshot-selection overrides. Grids larger
+        than 16 require an explicit PC_COARSEN_TO, including the native size.
+        PC_C2_TIMEOUT and PC_SCRIPT_TIMEOUT set positive backend limits in
+        seconds, defaulting to 1800 and 900 respectively.
 
     Returns
     -------
@@ -86,9 +89,9 @@ def configuration(
         raise ValueError(
             "PC_COARSEN_TO must divide the original dimension and lie between 2 and that dimension"
         )
-    if output_n > 16:
+    if output_n > 16 and coarse is None:
         raise ValueError(
-            "This C²-Ray pilot is limited to N<=16; explicitly set PC_COARSEN_TO=16 for a divisible larger input"
+            "N>16 requires an explicit PC_COARSEN_TO; select a divisor of the original dimension, or that dimension itself"
         )
     threads = int(environment.get("PC_THREADS", "8"))
     steps = int(environment.get("PC_EXPOSURE_STEPS", "16"))
@@ -97,6 +100,8 @@ def configuration(
     c2_max_iterations = int(environment.get("PC_C2_MAX_ITERATIONS", "2000"))
     c2_subbox_size = int(environment.get("PC_C2_SUBBOX_SIZE", "2"))
     c2_loss_fraction = float(environment.get("PC_C2_LOSS_FRACTION", "1e-10"))
+    c2_timeout = float(environment.get("PC_C2_TIMEOUT", "1800"))
+    script_timeout = float(environment.get("PC_SCRIPT_TIMEOUT", "900"))
     boundary = environment.get("PC_BOUNDARY", "source_periodic_cube")
     directions = int(environment.get("PC_DIRECTIONS", "24"))
     sigma = float(environment.get("PC_SIGMA_CM2", str(6.3e-18 * (13.6 / 18.0) ** 3)))
@@ -117,6 +122,12 @@ def configuration(
         raise ValueError("Invalid PC_C2_SUBBOX_SIZE")
     if not math.isfinite(c2_loss_fraction) or not 0 <= c2_loss_fraction < 1:
         raise ValueError("PC_C2_LOSS_FRACTION must lie in [0,1)")
+    for name, value in (
+        ("PC_C2_TIMEOUT", c2_timeout),
+        ("PC_SCRIPT_TIMEOUT", script_timeout),
+    ):
+        if not math.isfinite(value) or value <= 0:
+            raise ValueError(f"{name} must be finite and positive seconds")
     if boundary not in {"periodic", "open", "source_periodic_cube"}:
         raise ValueError("Invalid PC_BOUNDARY")
     seeds = environment.get("PC_SEEDS", "")
@@ -148,8 +159,9 @@ def configuration(
             "max_iterations": c2_max_iterations,
             "subbox_size": c2_subbox_size,
             "loss_fraction": c2_loss_fraction,
+            "timeout": c2_timeout,
         },
-        "script_timeout_seconds": 900,
+        "script_timeout_seconds": script_timeout,
         "mfp_rays": 4096,
         "coarsening_scope": (
             "No coarsening: exact archived native source and density arrays"
@@ -260,7 +272,8 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict[str, Any]:
     run
         Fresh run with archived source and shell metadata already installed.
     environment
-        Preparation-time configuration and optional upstream path.
+        Preparation-time configuration, optional upstream path, and optional
+        PC_GRID_REFERENCE_RUN pointing to completed coarse-grid results.
 
     Returns
     -------
@@ -277,6 +290,20 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict[str, Any]:
         raise ValueError("Output must be separate from the archived input")
     original = json.loads((input_run / "experiment_config.json").read_text())
     config = configuration(original, environment)
+    reference_value = environment.get("PC_GRID_REFERENCE_RUN", "")
+    if reference_value:
+        reference = Path(reference_value).resolve()
+        if (reference / "results").is_dir():
+            reference = reference / "results"
+        reference_names = ("COMPLETED", "comparison_report.json", "identity.json")
+        if any(not (reference / name).is_file() for name in reference_names):
+            raise ValueError(
+                "PC_GRID_REFERENCE_RUN requires completed comparison results with COMPLETED, comparison_report.json and identity.json"
+            )
+        config["grid_reference_run"] = str(reference)
+        config["grid_reference_sha256"] = {
+            name: _digest(reference / name) for name in reference_names
+        }
     directories, input_hashes = _selected_inputs(input_run, config)
     _prepare_upstream(run, environment)
     config["input_run"] = str(input_run)
@@ -324,6 +351,14 @@ def verify(run: Path, cpus: int | None = None) -> dict[str, Any]:
     if checksum_rows != expected_rows:
         raise ValueError("Prepared metadata checksum changed")
     manifest = json.loads((run / "run_manifest.json").read_text())
+    config = manifest["configuration"]
+    if config.get("grid_reference_run"):
+        reference = Path(config["grid_reference_run"])
+        if any(
+            not (reference / name).is_file() or _digest(reference / name) != checksum
+            for name, checksum in config["grid_reference_sha256"].items()
+        ):
+            raise ValueError("Grid reference metadata changed; prepare a new run")
     if tree_hashes(run / "source") != manifest["source_sha256"]:
         raise ValueError("Frozen source changed; prepare a new run")
     if tree_hashes(run / "c2ray_upstream") != manifest["upstream_sha256"]:

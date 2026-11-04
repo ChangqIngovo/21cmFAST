@@ -184,6 +184,66 @@ bash research/pc_analytic/gadi_prepare.sh \
 This explicitly compares all methods on common **16³ filtered arrays** while
 retaining the archive's box size. It is a small reference pilot, not a
 high-resolution 256-cMpc validation. Omitting `PC_COARSEN_TO` uses an existing
-native N≤16 archive directly; larger native grids are rejected by this pilot
-launcher rather than silently downsampled. Local validation results and their
-scope are documented in `VALIDATION.md`.
+native N≤16 archive directly; larger grids require an explicit target such as
+`PC_COARSEN_TO=32`, `64`, or the native dimension. Local validation results and
+their scope are documented in `VALIDATION.md`.
+
+## Fixed-input grid verification on Gadi
+
+The completed 256-cMpc N16 comparison at z=7.5 has a maximum analytic/C²-Ray
+21-cm power difference of 9.69% in its three shells below half Nyquist. To
+measure grid sensitivity, rerun **all three methods** at N32 using the same
+original N128 source/atom archive. Keep the cross-section, source exposure,
+angular quadrature and boundary settings fixed. The existing N16 calculation
+is reused without editing its frozen source or results.
+
+```bash
+(
+    set -euo pipefail
+    cd /g/data/qp00/sz4640/21cmFAST
+    git switch matched-photon-conservation
+    git pull --ff-only origin matched-photon-conservation
+
+    PC_GRID_REFERENCE_RUN=/g/data/qp00/sz4640/21cmfast_runs/analytic_pc_01aa674c8b_20261104T035222_bZTV \
+    PC_COARSEN_TO=32 PC_SEEDS=222 PC_REDSHIFTS=7.5 PC_THREADS=8 \
+    PC_DIRECTIONS=96 PC_EXPOSURE_STEPS=32 PC_C2_EXPOSURE_STEPS=32 \
+    PC_BOUNDARY=source_periodic_cube PC_SIGMA_CM2=2.7173135802469135e-18 \
+    PC_C2_TOLERANCE=1e-6 PC_C2_MAX_ITERATIONS=2000 \
+    PC_C2_SUBBOX_SIZE=2 PC_C2_LOSS_FRACTION=1e-10 \
+    PC_C2_TIMEOUT=72000 PC_SCRIPT_TIMEOUT=900 \
+    PC_MEM=32GB PC_WALLTIME=24:00:00 PC_QUEUE=normal \
+    bash research/pc_analytic/gadi_prepare.sh \
+      --input-run /g/data/qp00/sz4640/21cmfast_runs/pc_compare_873f8b6152_20261031T110335_IuGe/causal_rt_873f8b6152_20261031T110336_JIAc \
+      --submit
+)
+```
+
+`PC_C2_TIMEOUT` is a per-snapshot backend limit in seconds, separate from PBS
+walltime. Its ordinary default remains 1800 seconds. The 72000-second limit
+allows this explicitly requested larger reference calculation to run for up to
+20 hours. Actual C²-Ray CPU execution remains serial in this backend.
+
+The job automatically writes `grid_comparison/grid_report.json` and
+`grid_comparison/grid_comparison.png` beneath the new run directory after all
+three fine-grid methods complete. The reference report identity is frozen at
+preparation, and the analysis verifies both runs' field receipts, original
+input hashes and physical/numerical controls before comparing them.
+
+The primary comparison maps N32 results onto N16 using atom-weighted neutral
+fractions and volume-weighted brightness temperatures. It uses identical FFT
+shells and mode counts, with no adjustment of the mean neutral fraction.
+It reports each method's own grid change and the analytic/reference difference
+at both resolutions. The first diagnostic band is
+`k < pi / (2 * 16 cMpc) = 0.09817 cMpc^-1`; higher-k shells are retained and
+labelled separately. This is a fixed-input grid-sensitivity test: refinement
+also restores source and density substructure. Two grids alone do not establish
+convergence or isolate propagation error.
+
+Existing completed runs can also be analysed without rerunning any solver:
+
+```bash
+python -m research.pc_analytic.grid_compare \
+  --coarse-run /absolute/coarse_run \
+  --fine-run /absolute/fine_run \
+  --redshifts 7.5 --output /absolute/new/grid_comparison
+```

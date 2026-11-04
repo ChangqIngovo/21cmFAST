@@ -21,11 +21,59 @@ def test_default_configuration_is_an_explicit_small_pilot() -> None:
     assert "transport_fraction" not in config["analytic"]
     assert config["c2ray"]["subbox_size"] == 2
     assert config["c2ray"]["loss_fraction"] == 1e-10
+    assert config["c2ray"]["timeout"] == 1800
+    assert config["script_timeout_seconds"] == 900
     with pytest.raises(ValueError, match="PC_COARSEN_TO"):
         prepare.configuration({"dimension": 128}, {})
     coarse = prepare.configuration({"dimension": 128}, {"PC_COARSEN_TO": "16"})
     assert coarse["coarsen_to"] == 16
     assert coarse["input_dimension"] == 128
+
+
+@pytest.mark.parametrize("dimension", [32, 64, 128])
+def test_large_grid_requires_explicit_selection(dimension: int) -> None:
+    """Allow deliberate refinement without silently launching the native grid."""
+    with pytest.raises(ValueError, match="PC_COARSEN_TO"):
+        prepare.configuration({"dimension": dimension}, {})
+    config = prepare.configuration(
+        {"dimension": 128}, {"PC_COARSEN_TO": str(dimension)}
+    )
+    assert config["input_dimension"] == 128
+    assert config["output_dimension"] == dimension
+    assert config["coarsen_to"] == dimension
+    pilot = prepare.configuration({"dimension": 128}, {"PC_COARSEN_TO": "16"})
+    for key in ("analytic", "c2ray", "sigma_cm2", "seeds", "redshifts", "brightness"):
+        assert config[key] == pilot[key]
+
+
+def test_empty_grid_override_does_not_enable_a_large_run() -> None:
+    """An exported but empty variable is not an explicit grid selection."""
+    with pytest.raises(ValueError, match="PC_COARSEN_TO"):
+        prepare.configuration({"dimension": 128}, {"PC_COARSEN_TO": ""})
+
+
+@pytest.mark.parametrize("key", ["PC_C2_TIMEOUT", "PC_SCRIPT_TIMEOUT"])
+@pytest.mark.parametrize("value", ["0", "-1", "nan", "inf", "-inf"])
+def test_nonpositive_or_nonfinite_backend_timeouts_are_rejected(
+    key: str, value: str
+) -> None:
+    """Reject unusable subprocess limits before creating a compute job."""
+    with pytest.raises(ValueError, match=key):
+        prepare.configuration({"dimension": 8}, {key: value})
+
+
+def test_backend_timeout_overrides_are_recorded() -> None:
+    """Give larger-grid backends explicit runtime budgets without changing physics."""
+    config = prepare.configuration(
+        {"dimension": 128},
+        {
+            "PC_COARSEN_TO": "32",
+            "PC_C2_TIMEOUT": "72000",
+            "PC_SCRIPT_TIMEOUT": "1200.5",
+        },
+    )
+    assert config["c2ray"]["timeout"] == 72000
+    assert config["script_timeout_seconds"] == 1200.5
 
 
 @pytest.mark.parametrize(
@@ -102,12 +150,20 @@ def test_checkpoint_files_are_not_silently_reprepared(tmp_path: Path) -> None:
         prepare.prepare(tmp_path, {})
 
 
-def _frozen_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, Path]:
+def _frozen_run(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    *,
+    dimension: int = 8,
+    environment: dict[str, str] | None = None,
+) -> tuple[Path, Path]:
     """Prepare a real frozen manifest with isolated runtime and input fixtures."""
     run, original = tmp_path / "run", tmp_path / "input"
     run.mkdir()
     original.mkdir()
-    (original / "experiment_config.json").write_text(json.dumps({"dimension": 8}))
+    (original / "experiment_config.json").write_text(
+        json.dumps({"dimension": dimension})
+    )
     data = original / "input.npz"
     data.write_bytes(b"fixture arrays")
     for name in ("commit.txt", "runtime.env", "python_path.txt", "submit.pbs"):
@@ -128,7 +184,7 @@ def _frozen_run(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> tuple[Path, 
         "_selected_inputs",
         lambda *_args: ([str(original)], {str(data): prepare._digest(data)}),
     )
-    prepare.prepare(run, {})
+    prepare.prepare(run, environment or {})
     return run, data
 
 
@@ -174,6 +230,80 @@ def test_metadata_mutation_is_rejected(
     (run / "experiment_config.json").write_text("{}\n")
     with pytest.raises(ValueError, match="Prepared metadata"):
         prepare.verify(run)
+
+
+def test_grid_and_timeouts_are_frozen_with_the_run(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Verify recorded overrides and reject changes to a prepared timeout."""
+    run, _ = _frozen_run(
+        tmp_path,
+        monkeypatch,
+        dimension=128,
+        environment={
+            "PC_COARSEN_TO": "32",
+            "PC_C2_TIMEOUT": "72000",
+            "PC_SCRIPT_TIMEOUT": "1200",
+        },
+    )
+    config_path = run / "experiment_config.json"
+    config = json.loads(config_path.read_text())
+    assert prepare.verify(run, cpus=8)["configuration"] == config
+    assert config["output_dimension"] == 32
+    assert config["c2ray"]["timeout"] == 72000
+    assert config["script_timeout_seconds"] == 1200
+    config["c2ray"]["timeout"] = 1800
+    config_path.write_text(json.dumps(config))
+    with pytest.raises(ValueError, match="Prepared metadata"):
+        prepare.verify(run)
+
+
+@pytest.mark.parametrize("select_results", [False, True])
+def test_grid_reference_is_resolved_and_frozen(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, select_results: bool
+) -> None:
+    """Pin the completed coarse comparison before launching a finer run."""
+    reference = tmp_path / "coarse"
+    results = reference / "results"
+    results.mkdir(parents=True)
+    for name in ("COMPLETED", "comparison_report.json", "identity.json"):
+        (results / name).write_text("{}\n")
+    selected = results if select_results else reference
+    run, _ = _frozen_run(
+        tmp_path,
+        monkeypatch,
+        environment={"PC_GRID_REFERENCE_RUN": str(selected)},
+    )
+    config = prepare.verify(run)["configuration"]
+    assert config["grid_reference_run"] == str(results.resolve())
+    assert set(config["grid_reference_sha256"]) == {
+        "COMPLETED",
+        "comparison_report.json",
+        "identity.json",
+    }
+    (results / "comparison_report.json").write_text('{"changed": true}\n')
+    with pytest.raises(ValueError, match="Grid reference"):
+        prepare.verify(run)
+
+
+@pytest.mark.parametrize(
+    "missing", ["COMPLETED", "comparison_report.json", "identity.json"]
+)
+def test_incomplete_grid_reference_is_rejected(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, missing: str
+) -> None:
+    """A fine-grid campaign cannot start from an incomplete coarse result."""
+    reference = tmp_path / "coarse" / "results"
+    reference.mkdir(parents=True)
+    for name in ("COMPLETED", "comparison_report.json", "identity.json"):
+        if name != missing:
+            (reference / name).write_text("{}\n")
+    with pytest.raises(ValueError, match="PC_GRID_REFERENCE_RUN"):
+        _frozen_run(
+            tmp_path,
+            monkeypatch,
+            environment={"PC_GRID_REFERENCE_RUN": str(reference)},
+        )
 
 
 def test_shell_syntax() -> None:

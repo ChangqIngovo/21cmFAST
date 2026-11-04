@@ -71,3 +71,37 @@ At z=7.5, all three methods were rerun on conservative 8³ source/atom block mea
 | c2ray | 0.03257 | 0.9873 | 1.5045 |
 
 Only the first shell is below half the coarse-grid Nyquist frequency. Near the coarse-grid scale, all three methods vary substantially. These two resolutions do not certify a converged morphology or establish that one code is universally more accurate. The native ES restriction control gives MAE=0 and every power ratio=1.
+
+## Gadi N16 baseline and the N32 verification
+
+The user-supplied report from
+`analytic_pc_01aa674c8b_20261104T035222_bZTV/results` completes all three
+backends for seed 222 at z=8 and 7.5. It uses the original 256-cMpc N128 native
+archive, filtered to N16 (16-cMpc cells), with D96 and 32 exposure batches.
+
+| z | xHI MAE vs SCRIPT | xHI MAE vs C²-Ray | Maximum 21-cm power difference vs C²-Ray, k < 0.09817 cMpc⁻¹ |
+|---:|---:|---:|---:|
+| 8 | 0.000356 | 0.003784 | 6.04% |
+| 7.5 | 0.002696 | 0.012641 | 9.69% |
+
+The analytic emitted-normalized ledger residuals are 6.50e-17 and 7.64e-17.
+C²-Ray's field-derived emitted-minus-ionized fractions are 0.1153% and
+0.3591%; its independent escaped/reservoir counts are unavailable, so its
+strict conservation residual remains undefined. The table measures differences
+between methods, not error against a known exact field.
+
+The grid-verification launcher keeps the same original input and numerical
+controls, selects z=7.5, and increases all three methods to N32. It reuses the
+completed N16 baseline and automatically produces a checksum-verified
+comparison on the common coarse grid. The exact submission command is in
+`README.md`. This launcher update does not change any absorption or transport
+kernel. The N32 scientific outcome must be read from the completed new Gadi
+run; the baseline alone cannot establish the cause of the 9.69% difference.
+
+The grid-analysis update passes 80 targeted tests across preparation, comparison
+and grid comparison. Its CLI was also executed against the unchanged, real
+50-cMpc N8/N16 archive above: it reproduces all three xHI MAEs, verifies equal
+physical source/atom totals, and returns zero native-ES restriction MAE. The
+native-ES brightness power ratios differ from unity by at most 3.43e-8 from
+floating-point averaging. This tests the analysis workflow; it is not a new
+256-cMpc N32 simulation.

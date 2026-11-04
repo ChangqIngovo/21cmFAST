@@ -47,5 +47,13 @@ printf 'Job: %s\nRun: %s\nInput: %s\nStart: %s\n' "$PBS_JOBID" "$run" "$input_ru
 "$pc_python" -m research.pc_analytic.compare --config "$run/experiment_config.json" --output "$run/results"
 "$pc_python" -m research.pc_analytic.prepare verify --run "$run" --cpus "$PBS_NCPUS"
 test -f "$run/results/COMPLETED"
+pc_grid_reference=$("$pc_python" -c 'import json,sys; print(json.load(open(sys.argv[1])).get("grid_reference_run", ""))' "$run/experiment_config.json")
+if [[ -n $pc_grid_reference ]]; then
+    pc_grid_redshifts=$("$pc_python" -c 'import json,sys; print(",".join(str(z) for z in json.load(open(sys.argv[1]))["redshifts"]))' "$run/experiment_config.json")
+    "$pc_python" -m research.pc_analytic.grid_compare \
+        --coarse-run "$pc_grid_reference" --fine-run "$run/results" \
+        --redshifts "$pc_grid_redshifts" --output "$run/grid_comparison"
+    "$pc_python" -m research.pc_analytic.prepare verify --run "$run" --cpus "$PBS_NCPUS"
+fi
 printf 'Analytic PC, original SCRIPT and C2-Ray comparison completed; inspect diagnostics.\n' > "$run/COMPLETED"
 printf 'Finished: %s\nResults: %s/results\n' "$(date)" "$run"
