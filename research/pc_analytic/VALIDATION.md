@@ -1,5 +1,79 @@
 # Local validation: analytic absorption / SCRIPT / C²-Ray
 
+## Parallel teacher update, 2026-11-04
+
+The analytic characteristic kernel now parallelizes inventory scans, injection
+and radiation retirement. Fixed 4096-element reduction blocks and a fixed merge
+order give the same result independently of OpenMP thread count. The absorption
+formula, directions, chord geometry, exposure schedule and tolerances are
+unchanged. The separate teacher campaign runs independent native realizations
+in spawned processes; it does not execute SCRIPT, C²-Ray or neural training.
+
+The absorption, solver, campaign and Gadi-preparation tests pass **108 checks**.
+They cover thread reproducibility, open/periodic/source-centred boundaries,
+incomplete-run ledgers, receipt validation, frozen-runtime mutation rejection,
+resource checks, single-node enforcement and resume behavior. Ruff and shell
+syntax checks pass.
+
+Fresh native integration also completed two independent seeds (1001 and 1002)
+at z=8 and 7.5 with two spawned workers, two threads each, N16 and DIM48 in a
+256-cMpc box. All four labels passed, with maximum field-derived ledger residual
+6.46e-17. A complete resume verified and reused all four labels, preserving both
+file hashes and modification times. The initial-condition hashes differ between
+seeds and are shared across redshifts within each seed. This deliberately cheap
+test checks orchestration;
+its coarse density grid triggers the native resolution warning and is not the
+production accuracy configuration.
+
+A separate genuine native simulation at the production geometry, **L256,
+N32 and DIM256**, completed for seed 1003 at z=7.5. Its analytic teacher and
+native 21-cm brightness were saved successfully; the independent photon residual
+was 6.37e-17. This tests the production geometry locally, not all 56 planned
+Gadi samples.
+
+A faithful local parent fixture made from that real native archive also passed
+the frozen preparation and actual PBS shell script, using two spawned workers
+for fresh seeds 1005/1006 at z=7.5. Both labels passed (maximum residual
+5.15e-17), and post-run verification confirmed unchanged frozen source, native
+runtime and input receipts. This was a local execution with explicit test PBS
+environment variables; no Gadi scheduler submission was made.
+
+On an archived genuine native N16 input and controlled sparse/dense N32 fields,
+all 24 old/new kernel configurations at 1/2/4/8 threads completed. Ionized atoms,
+remaining radiation, escaped and unemitted photons were bitwise identical to
+the old single-thread result in every tested case. The largest independent
+photon residual was 6.87e-17. Changing summation order can still affect a stopping
+decision for an untested input exactly at a tolerance boundary.
+
+Measured kernel times, with matching settings and thread counts:
+
+| Input | Exposure batches | Threads | Previous kernel (s) | Parallel inventory kernel (s) |
+|---|---:|---:|---:|---:|
+| Native N16 | 32 | 2 | 1.579 | 1.210 |
+| Native N16 | 32 | 8 | 1.661 | 1.550 |
+| Controlled sparse N32 | 8 | 2 | 6.712 | 3.882 |
+| Controlled sparse N32 | 8 | 8 | 7.251 | 3.969 |
+| Controlled dense N32 | 8 | 2 | 5.454 | 3.484 |
+| Controlled dense N32 | 8 | 8 | 5.043 | 2.366 |
+
+These are medians of three repeats for native N16 and two for each controlled
+N32 input, under an eight-CPU quota with passive OpenMP waiting. Individual
+times fluctuate, and single-thread speed did not consistently improve. Small
+grids benefit from running independent simulations concurrently; increasing
+threads within one small simulation is not uniformly faster. These kernel
+times exclude native input generation and are not campaign-throughput estimates.
+
+The first Gadi teacher configuration retains the original L=256 cMpc,
+R_BUBBLE_MAX=50 and all physical switches. Its output grid is N32; native density
+uses DIM256 (1 cMpc cells). Native validation rejected an initial L128 proposal
+because R_BUBBLE_MAX exceeds BOX_LEN/3. The box was enlarged without changing
+the physical parameter or suppressing native validation. A coarser initial
+density-grid proposal also triggered the native 2LPT-resolution warning, so the
+production default uses DIM256. Four workers with four threads each generate
+eight independent seeds at seven redshifts, for 56 requested teacher labels.
+
+## Earlier three-method validation
+
 Executed 2026-11-03 on local CPUs. All three methods completed on two fresh native 21cmFAST snapshots: seed 222, **50 cMpc, 16³**, z=8 and 7.5. These are genuine native fields, not synthetic random cubes and not a high-resolution 256-cMpc result.
 
 ## What changed

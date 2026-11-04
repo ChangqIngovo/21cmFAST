@@ -5,6 +5,83 @@ unmodified SCRIPT allocation kernel, and the native CPU short-characteristics
 kernel from pyC2Ray. It preserves the archived native cumulative `n_ion` and
 `1 + density` arrays. It does not replace 21cmFAST's production ionization driver.
 
+## Parallel teacher simulations
+
+`campaign.py` generates new native 21cmFAST realizations and analytic-PC teacher
+fields. It does not invoke the reference solvers or train a neural network.
+Each independent seed runs in a spawned process with a private native cache;
+redshifts for that seed reuse its initial conditions. Each analytic solve also
+uses OpenMP. `workers * threads` must fit the allocated CPUs on one node.
+Fixed-size reduction blocks, photon injection and radiation retirement now run
+in parallel, with a deterministic block-merge order independent of thread count.
+The absorption law, ray geometry, cross-section and numerical tolerances are
+unchanged.
+
+The campaign clones the parent's complete native input template, changing only
+the requested seed, box/grid dimensions and thread count. Cosmology, source
+physics, astrophysical parameters and all physics switches are checked for
+exact equality. The default first campaign contains 8 independent seeds and
+7 redshifts (56 labels), with native low-resolution N=32, high-resolution N=256,
+and L=256 cMpc. The 1-cMpc high-resolution density grid retains the existing
+2LPT density evolution; only the teacher output grid is small. These are new
+simulations, not coarsened copies of seed 222.
+Each redshift is an independent cumulative-budget coeval solution; it is not a
+time-evolution step. The physical scope documented below remains in force.
+
+```bash
+(
+    set -euo pipefail
+    cd /g/data/qp00/sz4640/21cmFAST
+    git switch matched-photon-conservation
+    git pull --ff-only origin matched-photon-conservation
+
+    PC_WORKERS=4 PC_THREADS=4 PC_NCPUS=16 \
+    PC_DIMENSION=32 PC_HIGHRES_DIMENSION=256 PC_BOX_LEN=256 \
+    PC_SEEDS=1001,1002,1003,1004,1005,1006,1007,1008 \
+    PC_REDSHIFTS=10,9,8,7.5,7,6.5,6 \
+    PC_DIRECTIONS=96 PC_EXPOSURE_STEPS=32 \
+    PC_MEM=64GB PC_MEMORY_GB=48 PC_WALLTIME=12:00:00 \
+    bash research/pc_analytic/gadi_teacher_prepare.sh \
+      --parent /g/data/qp00/sz4640/21cmfast_runs/pc_compare_873f8b6152_20261031T110335_IuGe/causal_rt_873f8b6152_20261031T110336_JIAc \
+      --submit
+)
+```
+
+The launcher prints the new `analytic_teacher_...` directory and job ID. It
+freezes committed source, the original native runtime and the full physical
+template. `bash /absolute/new/run/resubmit.sh` resubmits the unchanged campaign:
+completed native snapshots and teacher labels are checksum-verified and reused.
+Changing code or configuration requires a new run directory. Failed samples
+never receive passing receipts. No network or reference-backend build is needed
+on the compute node.
+
+The output `results/dataset_manifest.json` indexes the exact seed/redshift set.
+Each `results/seeds/seedNNNN/teacher/z.../fields.npz` stores source and atom
+arrays, `teacher_xHI`, ionized atoms, remaining photons, escaped photons by
+direction, unemitted photons, native ES and both native/teacher brightness
+fields. `remaining_photons` is summed over direction; these coeval labels are
+not radiation restart states. Original native HDF5 snapshots remain alongside
+them. Every label must finish, remain finite and bounded, preserve its source
+inputs, and pass an independent field-derived photon ledger at relative
+residual <=1e-10. Completion is recorded only when every requested sample passes.
+
+The first campaign varies realization and redshift at fixed astrophysical
+parameters. It supplies an initial teacher dataset; later parameter coverage
+must be explicit. When training starts, split by seed to keep redshifts from
+the same initial conditions out of both training and held-out sets.
+
+For a local campaign, provide a full native `InputParameters.asdict()` JSON
+template in `native_template_json`, plus the settings in `campaign.DEFAULTS`:
+
+```bash
+python -m research.pc_analytic.campaign \
+  --config /absolute/teacher_config.json --output /absolute/new/teacher_results
+```
+
+The selected Python environment must contain the matching native 21cmFAST
+runtime and the compiler/shared-library dependencies. Native input serialization
+and extension identity are checked before generating labels.
+
 ## Absorption and model scope
 
 For a constant-area ray tube with initial neutral column `C`, incident photon

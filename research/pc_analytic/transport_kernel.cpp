@@ -9,6 +9,29 @@
 #include <vector>
 
 namespace {
+// Fixed chunks, independent of worker count, make the inventory reductions
+// reproducible. Workers traverse contiguous radiation memory; only the short
+// list of partial sums is combined serially in a fixed order. An OpenMP sum
+// reduction would instead change the summation tree with the worker count and
+// could change an event's termination decision at a tolerance boundary.
+template <typename Value>
+long double fixed_block_total(std::int64_t count, int threads, const Value& value) {
+    constexpr std::int64_t block_size=4096;
+    const std::int64_t blocks=(count+block_size-1)/block_size;
+    std::vector<long double> partial(blocks,0.L);
+    #pragma omp parallel for num_threads(threads) schedule(static) if(blocks>1)
+    for (std::int64_t block=0;block<blocks;++block) {
+        const std::int64_t begin=block*block_size;
+        const std::int64_t end=std::min(begin+block_size,count);
+        long double total=0;
+        for (std::int64_t i=begin;i<end;++i) total+=value(i);
+        partial[block]=total;
+    }
+    long double total=0;
+    for (long double value:partial) total+=value;
+    return total;
+}
+
 long double absorbed(long double p, long double h, long double k) {
     if (p <= 0 || h <= 0 || k <= 0) return 0;
     const long double small = std::min(p, h);
@@ -245,11 +268,12 @@ extern "C" int analytic_characteristics(
         const bool capped=boundary==2;
         const double infinity=std::numeric_limits<double>::infinity();
         std::vector<double> current(cells*nd,0.),temporary(cells*nd,0.);
-        long double source_total=0,atom_total=0,initial_ions=0;
-        for (std::int64_t i=0;i<cells;++i) {
-            atom_total+=capacity[i]; initial_ions+=ions[i];
-            for (int d=0;d<nd;++d) source_total+=angular_source[d*cells+i];
-        }
+        const long double source_total=fixed_block_total(cells*nd,threads,
+            [&](std::int64_t i) {return angular_source[i];});
+        const long double atom_total=fixed_block_total(cells,threads,
+            [&](std::int64_t i) {return capacity[i];});
+        const long double initial_ions=fixed_block_total(cells,threads,
+            [&](std::int64_t i) {return ions[i];});
         const long double initial_neutral=atom_total-initial_ions;
         const long double normalization=std::max(
             initial_neutral>0 ? std::min(source_total,initial_neutral) : source_total,1e-300L);
@@ -260,28 +284,36 @@ extern "C" int analytic_characteristics(
         for (int batch=0;batch<exposure_steps;++batch) {
             const double fraction=batch==exposure_steps-1
                 ? 1.-static_cast<double>(batch)/exposure_steps : 1./exposure_steps;
+            #pragma omp parallel for num_threads(threads) schedule(static)
             for (std::int64_t i=0;i<cells*nd;++i) current[i]=angular_source[i]*fraction;
             injected+=source_total*fraction; ++injected_batches;
             std::vector<std::array<double,3>> next(nd);
             std::vector<std::array<int,3>> offset(nd);
             std::vector<double> last(nd,0.);
-            std::vector<bool> done(nd,false);
+            // A byte per direction permits independent writes during setup;
+            // vector<bool> packs several entries into a shared machine word.
+            std::vector<unsigned char> done(nd,0);
+            #pragma omp parallel for num_threads(threads) schedule(static)
             for (int d=0;d<nd;++d) {
                 offset[d]={0,0,0};
-                long double photons=0;
-                for (std::int64_t i=0;i<cells;++i) photons+=current[d*cells+i];
-                done[d]=photons==0;
+                bool empty=true;
+                for (std::int64_t i=0;i<cells;++i) {
+                    if (current[d*cells+i]>0) {empty=false;break;}
+                }
+                done[d]=empty;
                 for (int a=0;a<3;++a) {
                     const double velocity=std::abs(vectors[3*d+a]);
                     next[d][a]=velocity>1e-15 ? .5/velocity : infinity;
                 }
             }
             while (true) {
-                long double photons=0,neutral=0;
-                for (std::int64_t i=0;i<cells;++i) {
-                    neutral+=std::max(0.,capacity[i]-ions[i]);
-                    for (int d=0;d<nd;++d) photons+=current[d*cells+i];
-                }
+                const long double photons=fixed_block_total(cells*nd,threads,
+                    [&](std::int64_t i) {return current[i];});
+                // Neutral exhaustion only terminates a recycling periodic box.
+                // The finite tracing domains must still count outgoing photons.
+                const long double neutral=boundary==0
+                    ? fixed_block_total(cells,threads,[&](std::int64_t i) {
+                        return std::max(0.,capacity[i]-ions[i]);}) : 0.L;
                 if (photons<=threshold || (boundary==0 && neutral<=threshold)
                         || (boundary==0 && cell_coefficient==0)) break;
                 if (events>=maximum_events) {status=1; break;}
@@ -326,10 +358,9 @@ extern "C" int analytic_characteristics(
                     if (terminate[j]) done[active[j]]=true;
                 ++events;
             }
-            long double retired=0;
-            for (std::int64_t i=0;i<cells*nd;++i) {
-                radiation[i]+=current[i];retired+=current[i];
-            }
+            const long double retired=fixed_block_total(cells*nd,threads,
+                [&](std::int64_t i) {
+                    radiation[i]+=current[i];return current[i];});
             maximum_retired=std::max(maximum_retired,retired);
             if (status) break;
         }

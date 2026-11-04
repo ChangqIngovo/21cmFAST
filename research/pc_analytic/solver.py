@@ -219,7 +219,9 @@ def solve(
     exposure_steps : int, optional
         Number of simultaneous source-dose batches.
     threads : int, optional
-        OpenMP worker count.
+        OpenMP worker count for cell absorption, angular transport and
+        characteristic inventory scans. Fixed reduction blocks keep inventory
+        totals and stopping decisions independent of the worker count.
     boundary : {'periodic', 'open', 'source_periodic_cube'}, optional
         Global periodic recycling, fixed open box, or one source-centred periodic
         cube followed by escape. The latter uses integer offsets from -N//2
@@ -446,6 +448,11 @@ def solve(
         "transport_fraction_applies": transport_mode == "interpolated",
         "batch_tail_tolerance_applies": transport_mode == "interpolated",
         "characteristic_tails": "per-batch tolerance tails retained without resetting their ray phase or propagating them again",
+        "parallel_inventory_reduction": (
+            "fixed contiguous 4096-element blocks; parallel block totals and fixed-order serial combination"
+            if transport_mode == "characteristic"
+            else "legacy serial inventory scans"
+        ),
         "direction_vectors": vectors.tolist(),
         "direction_weights": weights.tolist(),
         "limitations": "No recombination, helium, heating, finite light speed or unresolved directional column structure; memory O(directions*cells)",

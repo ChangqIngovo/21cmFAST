@@ -150,6 +150,62 @@ def test_cubic_symmetry_and_threads() -> None:
     )
 
 
+@pytest.mark.parametrize("boundary", ["periodic", "open", "source_periodic_cube"])
+def test_parallel_multiblock_inventory_and_fields_are_deterministic(
+    boundary: str,
+) -> None:
+    """Preserve stopping events, inventories and fields across parallel sum blocks."""
+    rng = np.random.default_rng(735)
+    capacity = np.exp(rng.normal(0, 0.5, (18, 18, 18)))
+    source = np.zeros_like(capacity)
+    source[::3, ::3, ::3] = rng.lognormal(0, 1, (6, 6, 6))
+    source *= 0.45 * capacity.sum() / source.sum()
+    initial = 0.1 * capacity
+    serial = run(
+        source, capacity, boundary=boundary, exposure_steps=2, initial_ionized=initial
+    )
+    for threads in (2, 4, 8):
+        parallel = run(
+            source,
+            capacity,
+            boundary=boundary,
+            exposure_steps=2,
+            initial_ionized=initial,
+            threads=threads,
+        )
+        for field in ("ionized", "remaining_radiation", "escaped", "unemitted_source"):
+            np.testing.assert_array_equal(parallel[field], serial[field])
+        for field in (
+            "sweeps",
+            "completed_exposure_batches",
+            "emitted",
+            "remaining_photons",
+            "escaped_photons",
+            "maximum_retained_batch_photons",
+        ):
+            assert parallel["audit"][field] == serial["audit"][field]
+        assert parallel["audit"]["complete"]
+        assert abs(parallel["audit"]["relative_photon_residual"]) < 2e-13
+
+
+def test_parallel_limited_run_preserves_all_unfinished_inventories() -> None:
+    """A multi-block sweep-limited run retains the same unfinished photon budget."""
+    rng = np.random.default_rng(736)
+    capacity = rng.uniform(0.3, 2, (18, 18, 18))
+    source = rng.lognormal(0, 3, capacity.shape)
+    serial = run(source, capacity, max_sweeps=2, exposure_steps=3)
+    parallel = run(source, capacity, max_sweeps=2, exposure_steps=3, threads=8)
+    assert not serial["audit"]["complete"]
+    assert not parallel["audit"]["complete"]
+    for field in ("ionized", "remaining_radiation", "escaped", "unemitted_source"):
+        np.testing.assert_array_equal(parallel[field], serial[field])
+    recovered = sum(
+        np.sum(parallel[field], dtype=np.longdouble)
+        for field in ("ionized", "remaining_radiation", "escaped", "unemitted_source")
+    )
+    assert float(recovered) == pytest.approx(source.sum(dtype=np.longdouble), rel=2e-13)
+
+
 def test_sweep_limit_keeps_unemitted_and_in_flight_inventory() -> None:
     """A work limit returns every remaining inventory and an incomplete status."""
     source = np.zeros((6, 6, 6))
