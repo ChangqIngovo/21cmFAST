@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+#PBS -N analytic_train
+#PBS -P qp00
+#PBS -q normal
+#PBS -l ncpus=16
+#PBS -l mem=64GB
+#PBS -l walltime=04:00:00
+#PBS -l jobfs=4GB
+#PBS -l storage=gdata/qp00+scratch/qp00
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${PC_ANALYTIC_TRAIN_RUN:?Use the prepared resubmit.sh}"
+: "${PBS_JOBID:?Launch with qsub}"
+: "${PBS_NCPUS:?Missing CPU allocation}"
+[[ ${PBS_NNODES:-1} == 1 ]] || { echo 'Training requires a single-node allocation.' >&2; exit 2; }
+run=$(realpath "$PC_ANALYTIC_TRAIN_RUN")
+cd "$run"
+test -f PREPARED
+exec 9> "$run/run.lock"
+flock -n 9 || { echo 'Another process is using this training run.' >&2; exit 2; }
+exec > >(tee "$run/run_${PBS_JOBID}.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then rm -f "$run/COMPLETED"; printf "%s\n" "$status" > "$run/FAILED"; fi' EXIT
+sha256sum --quiet -c prepared.sha256
+PC_MODULES=()
+source "$run/runtime.env"
+if (( ${#PC_MODULES[@]} )); then
+    module --force purge
+    module load "${PC_MODULES[@]}"
+fi
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 MPLBACKEND=Agg
+pc_python=$(cat "$run/python_path.txt")
+pc_threads=$("$pc_python" -c 'import json,sys; print(json.load(open(sys.argv[1]))["threads"])' "$run/experiment_config.json")
+export OPENBLAS_NUM_THREADS="$pc_threads" MKL_NUM_THREADS="$pc_threads" OMP_NUM_THREADS="$pc_threads" OMP_THREAD_LIMIT="$pc_threads"
+export NUMEXPR_NUM_THREADS=1 OMP_DYNAMIC=FALSE OMP_WAIT_POLICY=PASSIVE
+export TMPDIR="${PBS_JOBFS:-$run/tmp}"
+mkdir -p "$TMPDIR"
+cd "$run/source"
+"$pc_python" -m research.pc_analytic_emulator.prepare verify --run "$run" --cpus "$PBS_NCPUS"
+rm -f "$run/FAILED" "$run/COMPLETED"
+printf 'Job: %s\nRun: %s\nTeacher: %s\nStart: %s\n' "$PBS_JOBID" "$run" "$(cat "$run/teacher_run.txt")" "$(date)"
+"$pc_python" -m research.pc_analytic_emulator.train --config "$run/experiment_config.json" --output "$run/results"
+"$pc_python" -m research.pc_analytic_emulator.prepare verify --run "$run" --cpus "$PBS_NCPUS"
+test -f "$run/results/COMPLETED"
+printf 'Analytic teacher training and held-out evaluation completed.\n' > "$run/COMPLETED"
+printf 'Finished: %s\nSummary: %s/results/summary.json\n' "$(date)" "$run"
