@@ -36,12 +36,37 @@ def test_sampling_is_stable_and_does_not_repeat() -> None:
         {"model_seeds": [1, 1]},
         {"unknown_setting": 1},
         {"validation_seeds": [1001]},
+        {"training_method": "unknown"},
+        {"v2_epochs": 0},
+        {"spectral_weight": -1},
+        {"spectral_power_floor": -1},
+        {"raw_weight": float("nan")},
+        {"field_variance_floor": 0},
+        {"k_fraction": 1.1},
+        {"regression_test_seeds": [1008, 1008]},
     ],
 )
 def test_bad_training_config_is_rejected(tmp_path: Path, change: dict) -> None:
     """Invalid resources, optimization controls and overlapping seeds fail."""
     with pytest.raises((ValueError, TypeError)):
         train.validate_config({"input_root": str(tmp_path), **change})
+
+
+def test_training_method_is_explicit_and_legacy_remains_default(tmp_path: Path) -> None:
+    """An improved objective requires an explicit method discriminator."""
+    config = train.validate_config({"input_root": str(tmp_path)})
+    assert config["training_method"] == "legacy"
+    assert config["v2_epochs"] == 80
+    improved = train.validate_config(
+        {
+            "input_root": str(tmp_path),
+            "training_method": "projected_multiscale_v2",
+            "regression_test_seeds": [],
+        }
+    )
+    assert improved["spectral_weight"] == 0.1
+    assert improved["spectral_power_floor"] == 1e-4
+    assert improved["regression_test_seeds"] == [1008]
 
 
 def test_candidate_selection_uses_validation_only() -> None:
@@ -150,3 +175,73 @@ def test_corrupted_completed_training_is_rejected(tmp_path: Path) -> None:
     )
     with pytest.raises(ValueError, match="checksum"):
         train._verify_completion(folder)
+
+
+def test_projected_training_uses_full_cubes_and_separate_external_test(
+    tmp_path: Path,
+) -> None:
+    """Improved training excludes both inspected and new test labels from fitting."""
+    from research.pc_analytic_emulator.model import Emulator
+    from research.pc_analytic_emulator.test_data import make_campaign
+
+    inputs = make_campaign(tmp_path / "teacher", seeds=(1001, 1007, 1008), n=4)
+    external = make_campaign(tmp_path / "external", seeds=(2001,), n=4)
+    config = {
+        "input_root": str(inputs),
+        "external_test_root": str(external),
+        "training_method": "projected_multiscale_v2",
+        "train_seeds": [1001],
+        "validation_seeds": [1007],
+        "test_seeds": [1008],
+        "model_seeds": [11],
+        "workers": 1,
+        "threads": 1,
+        "cpus": 1,
+        "epochs": 2,
+        "v2_epochs": 2,
+        "patience": 2,
+        "hidden": [4],
+        "budget_hidden": [3],
+        "samples_per_snapshot": 2,
+    }
+    output = tmp_path / "fit_v2"
+    summary = train.run(config, output)
+    assert summary["training_method"] == "projected_multiscale_v2"
+    assert summary["training_cells"] == 2 * 4**3
+    assert summary["internal_test_role"] == "Regression"
+    assert summary["known_regression_test_seeds"] == [1008]
+    assert summary["external_test"]["seeds"] == [2001]
+    assert summary["selected_validation_objective"] is not None
+    assert summary["budget_selection"]["selected_before_field_training"]
+    assert summary["maximum_test_photon_residual"] < 1e-12
+    assert (
+        Emulator.load(output / "model").projection_mode
+        == summary["selected_projection_mode"]
+    )
+    details = json.loads((output / "features.json").read_text())
+    assert {row["seed"] for row in details["training_snapshots"]} == {1001}
+    assert {row["seed"] for row in details["validation_snapshots"]} == {1007}
+    selection = json.loads((output / "model_selection.json").read_text())
+    assert {row["kind"] for row in selection["selected"]["candidates"]} == {
+        "trained_selected_budget",
+        "trained_eta_one",
+        "es_selected_budget",
+        "es_eta_one",
+        "legacy_reference",
+        "legacy_trained",
+    }
+    assert summary["selected_validation_objective"] == min(
+        row["validation_objective"] for row in selection["selected"]["candidates"]
+    )
+    assert len(list((output / "external_test/test").glob("*/predictions.npz"))) == 2
+    assert train.run(config, output) == summary
+    legacy_model = output / "trials/seed11/legacy_reference/model/field_model.npz"
+    legacy_identity = (legacy_model.read_bytes(), legacy_model.stat().st_mtime_ns)
+    (output / "COMPLETED").unlink()
+    (output / "trials/seed11/receipt.json").unlink()
+    resumed = train.run(config, output)
+    assert resumed["complete"]
+    assert legacy_identity == (
+        legacy_model.read_bytes(),
+        legacy_model.stat().st_mtime_ns,
+    )

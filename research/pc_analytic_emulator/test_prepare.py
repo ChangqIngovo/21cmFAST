@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import copy
 import json
 import subprocess
 from pathlib import Path
@@ -128,6 +129,29 @@ def test_configuration_explicit_cpu_split(tmp_path):
     assert config["epochs"] == 5
 
 
+def test_improved_configuration_keeps_legacy_opt_in(tmp_path):
+    """The new objective is explicit and stores a separate test archive path."""
+    assert "training_method" not in prepare.configuration(tmp_path, {})
+    config = prepare.configuration(
+        tmp_path,
+        {
+            "PC_TRAINING_METHOD": "projected_multiscale_v2",
+            "PC_V2_EPOCHS": "12",
+            "PC_SPECTRAL_WEIGHT": "0.2",
+            "PC_SPECTRAL_POWER_FLOOR": "0.0002",
+            "PC_EXTERNAL_TEST_ROOT": str(tmp_path / "external"),
+        },
+    )
+    assert config["training_method"] == "projected_multiscale_v2"
+    assert config["v2_epochs"] == 12
+    assert config["spectral_weight"] == 0.2
+    assert config["spectral_power_floor"] == 0.0002
+    assert config["regression_test_seeds"] == [1008]
+    assert config["external_test_root"] == str((tmp_path / "external").resolve())
+    with pytest.raises(ValueError, match="Unknown PC_TRAINING_METHOD"):
+        prepare.configuration(tmp_path, {"PC_TRAINING_METHOD": "unknown"})
+
+
 def _prepared_fixture(tmp_path, monkeypatch):
     """Install a minimal audited-data stand-in for preparation unit checks."""
     teacher = tmp_path / "teacher"
@@ -142,7 +166,12 @@ def _prepared_fixture(tmp_path, monkeypatch):
         },
         identity={"configuration": {"seeds": list(range(1001, 1009))}},
         physics={"scope": "test"},
-        audit={"all_photon_ledgers_passed": True},
+        audit={
+            "all_photon_ledgers_passed": True,
+            "initial_conditions_sha256": {
+                str(seed): f"initial-{seed}" for seed in range(1001, 1009)
+            },
+        },
         samples=[
             SimpleNamespace(seed=seed, redshift=7.5) for seed in range(1001, 1009)
         ],
@@ -207,6 +236,83 @@ def test_verify_rejects_teacher_mutation(tmp_path, monkeypatch):
     prepare.prepare(run, {})
     Path(next(iter(dataset.file_hashes))).write_bytes(b"different teacher")
     with pytest.raises(ValueError, match="Teacher input changed"):
+        prepare.verify(run, 16)
+
+
+def _external_fixture(tmp_path, dataset):
+    """Keep an independently addressed archive outside the original dataset."""
+    external = copy.deepcopy(dataset)
+    external.root = tmp_path / "external/results"
+    external.root.mkdir(parents=True)
+    path = external.root / "fields.npz"
+    path.write_bytes(b"external audited field")
+    external.file_hashes = {str(path): prepare._digest(path)}
+    external.samples = [SimpleNamespace(seed=1009, redshift=7.5)]
+    external.audit["initial_conditions_sha256"] = {"1009": "new-initial-1009"}
+    return external
+
+
+@pytest.mark.parametrize(
+    ("change", "expected"),
+    [
+        ("physics", "physical settings"),
+        ("seed", "seeds overlap"),
+        ("initial", "initial conditions repeat"),
+        ("solver", "teacher settings"),
+        ("runtime", "native runtime"),
+        ("implementation", "teacher implementation"),
+    ],
+)
+def test_external_test_rejects_reused_or_different_targets(
+    tmp_path, monkeypatch, change, expected
+):
+    """A renamed realization or a different teacher is not a fresh test target."""
+    _, dataset, _ = _prepared_fixture(tmp_path, monkeypatch)
+    external = _external_fixture(tmp_path, dataset)
+    prepare.validate_external_test(dataset, external)
+    if change == "physics":
+        external.physics["changed"] = True
+    elif change == "seed":
+        external.samples[0].seed = 1008
+    elif change == "initial":
+        external.audit["initial_conditions_sha256"] = {1009: "initial-1008"}
+    elif change == "solver":
+        external.identity["configuration"]["analytic"] = {"directions": 384}
+    elif change == "runtime":
+        external.identity["native_runtime"] = {"native_extension_sha256": "changed"}
+    elif change == "implementation":
+        external.identity["implementation_sha256"] = {"solver.py": "changed"}
+    with pytest.raises(ValueError, match=expected):
+        prepare.validate_external_test(dataset, external)
+
+
+def test_external_archive_is_frozen_separately(tmp_path, monkeypatch):
+    """External labels are pinned without adding them to the original fit split."""
+    run, dataset, _ = _prepared_fixture(tmp_path, monkeypatch)
+    external = _external_fixture(tmp_path, dataset)
+    monkeypatch.setattr(
+        prepare,
+        "_load_dataset",
+        lambda path: external if Path(path) == external.root else dataset,
+    )
+    manifest = prepare.prepare(
+        run,
+        {
+            "PC_TRAINING_METHOD": "projected_multiscale_v2",
+            "PC_EXTERNAL_TEST_ROOT": str(external.root),
+        },
+    )
+    assert manifest["sample_count"] == 8
+    assert manifest["split_counts"] == {"train": 6, "validation": 1, "test": 1}
+    assert manifest["external_test"]["sample_count"] == 1
+    assert manifest["external_test"]["input_sha256"] == external.file_hashes
+    assert manifest["input_sha256"] == dataset.file_hashes
+    assert manifest["test_interpretation"]["previously_inspected_regression_seeds"] == [
+        1008
+    ]
+    assert prepare.verify(run, 16) == manifest
+    Path(next(iter(external.file_hashes))).write_bytes(b"changed external target")
+    with pytest.raises(ValueError, match="External test input changed"):
         prepare.verify(run, 16)
 
 

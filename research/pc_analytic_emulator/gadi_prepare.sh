@@ -4,17 +4,25 @@ set -euo pipefail
 submit=false
 latest=false
 teacher=${PC_TEACHER_RUN:-}
+external_test=${PC_EXTERNAL_TEST_ROOT:-}
+training_method=${PC_TRAINING_METHOD:-legacy}
 root=$(realpath -m "${PC_RUN_ROOT:-/g/data/qp00/sz4640/21cmfast_runs}")
 while (( $# )); do
     case "$1" in
         --submit) submit=true; shift ;;
         --teacher-run) teacher=${2:?Supply a completed analytic_teacher run}; shift 2 ;;
         --latest-teacher) latest=true; shift ;;
+        --improved) training_method=projected_multiscale_v2; shift ;;
+        --external-test-root) external_test=${2:?Supply a separate completed teacher archive}; shift 2 ;;
         --help)
-            echo 'Usage: bash research/pc_analytic_emulator/gadi_prepare.sh (--teacher-run RUN | --latest-teacher) [--submit]'
+            echo 'Usage: bash research/pc_analytic_emulator/gadi_prepare.sh (--teacher-run RUN | --latest-teacher) [--improved] [--external-test-root RUN] [--submit]'
             echo 'Latest mode selects the newest completed N32/L256 campaign with seeds 1001..1008 and all 7 requested redshifts.'
             echo 'Defaults: seeds 1001..1006 train, 1007 validates, 1008 tests; all redshifts stay with their seed.'
-            echo 'Four initializations (11,23,47,83), 200 epochs maximum, 8192 sampled cells per training snapshot.'
+            echo 'Legacy: four initializations (11,23,47,83), 200 epochs maximum, 8192 sampled cells per training snapshot.'
+            echo '--improved selects projected_multiscale_v2; PC_V2_EPOCHS=80 controls its refinement stage.'
+            echo 'V2 uses every training cell; PC_EMULATOR_EPOCHS controls budget fitting and the retained legacy competitors.'
+            echo 'Seed 1008 is a previously inspected regression test; an optional external archive must contain new initial conditions.'
+            echo 'The external archive remains separate and never selects model parameters or checkpoints.'
             echo 'Resources: 4 workers x 4 BLAS threads, 16 CPUs on one node, 64GB, 4 hours.'
             echo 'PC_TRAIN_SEEDS, PC_VALIDATION_SEEDS, PC_TEST_SEEDS, PC_MODEL_SEEDS select splits/trials.'
             echo 'PC_EMULATOR_EPOCHS, PC_SAMPLES_PER_SNAPSHOT, PC_WORKERS, PC_THREADS and PC_NCPUS control fitting.'
@@ -25,6 +33,10 @@ while (( $# )); do
         *) echo "Unknown argument: $1" >&2; exit 2 ;;
     esac
 done
+[[ $training_method == legacy || $training_method == projected_multiscale_v2 ]] || {
+    echo 'PC_TRAINING_METHOD must be legacy or projected_multiscale_v2.' >&2; exit 2;
+}
+export PC_TRAINING_METHOD="$training_method"
 if $latest && [[ -n $teacher ]]; then
     echo 'Select exactly one of --teacher-run (or PC_TEACHER_RUN) and --latest-teacher.' >&2
     exit 2
@@ -45,6 +57,14 @@ for path in "$teacher" "$root"; do
     [[ $path =~ ^/[a-zA-Z0-9_./-]+$ ]] || { echo 'PBS paths must be absolute without spaces, commas or shell metacharacters.' >&2; exit 2; }
 done
 case "$root/" in "$teacher/"*) echo 'PC_RUN_ROOT must be outside the teacher archive.' >&2; exit 2 ;; esac
+if [[ -n $external_test ]]; then
+    external_test=$(realpath "$external_test")
+    [[ $external_test =~ ^/[a-zA-Z0-9_./-]+$ ]] || { echo 'External test paths must be absolute without spaces, commas or shell metacharacters.' >&2; exit 2; }
+    case "$root/" in "$external_test/"*) echo 'PC_RUN_ROOT must be outside the external test archive.' >&2; exit 2 ;; esac
+    export PC_EXTERNAL_TEST_ROOT="$external_test"
+else
+    unset PC_EXTERNAL_TEST_ROOT
+fi
 for name in runtime.env python_path.txt results/COMPLETED results/dataset_manifest.json results/completion.json; do
     [[ -f $teacher/$name ]] || { echo "Missing completed teacher input: $teacher/$name" >&2; exit 2; }
 done
@@ -110,5 +130,7 @@ command=(qsub -P "${PC_PROJECT:-qp00}" -q "${PC_QUEUE:-normal}"
 } > "$run/resubmit.sh"
 cd "$run"
 printf 'Selected teacher: %s\nPrepared training run: %s\n' "$teacher" "$run"
+printf 'Training method: %s\n' "$training_method"
+if [[ -n $external_test ]]; then printf 'Separate external test: %s\n' "$external_test"; fi
 printf 'Submit/resubmit: bash %q\n' "$run/resubmit.sh"
 if $submit; then bash "$run/resubmit.sh" | tee "$run/jobid.txt"; fi

@@ -163,6 +163,29 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
         )
     if config["workers"] * config["threads"] > config["cpus"]:
         raise ValueError("PC_NCPUS must cover PC_WORKERS * PC_THREADS")
+    method = environment.get("PC_TRAINING_METHOD", "legacy")
+    if method not in ("legacy", "projected_multiscale_v2"):
+        raise ValueError("Unknown PC_TRAINING_METHOD")
+    if method == "projected_multiscale_v2":
+        config.update(
+            training_method=method,
+            v2_epochs=int(environment.get("PC_V2_EPOCHS", "80")),
+            spectral_weight=float(environment.get("PC_SPECTRAL_WEIGHT", "0.1")),
+            spectral_power_floor=float(
+                environment.get("PC_SPECTRAL_POWER_FLOOR", "0.0001")
+            ),
+            front_weight=float(environment.get("PC_FRONT_WEIGHT", "1")),
+            raw_weight=float(environment.get("PC_RAW_WEIGHT", "0.05")),
+            field_variance_floor=float(
+                environment.get("PC_FIELD_VARIANCE_FLOOR", "0.01")
+            ),
+            k_fraction=float(environment.get("PC_K_FRACTION", "0.5")),
+            regression_test_seeds=[1008],
+        )
+    if environment.get("PC_EXTERNAL_TEST_ROOT"):
+        config["external_test_root"] = str(
+            Path(environment["PC_EXTERNAL_TEST_ROOT"]).resolve()
+        )
     return config
 
 
@@ -208,6 +231,47 @@ def _validated_config(config: dict[str, Any]) -> dict[str, Any]:
     return validate_config(config)
 
 
+def validate_external_test(dataset: Any, external: Any) -> None:
+    """Check that an external archive supplies new realizations of the same target.
+
+    Parameters
+    ----------
+    dataset, external
+        Independently audited teacher datasets. Neither is modified or combined.
+        The external archive is used only after validation selects the final model.
+
+    Raises
+    ------
+    ValueError
+        Physical settings or teacher methods differ, or an initial realization
+        has appeared anywhere in the original campaign.
+    """
+    if dataset.physics != external.physics:
+        raise ValueError("External test physical settings differ from training")
+    old_seeds = {sample.seed for sample in dataset.samples}
+    new_seeds = {sample.seed for sample in external.samples}
+    if old_seeds & new_seeds:
+        raise ValueError("External test seeds overlap the original teacher campaign")
+    old_initial = set(dataset.audit["initial_conditions_sha256"].values())
+    new_initial = set(external.audit["initial_conditions_sha256"].values())
+    if old_initial & new_initial:
+        raise ValueError(
+            "External test initial conditions repeat the original campaign"
+        )
+    for name in ("analytic", "sigma_cm2", "brightness"):
+        if dataset.identity["configuration"].get(name) != external.identity[
+            "configuration"
+        ].get(name):
+            raise ValueError(f"External test teacher settings differ: {name}")
+    if dataset.identity.get("native_runtime") != external.identity.get(
+        "native_runtime"
+    ):
+        raise ValueError("External test native runtime differs from training")
+    for name in ("implementation_sha256", "analytic_build"):
+        if dataset.identity.get(name) != external.identity.get(name):
+            raise ValueError(f"External test teacher implementation differs: {name}")
+
+
 def prepare(run: Path, environment: Mapping[str, str]) -> dict[str, Any]:
     """Freeze the selected teacher bytes, input splits and executable environment.
 
@@ -235,6 +299,15 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict[str, Any]:
     dataset = _load_dataset(teacher)
     config = _validated_config(configuration(dataset.root, environment))
     splits = _split_dataset(dataset, config)
+    external = None
+    if config.get("external_test_root"):
+        external = _load_dataset(Path(config["external_test_root"]))
+        if run == external.root or run.is_relative_to(external.root):
+            raise ValueError(
+                "Training output must be outside the external test archive"
+            )
+        validate_external_test(dataset, external)
+        config["external_test_root"] = str(external.root)
     runtime = _runtime()
     _write_json(run / "experiment_config.json", config)
     manifest = {
@@ -260,6 +333,22 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict[str, Any]:
         "scope": "Train on completed analytic coeval photon-conserving teachers; physical seeds are disjoint across train, validation and test; no simulation or reference reruns",
         "network_required_on_compute": False,
     }
+    if config.get("training_method") == "projected_multiscale_v2":
+        manifest["test_interpretation"] = {
+            "previously_inspected_regression_seeds": [1008],
+            "scope": "Seed 1008 is an inspected regression test, not a fresh held-out realization for this improvement",
+        }
+    if external is not None:
+        manifest["external_test"] = {
+            "input_root": str(external.root),
+            "input_sha256": external.file_hashes,
+            "teacher_identity": external.identity,
+            "teacher_physics": external.physics,
+            "teacher_audit": external.audit,
+            "sample_count": len(external.samples),
+            "seeds": sorted({sample.seed for sample in external.samples}),
+            "scope": "Separate new realizations; excluded from fitting, normalization and model selection",
+        }
     _write_json(run / "run_manifest.json", manifest)
     (run / "prepared.sha256").write_text(
         "".join(f"{_digest(run / name)}  {name}\n" for name in FROZEN_FILES)
@@ -298,6 +387,11 @@ def verify(run: Path, cpus: int | None = None) -> dict[str, Any]:
     for name, digest in manifest["input_sha256"].items():
         if not Path(name).is_file() or _digest(Path(name)) != digest:
             raise ValueError(f"Teacher input changed: {name}")
+    for name, digest in (
+        manifest.get("external_test", {}).get("input_sha256", {}).items()
+    ):
+        if not Path(name).is_file() or _digest(Path(name)) != digest:
+            raise ValueError(f"External test input changed: {name}")
     if _runtime() != manifest["runtime"]:
         raise ValueError("Training runtime changed")
     if cpus is not None and cpus != manifest["configuration"]["cpus"]:

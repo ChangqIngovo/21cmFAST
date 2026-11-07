@@ -12,14 +12,19 @@ import json
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from scipy.ndimage import gaussian_filter
 
+from research.pc_analytic_emulator.projection import project_capacity_l2
 from research.pc_field_emulator.features import build_features
 from research.pc_field_emulator.model import MLPModel, project_global_budget
+
+if TYPE_CHECKING:
+    from research.pc_analytic_emulator.budget import TabulatedBudgetModel
+    from research.pc_analytic_emulator.latent import LatentFieldModel
 
 DEFAULT_RADII = (6.25, 12.5, 25.0, 50.0)
 
@@ -203,23 +208,47 @@ def absorption_efficiency(
 
 @dataclass
 class Emulator:
-    """Couple a bounded ES-residual field model to a learned global budget.
+    """Couple an ES-residual field predictor to an independent global budget.
 
     Parameters
     ----------
     field_model, budget_model
-        Residual MLPs for the field and absorbed fraction. The field baseline
-        is native ES xHII; the efficiency baseline is one.
+        The field uses native ES xHII plus a bounded MLP or unbounded latent
+        correction. The absorption head is a residual MLP around efficiency
+        one or a training-only interpolation table.
     radii_cMpc
         Physical smoothing scales used identically at training and inference.
     metadata
         Training provenance, feature names and model-selection diagnostics.
+    projection_mode
+        ``log_odds`` preserves the original bounded-MLP behavior.
+        ``capacity_l2`` minimizes capacity-weighted squared field adjustment
+        and also supports unbounded latent corrections.
     """
 
-    field_model: MLPModel
-    budget_model: MLPModel
+    field_model: MLPModel | LatentFieldModel
+    budget_model: MLPModel | TabulatedBudgetModel
     radii_cMpc: tuple[float, ...] = DEFAULT_RADII
     metadata: dict[str, Any] = field(default_factory=dict)
+    projection_mode: str = "log_odds"
+
+    def _model_kinds(self) -> tuple[str, str]:
+        if self.projection_mode not in ("log_odds", "capacity_l2"):
+            raise ValueError("Unsupported emulator projection mode")
+        field_mode, budget_mode = (
+            self.field_model.output_mode,
+            self.budget_model.output_mode,
+        )
+        if field_mode not in ("residual", "latent_linear"):
+            raise ValueError("Unsupported field model output mode")
+        if field_mode == "latent_linear" and self.projection_mode != "capacity_l2":
+            raise ValueError("Latent field models require capacity_l2 projection")
+        if budget_mode not in ("residual", "efficiency"):
+            raise ValueError("Unsupported budget model output mode")
+        return (
+            "latent_linear" if field_mode == "latent_linear" else "mlp",
+            "tabulated" if budget_mode == "efficiency" else "mlp",
+        )
 
     def predict(
         self,
@@ -262,17 +291,24 @@ class Emulator:
             box_len,
             radii_cMpc=self.radii_cMpc,
         )
-        if (
-            self.field_model.output_mode != "residual"
-            or self.budget_model.output_mode != "residual"
-        ):
-            raise ValueError(
-                "Both emulator heads require their declared residual baselines"
+        field_kind, budget_kind = self._model_kinds()
+        if field_kind == "latent_linear":
+            latent = self.field_model.latent_predict(
+                features, baseline=baseline
+            ).reshape(atoms.shape)
+            raw = np.clip(latent, 0, 1)
+        else:
+            raw = self.field_model.predict(features, baseline=baseline).reshape(
+                atoms.shape
             )
-        raw = self.field_model.predict(features, baseline=baseline).reshape(atoms.shape)
+            latent = raw
         efficiency = float(
-            self.budget_model.predict(box_features, baseline=np.ones(1))[0]
+            self.budget_model.predict(box_features)[0]
+            if budget_kind == "tabulated"
+            else self.budget_model.predict(box_features, baseline=np.ones(1))[0]
         )
+        if not np.isfinite(efficiency) or not 0 <= efficiency <= 1:
+            raise ValueError("Predicted absorption efficiency must lie in [0,1]")
         total_source = np.sum(photons, dtype=np.longdouble)
         total_capacity = np.sum(atoms, dtype=np.longdouble)
         limit = min(total_source, total_capacity)
@@ -286,9 +322,16 @@ class Emulator:
         unabsorbed = float(total_source - np.longdouble(target))
         if total_source == 0:
             raw = np.zeros_like(raw)
-        corrected, projection = project_global_budget(
-            raw, atoms, target, rtol=1e-13, atol=0.0
-        )
+            latent = raw
+        if self.projection_mode == "capacity_l2":
+            corrected, projection = project_capacity_l2(
+                latent, atoms, target, rtol=1e-13, atol=0.0
+            )
+        else:
+            corrected, projection = project_global_budget(
+                raw, atoms, target, rtol=1e-13, atol=0.0
+            )
+        projection.update(method=self.projection_mode, field_kind=field_kind)
         field_absorbed = np.sum(
             np.multiply(atoms, corrected, dtype=np.longdouble), dtype=np.longdouble
         )
@@ -316,6 +359,7 @@ class Emulator:
             "raw_xHI": 1 - raw,
             "xHI": 1 - corrected,
             "raw_xHII": raw,
+            "latent_xHII": latent,
             "xHII": corrected,
             "absorption_efficiency": efficiency,
             "predicted_absorbed_photons": target,
@@ -332,6 +376,7 @@ class Emulator:
         directory
             Destination containing two pickle-free NPZ models and model.json.
         """
+        field_kind, budget_kind = self._model_kinds()
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         self.field_model.save(directory / "field_model.npz")
@@ -339,10 +384,13 @@ class Emulator:
         (directory / "model.json").write_text(
             json.dumps(
                 {
-                    "schema": 1,
+                    "schema": 2,
                     "method": "native-ES-residual-with-learned-global-absorption",
                     "radii_cMpc": list(self.radii_cMpc),
                     "metadata": self.metadata,
+                    "projection_mode": self.projection_mode,
+                    "field_kind": field_kind,
+                    "budget_kind": budget_kind,
                 },
                 indent=2,
                 sort_keys=True,
@@ -368,7 +416,7 @@ class Emulator:
         directory = Path(directory)
         record = json.loads((directory / "model.json").read_text())
         if (
-            record.get("schema") != 1
+            record.get("schema") not in (1, 2)
             or record.get("method")
             != "native-ES-residual-with-learned-global-absorption"
         ):
@@ -380,9 +428,33 @@ class Emulator:
             raise ValueError("Saved emulator has invalid smoothing scales")
         if not isinstance(record["metadata"], dict):
             raise TypeError("Saved emulator metadata must be an object")
-        return cls(
-            MLPModel.load(directory / "field_model.npz"),
-            MLPModel.load(directory / "budget_model.npz"),
+        if record["schema"] == 1:
+            projection_mode, field_kind, budget_kind = "log_odds", "mlp", "mlp"
+        else:
+            projection_mode = record["projection_mode"]
+            field_kind, budget_kind = record["field_kind"], record["budget_kind"]
+        if field_kind == "latent_linear":
+            from research.pc_analytic_emulator.latent import LatentFieldModel
+
+            field_model = LatentFieldModel.load(directory / "field_model.npz")
+        elif field_kind == "mlp":
+            field_model = MLPModel.load(directory / "field_model.npz")
+        else:
+            raise ValueError("Unsupported saved field model kind")
+        if budget_kind == "tabulated":
+            from research.pc_analytic_emulator.budget import TabulatedBudgetModel
+
+            budget_model = TabulatedBudgetModel.load(directory / "budget_model.npz")
+        elif budget_kind == "mlp":
+            budget_model = MLPModel.load(directory / "budget_model.npz")
+        else:
+            raise ValueError("Unsupported saved budget model kind")
+        result = cls(
+            field_model,
+            budget_model,
             radii,
             record["metadata"],
+            projection_mode,
         )
+        result._model_kinds()
+        return result
