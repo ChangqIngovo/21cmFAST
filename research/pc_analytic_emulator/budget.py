@@ -34,6 +34,7 @@ class TabulatedBudgetModel:
     efficiencies: np.ndarray
     feature_count: int
     output_mode: str = field(default="efficiency", init=False)
+    budget_kind: str = field(default="tabulated", init=False)
 
     def __post_init__(self) -> None:
         """Copy and validate the independent training table."""
@@ -122,6 +123,249 @@ class TabulatedBudgetModel:
             )
 
 
+@dataclass
+class LocalDeficitBudgetModel:
+    """Interpolate training absorption deficits from native box structure.
+
+    Parameters
+    ----------
+    training_features
+        Training-only standardized photon load, density/source scatter and
+        native ES morphology coordinates, with one row per training snapshot.
+    deficits
+        Training labels ``1 - absorbed/min(source, capacity)`` in [0, 1].
+    mean, scale
+        Training-only feature standardizer for the selected coordinates.
+    feature_indices
+        Indices of native input coordinates, with no teacher-derived columns.
+    feature_count
+        Number of columns in the original native budget feature matrix.
+    neighbors
+        Positive number of nearest training snapshots used for interpolation.
+
+    Notes
+    -----
+    Positive inverse-distance weights form a convex average of the observed
+    deficits. This can return exact zero when all selected deficits are zero,
+    but does not impose zero escape at any redshift or photon load. Outside
+    the training support the same local averaging rule applies; accuracy there
+    is unvalidated. This estimator is empirical, not a transport closure law.
+    """
+
+    training_features: np.ndarray
+    deficits: np.ndarray
+    mean: np.ndarray
+    scale: np.ndarray
+    feature_indices: np.ndarray
+    feature_count: int
+    neighbors: int = 3
+    output_mode: str = field(default="efficiency", init=False)
+    budget_kind: str = field(default="local_deficit", init=False)
+
+    def __post_init__(self) -> None:
+        """Copy and validate the native-input table and bounded labels."""
+        self.training_features = np.array(
+            self.training_features, dtype=np.float64, copy=True
+        )
+        self.deficits = np.array(self.deficits, dtype=np.float64, copy=True)
+        self.mean = np.array(self.mean, dtype=np.float64, copy=True)
+        self.scale = np.array(self.scale, dtype=np.float64, copy=True)
+        indices = np.asarray(self.feature_indices)
+        if (
+            indices.ndim != 1
+            or not np.issubdtype(indices.dtype, np.integer)
+            or not indices.size
+        ):
+            raise ValueError("Local budget feature indices must be nonempty integers")
+        self.feature_indices = np.array(indices, dtype=np.int64, copy=True)
+        width = len(self.feature_indices)
+        if (
+            type(self.feature_count) is not int
+            or self.feature_count < 10
+            or type(self.neighbors) is not int
+            or self.neighbors < 1
+            or np.any(self.feature_indices < 0)
+            or np.any(self.feature_indices >= self.feature_count)
+            or len(np.unique(self.feature_indices)) != width
+            or self.training_features.ndim != 2
+            or not self.training_features.shape[0]
+            or self.training_features.shape[1] != width
+            or self.deficits.shape != (len(self.training_features),)
+            or self.mean.shape != (width,)
+            or self.scale.shape != (width,)
+            or any(
+                not np.isfinite(value).all()
+                for value in (
+                    self.training_features,
+                    self.deficits,
+                    self.mean,
+                    self.scale,
+                )
+            )
+            or np.any(self.scale <= 0)
+            or np.any((self.deficits < 0) | (self.deficits > 1))
+        ):
+            raise ValueError("Invalid native-input local absorption table")
+        for value in (
+            self.training_features,
+            self.deficits,
+            self.mean,
+            self.scale,
+            self.feature_indices,
+        ):
+            value.setflags(write=False)
+
+    @classmethod
+    def from_training(
+        cls,
+        features: np.ndarray,
+        efficiencies: np.ndarray,
+        *,
+        neighbors: int = 3,
+    ) -> LocalDeficitBudgetModel:
+        """Fit coordinates using training snapshots only.
+
+        Parameters
+        ----------
+        features
+            Native global features in the order of ``model.budget_features``.
+            The first ten fixed native columns are required; smoothing columns
+            may follow and are not used in the neighborhood distance.
+        efficiencies
+            Bounded supervised training absorption efficiencies.
+        neighbors
+            Positive number of nearest neighbors; clipped to training count
+            only when evaluating a query.
+
+        Returns
+        -------
+        LocalDeficitBudgetModel
+            Empirical interpolation model with a fixed training normalizer.
+        """
+        x = np.asarray(features, dtype=np.float64)
+        y = np.asarray(efficiencies, dtype=np.float64)
+        if (
+            x.ndim != 2
+            or not len(x)
+            or x.shape[1] < 10
+            or y.shape != (len(x),)
+            or not np.isfinite(x).all()
+            or not np.isfinite(y).all()
+            or np.any(x[:, :2] < 0)
+            or np.any((y < 0) | (y > 1))
+        ):
+            raise ValueError("Invalid native-input training absorption data")
+        indices = np.asarray([0, 4, 5, 6, 7, 8, 9], dtype=np.int64)
+        coordinates = x[:, indices]
+        mean = np.mean(coordinates, axis=0)
+        scale = np.std(coordinates, axis=0)
+        scale = np.where(scale > 1e-12, scale, 1.0)
+        return cls(
+            (coordinates - mean) / scale,
+            1 - y,
+            mean,
+            scale,
+            indices,
+            x.shape[1],
+            neighbors,
+        )
+
+    def predict(
+        self, features: np.ndarray, *, baseline: np.ndarray | None = None
+    ) -> np.ndarray:
+        """Predict bounded efficiencies from a convex local deficit average.
+
+        Parameters
+        ----------
+        features
+            Native global features only, in their original order and units.
+        baseline
+            Unused compatibility argument; no teacher information is accepted.
+
+        Returns
+        -------
+        ndarray
+            Efficiencies in [0, 1], one per input snapshot. Exactly duplicate
+            native coordinates receive their mean training deficit.
+        """
+        x = np.asarray(features, dtype=np.float64)
+        if (
+            x.ndim != 2
+            or x.shape[1] != self.feature_count
+            or not np.isfinite(x).all()
+            or np.any(x[:, :2] < 0)
+        ):
+            raise ValueError("Invalid native budget feature matrix")
+        result = np.empty(len(x), dtype=np.float64)
+        with np.errstate(over="raise", invalid="raise", divide="raise"):
+            coordinates = (x[:, self.feature_indices] - self.mean) / self.scale
+            for index, query in enumerate(coordinates):
+                distance = np.sum((self.training_features - query) ** 2, axis=1)
+                exact = distance == 0
+                if np.any(exact):
+                    deficit = float(np.mean(self.deficits[exact]))
+                else:
+                    nearest = np.argsort(distance, kind="stable")[
+                        : min(self.neighbors, len(distance))
+                    ]
+                    # Relative weights avoid overflow arbitrarily close to a
+                    # training point. distance is squared Euclidean distance.
+                    weights = distance[nearest[0]] / distance[nearest]
+                    deficit = float(
+                        np.dot(weights, self.deficits[nearest]) / np.sum(weights)
+                    )
+                result[index] = np.clip(1 - deficit, 0, 1)
+        return result
+
+    def save(self, path: str | Path) -> None:
+        """Save an immutable, pickle-free local deficit predictor.
+
+        Parameters
+        ----------
+        path
+            Destination NPZ file in an existing directory.
+        """
+        np.savez_compressed(
+            path,
+            schema=np.asarray(1),
+            kind=np.asarray("local_deficit"),
+            training_features=self.training_features,
+            deficits=self.deficits,
+            mean=self.mean,
+            scale=self.scale,
+            feature_indices=self.feature_indices,
+            feature_count=np.asarray(self.feature_count),
+            neighbors=np.asarray(self.neighbors),
+        )
+
+    @classmethod
+    def load(cls, path: str | Path) -> LocalDeficitBudgetModel:
+        """Restore training coordinates and labels without fitting.
+
+        Parameters
+        ----------
+        path
+            Archive written by :meth:`save`.
+
+        Returns
+        -------
+        LocalDeficitBudgetModel
+            Restored bounded predictor with its original normalizer.
+        """
+        with np.load(path, allow_pickle=False) as saved:
+            if int(saved["schema"]) != 1 or str(saved["kind"]) != "local_deficit":
+                raise ValueError("Unsupported local absorption table schema")
+            return cls(
+                saved["training_features"],
+                saved["deficits"],
+                saved["mean"],
+                saved["scale"],
+                saved["feature_indices"],
+                int(saved["feature_count"]),
+                int(saved["neighbors"]),
+            )
+
+
 def constant_efficiency_model(feature_count: int) -> MLPModel:
     """Construct the eta=1 reference without fitting any data.
 
@@ -147,7 +391,9 @@ def constant_efficiency_model(feature_count: int) -> MLPModel:
     )
 
 
-def load_budget(path: str | Path) -> MLPModel | TabulatedBudgetModel:
+def load_budget(
+    path: str | Path,
+) -> MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel:
     """Restore a tagged table or legacy-format residual budget network.
 
     Parameters
@@ -157,12 +403,16 @@ def load_budget(path: str | Path) -> MLPModel | TabulatedBudgetModel:
 
     Returns
     -------
-    MLPModel or TabulatedBudgetModel
+    MLPModel, TabulatedBudgetModel or LocalDeficitBudgetModel
         Restored predictor with its original training normalization/table.
     """
     with np.load(path, allow_pickle=False) as saved:
-        tabulated = "kind" in saved and str(saved["kind"]) == "tabulated_efficiency"
-    return TabulatedBudgetModel.load(path) if tabulated else MLPModel.load(path)
+        kind = str(saved["kind"]) if "kind" in saved else None
+    if kind == "tabulated_efficiency":
+        return TabulatedBudgetModel.load(path)
+    if kind == "local_deficit":
+        return LocalDeficitBudgetModel.load(path)
+    return MLPModel.load(path)
 
 
 def _arrays(
@@ -188,7 +438,7 @@ def _arrays(
     return x, y, scale
 
 
-def fit_budget(
+def _fit_base_candidates(
     x_train: np.ndarray,
     eta_train: np.ndarray,
     mass_scale_train: np.ndarray,
@@ -201,7 +451,7 @@ def fit_budget(
     patience: int,
     learning_rate: float,
     hidden: tuple[int, ...] = (8,),
-) -> tuple[MLPModel | TabulatedBudgetModel, dict[str, Any]]:
+) -> tuple[dict[str, MLPModel | TabulatedBudgetModel], dict[str, Any]]:
     """Fit budget candidates on training data and select by validation mass error.
 
     Parameters
@@ -276,7 +526,7 @@ def fit_budget(
         range(len(records)),
         key=lambda index: (records[index]["validation_mass_mse"], index),
     )
-    return candidates[selected][1], {
+    return dict(candidates), {
         "selected_kind": records[selected]["kind"],
         "selection": "Validation MSE of absorbed atoms / total atom capacity",
         "candidates": records,
@@ -288,3 +538,138 @@ def fit_budget(
         "table_extrapolation": "constant endpoint efficiency; no extrapolation accuracy is certified",
         "test_used": False,
     }
+
+
+def fit_budget(
+    x_train: np.ndarray,
+    eta_train: np.ndarray,
+    mass_scale_train: np.ndarray,
+    x_validation: np.ndarray,
+    eta_validation: np.ndarray,
+    mass_scale_validation: np.ndarray,
+    *,
+    seed: int,
+    epochs: int,
+    patience: int,
+    learning_rate: float,
+    hidden: tuple[int, ...] = (8,),
+) -> tuple[MLPModel | TabulatedBudgetModel, dict[str, Any]]:
+    """Preserve v2 budget fitting and its validation-mass-error selection.
+
+    Parameters
+    ----------
+    x_train, x_validation
+        Native global input features, with photon load and redshift first.
+    eta_train, eta_validation
+        Supervised efficiencies absorbed/min(source, capacity).
+    mass_scale_train, mass_scale_validation
+        min(source, capacity)/total atom capacity for each snapshot.
+    seed, epochs, patience, learning_rate, hidden
+        Original MLP initialization, optimization and architecture controls.
+
+    Returns
+    -------
+    tuple
+        Original selected predictor and JSON-safe candidate diagnostics.
+        V3 local estimators are not fitted or selected on this path.
+    """
+    candidates, report = _fit_base_candidates(
+        x_train,
+        eta_train,
+        mass_scale_train,
+        x_validation,
+        eta_validation,
+        mass_scale_validation,
+        seed=seed,
+        epochs=epochs,
+        patience=patience,
+        learning_rate=learning_rate,
+        hidden=hidden,
+    )
+    return candidates[report["selected_kind"]], report
+
+
+def fit_budget_v3(
+    x_train: np.ndarray,
+    eta_train: np.ndarray,
+    mass_scale_train: np.ndarray,
+    x_validation: np.ndarray,
+    eta_validation: np.ndarray,
+    mass_scale_validation: np.ndarray,
+    *,
+    seed: int,
+    epochs: int,
+    patience: int,
+    learning_rate: float,
+    hidden: tuple[int, ...] = (8,),
+) -> tuple[
+    dict[str, MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel],
+    dict[str, Any],
+]:
+    """Retain budget candidates for controlled fixed-field comparisons.
+
+    Parameters
+    ----------
+    x_train, x_validation
+        Native global features in ``model.budget_features`` order. The first
+        ten native columns are required; teacher fields are never inputs.
+    eta_train, eta_validation
+        Supervised efficiencies absorbed/min(source, capacity).
+    mass_scale_train, mass_scale_validation
+        min(source, capacity)/total atom capacity for each snapshot.
+    seed, epochs, patience, learning_rate, hidden
+        Original MLP initialization, optimization and architecture controls.
+
+    Returns
+    -------
+    tuple
+        All candidate models and a validation budget-error ranking. No model
+        is discarded: the caller compares them with fixed field predictors
+        and projections before residual fitting. Local tables and normalizers
+        depend only on training snapshots; validation selects among models.
+    """
+    xt, yt, _ = _arrays(x_train, eta_train, mass_scale_train)
+    xv, yv, sv = _arrays(x_validation, eta_validation, mass_scale_validation)
+    if xt.shape[1] < 10 or xv.shape[1] != xt.shape[1]:
+        raise ValueError("V3 budget fitting requires complete native global features")
+    candidates, report = _fit_base_candidates(
+        xt,
+        yt,
+        mass_scale_train,
+        xv,
+        yv,
+        sv,
+        seed=seed,
+        epochs=epochs,
+        patience=patience,
+        learning_rate=learning_rate,
+        hidden=hidden,
+    )
+    models = dict(candidates)
+    for neighbors in (3, 5):
+        name = f"local_k{neighbors}"
+        model = LocalDeficitBudgetModel.from_training(xt, yt, neighbors=neighbors)
+        models[name] = model
+        predicted = model.predict(xv)
+        error = sv * (predicted - yv)
+        report["candidates"].append(
+            {
+                "kind": name,
+                "validation_mass_mse": float(np.mean(error**2)),
+                "validation_mass_MAE": float(np.mean(np.abs(error))),
+                "validation_maximum_absolute_mass_error": float(np.max(np.abs(error))),
+                "validation_efficiencies": predicted.tolist(),
+            }
+        )
+    ranked = sorted(report["candidates"], key=lambda item: item["validation_mass_mse"])
+    report.update(
+        selected_kind=ranked[0]["kind"],
+        selection="Budget-error ranking only; all candidates retained for fixed-field validation",
+        retained_candidate_count=len(models),
+        ranking=[item["kind"] for item in ranked],
+        local_feature_indices=[0, 4, 5, 6, 7, 8, 9],
+        local_fit_scope="Training native features and efficiencies only; no validation/test samples in normalizer or neighbor table",
+        local_extrapolation="Convex nearest-training-deficit average; no out-of-support accuracy is certified",
+        local_zero_deficit_scope="Exact zero only from zero local training deficits; no forced photon-load or redshift threshold",
+    )
+    return models, report

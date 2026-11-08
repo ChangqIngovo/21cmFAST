@@ -8,14 +8,16 @@ model remains frozen throughout this optimization.
 
 from __future__ import annotations
 
+import hashlib
 import itertools
 from collections import OrderedDict
 from collections.abc import Callable, Iterator, Sequence
 from contextlib import contextmanager
 from contextvars import ContextVar
+from dataclasses import fields, is_dataclass
 from functools import wraps
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
@@ -25,6 +27,9 @@ from research.pc_analytic_emulator.projection import (
     capacity_l2_vjp,
     project_capacity_l2,
 )
+
+if TYPE_CHECKING:
+    from research.pc_analytic_emulator.model import Emulator
 
 FrameRecord = str | Path | dict[str, Any]
 FRAME_CACHE_MAX_BYTES = 512 * 1024**2
@@ -53,9 +58,23 @@ class _FrameCache:
     def __init__(self, max_bytes: int) -> None:
         self.max_bytes = max_bytes
         self.nbytes = 0
-        self.entries: OrderedDict[Path, tuple[tuple, dict[str, Any], int]] = (
+        self.entries: OrderedDict[Path | tuple, tuple[tuple, dict[str, Any], int]] = (
             OrderedDict()
         )
+        self.frozen_bases: dict[int, tuple[Emulator, str]] = {}
+
+    def _remember(
+        self, key: Path | tuple, identity: tuple, frame: dict[str, Any]
+    ) -> None:
+        size = sum(
+            value.nbytes for value in frame.values() if isinstance(value, np.ndarray)
+        )
+        if size <= self.max_bytes:
+            while self.entries and self.nbytes + size > self.max_bytes:
+                _, removed = self.entries.popitem(last=False)
+                self.nbytes -= removed[2]
+            self.entries[key] = (identity, frame, size)
+            self.nbytes += size
 
     def load(self, path: Path) -> dict[str, Any]:
         identity = _file_identity(path)
@@ -68,20 +87,72 @@ class _FrameCache:
         frame = _read_frame(path)
         if _file_identity(path) != identity:
             raise ValueError(f"Snapshot cache changed while being read: {path}")
-        size = sum(
-            value.nbytes for value in frame.values() if isinstance(value, np.ndarray)
-        )
-        if size <= self.max_bytes:
-            while self.entries and self.nbytes + size > self.max_bytes:
-                _, removed = self.entries.popitem(last=False)
-                self.nbytes -= removed[2]
-            self.entries[path] = (identity, frame, size)
-            self.nbytes += size
+        self._remember(path, identity, frame)
         return frame
+
+    def baseline(self, frame: dict[str, Any], base_model: Emulator) -> np.ndarray:
+        digest = _inference_digest(base_model)
+        previous = self.frozen_bases.setdefault(id(base_model), (base_model, digest))
+        if previous[1] != digest:
+            raise ValueError("Frozen base model changed during residual fitting")
+        path, identity = frame["cache_path"], frame["cache_identity"]
+        redshift = _base_redshift(frame)
+        key = ("base_prediction", path, digest, redshift)
+        old = self.entries.pop(key, None)
+        if old is not None:
+            if old[0] == identity:
+                self.entries[key] = old
+                return old[1]["baseline"]
+            self.nbytes -= old[2]
+        baseline = _predict_base(frame, base_model)
+        if _file_identity(path) != identity:
+            raise ValueError(f"Snapshot cache changed during base prediction: {path}")
+        self._remember(key, identity, {"baseline": baseline})
+        return baseline
 
     def clear(self) -> None:
         self.entries.clear()
+        self.frozen_bases.clear()
         self.nbytes = 0
+
+
+def _inference_digest(model: Any) -> str:
+    """Hash inference parameters without serializing provenance metadata."""
+    digest = hashlib.sha256()
+    visiting: set[int] = set()
+
+    def add(value: Any) -> None:
+        if isinstance(value, np.ndarray):
+            digest.update(b"array")
+            digest.update(value.dtype.str.encode())
+            digest.update(str(value.shape).encode())
+            digest.update(np.ascontiguousarray(value).tobytes())
+        elif is_dataclass(value) and not isinstance(value, type):
+            if id(value) in visiting:
+                raise ValueError("Frozen base inference parameters contain a cycle")
+            visiting.add(id(value))
+            digest.update(type(value).__qualname__.encode())
+            for item in fields(value):
+                if item.name != "metadata":
+                    digest.update(item.name.encode())
+                    add(getattr(value, item.name))
+            visiting.remove(id(value))
+        elif isinstance(value, dict):
+            digest.update(b"mapping")
+            for key in sorted(value):
+                add(key)
+                add(value[key])
+        elif isinstance(value, (list, tuple)):
+            digest.update(f"sequence:{len(value)}".encode())
+            for item in value:
+                add(item)
+        elif value is None or isinstance(value, (str, int, float, bool, np.generic)):
+            digest.update(f"{type(value).__name__}:{value!r}".encode())
+        else:
+            raise TypeError(f"Unsupported frozen inference parameter: {type(value)}")
+
+    add(model)
+    return digest.hexdigest()
 
 
 _ACTIVE_FRAME_CACHE: ContextVar[_FrameCache | None] = ContextVar(
@@ -172,14 +243,65 @@ def _read_frame(path: Path) -> dict[str, Any]:
 
 def _load_frame(record: FrameRecord) -> dict[str, Any]:
     path = Path(record["cache"] if isinstance(record, dict) else record).resolve()
+    identity = _file_identity(path)
     cache = _ACTIVE_FRAME_CACHE.get()
     frame = dict(cache.load(path) if cache is not None else _read_frame(path))
+    if _file_identity(path) != identity:
+        raise ValueError(f"Snapshot cache changed while being loaded: {path}")
+    frame["cache_path"], frame["cache_identity"] = path, identity
     frame["record"] = (
         {name: record[name] for name in ("seed", "redshift") if name in record}
         if isinstance(record, dict)
         else {"cache": str(path)}
     )
     return frame
+
+
+def _base_redshift(frame: dict[str, Any]) -> float:
+    value = frame["record"].get("redshift")
+    if (
+        isinstance(value, bool)
+        or value is None
+        or not np.isscalar(value)
+        or not np.isfinite(value)
+        or value < 0
+    ):
+        raise ValueError("Warm-start frame records require a finite native redshift")
+    return float(value)
+
+
+def _predict_base(frame: dict[str, Any], base_model: Emulator) -> np.ndarray:
+    if "native_es_xHI" not in frame:
+        raise ValueError("Warm-start frames require the original native_es_xHI input")
+    prediction = base_model.predict(
+        frame["source"],
+        frame["capacity"],
+        frame["native_es_xHI"],
+        _base_redshift(frame),
+        frame["box_len"],
+    )
+    baseline = np.array(prediction["xHII"], dtype=np.float64, copy=True)
+    if (
+        baseline.shape != frame["capacity"].shape
+        or not np.isfinite(baseline).all()
+        or np.any((baseline < 0) | (baseline > 1))
+    ):
+        raise ValueError("Frozen base must predict a bounded field on the native grid")
+    baseline = baseline.ravel()
+    baseline.setflags(write=False)
+    return baseline
+
+
+def _warm_frame(frame: dict[str, Any], base_model: Emulator | None) -> dict[str, Any]:
+    if base_model is None:
+        return frame
+    cache = _ACTIVE_FRAME_CACHE.get()
+    baseline = (
+        cache.baseline(frame, base_model)
+        if cache is not None
+        else _predict_base(frame, base_model)
+    )
+    return dict(frame, baseline=baseline)
 
 
 def _normalizer(frames: Sequence[FrameRecord]) -> tuple[np.ndarray, np.ndarray, int]:
@@ -298,7 +420,10 @@ def _frame_gradient(
     frame: dict[str, Any],
     budget_model: Any,
     objective_config: dict[str, Any] | None,
+    *,
+    base_model: Emulator | None = None,
 ) -> tuple[dict[str, Any], list[np.ndarray]]:
+    frame = _warm_frame(frame, base_model)
     options = _options(objective_config)
     activations = model._forward((frame["features"] - model.mean) / model.scale)
     latent = (frame["baseline"] + activations[-1][:, 0]).reshape(
@@ -321,6 +446,8 @@ def score_field(
     frames: Sequence[FrameRecord],
     budget_model: Any,
     objective_config: dict[str, Any] | None = None,
+    *,
+    base_model: Emulator | None = None,
 ) -> tuple[float, list[dict[str, Any]]]:
     """Evaluate the identical projected objective used to select checkpoints.
 
@@ -337,6 +464,11 @@ def score_field(
     objective_config
         Projected objective controls and optional raw_weight. The auxiliary raw
         loss is reported but never included in the returned selection score.
+    base_model
+        Optional frozen deployed emulator. Its full input-only prediction,
+        including its own photon projection, replaces the native ES baseline.
+        Warm-start frame records must include redshift and their cache must
+        retain native_es_xHI. The original native features are unchanged.
 
     Returns
     -------
@@ -350,7 +482,7 @@ def score_field(
     options = _options(objective_config)
     diagnostics = []
     for record in frames:
-        frame = _load_frame(record)
+        frame = _warm_frame(_load_frame(record), base_model)
         latent = model.latent_predict(
             frame["features"], baseline=frame["baseline"]
         ).reshape(frame["capacity"].shape)
@@ -415,6 +547,7 @@ def fit_field(
     min_delta: float = 1e-9,
     objective_config: dict[str, Any] | None = None,
     on_epoch: Callable[[dict[str, Any]], None] | None = None,
+    base_model: Emulator | None = None,
 ) -> tuple[LatentFieldModel, list[dict[str, Any]]]:
     """Train full snapshots with differentiation through a fixed photon budget.
 
@@ -444,12 +577,18 @@ def fit_field(
         only. Checkpoint selection uses the projected objective alone.
     on_epoch
         Optional callback receiving the completed epoch diagnostics.
+    base_model
+        Optional complete frozen emulator supplying the residual baseline.
+        Only the newly initialized residual network is optimized. Its zero
+        output retains the base prediction when the absorption budget matches.
+        Base predictions share the bounded frame cache; changing base inference
+        parameters during fitting raises an error.
 
     Returns
     -------
     model : LatentFieldModel
         Parameters of the best projected validation epoch. The zero-correction
-        ES initialization remains an eligible checkpoint at epoch zero.
+        ES or frozen-model initialization remains eligible at epoch zero.
     history : list of dict
         Losses for each epoch containing optimizer updates.
     """
@@ -458,8 +597,11 @@ def fit_field(
     if not training_frames or not validation_frames:
         raise ValueError("Training and validation each require at least one snapshot")
     model = _initialize(training_frames, seed=seed, hidden=hidden)
+    base_digest = _inference_digest(base_model) if base_model is not None else None
     model.metadata.update(
-        training_method="projected_multiscale_v2",
+        training_method="warm_started_v3"
+        if base_model is not None
+        else "projected_multiscale_v2",
         optimizer="Adam; one whole-snapshot update",
         projection_mode="capacity_l2",
         objective_config=options,
@@ -473,16 +615,27 @@ def fit_field(
         min_delta=min_delta,
         validation_snapshots=len(validation_frames),
         budget_model_frozen=True,
+        base_model_frozen=base_model is not None,
+        base_model_inference_sha256=base_digest,
+        baseline_scope="full frozen emulator prediction from native inputs"
+        if base_model is not None
+        else "native ES input field",
         frame_cache_max_bytes=FRAME_CACHE_MAX_BYTES,
         frame_cache_scope="per fit; read-only LRU; resolved-path file metadata checked per access",
     )
+    if base_model is not None:
+        model.metadata["initialization"] = (
+            "zero final residual layer retains the full frozen emulator baseline"
+        )
     parameters = [*model.weights, *model.biases]
     moments = [np.zeros_like(parameter) for parameter in parameters]
     squares = [np.zeros_like(parameter) for parameter in parameters]
     best_parameters = [parameter.copy() for parameter in parameters]
-    initial_train, _ = score_field(model, training_frames, budget_model, options)
+    initial_train, _ = score_field(
+        model, training_frames, budget_model, options, base_model=base_model
+    )
     best_loss, initial_validation = score_field(
-        model, validation_frames, budget_model, options
+        model, validation_frames, budget_model, options, base_model=base_model
     )
     best_mse = float(np.mean([row["projected_mse"] for row in initial_validation]))
     model.metadata["initial_baseline_metrics"] = {
@@ -497,16 +650,18 @@ def fit_field(
     for epoch in range(1, epochs + 1):
         for index in random.permutation(len(training_frames)):
             frame = _load_frame(training_frames[index])
-            _, gradients = _frame_gradient(model, frame, budget_model, options)
+            _, gradients = _frame_gradient(
+                model, frame, budget_model, options, base_model=base_model
+            )
             iteration += 1
             _adam_step(
                 parameters, gradients, moments, squares, iteration, learning_rate
             )
         training_loss, training_metrics = score_field(
-            model, training_frames, budget_model, options
+            model, training_frames, budget_model, options, base_model=base_model
         )
         validation_loss, validation_metrics = score_field(
-            model, validation_frames, budget_model, options
+            model, validation_frames, budget_model, options, base_model=base_model
         )
         validation_mse = float(
             np.mean([row["projected_mse"] for row in validation_metrics])
@@ -553,4 +708,6 @@ def fit_field(
         completed_epochs=len(history),
         optimizer_updates=iteration,
     )
+    if base_model is not None and _inference_digest(base_model) != base_digest:
+        raise ValueError("Frozen base model changed during residual fitting")
     return model, history

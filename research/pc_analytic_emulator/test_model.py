@@ -227,6 +227,135 @@ def test_latent_projection_roundtrip_retains_neutral_saturation(tmp_path: Path) 
         restored.predict(source, capacity, es, 7.5, 256)
 
 
+def residual_model(base: Emulator, feature_count: int = 24) -> Emulator:
+    """Wrap a deployed emulator in an initially zero linear residual."""
+    from research.pc_analytic_emulator.latent import LatentFieldModel
+
+    correction = LatentFieldModel(
+        [np.zeros((feature_count, 1))],
+        [np.zeros(1)],
+        np.zeros(feature_count),
+        np.ones(feature_count),
+        {},
+    )
+    return Emulator(
+        correction,
+        base.budget_model,
+        radii_cMpc=base.radii_cMpc,
+        projection_mode="capacity_l2",
+        base_model=base,
+    )
+
+
+def test_local_deficit_budget_roundtrip_in_recursive_base(tmp_path: Path) -> None:
+    """Restore new budget heads at both levels without losing finite escape."""
+    from research.pc_analytic_emulator.budget import LocalDeficitBudgetModel
+
+    source = np.full((4, 4, 4), 0.4)
+    capacity = np.ones_like(source)
+    es = np.linspace(0, 1, source.size).reshape(source.shape)
+    features, _ = budget_features(source, capacity, es, 7.5, 256)
+    base = fixture_model(source, capacity, es)
+    base.budget_model = LocalDeficitBudgetModel.from_training(
+        np.repeat(features, 3, axis=0), np.array([0.8, 0.9, 1.0])
+    )
+    model = residual_model(base)
+    before = model.predict(source, capacity, es, 7.5, 256)
+    model.save(tmp_path)
+    restored = Emulator.load(tmp_path)
+    after = restored.predict(source, capacity, es, 7.5, 256)
+
+    assert isinstance(restored.budget_model, LocalDeficitBudgetModel)
+    assert isinstance(restored.base_model.budget_model, LocalDeficitBudgetModel)
+    for directory in (tmp_path, tmp_path / "base_model"):
+        assert (
+            json.loads((directory / "model.json").read_text())["budget_kind"]
+            == "local_deficit"
+        )
+    np.testing.assert_array_equal(before["xHII"], after["xHII"])
+    assert before["photon_ledger"] == after["photon_ledger"]
+    assert after["absorption_efficiency"] == pytest.approx(0.9)
+    assert after["predicted_unabsorbed_photons"] == pytest.approx(0.1 * source.sum())
+
+
+@pytest.mark.parametrize("projection_mode", ["log_odds", "capacity_l2"])
+@pytest.mark.parametrize(
+    ("source_per_atom", "efficiency"), [(0, 1), (0.7, 0.75), (2, 1)]
+)
+def test_zero_residual_retains_complete_deployed_base(
+    projection_mode: str, source_per_atom: float, efficiency: float
+) -> None:
+    """Retain the base's budget and spatial field, including endpoint cases."""
+    capacity = np.linspace(0.5, 1.5, 64).reshape(4, 4, 4)
+    source = source_per_atom * capacity
+    es = np.linspace(0, 1, 64).reshape(source.shape)
+    base = fixture_model(source, capacity, es, efficiency=efficiency)
+    base.projection_mode = projection_mode
+    model = residual_model(base)
+    expected = base.predict(source, capacity, es, 7.5, 256)
+    result = model.predict(source, capacity, es, 7.5, 256)
+    np.testing.assert_array_equal(result["raw_xHII"], expected["xHII"])
+    np.testing.assert_allclose(result["xHII"], expected["xHII"], rtol=0, atol=2e-12)
+    assert result["absorption_efficiency"] == expected["absorption_efficiency"]
+    assert (
+        result["predicted_absorbed_photons"] == expected["predicted_absorbed_photons"]
+    )
+    assert result["photon_ledger"]["passed"]
+
+
+def test_recursive_residual_roundtrip_is_self_contained(tmp_path: Path) -> None:
+    """A moved model archive restores the base and corrections without external paths."""
+    source = np.full((4, 4, 4), 0.4)
+    capacity = np.linspace(0.5, 1.5, 64).reshape(source.shape)
+    es = np.linspace(0.1, 0.9, 64).reshape(source.shape)
+    first = residual_model(fixture_model(source, capacity, es))
+    first.field_model.weights[0][0, 0] = 0.07
+    second = residual_model(first)
+    second.field_model.weights[0][1, 0] = -0.04
+    directory = tmp_path / "original"
+    second.save(directory)
+    saved = json.loads((directory / "model.json").read_text())
+    assert saved["schema"] == 3
+    assert saved["base_model"] == "base_model"
+    assert (directory / "base_model/base_model/field_model.npz").is_file()
+    moved = directory.rename(tmp_path / "moved")
+    restored = Emulator.load(moved)
+    before = second.predict(source, capacity, es, 7.5, 256)
+    after = restored.predict(source, capacity, es, 7.5, 256)
+    for name in ("raw_xHI", "xHI", "latent_xHII"):
+        np.testing.assert_array_equal(before[name], after[name])
+    assert before["photon_ledger"] == after["photon_ledger"]
+    assert restored.base_model.base_model is not None
+
+
+def test_invalid_residual_base_is_rejected(tmp_path: Path) -> None:
+    """Reject self-referential bases and incompatible residual parameterizations."""
+    source = np.full((4, 4, 4), 0.4)
+    es = np.full_like(source, 0.6)
+    base = fixture_model(source, np.ones_like(source), es)
+    cyclic = residual_model(base)
+    cyclic.base_model = cyclic
+    with pytest.raises(ValueError, match="cycle"):
+        cyclic.save(tmp_path / "cyclic")
+    with pytest.raises(ValueError, match="cycle"):
+        cyclic.predict(source, np.ones_like(source), es, 7.5, 256)
+    base.base_model = fixture_model(source, np.ones_like(source), es)
+    with pytest.raises(ValueError, match="latent"):
+        base.save(tmp_path / "bounded")
+
+
+def test_saved_residual_cannot_reference_external_base(tmp_path: Path) -> None:
+    """Require the fixed local subdirectory recorded by schema three."""
+    source = np.full((4, 4, 4), 0.4)
+    model = residual_model(fixture_model(source, np.ones_like(source), 1 - source))
+    model.save(tmp_path)
+    record = json.loads((tmp_path / "model.json").read_text())
+    record["base_model"] = "../elsewhere"
+    (tmp_path / "model.json").write_text(json.dumps(record))
+    with pytest.raises(ValueError, match="base"):
+        Emulator.load(tmp_path)
+
+
 @pytest.mark.parametrize("bad", [np.nan, -0.1, 1.1])
 def test_bad_native_es_rejected(bad: float) -> None:
     """Reject nonfinite or unbounded inference-time ES fields."""

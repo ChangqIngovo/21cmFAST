@@ -23,7 +23,10 @@ from research.pc_field_emulator.features import build_features
 from research.pc_field_emulator.model import MLPModel, project_global_budget
 
 if TYPE_CHECKING:
-    from research.pc_analytic_emulator.budget import TabulatedBudgetModel
+    from research.pc_analytic_emulator.budget import (
+        LocalDeficitBudgetModel,
+        TabulatedBudgetModel,
+    )
     from research.pc_analytic_emulator.latent import LatentFieldModel
 
 DEFAULT_RADII = (6.25, 12.5, 25.0, 50.0)
@@ -224,15 +227,30 @@ class Emulator:
         ``log_odds`` preserves the original bounded-MLP behavior.
         ``capacity_l2`` minimizes capacity-weighted squared field adjustment
         and also supports unbounded latent corrections.
+    base_model
+        Optional frozen deployed emulator. Its complete constrained xHII field
+        replaces native ES as the residual baseline; all native inputs and
+        smoothing features remain unchanged. A zero residual with the same
+        absorption budget retains this base field within projection tolerance.
     """
 
     field_model: MLPModel | LatentFieldModel
-    budget_model: MLPModel | TabulatedBudgetModel
+    budget_model: MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel
     radii_cMpc: tuple[float, ...] = DEFAULT_RADII
     metadata: dict[str, Any] = field(default_factory=dict)
     projection_mode: str = "log_odds"
+    base_model: Emulator | None = None
 
     def _model_kinds(self) -> tuple[str, str]:
+        seen = {id(self)}
+        base = self.base_model
+        while base is not None:
+            if not isinstance(base, Emulator):
+                raise TypeError("A residual base must be a complete Emulator")
+            if id(base) in seen:
+                raise ValueError("Residual base models cannot contain a cycle")
+            seen.add(id(base))
+            base = base.base_model
         if self.projection_mode not in ("log_odds", "capacity_l2"):
             raise ValueError("Unsupported emulator projection mode")
         field_mode, budget_mode = (
@@ -243,11 +261,20 @@ class Emulator:
             raise ValueError("Unsupported field model output mode")
         if field_mode == "latent_linear" and self.projection_mode != "capacity_l2":
             raise ValueError("Latent field models require capacity_l2 projection")
+        if self.base_model is not None and field_mode != "latent_linear":
+            raise ValueError("Frozen-base corrections require a latent field model")
         if budget_mode not in ("residual", "efficiency"):
             raise ValueError("Unsupported budget model output mode")
+        budget_kind = (
+            getattr(self.budget_model, "budget_kind", "tabulated")
+            if budget_mode == "efficiency"
+            else "mlp"
+        )
+        if budget_kind not in ("mlp", "tabulated", "local_deficit"):
+            raise ValueError("Unsupported budget model serialization kind")
         return (
             "latent_linear" if field_mode == "latent_linear" else "mlp",
-            "tabulated" if budget_mode == "efficiency" else "mlp",
+            budget_kind,
         )
 
     def predict(
@@ -274,6 +301,7 @@ class Emulator:
             their field-derived ledger. The unabsorbed reservoir combines
             retained and escaped photons without resolving their transport.
         """
+        field_kind, budget_kind = self._model_kinds()
         photons, atoms, _ = _arrays(source, capacity, native_es_xHI)
         features, _, baseline = field_features(
             photons,
@@ -291,7 +319,10 @@ class Emulator:
             box_len,
             radii_cMpc=self.radii_cMpc,
         )
-        field_kind, budget_kind = self._model_kinds()
+        if self.base_model is not None:
+            baseline = self.base_model.predict(
+                photons, atoms, native_es_xHI, redshift, box_len
+            )["xHII"].ravel()
         if field_kind == "latent_linear":
             latent = self.field_model.latent_predict(
                 features, baseline=baseline
@@ -304,7 +335,7 @@ class Emulator:
             latent = raw
         efficiency = float(
             self.budget_model.predict(box_features)[0]
-            if budget_kind == "tabulated"
+            if budget_kind in ("tabulated", "local_deficit")
             else self.budget_model.predict(box_features, baseline=np.ones(1))[0]
         )
         if not np.isfinite(efficiency) or not 0 <= efficiency <= 1:
@@ -332,6 +363,8 @@ class Emulator:
                 raw, atoms, target, rtol=1e-13, atol=0.0
             )
         projection.update(method=self.projection_mode, field_kind=field_kind)
+        if self.base_model is not None:
+            projection["baseline"] = "frozen deployed emulator constrained xHII"
         field_absorbed = np.sum(
             np.multiply(atoms, corrected, dtype=np.longdouble), dtype=np.longdouble
         )
@@ -369,28 +402,36 @@ class Emulator:
         }
 
     def save(self, directory: str | Path) -> None:
-        """Save both fitted heads and their common inference configuration.
+        """Save fitted heads, inference settings and any complete frozen base.
 
         Parameters
         ----------
         directory
             Destination containing two pickle-free NPZ models and model.json.
+            A residual model stores its self-contained base under base_model/.
         """
         field_kind, budget_kind = self._model_kinds()
         directory = Path(directory)
         directory.mkdir(parents=True, exist_ok=True)
         self.field_model.save(directory / "field_model.npz")
         self.budget_model.save(directory / "budget_model.npz")
+        if self.base_model is not None:
+            self.base_model.save(directory / "base_model")
         (directory / "model.json").write_text(
             json.dumps(
                 {
-                    "schema": 2,
+                    "schema": 3 if self.base_model is not None else 2,
                     "method": "native-ES-residual-with-learned-global-absorption",
                     "radii_cMpc": list(self.radii_cMpc),
                     "metadata": self.metadata,
                     "projection_mode": self.projection_mode,
                     "field_kind": field_kind,
                     "budget_kind": budget_kind,
+                    **(
+                        {"base_model": "base_model"}
+                        if self.base_model is not None
+                        else {}
+                    ),
                 },
                 indent=2,
                 sort_keys=True,
@@ -413,10 +454,17 @@ class Emulator:
         Emulator
             Restored field and scalar models with shared inference settings.
         """
-        directory = Path(directory)
+        return cls._load(Path(directory), frozenset())
+
+    @classmethod
+    def _load(cls, directory: Path, ancestors: frozenset[Path]) -> Emulator:
+        directory = directory.resolve()
+        if directory in ancestors:
+            raise ValueError("Saved residual base models contain a directory cycle")
+        ancestors = ancestors | {directory}
         record = json.loads((directory / "model.json").read_text())
         if (
-            record.get("schema") not in (1, 2)
+            record.get("schema") not in (1, 2, 3)
             or record.get("method")
             != "native-ES-residual-with-learned-global-absorption"
         ):
@@ -441,20 +489,33 @@ class Emulator:
             field_model = MLPModel.load(directory / "field_model.npz")
         else:
             raise ValueError("Unsupported saved field model kind")
-        if budget_kind == "tabulated":
-            from research.pc_analytic_emulator.budget import TabulatedBudgetModel
+        if budget_kind in ("tabulated", "local_deficit"):
+            from research.pc_analytic_emulator.budget import load_budget
 
-            budget_model = TabulatedBudgetModel.load(directory / "budget_model.npz")
+            budget_model = load_budget(directory / "budget_model.npz")
         elif budget_kind == "mlp":
             budget_model = MLPModel.load(directory / "budget_model.npz")
         else:
             raise ValueError("Unsupported saved budget model kind")
+        base_model = None
+        if record["schema"] == 3:
+            if record.get("base_model") != "base_model":
+                raise ValueError(
+                    "Saved residual model requires its local base_model directory"
+                )
+            base_model = cls._load(directory / "base_model", ancestors)
+        elif "base_model" in record:
+            raise ValueError("Saved base model requires schema three")
         result = cls(
             field_model,
             budget_model,
             radii,
             record["metadata"],
             projection_mode,
+            base_model,
         )
-        result._model_kinds()
+        if result._model_kinds() != (field_kind, budget_kind):
+            raise ValueError(
+                "Saved field or budget kinds differ from their model archives"
+            )
         return result

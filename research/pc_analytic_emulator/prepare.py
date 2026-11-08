@@ -121,7 +121,9 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
         Audited teacher results directory.
     environment
         PC-prefixed controls. PC_THREADS limits BLAS threads per independent
-        trial worker, and PC_NCPUS covers their product.
+        trial worker, and PC_NCPUS covers their product. The opt-in
+        warm_started_v3 method reserves seeds 1006 and 1007 for validation;
+        explicit seed settings override each method's defaults.
 
     Returns
     -------
@@ -130,14 +132,24 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
     """
     workers = int(environment.get("PC_WORKERS", "4"))
     threads = int(environment.get("PC_THREADS", "4"))
+    method = environment.get("PC_TRAINING_METHOD", "legacy")
+    if method not in ("legacy", "projected_multiscale_v2", "warm_started_v3"):
+        raise ValueError("Unknown PC_TRAINING_METHOD")
+    warm_started = method == "warm_started_v3"
+    training_default = (
+        "1001,1002,1003,1004,1005" if warm_started else "1001,1002,1003,1004,1005,1006"
+    )
     config = {
         "input_root": str(input_root.resolve()),
         "train_seeds": _integers(
-            environment.get("PC_TRAIN_SEEDS", "1001,1002,1003,1004,1005,1006"),
+            environment.get("PC_TRAIN_SEEDS", training_default),
             "PC_TRAIN_SEEDS",
         ),
         "validation_seeds": _integers(
-            environment.get("PC_VALIDATION_SEEDS", "1007"), "PC_VALIDATION_SEEDS"
+            environment.get(
+                "PC_VALIDATION_SEEDS", "1006,1007" if warm_started else "1007"
+            ),
+            "PC_VALIDATION_SEEDS",
         ),
         "test_seeds": _integers(
             environment.get("PC_TEST_SEEDS", "1008"), "PC_TEST_SEEDS"
@@ -163,10 +175,7 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
         )
     if config["workers"] * config["threads"] > config["cpus"]:
         raise ValueError("PC_NCPUS must cover PC_WORKERS * PC_THREADS")
-    method = environment.get("PC_TRAINING_METHOD", "legacy")
-    if method not in ("legacy", "projected_multiscale_v2"):
-        raise ValueError("Unknown PC_TRAINING_METHOD")
-    if method == "projected_multiscale_v2":
+    if method in ("projected_multiscale_v2", "warm_started_v3"):
         config.update(
             training_method=method,
             v2_epochs=int(environment.get("PC_V2_EPOCHS", "80")),
@@ -181,6 +190,13 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
             ),
             k_fraction=float(environment.get("PC_K_FRACTION", "0.5")),
             regression_test_seeds=[1008],
+        )
+    if warm_started:
+        config.update(
+            warmstart_epochs=int(environment.get("PC_RESIDUAL_EPOCHS", "80")),
+            warmstart_learning_rate=float(
+                environment.get("PC_RESIDUAL_LEARNING_RATE", "0.0003")
+            ),
         )
     if environment.get("PC_EXTERNAL_TEST_ROOT"):
         config["external_test_root"] = str(
@@ -333,7 +349,7 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict[str, Any]:
         "scope": "Train on completed analytic coeval photon-conserving teachers; physical seeds are disjoint across train, validation and test; no simulation or reference reruns",
         "network_required_on_compute": False,
     }
-    if config.get("training_method") == "projected_multiscale_v2":
+    if config.get("training_method") in ("projected_multiscale_v2", "warm_started_v3"):
         manifest["test_interpretation"] = {
             "previously_inspected_regression_seeds": [1008],
             "scope": "Seed 1008 is an inspected regression test, not a fresh held-out realization for this improvement",

@@ -6,6 +6,11 @@ import numpy as np
 import pytest
 
 from research.pc_analytic_emulator import fit
+from research.pc_analytic_emulator.model import (
+    Emulator,
+    budget_features,
+    field_features,
+)
 from research.pc_field_emulator.model import MLPModel
 
 
@@ -233,3 +238,230 @@ def test_frame_cache_reloads_changed_file_and_skips_oversize(tmp_path: Path) -> 
         fit._load_frame(record)
         assert cache.nbytes == 0
         assert not cache.entries
+
+
+def _warm_fixture(path: Path, *, saturated: bool = False) -> tuple[dict, Emulator]:
+    feature = np.linspace(-1, 1, 64).reshape(4, 4, 4)
+    source, capacity = np.full_like(feature, 0.5), np.ones_like(feature)
+    native = (feature <= 0).astype(float) if saturated else 0.5 - 0.15 * feature
+    features, _, baseline = field_features(source, capacity, native, 8.0, 16.0)
+    globals_, _ = budget_features(source, capacity, native, 8.0, 16.0)
+    field = MLPModel(
+        [np.zeros((features.shape[1], 1))],
+        [np.array([0.0 if saturated else 0.2])],
+        np.zeros(features.shape[1]),
+        np.ones(features.shape[1]),
+        {},
+        "residual",
+    )
+    budget = MLPModel(
+        [np.zeros((globals_.shape[1], 1))],
+        [np.zeros(1)],
+        np.zeros(globals_.shape[1]),
+        np.ones(globals_.shape[1]),
+        {},
+        "residual",
+    )
+    base = Emulator(field, budget, projection_mode="capacity_l2")
+    np.savez(
+        path,
+        features=features,
+        baseline=baseline,
+        source=source,
+        capacity=capacity,
+        native_es_xHI=native,
+        global_features=globals_,
+        teacher_xHI=0.5 - 0.2 * feature,
+        box_len=np.asarray(16.0),
+    )
+    return {"cache": str(path), "seed": 1, "redshift": 8.0}, base
+
+
+def test_zero_residual_score_reproduces_full_frozen_base(tmp_path: Path) -> None:
+    """Use the deployed base field including its budget, never teacher labels."""
+    record, base = _warm_fixture(tmp_path / "frame.npz")
+    frame = fit._load_frame(record)
+    residual = fit._initialize([record], seed=7, hidden=(3,))
+    score, rows = fit.score_field(
+        residual, [record], base.budget_model, base_model=base
+    )
+    prediction = base.predict(
+        frame["source"], frame["capacity"], frame["native_es_xHI"], 8.0, 16.0
+    )
+    warm = fit._warm_frame(frame, base)
+    np.testing.assert_array_equal(warm["baseline"], prediction["xHII"].ravel())
+    assert not np.array_equal(warm["baseline"], frame["baseline"])
+    expected, _, _ = fit.projected_objective(
+        prediction["xHII"], 1 - frame["teacher_xHI"], frame["capacity"], 16.0
+    )
+    assert score == pytest.approx(expected, rel=1e-12, abs=1e-14)
+    assert rows[0]["projection"]["relative_count_residual"] < 1e-12
+    changed_teacher = dict(frame, teacher_xHI=np.zeros_like(frame["teacher_xHI"]))
+    np.testing.assert_array_equal(
+        fit._warm_frame(changed_teacher, base)["baseline"], warm["baseline"]
+    )
+
+
+def test_warm_residual_gradient_matches_finite_difference(tmp_path: Path) -> None:
+    """Differentiate new residual parameters through the frozen-base projection."""
+    record, base = _warm_fixture(tmp_path / "frame.npz")
+    frame = fit._load_frame(record)
+    residual = fit._initialize([record], seed=7, hidden=(3,))
+    residual.weights[-1][:] = [[0.05], [-0.03], [0.04]]
+    _, derivatives = fit._frame_gradient(
+        residual, frame, base.budget_model, None, base_model=base
+    )
+    parameter = residual.weights[-1]
+    before, step = parameter[1, 0], 1e-6
+    parameter[1, 0] = before + step
+    plus, _ = fit._frame_gradient(
+        residual, frame, base.budget_model, None, base_model=base
+    )
+    parameter[1, 0] = before - step
+    minus, _ = fit._frame_gradient(
+        residual, frame, base.budget_model, None, base_model=base
+    )
+    assert derivatives[len(residual.weights) - 1][1, 0] == pytest.approx(
+        (plus["optimization_loss"] - minus["optimization_loss"]) / (2 * step),
+        rel=3e-5,
+        abs=3e-7,
+    )
+
+
+def test_warm_training_retains_base_weights_and_can_leave_wrong_saturation(
+    tmp_path: Path,
+) -> None:
+    """The new auxiliary gradient can correct a clipped base without fitting it."""
+    record, base = _warm_fixture(tmp_path / "frame.npz", saturated=True)
+    digest = fit._inference_digest(base)
+    residual, history = fit.fit_field(
+        [record],
+        [record],
+        base.budget_model,
+        seed=7,
+        hidden=(4,),
+        epochs=20,
+        learning_rate=0.02,
+        patience=20,
+        base_model=base,
+    )
+    assert fit._inference_digest(base) == digest
+    assert residual.metadata["base_model_inference_sha256"] == digest
+    assert residual.metadata["base_model_frozen"]
+    assert history
+    assert (
+        residual.metadata["best_validation_loss"]
+        < residual.metadata["initial_baseline_metrics"]["validation_loss"]
+    )
+    score, _ = fit.score_field(residual, [record], base.budget_model, base_model=base)
+    assert score == residual.metadata["best_validation_loss"]
+
+
+def test_warm_prediction_cache_is_shared_bounded_and_stale_safe(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Charge immutable base predictions to the frame LRU and reject stale models."""
+    record, base = _warm_fixture(tmp_path / "frame.npz")
+    frame = fit._load_frame(record)
+    size = sum(v.nbytes for v in frame.values() if isinstance(v, np.ndarray))
+    prediction_size = frame["capacity"].nbytes
+    calls = []
+    predict = base.predict
+
+    def count(*args: object, **kwargs: object) -> dict:
+        calls.append(1)
+        return predict(*args, **kwargs)
+
+    monkeypatch.setattr(base, "predict", count)
+    with fit._frame_cache_scope(max_bytes=size + prediction_size) as cache:
+        first = fit._warm_frame(fit._load_frame(record), base)
+        second = fit._warm_frame(fit._load_frame(record), base)
+        assert first["baseline"] is second["baseline"]
+        assert len(calls) == 1
+        assert cache.nbytes == size + prediction_size
+        with pytest.raises(ValueError, match="read-only"):
+            first["baseline"][0] = 0.0
+        base.field_model.biases[0][0] += 0.01
+        with pytest.raises(ValueError, match="Frozen base model changed"):
+            fit._warm_frame(fit._load_frame(record), base)
+        base.field_model.biases[0][0] -= 0.01
+        _warm_fixture(Path(record["cache"]), saturated=True)
+        after = fit._warm_frame(fit._load_frame(record), base)
+        assert len(calls) == 2
+        assert not np.array_equal(after["baseline"], first["baseline"])
+        assert cache.nbytes <= size + prediction_size
+    assert cache.nbytes == 0
+    assert not cache.frozen_bases
+
+
+def test_warm_start_requires_explicit_native_inputs_and_epoch(tmp_path: Path) -> None:
+    """Missing original input metadata cannot be replaced with target information."""
+    record, base = _warm_fixture(tmp_path / "frame.npz")
+    frame = fit._load_frame(record)
+    del frame["native_es_xHI"]
+    with pytest.raises(ValueError, match="native_es_xHI"):
+        fit._warm_frame(frame, base)
+    frame = fit._load_frame(record)
+    del frame["record"]["redshift"]
+    with pytest.raises(ValueError, match="redshift"):
+        fit._warm_frame(frame, base)
+
+
+def test_warm_score_matches_deployed_emulator_after_training(tmp_path: Path) -> None:
+    """Use identical frozen baseline, projection and objective at fit and inference."""
+    record, base = _warm_fixture(tmp_path / "frame.npz")
+    before = fit._inference_digest(base)
+    residual, _ = fit.fit_field(
+        [record],
+        [record],
+        base.budget_model,
+        seed=5,
+        hidden=(3,),
+        epochs=4,
+        base_model=base,
+    )
+    deployed = Emulator(
+        residual,
+        base.budget_model,
+        radii_cMpc=base.radii_cMpc,
+        projection_mode="capacity_l2",
+        base_model=base,
+    )
+    frame = fit._load_frame(record)
+    prediction = deployed.predict(
+        frame["source"], frame["capacity"], frame["native_es_xHI"], 8.0, 16.0
+    )
+    expected, _, _ = fit.projected_objective(
+        prediction["xHII"], 1 - frame["teacher_xHI"], frame["capacity"], 16.0
+    )
+    score, rows = fit.score_field(
+        residual, [record], base.budget_model, base_model=base
+    )
+    assert score == pytest.approx(expected, rel=1e-12, abs=1e-14)
+    assert (
+        rows[0]["projection"]["target_count"]
+        == prediction["predicted_absorbed_photons"]
+    )
+    assert prediction["photon_ledger"]["passed"]
+    assert fit._inference_digest(base) == before
+
+
+def test_warm_fit_rejects_base_mutation_from_callback(tmp_path: Path) -> None:
+    """A changing frozen baseline cannot silently invalidate cached predictions."""
+    record, base = _warm_fixture(tmp_path / "frame.npz")
+
+    def mutate(_: dict) -> None:
+        base.field_model.biases[0][0] += 0.01
+
+    with pytest.raises(ValueError, match="Frozen base model changed"):
+        fit.fit_field(
+            [record],
+            [record],
+            base.budget_model,
+            seed=5,
+            hidden=(3,),
+            epochs=1,
+            base_model=base,
+            on_epoch=mutate,
+        )
+    assert fit._ACTIVE_FRAME_CACHE.get() is None

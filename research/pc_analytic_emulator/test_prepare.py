@@ -152,6 +152,61 @@ def test_improved_configuration_keeps_legacy_opt_in(tmp_path):
         prepare.configuration(tmp_path, {"PC_TRAINING_METHOD": "unknown"})
 
 
+def test_residual_configuration_reserves_two_validation_seeds(tmp_path: Path) -> None:
+    """Residual fitting starts with a separate 35/14/7 campaign split."""
+    config = prepare.configuration(tmp_path, {"PC_TRAINING_METHOD": "warm_started_v3"})
+    assert config["training_method"] == "warm_started_v3"
+    assert config["train_seeds"] == list(range(1001, 1006))
+    assert config["validation_seeds"] == [1006, 1007]
+    assert config["test_seeds"] == config["regression_test_seeds"] == [1008]
+    assert config["warmstart_epochs"] == 80
+    assert config["warmstart_learning_rate"] == 0.0003
+    assert config["epochs"] == 200
+    assert prepare.configuration(tmp_path, {})["train_seeds"] == list(range(1001, 1007))
+
+
+def test_residual_configuration_accepts_explicit_controls(tmp_path: Path) -> None:
+    """User-supplied splits and refinement controls override v3 defaults."""
+    config = prepare.configuration(
+        tmp_path,
+        {
+            "PC_TRAINING_METHOD": "warm_started_v3",
+            "PC_TRAIN_SEEDS": "10,20",
+            "PC_VALIDATION_SEEDS": "30,40",
+            "PC_TEST_SEEDS": "50",
+            "PC_RESIDUAL_EPOCHS": "5",
+            "PC_RESIDUAL_LEARNING_RATE": "0.0001",
+        },
+    )
+    assert config["train_seeds"] == [10, 20]
+    assert config["validation_seeds"] == [30, 40]
+    assert config["test_seeds"] == [50]
+    assert config["warmstart_epochs"] == 5
+    assert config["warmstart_learning_rate"] == 0.0001
+
+
+def test_residual_flag_is_documented_and_conflicting_modes_fail() -> None:
+    """Opt-in method flags cannot silently replace one another."""
+    script = Path(__file__).with_name("gadi_prepare.sh")
+    help_result = subprocess.run(
+        ["bash", str(script), "--residual", "--help"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert help_result.returncode == 0
+    assert "warm_started_v3" in help_result.stdout
+    assert "1006,1007" in help_result.stdout
+    conflict = subprocess.run(
+        ["bash", str(script), "--improved", "--residual"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert conflict.returncode == 2
+    assert "one training method" in conflict.stderr
+
+
 def _prepared_fixture(tmp_path, monkeypatch):
     """Install a minimal audited-data stand-in for preparation unit checks."""
     teacher = tmp_path / "teacher"
@@ -215,6 +270,19 @@ def test_prepare_freezes_inputs_and_split(tmp_path, monkeypatch):
     assert (run / "PREPARED").is_file()
     assert prepare.verify(run, 16) == manifest
     assert not (run / "results").exists()
+
+
+def test_residual_preparation_records_regression_and_new_split(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """The manifest preserves seed1008's inspected role under the v3 split."""
+    run, _, _ = _prepared_fixture(tmp_path, monkeypatch)
+    manifest = prepare.prepare(run, {"PC_TRAINING_METHOD": "warm_started_v3"})
+    assert manifest["split_counts"] == {"train": 5, "validation": 2, "test": 1}
+    assert manifest["test_interpretation"]["previously_inspected_regression_seeds"] == [
+        1008
+    ]
+    assert prepare.verify(run, 16) == manifest
 
 
 @pytest.mark.parametrize(

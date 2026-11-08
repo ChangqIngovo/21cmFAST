@@ -158,7 +158,8 @@ class LatentFieldModel:
         features
             Nonempty samples-by-features matrix in original feature units.
         baseline
-            Required input-only native ES ionized fraction for every sample.
+            Required input-only ionized fraction for every sample: native ES
+            or the full frozen deployed model prediction.
         chunk_size
             Positive maximum number of samples evaluated in one matrix batch.
 
@@ -209,7 +210,8 @@ class LatentFieldModel:
         features
             Nonempty samples-by-features matrix in original feature units.
         baseline
-            Required input-only native ES ionized fraction for every sample.
+            Required input-only ionized fraction for every sample: native ES
+            or the full frozen deployed model prediction.
         chunk_size
             Positive maximum number of samples evaluated in one matrix batch.
 

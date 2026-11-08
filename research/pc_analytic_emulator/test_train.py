@@ -38,6 +38,10 @@ def test_sampling_is_stable_and_does_not_repeat() -> None:
         {"validation_seeds": [1001]},
         {"training_method": "unknown"},
         {"v2_epochs": 0},
+        {"warmstart_epochs": 0},
+        {"warmstart_learning_rate": 0},
+        {"warmstart_learning_rate": True},
+        {"warmstart_learning_rate": float("nan")},
         {"spectral_weight": -1},
         {"spectral_power_floor": -1},
         {"raw_weight": float("nan")},
@@ -67,6 +71,41 @@ def test_training_method_is_explicit_and_legacy_remains_default(tmp_path: Path) 
     assert improved["spectral_weight"] == 0.1
     assert improved["spectral_power_floor"] == 1e-4
     assert improved["regression_test_seeds"] == [1008]
+    residual = train.validate_config(
+        {
+            "input_root": str(tmp_path),
+            "training_method": "warm_started_v3",
+            "regression_test_seeds": [],
+        }
+    )
+    assert residual["warmstart_epochs"] == 80
+    assert residual["warmstart_learning_rate"] == 3e-4
+    assert residual["regression_test_seeds"] == [1008]
+
+
+def test_compact_comparison_retains_each_candidate_and_validation_seed() -> None:
+    """A readable report preserves selection evidence but omits bulky modes."""
+    candidate = {
+        "kind": "fixed_field",
+        "validation_objective": 0.1,
+        "validation_by_seed": {"1006": 0.08, "1007": 0.12},
+        "snapshots": [{"objective": {"shell_mode_count": [18, 62]}}],
+    }
+    row = {
+        "model_seed": 23,
+        "selected_kind": "fixed_field",
+        "validation_objective": 0.1,
+        "validation_mse": 0.01,
+        "candidates": [candidate],
+    }
+    report = train._compact_comparison([row], row, [1006, 1007])
+    assert report["validation_seeds"] == [1006, 1007]
+    assert report["selected"]["model_seed"] == 23
+    saved = report["trials"][0]["candidates"][0]
+    assert saved["validation_by_seed"] == candidate["validation_by_seed"]
+    assert "snapshots" not in saved
+    assert "snapshots" in candidate
+    assert report["test_used_for_selection"] is False
 
 
 def test_candidate_selection_uses_validation_only() -> None:

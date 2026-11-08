@@ -77,7 +77,8 @@ schema 1 models keep their original behavior.
 
 Seed 1008 has already been inspected. It is now a **regression test** for the
 improved method, not evidence from a fresh unseen simulation. It remains
-excluded from fitting and checkpoint selection; seed 1007 supplies validation.
+excluded from fitting and checkpoint selection. V2 uses seed 1007 for validation;
+the residual workflow below reserves seeds 1006 and 1007.
 
 An optional `--external-test-root /absolute/path/to/completed_teacher_run`
 adds a separately audited archive to the same command. Its labels are evaluated
@@ -93,13 +94,83 @@ the original campaign's recorded physical and solver settings. Its
 by `research/pc_analytic/gadi_teacher_prepare.sh`; the teacher run itself is not
 a replacement for that parent.
 
+## Residual refinement with two validation realizations
+
+`--residual` selects `warm_started_v3`. It first refits the legacy models using
+the new training split, compares absorption estimators and projection methods
+while keeping each fitted field fixed, and then learns a residual around the
+chosen complete deployed prediction. The fixed base includes its own budget
+and projection. A zero residual with the same budget therefore starts from the
+base field, rather than from uncorrected native ES.
+
+```bash
+(
+    set -euo pipefail
+    cd /g/data/qp00/sz4640/21cmFAST
+    git switch matched-photon-conservation
+    git pull --ff-only origin matched-photon-conservation
+    module load python3/3.12.1
+
+    unset PC_TEACHER_RUN PC_EXTERNAL_TEST_ROOT PC_TRAINING_METHOD
+    PC_RUN_ROOT=/g/data/qp00/sz4640/21cmfast_runs \
+    PC_TRAIN_SEEDS=1001,1002,1003,1004,1005 \
+    PC_VALIDATION_SEEDS=1006,1007 PC_TEST_SEEDS=1008 \
+    PC_MODEL_SEEDS=11,23,47,83 \
+    PC_WORKERS=4 PC_THREADS=4 PC_NCPUS=16 \
+    PC_EMULATOR_EPOCHS=200 PC_RESIDUAL_EPOCHS=80 \
+    PC_RESIDUAL_LEARNING_RATE=0.0003 PC_SAMPLES_PER_SNAPSHOT=8192 \
+    PC_MEM=64GB PC_WALLTIME=04:00:00 PC_QUEUE=normal \
+    bash research/pc_analytic_emulator/gadi_prepare.sh \
+        --latest-teacher --residual --submit
+)
+```
+
+This reuses the same 56 teacher snapshots as 35 training, 14 validation and
+7 regression snapshots. Every base network, budget predictor and normalization
+is refitted on the new training split. Previous model checkpoints trained on
+seed 1006 are not imported, because that seed now belongs to validation.
+Explicit `PC_TRAIN_SEEDS`, `PC_VALIDATION_SEEDS` and `PC_TEST_SEEDS` settings can
+select other disjoint groups; all redshifts of a seed remain together.
+Assess the change against the freshly refitted legacy candidates within this
+same run. The earlier 42/7/7 run used different training and validation samples,
+so its validation score is not directly comparable to the new 35/14/7 score.
+
+`PC_RESIDUAL_EPOCHS` sets the residual epoch limit (80), and
+`PC_RESIDUAL_LEARNING_RATE` its learning rate (0.0003). The original base and
+budget fits still use `PC_EMULATOR_EPOCHS` (200). Unmodified base candidates
+remain eligible during validation selection. The residual field uses the same
+physical input features and projected field/Fourier objective as v2; it does
+not introduce teacher fields as inference inputs. New predictions retain the
+independent unabsorbed-photon reservoir and global conservation audit.
+
+The budget comparison retains a constant estimator, a tabulated estimator,
+an MLP, and local interpolation using either three or five training neighbours.
+The local estimators interpolate the absorption deficit `1 - eta`, where
+`eta = absorbed photons / min(source photons, atom capacity)`, using photon load,
+density/source scatter and native-ES statistics. Their tables and feature
+normalization use training data only. They introduce no redshift switch and
+do not force complete absorption whenever the photon supply exceeds the atom
+count. Validation compares each budget with the fixed field and projection;
+the scalar budget fit alone does not determine the deployed model.
+
+V3 expands validation within the existing campaign; it does not create a fresh
+external test. Seed 1008 retains its regression label. An additional
+`--external-test-root` remains available for independent completed teacher
+realizations with matching physical settings. `--improved` continues to run v2,
+and neither flag changes the legacy default.
+
 ## Data split and fitting
+
+The legacy and v2 default split is:
 
 | Role | Simulation seeds | Snapshots |
 | --- | --- | ---: |
 | Training | 1001–1006 | 42 |
 | Validation | 1007 | 7 |
 | Previously inspected regression test | 1008 | 7 |
+
+The v3 default moves seed 1006 from training to validation, giving 35/14/7
+snapshots. All models are refitted for that split.
 
 Every redshift of an initial-condition seed stays in the same split. Input and
 label arrays are checked against the native and teacher receipts, and the
@@ -175,6 +246,20 @@ model. Neither internal regression labels nor external test labels make this
 choice. `--improved` runs this comparison and selection; its name is not an
 accuracy result.
 
+### Frozen-base residual inference
+
+In v3 the selected fixed base is evaluated on the native inputs before the
+residual network. Its parameters are frozen throughout residual fitting.
+The added network predicts a correction to the base's projected xHII field;
+capacity-weighted projection then enforces the independently predicted budget.
+The zero-residual checkpoint and unrefined candidates remain available for
+validation selection. Training and inference use the same base prediction.
+
+Schema 3 stores the complete base recursively in `model/base_model/`, alongside
+the residual `model/field_model.npz` and its budget estimator. Inference therefore
+does not need an earlier training directory or any teacher arrays. Schema 1 and
+2 files remain readable with their existing predictions.
+
 ## Results and interpretation
 
 Within the printed `analytic_train_...` directory:
@@ -185,7 +270,9 @@ Within the printed `analytic_train_...` directory:
 | `model/field_model.npz` | Fitted field network and its training normalizer |
 | `model/budget_model.npz` | Selected absorption estimator: network, table or reference |
 | `model/model.json` | Inference configuration and teacher provenance |
+| `model/base_model/` | Self-contained frozen base when a residual candidate wins |
 | `model_selection.json` | Validation scores for all initializations and baseline candidates |
+| `comparison_summary.json` | V3 compact candidate scores and validation-seed summaries |
 | `trials/seed*/history.json` | Per-epoch field history; v2 links the separate absorption selection |
 | `dataset_manifest.json` | Audited input hashes, physical settings and seed split |
 | `test_metrics.csv`, `test_metrics.json` | Raw, constrained and native ES errors against the teacher |
@@ -195,6 +282,10 @@ Within the printed `analytic_train_...` directory:
 | `test_errors.png` | Internal test field and mass-ionized-fraction errors |
 | `external_test/summary.json` | Separate external-test results, when requested |
 | `external_test/test_metrics.json` | Per-snapshot external-test errors, without model selection |
+
+For v3 comparisons, inspect `summary.json` and `comparison_summary.json` first.
+The latter reports candidate and validation-seed scores without repeating the
+large per-shell arrays retained in `model_selection.json`.
 
 21-cm brightness is reconstructed from the original cosmological parameters
 using the explicit `BrightnessTemperatureBox.c` formula for `USE_TS_FLUCT=False`.
@@ -229,7 +320,8 @@ bash /absolute/path/to/analytic_train_run/resubmit.sh
 ```
 
 Completed trials with valid receipts are reused. An interrupted trial restarts;
-this is trial-level recovery, not optimizer-state recovery within an epoch.
+in v3, an already completed legacy base is retained when its residual stage
+restarts. This is stage-level recovery, not optimizer-state recovery within an epoch.
 A completed run is checksum-verified without refitting or selecting on its test
 results. Changed source, teacher inputs or runtime require a newly prepared run.
 

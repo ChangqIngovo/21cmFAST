@@ -68,6 +68,8 @@ DEFAULTS = {
     "sampling_seed": 2026,
     "training_method": "legacy",
     "v2_epochs": 80,
+    "warmstart_epochs": 80,
+    "warmstart_learning_rate": 3e-4,
     "spectral_weight": 0.1,
     "spectral_power_floor": 1e-4,
     "front_weight": 1.0,
@@ -113,6 +115,7 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         "batch_size",
         "patience",
         "v2_epochs",
+        "warmstart_epochs",
     ):
         if type(result[key]) is not int or result[key] < 1:
             raise ValueError(f"{key} must be a positive integer")
@@ -168,7 +171,11 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
 
 
 def _validate_extended_controls(result: dict[str, Any]) -> None:
-    if result["training_method"] not in {"legacy", "projected_multiscale_v2"}:
+    if result["training_method"] not in {
+        "legacy",
+        "projected_multiscale_v2",
+        "warm_started_v3",
+    }:
         raise ValueError("Unknown training_method")
     regression = result["regression_test_seeds"]
     if (
@@ -177,8 +184,16 @@ def _validate_extended_controls(result: dict[str, Any]) -> None:
         or len(regression) != len(set(regression))
     ):
         raise ValueError("regression_test_seeds requires unique nonnegative seeds")
-    if result["training_method"] == "projected_multiscale_v2":
+    if result["training_method"] in {"projected_multiscale_v2", "warm_started_v3"}:
         result["regression_test_seeds"] = sorted(set(regression) | {1008})
+    residual_rate = result["warmstart_learning_rate"]
+    if (
+        isinstance(residual_rate, bool)
+        or not isinstance(residual_rate, (int, float))
+        or not np.isfinite(residual_rate)
+        or residual_rate <= 0
+    ):
+        raise ValueError("warmstart_learning_rate must be finite and positive")
     for key in (
         "spectral_weight",
         "spectral_power_floor",
@@ -479,7 +494,7 @@ def _prepare_v2_cache(
         matrices[f"mass_scale_{split}"] = np.asarray(mass_scales)
     np.savez_compressed(folder / "budget_arrays.npz", **matrices)
     record = {
-        "training_method": "projected_multiscale_v2",
+        "training_method": config["training_method"],
         "training_snapshots": rows["train"],
         "validation_snapshots": rows["validation"],
         "field_feature_names": feature_names,
@@ -523,6 +538,52 @@ def _prepare_v2_budget(
         "selection": report,
         "initialization_seed": config["model_seeds"][0],
         "selected_before_field_training": True,
+        "test_used": False,
+    }
+    _write_json(folder / "budget_selection.json", record)
+    _seal(folder, identity, record)
+    return record
+
+
+def _prepare_v3_budget(
+    folder: Path, cache: Path, config: dict[str, Any], identity: dict[str, Any]
+) -> dict[str, Any]:
+    """Freeze every training-fitted budget for the controlled field comparison."""
+    from research.pc_analytic_emulator.budget import fit_budget_v3
+
+    cached = _verified_record(folder, identity)
+    if cached is not None:
+        return cached
+    _archive_partial(folder)
+    with np.load(cache / "budget_arrays.npz", allow_pickle=False) as arrays:
+        models, report = fit_budget_v3(
+            arrays["global_train"],
+            arrays["eta_train"],
+            arrays["mass_scale_train"],
+            arrays["global_validation"],
+            arrays["eta_validation"],
+            arrays["mass_scale_validation"],
+            seed=config["model_seeds"][0],
+            epochs=config["epochs"],
+            patience=config["patience"],
+            learning_rate=config["learning_rate"],
+            hidden=tuple(config["budget_hidden"]),
+        )
+    candidates = []
+    for kind, model in models.items():
+        if not kind or any(
+            c not in "abcdefghijklmnopqrstuvwxyz0123456789_" for c in kind
+        ):
+            raise ValueError("Budget candidate names must be safe artifact identifiers")
+        path = folder / f"{kind}.npz"
+        model.save(path)
+        candidates.append({"kind": kind, "model_path": str(path)})
+    record = {
+        "candidates": candidates,
+        "selection": report,
+        "initialization_seed": config["model_seeds"][0],
+        "fitted_before_field_comparison": True,
+        "selection_scope": "All fitted budgets retained for fixed-field validation; test labels excluded",
         "test_used": False,
     }
     _write_json(folder / "budget_selection.json", record)
@@ -690,6 +751,10 @@ def _fit_legacy_trial(task: dict[str, Any]) -> dict[str, Any]:
 
 
 def _fit_trial(task: dict[str, Any]) -> dict[str, Any]:
+    if task["config"]["training_method"] == "warm_started_v3":
+        from research.pc_analytic_emulator.warmstart import fit_trial
+
+        return fit_trial(task)
     if task["config"]["training_method"] == "projected_multiscale_v2":
         return _fit_v2_trial(task)
     return _fit_legacy_trial(task)
@@ -901,6 +966,45 @@ def _fit_v2_trial(task: dict[str, Any]) -> dict[str, Any]:
     _write_json(folder / "trial.json", record)
     _seal(folder, trial_identity, record)
     return record
+
+
+def _compact_comparison(
+    trials: Sequence[dict[str, Any]],
+    selected: dict[str, Any],
+    validation_seeds: Sequence[int],
+) -> dict[str, Any]:
+    """Summarize all controlled comparisons without copying shell-level arrays."""
+    from research.pc_analytic_emulator.warmstart import SELECTION_SCOPE as V3_SCOPE
+
+    keys = (
+        "model_seed",
+        "selected_kind",
+        "validation_objective",
+        "validation_mse",
+        "field_best_epoch",
+        "field_completed_epochs",
+    )
+    return {
+        "validation_seeds": list(validation_seeds),
+        "selection_scope": V3_SCOPE,
+        "selected": {key: selected.get(key) for key in keys},
+        "trials": [
+            {
+                **{key: trial.get(key) for key in keys},
+                "candidates": [
+                    {
+                        key: value
+                        for key, value in candidate.items()
+                        if key != "snapshots"
+                    }
+                    for candidate in trial["candidates"]
+                ],
+            }
+            for trial in trials
+        ],
+        "test_used_for_selection": False,
+        "scope": "Same split, fixed-field budget/projection ablations followed by frozen-base residual refinement; numerical losses are not relative power-spectrum errors",
+    }
 
 
 def _choose_trial(rows: list[dict[str, Any]]) -> dict[str, Any]:
@@ -1294,8 +1398,13 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
     """
     config = validate_config(config)
     dataset = load_dataset(config["input_root"])
-    improved = config["training_method"] == "projected_multiscale_v2"
+    warm_started = config["training_method"] == "warm_started_v3"
+    improved = config["training_method"] != "legacy"
     selection_scope = V2_SELECTION_SCOPE if improved else SELECTION_SCOPE
+    if warm_started:
+        from research.pc_analytic_emulator.warmstart import SELECTION_SCOPE as V3_SCOPE
+
+        selection_scope = V3_SCOPE
     external = None
     if config["external_test_root"] is not None:
         from research.pc_analytic_emulator.prepare import validate_external_test
@@ -1400,9 +1509,8 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
         )
         budget_record = None
         if improved:
-            budget_record = _prepare_v2_budget(
-                output / "budget", cache, config, identity
-            )
+            prepare_budget = _prepare_v3_budget if warm_started else _prepare_v2_budget
+            budget_record = prepare_budget(output / "budget", cache, config, identity)
             _prepare_cache(output / "legacy_fit_cache", splits, config, identity)
         tasks = [
             {
@@ -1413,7 +1521,10 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
                 "cache": str(cache),
                 "budget_model_path": None
                 if budget_record is None
-                else budget_record["model_path"],
+                else budget_record.get("model_path"),
+                "budget_candidates": budget_record["candidates"]
+                if warm_started and budget_record is not None
+                else [],
                 "legacy_cache": str(output / "legacy_fit_cache") if improved else None,
             }
             for seed in config["model_seeds"]
@@ -1456,6 +1567,11 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
             "budget_selection": budget_record,
         }
         _write_json(output / "model_selection.json", selection)
+        if warm_started:
+            _write_json(
+                output / "comparison_summary.json",
+                _compact_comparison(trials, selected, seed_roles["validation"]),
+            )
         model = Emulator.load(selected["model_directory"])
         model.metadata.update(
             teacher_physics=dataset.physics,
@@ -1514,7 +1630,9 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
                 "budget_checkpoint_selection", "Validation absorption-efficiency MSE"
             ),
             "budget_selection": budget_record,
-            "budget_selection_scope": "Frozen budget for projected candidates; legacy candidates retain their independently trained budget"
+            "budget_selection_scope": "Training-fitted budget and projection compared on a fixed field; chosen budget frozen during residual fitting"
+            if warm_started
+            else "Frozen budget for projected candidates; legacy candidates retain their independently trained budget"
             if improved
             else "Legacy field and budget heads",
             "selected_projection_mode": model.projection_mode,
