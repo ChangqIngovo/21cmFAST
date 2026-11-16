@@ -1,0 +1,106 @@
+{
+  "blind_seeds": [
+    2117,
+    2118,
+    2119,
+    2120
+  ],
+  "budget_kernel_decision": "Rejected by validation; not deployed",
+  "candidates": {
+    "legacy_features": {
+      "completion_sha256": "dff71e0e29025558515df69a255b756b3bc9f795e39007a614fdde29c4e4ed04",
+      "config_sha256": "4c33d873e86f6e6e2385c34c3ba9076ee50b7de4d92d2f68a98738fbeb071c61",
+      "elapsed_seconds": 902.9318551790002,
+      "model_hashes": {
+        "base_model/budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "base_model/field_model.npz": "8125e58e5364c7d7a67a0d311a16012c4991b22b5bb6081c52cc248fc97a9276",
+        "base_model/model.json": "8f013987bd7ab83c3f33089f3fbf0b457041dacf1dfb20cc67e0669ededb5008",
+        "budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "field_model.npz": "2834270e517e3dbd521b1cc241f742865d2efc4b7608eb55ab35320575b37653",
+        "model.json": "26b266bb7f3c998af2a29f88b1e2c0cd77d0f9826a1d5d2d3f14a757aee8463f"
+      },
+      "selected_model_seed": 83,
+      "selected_projection_mode": "capacity_l2",
+      "selected_validation_mse": 0.006004077593609739,
+      "selected_validation_objective": 0.14097606017428782,
+      "summary_sha256": "4d0ffc42ecace3b7f901978220f2ff8fa3d713f24f44df0560f5b4dc4b6a4b95"
+    },
+    "local_features": {
+      "completion_sha256": "ce27edec86adb6a734db7bd5b28759f61a656518faf2e2ca52e2411cfef39642",
+      "config_sha256": "2f64f511da3f71cb35a1bee33defa64681b6fdbde5a3efa362ee6db7f23842e3",
+      "elapsed_seconds": 1591.1868359049995,
+      "model_hashes": {
+        "base_model/budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "base_model/field_model.npz": "fa59c5ff130fdbdc4c177446541a03026eda89bf64c37930681e3cbb7522bb51",
+        "base_model/model.json": "f65f8f9c5ae9f7651059781d8f975dd54fd34885afd91fc06d197288c02d5db0",
+        "budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "field_model.npz": "0bca281ff95e89b768d0cec6131329dbf2916a560a8835706ea78abf429aaf67",
+        "model.json": "556855611eeb953f536c8546cec47b8ee337c71a676ac0c18cb33f95b476ffee"
+      },
+      "selected_model_seed": 83,
+      "selected_projection_mode": "capacity_l2",
+      "selected_validation_mse": 0.003545936335264903,
+      "selected_validation_objective": 0.10052016168208319,
+      "summary_sha256": "ec3e1dbd48529d482ea76e501a6006610f55e1e4753065979b672eb90227d29e"
+    },
+    "previous_model": {
+      "reference_sha256": "d43ccbf102ad2c6e1386fcc858b4b7a537a941401995cdbc3f5390a6bb72adee",
+      "selected_validation_mse": 0.007232253286151967,
+      "selected_validation_objective": 0.2724725065282344
+    }
+  },
+  "development_protocol_sha256": "7b7b03e4eb6e7324eb11d6b08249d94eba22f673d274848234c8925163373eab",
+  "frozen_training_source_identity_sha256": "698261b6989b51bec4a5616c821b589f39d17ca8cf2dfbbab2366717263a358d",
+  "frozen_utc": "2026-11-16T12:31:31.409767+00:00",
+  "inference_source_hashes": {
+    "research/pc_analytic_emulator/__init__.py": "6ce057a0363be8cc27a3d3fc7f9ebf660e7632f990faa34a8e7dc86c6958a97b",
+    "research/pc_analytic_emulator/audit_symmetry.py": "abd951dd83c08b02d872a0e72c87ba182ae1fa1758fa5d2e51e31114449c6186",
+    "research/pc_analytic_emulator/benchmark.py": "5a3fe804e755f95278ee69c7bb55881364985eef559cbea40f9dfe100af24e0c",
+    "research/pc_analytic_emulator/budget.py": "03064d68e735ed13587a580da3c1f57d9157f4ee9b16f0cffce9dfe4a8c50c42",
+    "research/pc_analytic_emulator/data.py": "c068cee09d671cffa7f37ce43fc6991728ec8659acd02c438ca8e715a0f15d14",
+    "research/pc_analytic_emulator/deficit_kernel.py": "6870eacf3969eea17c94ca4a1be35a405d20d2c7514a59d1118318224fda788e",
+    "research/pc_analytic_emulator/diagnose_errors.py": "bd24dccaafc2fabfb3cdfc0e6e3be4ec00f1a773817f17550fcc7e9f5fc7f44d",
+    "research/pc_analytic_emulator/evaluation.py": "446b49ddfcf32ed73838387e0d00fd4a1b26ed25b2832d7a214d9fa7b4022601",
+    "research/pc_analytic_emulator/fit.py": "1c300c63156303e886e3d7a7473d5ac9b93a46af0cfbf589f2c6c235a70339f4",
+    "research/pc_analytic_emulator/latent.py": "f5f480ce2b74cab70c20b4da81f92c94609f8015ce7b9ab75385cb9d2b89a460",
+    "research/pc_analytic_emulator/model.py": "318c8b599654cde53a3714aafb093cb9f54b887b542ac103dd976f174d63fb9a",
+    "research/pc_analytic_emulator/objectives.py": "7cef634a4a0f88138011b040baab378faa5fb3717845ec579bc223f6fefd491f",
+    "research/pc_analytic_emulator/predict.py": "bffebb17cfd3db01f8d535cd189dab09556dc3528633039225e865ead65526a4",
+    "research/pc_analytic_emulator/prepare.py": "9cc578ab45fa989b21276c9d0d11bfb2a12e07d955338ddc745184e227a35f49",
+    "research/pc_analytic_emulator/projection.py": "d84fff04f996db1e6cedd5ee62ed01118b86ede9e8180d7cd558ded8cff51529",
+    "research/pc_analytic_emulator/spatial.py": "1c3a8f6b9d750d54569b9aa886df2038aec3715c5fa21cb71d9f427b2215aa82",
+    "research/pc_analytic_emulator/train.py": "98e5d0611987c95000f06101032b40c574cf766bd2e63581cd0dc89b4b937286",
+    "research/pc_analytic_emulator/warmstart.py": "7c284ee788520d6a27bfd0926fcd452ae5f87fa86d11a8bf395f06dd64c262f6"
+  },
+  "previous_model_hashes": {
+    "base_model/budget_model.npz": "d9da23cff7855b01552c962e82e84a02eaf3c13e11068d0215cf86a2387502a4",
+    "base_model/field_model.npz": "7ba59eb152ff12a49b069982bd02958603e7225ab60357aa7a77e95f750d41fb",
+    "base_model/model.json": "1d80d4b60d06eeee8a77de2fc116c771a7a7670f7ba70558cb348a2fec5ce5a0",
+    "budget_model.npz": "d9da23cff7855b01552c962e82e84a02eaf3c13e11068d0215cf86a2387502a4",
+    "field_model.npz": "a46144004f003f762c36bd883664715b650e993b9c83f220ab9fbd1f28208ade",
+    "model.json": "e8900893819f681e5741ce082c0ab8cf9eed6575aa7ee2654a1d638d62e2503a"
+  },
+  "rays": 4096,
+  "schema": 1,
+  "selected": "local_features",
+  "selected_model_hashes": {
+    "base_model/budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+    "base_model/field_model.npz": "fa59c5ff130fdbdc4c177446541a03026eda89bf64c37930681e3cbb7522bb51",
+    "base_model/model.json": "f65f8f9c5ae9f7651059781d8f975dd54fd34885afd91fc06d197288c02d5db0",
+    "budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+    "field_model.npz": "0bca281ff95e89b768d0cec6131329dbf2916a560a8835706ea78abf429aaf67",
+    "model.json": "556855611eeb953f536c8546cec47b8ee337c71a676ac0c18cb33f95b476ffee"
+  },
+  "selection_rule": "Minimum common projected full-grid validation objective; unchanged previous model wins ties",
+  "selection_uses_test": false,
+  "training_snapshots": 164,
+  "transfer_resolution_seeds": [
+    2131,
+    2132
+  ],
+  "transfer_volume_seeds": [
+    2141,
+    2142
+  ],
+  "validation_snapshots": 28
+}

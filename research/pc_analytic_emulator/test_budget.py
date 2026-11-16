@@ -8,9 +8,11 @@ import pytest
 from research.pc_analytic_emulator.budget import (
     LocalDeficitBudgetModel,
     TabulatedBudgetModel,
+    budget_error_metrics,
     constant_efficiency_model,
     fit_budget,
     fit_budget_v3,
+    fit_deficit_budget,
     load_budget,
     predict_efficiency,
 )
@@ -356,3 +358,213 @@ def test_sigmoid_budget_fits_finite_deficit_and_keeps_training_only_prior(
         np.testing.assert_array_equal(a, b)
     np.testing.assert_array_equal(first.mean, changed.mean)
     np.testing.assert_array_equal(first.scale, changed.scale)
+
+
+def test_mixed_budget_metric_uses_mass_and_floored_neutral_fraction() -> None:
+    """Late relative-neutral errors supplement actual absorbed-count errors."""
+    report = budget_error_metrics(
+        np.array([0.8, 0.99]),
+        np.array([0.9, 0.999]),
+        np.array([0.2, 1.0]),
+        relative_weight=0.3,
+        neutral_floor=0.01,
+    )
+    mass_error = np.array([-0.02, -0.009])
+    relative = mass_error / np.array([0.82, 0.01])
+    assert report["mass_mse"] == pytest.approx(np.mean(mass_error**2))
+    assert report["floored_relative_neutral_mse"] == pytest.approx(np.mean(relative**2))
+    assert report["mixed_loss"] == pytest.approx(
+        np.mean(mass_error**2 + 0.3 * relative**2)
+    )
+    assert report["neutral_floor_active_count"] == 1
+
+
+def test_deficit_budget_learns_without_positive_residual_plateau(
+    tmp_path: Path,
+) -> None:
+    """A smooth deficit head learns small positive deficits and serializes them."""
+    x = np.column_stack((np.linspace(0.2, 0.8, 12), np.full(12, 7.0)))
+    eta = np.full(12, 0.995)
+    model, report = fit_deficit_budget(
+        x,
+        eta,
+        np.ones(12),
+        x,
+        eta,
+        np.ones(12),
+        seed=11,
+        epochs=500,
+        patience=100,
+        learning_rate=0.02,
+        hidden=(),
+        relative_weight=0.2,
+        neutral_floor=0.01,
+    )
+    direct = model.predict(x)
+    predicted = predict_efficiency(model, x)
+    assert np.all(direct * (1 - direct) > 0)
+    np.testing.assert_array_equal(predicted, 1 - direct)
+    np.testing.assert_allclose(predicted, eta, atol=2e-4)
+    assert (
+        model.metadata["budget_parameterization"] == "direct_sigmoid_absorption_deficit"
+    )
+    assert model.metadata["initial_deficit_prior"] == pytest.approx(0.005)
+    assert report["validation"]["mixed_loss"] < 2e-6
+    assert not report["test_used"]
+    model.save(tmp_path / "deficit.npz")
+    restored = load_budget(tmp_path / "deficit.npz")
+    np.testing.assert_array_equal(predict_efficiency(restored, x), predicted)
+    np.testing.assert_array_equal(restored.mean, x.mean(0))
+
+
+def test_deficit_updates_and_normalizer_exclude_validation_labels() -> None:
+    """Only checkpoint selection may depend on validation; first updates cannot."""
+    x = _native_globals()
+    eta = np.array([1.0, 0.999, 0.998, 0.97, 0.95, 0.9])
+    options = {
+        "seed": 8,
+        "epochs": 1,
+        "patience": 1,
+        "learning_rate": 0.01,
+        "relative_weight": 0.1,
+        "neutral_floor": 0.01,
+    }
+    first, _ = fit_deficit_budget(
+        x, eta, np.ones(6), x[:2], np.ones(2), np.ones(2), **options
+    )
+    changed, _ = fit_deficit_budget(
+        x, eta, np.ones(6), x[:2] + 100, np.array([0.3, 0.2]), np.ones(2), **options
+    )
+    for a, b in zip(
+        first.weights + first.biases, changed.weights + changed.biases, strict=True
+    ):
+        np.testing.assert_array_equal(a, b)
+    np.testing.assert_array_equal(first.mean, x.mean(0))
+    np.testing.assert_array_equal(first.mean, changed.mean)
+    assert (
+        first.metadata["initial_deficit_prior"]
+        == changed.metadata["initial_deficit_prior"]
+    )
+
+
+@pytest.mark.parametrize(
+    ("weight", "floor"),
+    [(-1, 0.01), (np.nan, 0.01), (0.1, 0), (0.1, 1.1), (1.0, 1e-200)],
+)
+def test_mixed_budget_controls_reject_invalid_values(
+    weight: float, floor: float
+) -> None:
+    """An undefined relative-neutral denominator must never enter optimization."""
+    with pytest.raises(ValueError, match=r"relative|floor"):
+        budget_error_metrics(
+            np.ones(2),
+            np.ones(2),
+            np.ones(2),
+            relative_weight=weight,
+            neutral_floor=floor,
+        )
+
+
+def test_deficit_marker_cannot_reinterpret_residual_network() -> None:
+    """The tag must not silently change the meaning of legacy bounded residuals."""
+    model = constant_efficiency_model(2)
+    model.metadata["budget_parameterization"] = "direct_sigmoid_absorption_deficit"
+    with pytest.raises(ValueError, match="sigmoid"):
+        predict_efficiency(model, np.array([[0.1, 7.0]]))
+
+
+def test_opt_in_deficit_ranks_every_budget_with_same_mixed_metric() -> None:
+    """Candidate-specific training losses cannot determine cross-model ranking."""
+    x = _native_globals()
+    eta = np.array([1, 1, 0.999, 0.97, 0.95, 0.995])
+    models, report = fit_budget_v3(
+        x,
+        eta,
+        np.ones(6),
+        x[[1, 4]],
+        eta[[1, 4]],
+        np.ones(2),
+        seed=11,
+        epochs=2,
+        patience=2,
+        learning_rate=0.001,
+        include_deficit=True,
+        deficit_relative_weight=0.2,
+        deficit_neutral_floor=0.03,
+    )
+    assert "deficit_mlp" in models
+    expected = {}
+    for name, model in models.items():
+        expected[name] = budget_error_metrics(
+            predict_efficiency(model, x[[1, 4]]),
+            eta[[1, 4]],
+            np.ones(2),
+            relative_weight=0.2,
+            neutral_floor=0.03,
+        )["mixed_loss"]
+    for record in report["candidates"]:
+        assert record["validation_mixed_loss"] == pytest.approx(
+            expected[record["kind"]]
+        )
+    assert report["ranking"] == sorted(expected, key=expected.get)
+    assert report["selected_kind"] == min(expected, key=expected.get)
+
+
+def test_deficit_network_survives_complete_emulator_reload(tmp_path: Path) -> None:
+    """Existing model schemas preserve the new budget's tagged target meaning."""
+    from research.pc_analytic_emulator.model import Emulator, field_features
+
+    x = _native_globals()
+    budget, _ = fit_deficit_budget(
+        x,
+        np.full(6, 0.99),
+        np.ones(6),
+        x[:2],
+        np.full(2, 0.99),
+        np.ones(2),
+        seed=11,
+        epochs=3,
+        patience=3,
+        learning_rate=0.001,
+    )
+    photons = np.full((4, 4, 4), 0.4)
+    atoms = np.ones_like(photons)
+    neutral = np.full_like(photons, 0.7)
+    features, _, _ = field_features(photons, atoms, neutral, 7.0, 50.0)
+    model = Emulator(constant_efficiency_model(features.shape[1]), budget)
+    before = model.predict(photons, atoms, neutral, 7.0, 50.0)
+    model.save(tmp_path / "model")
+    restored = Emulator.load(tmp_path / "model")
+    after = restored.predict(photons, atoms, neutral, 7.0, 50.0)
+    for key in ("xHI", "xHII", "raw_xHI", "absorption_efficiency"):
+        np.testing.assert_array_equal(before[key], after[key])
+    assert after["absorption_efficiency"] > 0.9
+    assert after["absorption_efficiency"] < 1.0
+    assert after["photon_ledger"]["relative_photon_residual"] < 1e-10
+
+
+def test_deficit_opt_in_photon_free_case_retains_exact_reference() -> None:
+    """An empty photon budget needs no learned deficit or zero-weight fitting."""
+    x = _native_globals()
+    models, report = fit_budget_v3(
+        x,
+        np.ones(6),
+        np.zeros(6),
+        x[:2],
+        np.ones(2),
+        np.zeros(2),
+        seed=11,
+        epochs=1,
+        patience=1,
+        learning_rate=0.001,
+        include_deficit=True,
+    )
+    assert "deficit_mlp" not in models
+    assert report["selected_kind"] == "constant_efficiency"
+    assert all(row["validation_mixed_loss"] == 0 for row in report["candidates"])
+
+
+def test_budget_metric_rejects_complex_values() -> None:
+    """Complex labels cannot be silently converted into real photon budgets."""
+    with pytest.raises(ValueError, match="real numeric"):
+        budget_error_metrics(np.array([0.5 + 0.2j]), np.ones(1), np.ones(1))

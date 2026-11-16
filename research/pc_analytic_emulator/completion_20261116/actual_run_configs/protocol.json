@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "experiment": "Matched spatial-feature ablation with expanded development data and deficit budget candidates",
+  "configurations": {
+    "legacy_features": {
+      "path": "${CAMPAIGN_ROOT}/experiments/legacy_features.json",
+      "sha256": "4c33d873e86f6e6e2385c34c3ba9076ee50b7de4d92d2f68a98738fbeb071c61"
+    },
+    "local_features": {
+      "path": "${CAMPAIGN_ROOT}/experiments/local_features.json",
+      "sha256": "2f64f511da3f71cb35a1bee33defa64681b6fdbde5a3efa362ee6db7f23842e3"
+    }
+  },
+  "selection": "Minimum full-grid projected validation objective, identical controls across both feature sets; test labels excluded",
+  "blind_seeds": [
+    2117,
+    2118,
+    2119,
+    2120
+  ],
+  "transfer_only_seeds": [
+    2131,
+    2132,
+    2141,
+    2142
+  ],
+  "previous_model": "${PREVIOUS_CAMPAIGN_ROOT}/emulator_results_smooth/model",
+  "previous_model_sha256": {
+    "base_model/budget_model.npz": "d9da23cff7855b01552c962e82e84a02eaf3c13e11068d0215cf86a2387502a4",
+    "base_model/field_model.npz": "7ba59eb152ff12a49b069982bd02958603e7225ab60357aa7a77e95f750d41fb",
+    "base_model/model.json": "1d80d4b60d06eeee8a77de2fc116c771a7a7670f7ba70558cb348a2fec5ce5a0",
+    "budget_model.npz": "d9da23cff7855b01552c962e82e84a02eaf3c13e11068d0215cf86a2387502a4",
+    "field_model.npz": "a46144004f003f762c36bd883664715b650e993b9c83f220ab9fbd1f28208ade",
+    "model.json": "e8900893819f681e5741ce082c0ab8cf9eed6575aa7ee2654a1d638d62e2503a"
+  },
+  "physics_changed": false
+}

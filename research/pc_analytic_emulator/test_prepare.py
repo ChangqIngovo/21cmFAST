@@ -91,6 +91,35 @@ def test_configuration_defaults(tmp_path):
     assert config["samples_per_snapshot"] == 8192
 
 
+def test_development_and_spatial_controls_are_explicit(tmp_path: Path) -> None:
+    """Gadi configuration carries opt-ins while keeping the blind set separate."""
+    config = prepare.configuration(
+        tmp_path,
+        {
+            "PC_TRAINING_METHOD": "warm_started_v3",
+            "PC_FEATURE_SET": "multiscale_local",
+            "PC_ALLOW_EMPTY_TEST": "true",
+            "PC_TEST_SEEDS": "",
+            "PC_INCLUDE_DEFICIT_BUDGET": "1",
+            "PC_BUDGET_EPOCHS": "1600",
+            "PC_FRAME_CACHE_MIB": "1024",
+            "PC_DEFICIT_RELATIVE_WEIGHT": "0.2",
+            "PC_DEFICIT_NEUTRAL_FLOOR": "0.01",
+            "PC_BUDGET_CANDIDATE_KINDS": "deficit_mlp, sigmoid_mlp",
+        },
+    )
+    assert config["feature_set"] == "multiscale_local"
+    assert config["test_seeds"] == []
+    assert config["allow_empty_test"]
+    assert config["include_deficit_budget"]
+    assert config["budget_epochs"] == 1600
+    assert config["frame_cache_MiB"] == 1024
+    assert config["deficit_relative_weight"] == 0.2
+    assert config["budget_candidate_kinds"] == ["deficit_mlp", "sigmoid_mlp"]
+    with pytest.raises(ValueError, match="requires"):
+        prepare.configuration(tmp_path, {"PC_TEST_SEEDS": ""})
+
+
 @pytest.mark.parametrize(
     "environment",
     [

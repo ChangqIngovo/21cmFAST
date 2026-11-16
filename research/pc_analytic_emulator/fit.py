@@ -57,6 +57,10 @@ def _file_identity(path: Path) -> tuple[int, int, int, int, int]:
 
 class _FrameCache:
     def __init__(self, max_bytes: int) -> None:
+        if type(max_bytes) is not int or max_bytes < 0:
+            raise ValueError(
+                "Frame cache limit must be a nonnegative integer byte count"
+            )
         self.max_bytes = max_bytes
         self.nbytes = 0
         self.entries: OrderedDict[Path | tuple, tuple[tuple, dict[str, Any], int]] = (
@@ -118,7 +122,7 @@ class _FrameCache:
 
 
 def _inference_digest(model: Any) -> str:
-    """Hash inference parameters without serializing provenance metadata."""
+    """Hash inference parameters, including semantic metadata only."""
     digest = hashlib.sha256()
     visiting: set[int] = set()
 
@@ -137,6 +141,11 @@ def _inference_digest(model: Any) -> str:
                 if item.name != "metadata":
                     digest.update(item.name.encode())
                     add(getattr(value, item.name))
+                elif "budget_parameterization" in getattr(value, item.name):
+                    # This persisted tag determines whether sigmoid output is
+                    # eta or 1-eta. Other metadata records provenance only.
+                    digest.update(b"budget_parameterization")
+                    add(getattr(value, item.name)["budget_parameterization"])
             visiting.remove(id(value))
         elif isinstance(value, dict):
             digest.update(b"mapping")
@@ -175,7 +184,9 @@ def _frame_cache_scope(max_bytes: int = FRAME_CACHE_MAX_BYTES) -> Iterator[_Fram
 def _cache_during_fit(function: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(function)
     def wrapped(*args: Any, **kwargs: Any) -> Any:
-        with _frame_cache_scope():
+        with _frame_cache_scope(
+            kwargs.get("frame_cache_max_bytes", FRAME_CACHE_MAX_BYTES)
+        ):
             return function(*args, **kwargs)
 
     return wrapped
@@ -547,6 +558,7 @@ def fit_field(
     objective_config: dict[str, Any] | None = None,
     on_epoch: Callable[[dict[str, Any]], None] | None = None,
     base_model: Emulator | None = None,
+    frame_cache_max_bytes: int = FRAME_CACHE_MAX_BYTES,
 ) -> tuple[LatentFieldModel, list[dict[str, Any]]]:
     """Train full snapshots with differentiation through a fixed photon budget.
 
@@ -556,7 +568,7 @@ def fit_field(
         Disjoint snapshot cache records accepted by :func:`score_field`.
         Training reads one complete cube at a time and visits every training
         cube once per epoch in a reproducibly shuffled order. A read-only LRU
-        cache stores at most 512 MiB per fit, checks file metadata on every
+        cache uses the declared per-fit bound, checks file metadata on every
         access and is cleared on return or failure.
     budget_model
         Absorption predictor selected before field fitting; never updated here.
@@ -582,6 +594,10 @@ def fit_field(
         output retains the base prediction when the absorption budget matches.
         Base predictions share the bounded frame cache; changing base inference
         parameters during fitting raises an error.
+    frame_cache_max_bytes
+        Nonnegative per-worker array cache cap in bytes; default 512 MiB.
+        Zero disables storage. Frozen-base arrays share the cap. Activations,
+        optimizer state and interpreter/library memory are additional.
 
     Returns
     -------
@@ -619,7 +635,7 @@ def fit_field(
         baseline_scope="full frozen emulator prediction from native inputs"
         if base_model is not None
         else "native ES input field",
-        frame_cache_max_bytes=FRAME_CACHE_MAX_BYTES,
+        frame_cache_max_bytes=frame_cache_max_bytes,
         frame_cache_scope="per fit; read-only LRU; resolved-path file metadata checked per access",
     )
     if base_model is not None:

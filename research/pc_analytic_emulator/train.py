@@ -68,6 +68,14 @@ DEFAULTS = {
     "radii_cMpc": [6.25, 12.5, 25.0, 50.0],
     "sampling_seed": 2026,
     "training_method": "legacy",
+    "feature_set": "legacy",
+    "allow_empty_test": False,
+    "budget_epochs": None,
+    "frame_cache_MiB": 512,
+    "include_deficit_budget": False,
+    "deficit_relative_weight": 0.1,
+    "deficit_neutral_floor": 0.01,
+    "budget_candidate_kinds": None,
     "v2_epochs": 80,
     "warmstart_epochs": 80,
     "warmstart_learning_rate": 3e-4,
@@ -126,7 +134,10 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
         values = result[key]
         if (
             not isinstance(values, list)
-            or not values
+            or (
+                not values
+                and not (key == "test_seeds" and result["allow_empty_test"] is True)
+            )
             or any(type(value) is not int or value < 0 for value in values)
             or len(values) != len(set(values))
         ):
@@ -171,13 +182,69 @@ def validate_config(config: dict[str, Any]) -> dict[str, Any]:
     return result
 
 
-def _validate_extended_controls(result: dict[str, Any]) -> None:
+def _validate_optins(result: dict[str, Any]) -> None:
     if result["training_method"] not in {
         "legacy",
         "projected_multiscale_v2",
         "warm_started_v3",
     }:
         raise ValueError("Unknown training_method")
+    if result["feature_set"] not in {"legacy", "multiscale_local"}:
+        raise ValueError("Unknown feature_set")
+    for name in ("allow_empty_test", "include_deficit_budget"):
+        if type(result[name]) is not bool:
+            raise TypeError(f"{name} must be boolean")
+    if result["budget_epochs"] is not None and (
+        type(result["budget_epochs"]) is not int or result["budget_epochs"] < 1
+    ):
+        raise ValueError("budget_epochs must be null or a positive integer")
+    if type(result["frame_cache_MiB"]) is not int or result["frame_cache_MiB"] < 0:
+        raise ValueError("frame_cache_MiB must be a nonnegative integer per worker")
+    for name in ("deficit_relative_weight", "deficit_neutral_floor"):
+        value = result[name]
+        if (
+            isinstance(value, bool)
+            or not isinstance(value, (int, float))
+            or not np.isfinite(value)
+            or value < 0
+        ):
+            raise ValueError(f"{name} must be finite and nonnegative")
+    if result["deficit_neutral_floor"] <= 0:
+        raise ValueError("deficit_neutral_floor must be positive")
+    kinds = result["budget_candidate_kinds"]
+    allowed = {
+        "constant_efficiency",
+        "tabulated",
+        "mlp",
+        "sigmoid_mlp",
+        "local_k3",
+        "local_k5",
+    }
+    if result["include_deficit_budget"]:
+        allowed.add("deficit_mlp")
+    if kinds is not None and (
+        not isinstance(kinds, list)
+        or not kinds
+        or any(not isinstance(kind, str) or kind not in allowed for kind in kinds)
+        or len(kinds) != len(set(kinds))
+    ):
+        raise ValueError(
+            "budget_candidate_kinds requires unique enabled candidate names"
+        )
+    if (result["include_deficit_budget"] or kinds is not None) and result[
+        "training_method"
+    ] != "warm_started_v3":
+        raise ValueError(
+            "Deficit budgets and candidate filtering require warm_started_v3"
+        )
+    if not result["test_seeds"] and result["external_test_root"] is not None:
+        raise ValueError(
+            "Development-only training requires separate post-freeze blind evaluation"
+        )
+
+
+def _validate_extended_controls(result: dict[str, Any]) -> None:
+    _validate_optins(result)
     regression = result["regression_test_seeds"]
     if (
         not isinstance(regression, list)
@@ -255,6 +322,7 @@ def _implementation_hashes() -> dict[str, str]:
         "research/pc_analytic_emulator/__init__.py",
         "research/pc_analytic_emulator/data.py",
         "research/pc_analytic_emulator/model.py",
+        "research/pc_analytic_emulator/spatial.py",
         "research/pc_analytic_emulator/evaluation.py",
         "research/pc_analytic_emulator/train.py",
         "research/pc_analytic_emulator/warmstart.py",
@@ -367,7 +435,9 @@ def _prepare_cache(
         for sample in splits[split]:
             args = _input_arguments(sample)
             features, names, baseline = field_features(
-                *args, radii_cMpc=config["radii_cMpc"]
+                *args,
+                radii_cMpc=config["radii_cMpc"],
+                feature_set=config.get("feature_set", "legacy"),
             )
             globals_, global_columns = budget_features(
                 *args, radii_cMpc=config["radii_cMpc"]
@@ -431,6 +501,8 @@ def _prepare_cache(
         "training_cells": len(arrays["y_train"]),
         "validation_cells": len(arrays["y_validation"]),
         "test_labels_in_fit_cache": False,
+        "feature_set": config.get("feature_set", "legacy"),
+        "sampling_scope": "Uniform deterministic training-cell sampling for legacy initialization only; validation uses complete grids",
     }
     _write_json(folder / "features.json", record)
     _seal(folder, identity, record)
@@ -457,7 +529,9 @@ def _prepare_v2_cache(
         for sample in splits[split]:
             arguments = _input_arguments(sample)
             features, names, baseline = field_features(
-                *arguments, radii_cMpc=config["radii_cMpc"]
+                *arguments,
+                radii_cMpc=config["radii_cMpc"],
+                feature_set=config.get("feature_set", "legacy"),
             )
             globals_, global_columns = budget_features(
                 *arguments, radii_cMpc=config["radii_cMpc"]
@@ -498,6 +572,8 @@ def _prepare_v2_cache(
     np.savez_compressed(folder / "budget_arrays.npz", **matrices)
     record = {
         "training_method": config["training_method"],
+        "feature_set": config.get("feature_set", "legacy"),
+        "sampling_scope": "All cells of every training and validation snapshot; samples_per_snapshot affects only the legacy initializer cache",
         "training_snapshots": rows["train"],
         "validation_snapshots": rows["validation"],
         "field_feature_names": feature_names,
@@ -530,7 +606,7 @@ def _prepare_v2_budget(
             arrays["eta_validation"],
             arrays["mass_scale_validation"],
             seed=config["model_seeds"][0],
-            epochs=config["epochs"],
+            epochs=config.get("budget_epochs") or config["epochs"],
             patience=config["patience"],
             learning_rate=config["learning_rate"],
             hidden=tuple(config["budget_hidden"]),
@@ -567,11 +643,23 @@ def _prepare_v3_budget(
             arrays["eta_validation"],
             arrays["mass_scale_validation"],
             seed=config["model_seeds"][0],
-            epochs=config["epochs"],
+            epochs=config.get("budget_epochs") or config["epochs"],
             patience=config["patience"],
             learning_rate=config["learning_rate"],
             hidden=tuple(config["budget_hidden"]),
+            include_deficit=config.get("include_deficit_budget", False),
+            deficit_relative_weight=config.get("deficit_relative_weight", 0.1),
+            deficit_neutral_floor=config.get("deficit_neutral_floor", 0.01),
         )
+    requested = config.get("budget_candidate_kinds")
+    if requested is not None:
+        missing = set(requested) - set(models)
+        if missing:
+            raise ValueError(
+                f"Requested budget candidates were not fitted: {sorted(missing)}"
+            )
+        models = {name: models[name] for name in requested}
+    report["eligible_candidate_kinds"] = list(models)
     candidates = []
     for kind, model in models.items():
         if not kind or any(
@@ -704,13 +792,18 @@ def _fit_legacy_trial(task: dict[str, Any]) -> dict[str, Any]:
         "budget_checkpoint_selection": "Validation absorption-efficiency MSE",
     }
     trained = Emulator(
-        field, budget, radii_cMpc=config["radii_cMpc"], metadata=metadata
+        field,
+        budget,
+        radii_cMpc=config["radii_cMpc"],
+        metadata=metadata,
+        feature_set=config.get("feature_set", "legacy"),
     )
     baseline = Emulator(
         _zero_model(arrays["x_train"].shape[1], "ES field baseline"),
         _zero_model(arrays["global_train"].shape[1], "eta=1 baseline"),
         radii_cMpc=config["radii_cMpc"],
         metadata=metadata | {"baseline_only": True},
+        feature_set=config.get("feature_set", "legacy"),
     )
     candidates = []
     for name, model in (("trained", trained), ("zero_correction", baseline)):
@@ -863,6 +956,7 @@ def _fit_v2_trial(task: dict[str, Any]) -> dict[str, Any]:
         patience=config["patience"],
         objective_config=objective,
         on_epoch=log,
+        frame_cache_max_bytes=config.get("frame_cache_MiB", 512) * 1024**2,
     )
     width = len(details["field_feature_names"])
     zero = LatentFieldModel(
@@ -897,6 +991,7 @@ def _fit_v2_trial(task: dict[str, Any]) -> dict[str, Any]:
             field_model,
             budget_model,
             radii_cMpc=config["radii_cMpc"],
+            feature_set=config.get("feature_set", "legacy"),
             metadata=metadata,
             projection_mode="capacity_l2",
         )
@@ -1213,6 +1308,9 @@ def _evaluate(
     model: Emulator,
     evaluation_label: str = "Held-out",
 ) -> list[dict[str, Any]]:
+    if not samples:
+        _write_json(output / "test_metrics.json", [])
+        return []
     rows = []
     for sample in samples:
         started = time.perf_counter()
@@ -1419,6 +1517,7 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
         train_seeds=config["train_seeds"],
         validation_seeds=config["validation_seeds"],
         test_seeds=config["test_seeds"],
+        allow_empty_test=config["allow_empty_test"],
     )
     output = Path(output).resolve()
     if (
@@ -1465,11 +1564,15 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
             set(config["regression_test_seeds"]) & set(seed_roles["test"])
         )
         test_role = (
-            "Regression"
-            if known_regression == seed_roles["test"]
-            else "Internal evaluation"
-            if known_regression
-            else "Held-out"
+            "Not evaluated"
+            if not seed_roles["test"]
+            else (
+                "Regression"
+                if known_regression == seed_roles["test"]
+                else "Internal evaluation"
+                if known_regression
+                else "Held-out"
+            )
         )
         _write_json(
             output / "dataset_manifest.json",
@@ -1620,6 +1723,7 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
             "schema": 1,
             "complete": True,
             "training_method": config["training_method"],
+            "feature_set": model.feature_set,
             "sample_counts": counts,
             "split_seeds": seed_roles,
             "selected_model_seed": selected["model_seed"],
@@ -1643,10 +1747,13 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
             "test_used_for_selection": False,
             "known_regression_test_seeds": known_regression,
             "internal_test_role": test_role,
+            "test_evaluated": bool(rows),
+            "blind_evaluation_pending": not bool(rows) and external is None,
             "external_test": external_summary,
             **aggregates,
             "maximum_test_photon_residual": max(
-                row["photon_ledger"]["relative_photon_residual"] for row in rows
+                (row["photon_ledger"]["relative_photon_residual"] for row in rows),
+                default=None,
             ),
             "conservation_scope": "Global predicted absorption plus separately predicted unabsorbed photons; not source-resolved transport or independently measured escape",
             "physical_scope": dataset.manifest.get("physical_scope"),
@@ -1674,6 +1781,8 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
         _write_json(output / "completion.json", {"files": files})
         (output / "COMPLETED").write_text(
             "Selected by validation; held-out seed evaluated with a global photon ledger.\n"
+            if rows
+            else "Development-only selection complete; blind evaluation remains separate.\n"
         )
         return summary
 

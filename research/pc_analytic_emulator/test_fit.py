@@ -473,3 +473,71 @@ def test_warm_fit_rejects_base_mutation_from_callback(tmp_path: Path) -> None:
             on_epoch=mutate,
         )
     assert fit._ACTIVE_FRAME_CACHE.get() is None
+
+
+def test_frozen_digest_tracks_budget_semantics_but_not_provenance(
+    tmp_path: Path,
+) -> None:
+    """A deficit-output tag changes inference and must invalidate cached bases."""
+    record, base = _warm_fixture(tmp_path / "frame.npz")
+    base.budget_model.output_mode = "sigmoid"
+    base.budget_model.biases[0][0] = np.log(4.0)
+    before = fit._inference_digest(base)
+    base.metadata["training_note"] = "Reporting-only provenance"
+    base.budget_model.metadata["best_epoch"] = 12
+    assert fit._inference_digest(base) == before
+    with fit._frame_cache_scope():
+        first = fit._warm_frame(fit._load_frame(record), base)["baseline"]
+        base.budget_model.metadata["budget_parameterization"] = (
+            "direct_sigmoid_absorption_deficit"
+        )
+        assert fit._inference_digest(base) != before
+        changed = fit._predict_base(fit._load_frame(record), base)
+        assert np.max(np.abs(changed - first)) > 0.1
+        with pytest.raises(ValueError, match="Frozen base model changed"):
+            fit._warm_frame(fit._load_frame(record), base)
+
+
+def test_explicit_cache_limit_preserves_fitted_weights_and_predictions(
+    tmp_path: Path,
+) -> None:
+    """Changing memory allowance cannot change RNG, optimization or deployment."""
+    first, base = _warm_fixture(tmp_path / "first.npz")
+    second, _ = _warm_fixture(tmp_path / "second.npz", saturated=True)
+    results = []
+    for cap in (0, 1024**2):
+        field, history = fit.fit_field(
+            [first, second],
+            [first],
+            base.budget_model,
+            seed=23,
+            hidden=(3,),
+            epochs=3,
+            patience=4,
+            base_model=base,
+            frame_cache_max_bytes=cap,
+        )
+        assert field.metadata["frame_cache_max_bytes"] == cap
+        frame = fit._load_frame(first)
+        emulator = Emulator(
+            field, base.budget_model, base_model=base, projection_mode="capacity_l2"
+        )
+        prediction = emulator.predict(
+            frame["source"], frame["capacity"], frame["native_es_xHI"], 8.0, 16.0
+        )
+        results.append((field, history, prediction))
+    for left, right in zip(
+        (*results[0][0].weights, *results[0][0].biases),
+        (*results[1][0].weights, *results[1][0].biases),
+        strict=True,
+    ):
+        np.testing.assert_array_equal(left, right)
+    assert results[0][1] == results[1][1]
+    np.testing.assert_array_equal(results[0][2]["xHI"], results[1][2]["xHI"])
+
+
+@pytest.mark.parametrize("limit", [-1, True, 1.5, "512"])
+def test_invalid_cache_limits_are_rejected(limit: object) -> None:
+    """Memory caps must be explicit nonnegative byte counts."""
+    with pytest.raises(ValueError, match="cache"):
+        fit._FrameCache(limit)

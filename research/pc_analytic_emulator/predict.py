@@ -47,7 +47,9 @@ def _model_hashes(directory: Path) -> dict[str, str]:
                 raise ValueError(f"Missing or external saved model artifact: {path}")
             hashes[str(path.relative_to(directory))] = _digest(path)
         record = json.loads((folder / "model.json").read_text())
-        if record.get("schema") == 3:
+        if record.get("schema") == 3 or (
+            record.get("schema") == 4 and "base_model" in record
+        ):
             if record.get("base_model") != "base_model":
                 raise ValueError("Residual model requires its local base_model")
             visit(folder / "base_model")

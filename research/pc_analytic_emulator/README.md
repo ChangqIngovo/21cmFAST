@@ -6,6 +6,15 @@ simulation results are in [the validation report](../pc_analytic/VALIDATION_2026
 Controlled budget replacements, Fourier attribution, ranking limits and late
 teacher refinement are in [the error-source report](ERROR_SOURCES_20261116.md).
 
+The [completed improvement report](COMPLETION_20261116.md) adds 164 training
+snapshots, 28 validation snapshots and 44 frozen-model blind/transfer checks.
+Its selected model uses 88 native features and a tabulated absorption budget.
+Same-geometry active field MAE is 0.02282 and low-k power error is 9.89%; grid/box
+transfer fails. Use those weights only within the documented L50/N16 physical
+configuration. The [reproduction workflow](completion_20261116/reproduction/README.md)
+and [Gadi launcher](completion_20261116/reproduction/GADI.md) run generation,
+paired training, validation-only selection and independent evaluation.
+
 This workflow trains on completed `pc_analytic.campaign` outputs. The labels are
 our **analytic-column-characteristic** neutral fields, not SCRIPT or C²-Ray.
 It reads the existing teacher archive and does not rerun the simulations.
@@ -17,13 +26,13 @@ From a clean checkout of `matched-photon-conservation`:
 ```bash
 (
     set -euo pipefail
-    cd /g/data/qp00/sz4640/21cmFAST
+    cd "/g/data/${PROJECT}/${USER}/21cmFAST"
     git switch matched-photon-conservation
     git pull --ff-only origin matched-photon-conservation
     module load python3/3.12.1
 
     unset PC_TEACHER_RUN PC_EXTERNAL_TEST_ROOT PC_TRAINING_METHOD
-    PC_RUN_ROOT=/g/data/qp00/sz4640/21cmfast_runs \
+    PC_RUN_ROOT="/g/data/${PROJECT}/${USER}/21cmfast_runs" \
     PC_TRAIN_SEEDS=1001,1002,1003,1004,1005,1006 \
     PC_VALIDATION_SEEDS=1007 PC_TEST_SEEDS=1008 \
     PC_MODEL_SEEDS=11,23,47,83 \
@@ -54,13 +63,13 @@ The original fitting path remains the default. Add `--improved` to select
 ```bash
 (
     set -euo pipefail
-    cd /g/data/qp00/sz4640/21cmFAST
+    cd "/g/data/${PROJECT}/${USER}/21cmFAST"
     git switch matched-photon-conservation
     git pull --ff-only origin matched-photon-conservation
     module load python3/3.12.1
 
     unset PC_TEACHER_RUN PC_EXTERNAL_TEST_ROOT
-    PC_RUN_ROOT=/g/data/qp00/sz4640/21cmfast_runs \
+    PC_RUN_ROOT="/g/data/${PROJECT}/${USER}/21cmfast_runs" \
     PC_TRAIN_SEEDS=1001,1002,1003,1004,1005,1006 \
     PC_VALIDATION_SEEDS=1007 PC_TEST_SEEDS=1008 \
     PC_MODEL_SEEDS=11,23,47,83 \
@@ -112,13 +121,13 @@ base field, rather than from uncorrected native ES.
 ```bash
 (
     set -euo pipefail
-    cd /g/data/qp00/sz4640/21cmFAST
+    cd "/g/data/${PROJECT}/${USER}/21cmFAST"
     git switch matched-photon-conservation
     git pull --ff-only origin matched-photon-conservation
     module load python3/3.12.1
 
     unset PC_TEACHER_RUN PC_EXTERNAL_TEST_ROOT PC_TRAINING_METHOD
-    PC_RUN_ROOT=/g/data/qp00/sz4640/21cmfast_runs \
+    PC_RUN_ROOT="/g/data/${PROJECT}/${USER}/21cmfast_runs" \
     PC_TRAIN_SEEDS=1001,1002,1003,1004,1005 \
     PC_VALIDATION_SEEDS=1006,1007 PC_TEST_SEEDS=1008 \
     PC_MODEL_SEEDS=11,23,47,83 \

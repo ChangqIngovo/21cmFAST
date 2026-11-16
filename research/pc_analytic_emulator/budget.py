@@ -425,7 +425,8 @@ def predict_efficiency(
     ----------
     model
         Fitted absorption predictor. Residual networks use an eta=1 baseline;
-        sigmoid networks and empirical tables predict efficiencies directly.
+        Sigmoid networks predict efficiencies directly unless their serialized
+        ``budget_parameterization`` explicitly marks an absorption deficit.
     features
         Native input features, with one row per snapshot and no teacher data.
 
@@ -437,7 +438,15 @@ def predict_efficiency(
     inputs = np.asarray(features, dtype=np.float64)
     if inputs.ndim != 2 or not len(inputs):
         raise ValueError("Budget prediction requires a nonempty feature matrix")
-    if model.output_mode == "residual":
+    deficit_mode = (
+        getattr(model, "metadata", {}).get("budget_parameterization")
+        == "direct_sigmoid_absorption_deficit"
+    )
+    if deficit_mode and model.output_mode != "sigmoid":
+        raise ValueError("Absorption-deficit budget requires sigmoid network output")
+    if deficit_mode:
+        values = 1.0 - model.predict(inputs)
+    elif model.output_mode == "residual":
         values = model.predict(inputs, baseline=np.ones(len(inputs)))
     elif model.output_mode in ("sigmoid", "efficiency"):
         values = model.predict(inputs)
@@ -474,6 +483,188 @@ def _arrays(
     ):
         raise ValueError("Invalid supervised photon-budget data")
     return x, y, scale
+
+
+def _relative_controls(
+    relative_weight: float, neutral_floor: float
+) -> tuple[float, float]:
+    weight, floor = float(relative_weight), float(neutral_floor)
+    if not np.isfinite(weight) or weight < 0:
+        raise ValueError("Budget relative weight must be finite and nonnegative")
+    if not np.isfinite(floor) or not 0 < floor <= 1:
+        raise ValueError("Budget neutral floor must be finite and in (0, 1]")
+    with np.errstate(over="ignore", under="ignore", divide="ignore", invalid="ignore"):
+        maximum_loss_scale = (1.0 + weight) / np.float64(floor) ** 2
+    if not np.isfinite(maximum_loss_scale):
+        raise ValueError(
+            "Budget relative weight and neutral floor exceed float64 range"
+        )
+    return weight, floor
+
+
+def budget_error_metrics(
+    predicted_eta: np.ndarray,
+    teacher_eta: np.ndarray,
+    mass_scale: np.ndarray,
+    *,
+    relative_weight: float = 0.1,
+    neutral_floor: float = 0.01,
+) -> dict[str, float | int]:
+    """Score every budget with the same absolute and relative-neutral objective.
+
+    Parameters
+    ----------
+    predicted_eta, teacher_eta
+        Predicted and labelled absorbed fraction of min(photons, atoms).
+    mass_scale
+        min(photons, atoms)/atoms for each snapshot, bounded in [0, 1].
+    relative_weight
+        Coefficient of squared relative-neutral error. The coefficient of
+        squared absolute mass-ionized-fraction error is one.
+    neutral_floor
+        Lower denominator in mass-neutral-fraction units. This regularizes
+        the loss near a fully ionized label; it does not floor predictions.
+
+    Returns
+    -------
+    dict
+        Absolute errors, explicitly floored relative errors and their common
+        mixed loss, averaged equally over independent snapshots.
+    """
+    weight, floor = _relative_controls(relative_weight, neutral_floor)
+    inputs = [np.asarray(value) for value in (predicted_eta, teacher_eta, mass_scale)]
+    if any(value.dtype.kind not in "fiu" for value in inputs):
+        raise ValueError("Budget metric arrays must contain real numeric values")
+    predicted, target, scale = (
+        value.astype(np.float64, copy=False) for value in inputs
+    )
+    if (
+        predicted.ndim != 1
+        or not predicted.size
+        or target.shape != predicted.shape
+        or scale.shape != predicted.shape
+        or any(
+            not np.isfinite(value).all() or np.any((value < 0) | (value > 1))
+            for value in (predicted, target, scale)
+        )
+    ):
+        raise ValueError("Invalid bounded budget predictions, labels or mass scales")
+    error = scale * (predicted - target)
+    neutral = 1.0 - scale * target
+    relative = error / np.maximum(neutral, floor)
+    mass_mse, relative_mse = float(np.mean(error**2)), float(np.mean(relative**2))
+    return {
+        "count": len(error),
+        "mass_mse": mass_mse,
+        "mass_MAE": float(np.mean(np.abs(error))),
+        "maximum_absolute_mass_error": float(np.max(np.abs(error))),
+        "floored_relative_neutral_mse": relative_mse,
+        "floored_relative_neutral_MAE": float(np.mean(np.abs(relative))),
+        "mixed_loss": mass_mse + weight * relative_mse,
+        "relative_weight": weight,
+        "neutral_floor": floor,
+        "neutral_floor_active_count": int(np.count_nonzero(neutral < floor)),
+    }
+
+
+def fit_deficit_budget(
+    x_train: np.ndarray,
+    eta_train: np.ndarray,
+    mass_scale_train: np.ndarray,
+    x_validation: np.ndarray,
+    eta_validation: np.ndarray,
+    mass_scale_validation: np.ndarray,
+    *,
+    seed: int,
+    epochs: int,
+    patience: int,
+    learning_rate: float,
+    hidden: tuple[int, ...] = (8,),
+    relative_weight: float = 0.1,
+    neutral_floor: float = 0.01,
+) -> tuple[MLPModel, dict[str, Any]]:
+    """Fit a smooth nonnegative absorption deficit with late-time sensitivity.
+
+    Parameters
+    ----------
+    x_train, x_validation
+        Native global features only; training inputs alone define normalization.
+    eta_train, eta_validation
+        Labelled absorbed/min(photons, atoms) fractions.
+    mass_scale_train, mass_scale_validation
+        min(photons, atoms)/atoms for each training/validation snapshot.
+    seed, epochs, patience, learning_rate, hidden
+        Network initialization, optimizer and checkpoint controls.
+    relative_weight, neutral_floor
+        Common mixed-objective controls, as defined by ``budget_error_metrics``.
+
+    Returns
+    -------
+    tuple
+        Tagged sigmoid MLP and diagnostic report. The raw network predicts
+        deficit d in [0,1]; always use ``predict_efficiency`` for eta=1-d.
+        Parameters are fitted only on training labels. Validation mixed loss
+        selects the checkpoint. No test inputs or labels are accepted.
+    """
+    weight, floor = _relative_controls(relative_weight, neutral_floor)
+    xt, yt, st = _arrays(x_train, eta_train, mass_scale_train)
+    xv, yv, sv = _arrays(x_validation, eta_validation, mass_scale_validation)
+    if xt.shape[1] != xv.shape[1]:
+        raise ValueError("Training and validation budget features differ")
+    if not np.any(st > 0) or not np.any(sv > 0):
+        raise ValueError(
+            "Deficit fitting requires positive training and validation photon supply"
+        )
+    train_weights = st**2 * (1.0 + weight / np.maximum(1.0 - st * yt, floor) ** 2)
+    validation_weights = sv**2 * (1.0 + weight / np.maximum(1.0 - sv * yv, floor) ** 2)
+    network, history = train(
+        xt,
+        1.0 - yt,
+        xv,
+        1.0 - yv,
+        seed=seed,
+        hidden=hidden,
+        epochs=epochs,
+        patience=patience,
+        learning_rate=learning_rate,
+        batch_size=len(xt),
+        min_delta=1e-14,
+        sample_weight_train=train_weights,
+        sample_weight_validation=validation_weights,
+        feature_scale_floor=np.full(xt.shape[1], 1e-12),
+    )
+    network.metadata.update(
+        budget_parameterization="direct_sigmoid_absorption_deficit",
+        initial_deficit_prior=float(np.clip(np.mean(1.0 - yt), 1e-4, 1 - 1e-4)),
+        initial_deficit_prior_scope="Mean training deficit labels only; clipped for finite initialization",
+        deficit_objective="Mean(delta_Q_mass^2 + relative_weight * (delta_Q_mass / max(teacher_xHI_mass, neutral_floor))^2)",
+        deficit_relative_weight=weight,
+        deficit_neutral_floor=floor,
+        prediction_floor=None,
+        budget_checkpoint_selection="Validation mixed absolute-mass and floored-relative-neutral MSE",
+        normalized_weight_scope="Training and validation weights each normalized by their own mean; checkpoint ordering is unchanged from the corresponding unnormalized mixed objective",
+    )
+    report = {
+        "parameterization": "d=sigmoid(logit), eta=1-d; no positive-residual eta=1 branch",
+        "training": budget_error_metrics(
+            predict_efficiency(network, xt),
+            yt,
+            st,
+            relative_weight=weight,
+            neutral_floor=floor,
+        ),
+        "validation": budget_error_metrics(
+            predict_efficiency(network, xv),
+            yv,
+            sv,
+            relative_weight=weight,
+            neutral_floor=floor,
+        ),
+        "network_history": history,
+        "test_used": False,
+        "selection": "Validation mixed budget error; no test data accepted",
+    }
+    return network, report
 
 
 def _fit_base_candidates(
@@ -640,6 +831,9 @@ def fit_budget_v3(
     patience: int,
     learning_rate: float,
     hidden: tuple[int, ...] = (8,),
+    include_deficit: bool = False,
+    deficit_relative_weight: float = 0.1,
+    deficit_neutral_floor: float = 0.01,
 ) -> tuple[
     dict[str, MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel],
     dict[str, Any],
@@ -657,6 +851,12 @@ def fit_budget_v3(
         min(source, capacity)/total atom capacity for each snapshot.
     seed, epochs, patience, learning_rate, hidden
         Original MLP initialization, optimization and architecture controls.
+    include_deficit
+        Opt in to a trainable absorption-deficit candidate and common mixed
+        budget-error ranking. False preserves the original candidates/ranking.
+    deficit_relative_weight, deficit_neutral_floor
+        Relative-neutral coefficient and denominator floor for deficit fitting
+        and, when enabled, the common validation ranking of every candidate.
 
     Returns
     -------
@@ -672,6 +872,10 @@ def fit_budget_v3(
     xv, yv, sv = _arrays(x_validation, eta_validation, mass_scale_validation)
     if xt.shape[1] < 10 or xv.shape[1] != xt.shape[1]:
         raise ValueError("V3 budget fitting requires complete native global features")
+    if type(include_deficit) is not bool:
+        raise ValueError("include_deficit must be a boolean")
+    if include_deficit:
+        _relative_controls(deficit_relative_weight, deficit_neutral_floor)
     candidates, report = _fit_base_candidates(
         xt,
         yt,
@@ -738,7 +942,56 @@ def fit_budget_v3(
                 "validation_efficiencies": predicted.tolist(),
             }
         )
-    ranked = sorted(report["candidates"], key=lambda item: item["validation_mass_mse"])
+    if include_deficit:
+        if np.any(st > 0) and np.any(sv > 0):
+            deficit, deficit_report = fit_deficit_budget(
+                xt,
+                yt,
+                st,
+                xv,
+                yv,
+                sv,
+                seed=seed,
+                epochs=epochs,
+                patience=patience,
+                learning_rate=learning_rate,
+                hidden=hidden,
+                relative_weight=deficit_relative_weight,
+                neutral_floor=deficit_neutral_floor,
+            )
+            models["deficit_mlp"] = deficit
+            metric = deficit_report["validation"]
+            report["candidates"].append(
+                {
+                    "kind": "deficit_mlp",
+                    "validation_mass_mse": metric["mass_mse"],
+                    "validation_mass_MAE": metric["mass_MAE"],
+                    "validation_maximum_absolute_mass_error": metric[
+                        "maximum_absolute_mass_error"
+                    ],
+                    "validation_efficiencies": predict_efficiency(deficit, xv).tolist(),
+                }
+            )
+            report["deficit_fit"] = deficit_report
+        for record in report["candidates"]:
+            metric = budget_error_metrics(
+                predict_efficiency(models[record["kind"]], xv),
+                yv,
+                sv,
+                relative_weight=deficit_relative_weight,
+                neutral_floor=deficit_neutral_floor,
+            )
+            record["validation_mixed_loss"] = metric["mixed_loss"]
+            record["validation_floored_relative_neutral_mse"] = metric[
+                "floored_relative_neutral_mse"
+            ]
+        report["mixed_ranking_controls"] = {
+            "relative_weight": deficit_relative_weight,
+            "neutral_floor": deficit_neutral_floor,
+            "scope": "Identical mixed metric for every candidate; training targets never used in validation ranking",
+        }
+    ranking_key = "validation_mixed_loss" if include_deficit else "validation_mass_mse"
+    ranked = sorted(report["candidates"], key=lambda item: item[ranking_key])
     report.update(
         selected_kind=ranked[0]["kind"],
         selection="Budget-error ranking only; all candidates retained for fixed-field validation",
@@ -751,4 +1004,8 @@ def fit_budget_v3(
         local_extrapolation="Convex nearest-training-deficit average; no out-of-support accuracy is certified",
         local_zero_deficit_scope="Exact zero only from zero local training deficits; no forced photon-load or redshift threshold",
     )
+    if include_deficit:
+        report["selection"] = (
+            "Common validation mixed absolute-mass and floored-relative-neutral ranking; all candidates retained for fixed-field validation"
+        )
     return models, report

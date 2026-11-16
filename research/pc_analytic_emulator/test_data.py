@@ -15,6 +15,29 @@ from research.pc_analytic.compare import independent_budget
 from research.pc_analytic_emulator.data import load_dataset, split_samples
 
 
+def write_collection(root: Path, campaigns: list[Path]) -> Path:
+    """Write checksummed references to original synthetic campaign archives."""
+    root.mkdir(parents=True, exist_ok=True)
+    _write(
+        root / "collection_manifest.json",
+        {
+            "schema": 1,
+            "kind": "analytic-teacher-campaign-collection",
+            "campaigns": [
+                {
+                    "name": f"campaign{index}",
+                    "path": str(path),
+                    "completion_sha256": _digest(path / "completion.json"),
+                    "identity_sha256": _digest(path / "identity.json"),
+                    "manifest_sha256": _digest(path / "dataset_manifest.json"),
+                }
+                for index, path in enumerate(campaigns)
+            ],
+        },
+    )
+    return root
+
+
 def _write(path: Path, value: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n")
@@ -246,6 +269,70 @@ def reseal(root: Path) -> None:
             },
         },
     )
+
+
+def test_collection_preserves_original_receipts_and_nonrectangular_epochs(
+    tmp_path: Path,
+) -> None:
+    """Campaigns with different epoch lists keep all original paths and identities."""
+    a = make_campaign(tmp_path / "a", seeds=(1001,), redshifts=(9.0, 8.0, 7.5))
+    b = make_campaign(tmp_path / "b", seeds=(1007,), redshifts=(8.0, 7.5))
+    originals = {
+        str(path): _digest(path)
+        for folder in (a, b)
+        for path in folder.rglob("receipt.json")
+    }
+    collection = write_collection(tmp_path / "collection", [a, b])
+    data = load_dataset(collection)
+    assert len(data.samples) == 5
+    assert data.audit["campaign_count"] == 2
+    assert {sample.fields_path.parents[4] for sample in data.samples} == {a, b}
+    assert len(data.identity["campaigns"]) == 2
+    assert all(
+        data.file_hashes[name] == expected == _digest(Path(name))
+        for name, expected in originals.items()
+    )
+    assert str(collection / "collection_manifest.json") in data.file_hashes
+    splits = split_samples(
+        data,
+        train_seeds=[1001],
+        validation_seeds=[1007],
+        test_seeds=[],
+        allow_empty_test=True,
+    )
+    assert {key: len(value) for key, value in splits.items()} == {
+        "train": 3,
+        "validation": 2,
+        "test": 0,
+    }
+    with pytest.raises(ValueError, match="nonempty"):
+        split_samples(data, train_seeds=[1001], validation_seeds=[1007], test_seeds=[])
+
+
+@pytest.mark.parametrize(
+    "issue", ["duplicate", "geometry", "reference_hash", "original_field"]
+)
+def test_collection_rejects_duplicate_incompatible_or_changed_campaigns(
+    tmp_path: Path, issue: str
+) -> None:
+    """Collection references do not bypass original audits or target compatibility."""
+    a = make_campaign(tmp_path / "a", seeds=(1001,))
+    b = make_campaign(
+        tmp_path / "b",
+        seeds=(1001 if issue == "duplicate" else 1007,),
+        n=6 if issue == "geometry" else 4,
+    )
+    collection = write_collection(tmp_path / "collection", [a, b])
+    if issue == "reference_hash":
+        path = collection / "collection_manifest.json"
+        record = json.loads(path.read_text())
+        record["campaigns"][1]["completion_sha256"] = "0" * 64
+        _write(path, record)
+    if issue == "original_field":
+        path = next(b.glob("seeds/*/teacher/*/fields.npz"))
+        path.write_bytes(b"corrupt original")
+    with pytest.raises(ValueError, match=r"repeat|incompatible|checksum"):
+        load_dataset(collection)
 
 
 def _mutate_fields(root: Path, **changes: np.ndarray) -> None:

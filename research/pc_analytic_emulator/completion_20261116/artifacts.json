@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "source": "ChangqIngovo/21cmFAST, matched-photon-conservation",
+  "artifacts": [
+    {
+      "filename": "PC_completed_models_and_validation_20261116.tar.zst",
+      "size_bytes": 60894253,
+      "sha256": "0be7308002f3de961cf2a5f8a2c5db806959abca8cbbc25fdf08b196dd2489c6",
+      "scope": "Selected and previous model weights, all candidate histories,44 independent comparisons and fixed-weight oracles; regenerable fit caches excluded"
+    },
+    {
+      "filename": "PC_completion_teachers_20261116.tar.zst",
+      "size_bytes": 310915808,
+      "sha256": "29354136d61554265e975b7319a116fa84ec550cadec7a86c615507804280c9f",
+      "scope": "152 new teacher snapshots, native inputs, receipts and generation protocols"
+    },
+    {
+      "filename": "PC_native_teachers_20261116.tar.zst",
+      "size_bytes": 174253713,
+      "sha256": "8029b42685bead065fa5fe177720aebb2adfc2faddc0d60855ef1d55cc0741c2",
+      "scope": "84 earlier audited native teacher snapshots used as development data"
+    }
+  ],
+  "delivery": "Archive downloads are provided in the private conversation; no private download identifiers are published here."
+}

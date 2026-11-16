@@ -1,0 +1,1080 @@
+{
+  "schema": 1,
+  "diagnostic_only": true,
+  "fitting_performed": false,
+  "model_selection_performed": false,
+  "all_model_hashes_match_preblind_freeze": true,
+  "final_selection_sha256": "493a9cdc3ba74c05131e550173eaaacf356ca3a9451e62bf05935a2668297efe",
+  "selected_model_sha256": {
+    "model.json": "556855611eeb953f536c8546cec47b8ee337c71a676ac0c18cb33f95b476ffee",
+    "budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+    "field_model.npz": "0bca281ff95e89b768d0cec6131329dbf2916a560a8835706ea78abf429aaf67",
+    "base_model/model.json": "f65f8f9c5ae9f7651059781d8f975dd54fd34885afd91fc06d197288c02d5db0",
+    "base_model/budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+    "base_model/field_model.npz": "fa59c5ff130fdbdc4c177446541a03026eda89bf64c37930681e3cbb7522bb51"
+  },
+  "interventions_are_additive": false,
+  "scope": "Frozen weights. Exact teacher absorption counts are diagnostic oracles unavailable at inference. Recursive oracle replaces the budget targets at every learned layer, preserving all field-model weights. Teacher field projected to the predicted budget is a capacity-weighted MSE lower bound for the current capacity_l2 projection; it is not a decomposition of deployed error.",
+  "campaigns": {
+    "blind": {
+      "summary_path": "${CAMPAIGN_ROOT}/oracle_final_blind/summary.json",
+      "summary_sha256": "9d93ee17e8ea6f1d1660b6f23559d8783b9d601ed014ad25861a6ae4eff26104",
+      "seeds": [
+        2117,
+        2118,
+        2119,
+        2120
+      ],
+      "snapshots": 28,
+      "geometry": [
+        [
+          16,
+          50.0
+        ]
+      ],
+      "deployed_fields_bitwise_equal_to_frozen_benchmark": true,
+      "all_saved_fields_checksums_verified": true,
+      "maximum_saved_roundtrip_photon_residual": 3.516752393559312e-16,
+      "all_counterfactuals_capacity_l2": true,
+      "aggregates": {
+        "all": {
+          "count": 28,
+          "methods": {
+            "deployed": {
+              "MAE": 0.02015315397760507,
+              "RMSE": 0.04485260013964162,
+              "capacity_weighted_MSE": 0.0028373261951566723,
+              "capacity_weighted_RMSE": 0.04170619830725624,
+              "mean_absolute_delta_Q_mass": 0.003466136432622606,
+              "mean_snapshot_low_k_power_ratio_error": 0.15459608528319665,
+              "defined_power_snapshots": 27
+            },
+            "oracle_final_budget": {
+              "MAE": 0.01960611012689906,
+              "RMSE": 0.04282734124814225,
+              "capacity_weighted_MSE": 0.0025624084293270765,
+              "capacity_weighted_RMSE": 0.03982140170151128,
+              "mean_absolute_delta_Q_mass": 1.7121647246475402e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.09650119889051635,
+              "defined_power_snapshots": 27
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.018946501413242983,
+              "RMSE": 0.04259628919407566,
+              "capacity_weighted_MSE": 0.002521868110517882,
+              "capacity_weighted_RMSE": 0.03958770411379186,
+              "mean_absolute_delta_Q_mass": 1.8074746107954124e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.08813353222036373,
+              "defined_power_snapshots": 27
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.004179294421189967,
+              "RMSE": 0.008509097799280056,
+              "capacity_weighted_MSE": 0.0003964559408851657,
+              "capacity_weighted_RMSE": 0.007676643397578258,
+              "mean_absolute_delta_Q_mass": 0.0034661364326226108,
+              "mean_snapshot_low_k_power_ratio_error": 0.054321454687592384,
+              "defined_power_snapshots": 27
+            }
+          }
+        },
+        "active": {
+          "count": 24,
+          "methods": {
+            "deployed": {
+              "MAE": 0.0228223521881257,
+              "RMSE": 0.04856302732258186,
+              "capacity_weighted_MSE": 0.0032402837299324604,
+              "capacity_weighted_RMSE": 0.045594967756036574,
+              "mean_absolute_delta_Q_mass": 0.0035735864753781467,
+              "mean_snapshot_low_k_power_ratio_error": 0.0988862080856519,
+              "defined_power_snapshots": 24
+            },
+            "oracle_final_budget": {
+              "MAE": 0.022588514411831535,
+              "RMSE": 0.04691848130559819,
+              "capacity_weighted_MSE": 0.002937840121467684,
+              "capacity_weighted_RMSE": 0.04399910398047724,
+              "mean_absolute_delta_Q_mass": 1.7361365348514086e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.07322493467359163,
+              "defined_power_snapshots": 24
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.021817018854655337,
+              "RMSE": 0.04665368666722188,
+              "capacity_weighted_MSE": 0.0028906240467930088,
+              "capacity_weighted_RMSE": 0.04372849212109068,
+              "mean_absolute_delta_Q_mass": 1.8496681562371118e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.06345063683691658,
+              "defined_power_snapshots": 24
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.004405604128706727,
+              "RMSE": 0.009457041403145164,
+              "capacity_weighted_MSE": 0.0004607798713025302,
+              "capacity_weighted_RMSE": 0.008485844601159734,
+              "mean_absolute_delta_Q_mass": 0.0035735864753781467,
+              "mean_snapshot_low_k_power_ratio_error": 0.055402862042301576,
+              "defined_power_snapshots": 24
+            }
+          }
+        },
+        "late": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.0041379647144813275,
+              "RMSE": 0.022590037042000133,
+              "capacity_weighted_MSE": 0.00041958098650194347,
+              "capacity_weighted_RMSE": 0.018373581614574225,
+              "mean_absolute_delta_Q_mass": 0.002821436176089361,
+              "mean_snapshot_low_k_power_ratio_error": 0.6002751028635547,
+              "defined_power_snapshots": 3
+            },
+            "oracle_final_budget": {
+              "MAE": 0.0017116844173042153,
+              "RMSE": 0.018280500903406605,
+              "capacity_weighted_MSE": 0.0003098182764834299,
+              "capacity_weighted_RMSE": 0.014755188027715513,
+              "mean_absolute_delta_Q_mass": 1.5683338634243265e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.28271131262591426,
+              "defined_power_snapshots": 3
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.0017233967647688685,
+              "RMSE": 0.018251904355198315,
+              "capacity_weighted_MSE": 0.00030933249286712,
+              "capacity_weighted_RMSE": 0.014742976069998946,
+              "mean_absolute_delta_Q_mass": 1.554313338145214e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.285596695287941,
+              "defined_power_snapshots": 3
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.0028214361760894036,
+              "RMSE": 0.002821436176089403,
+              "capacity_weighted_MSE": 1.0512358380979119e-05,
+              "capacity_weighted_RMSE": 0.0028214361760894036,
+              "mean_absolute_delta_Q_mass": 0.0028214361760894036,
+              "mean_snapshot_low_k_power_ratio_error": 0.04567019584991885,
+              "defined_power_snapshots": 3
+            }
+          }
+        },
+        "early": {
+          "count": 0,
+          "methods": {
+            "deployed": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_final_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_recursive_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "teacher_predicted_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            }
+          }
+        }
+      },
+      "by_redshift": {
+        "10.0": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.0015350404722483672,
+              "capacity_weighted_MSE": 2.5632968739905078e-05,
+              "mean_absolute_delta_Q_mass": 3.921430936519336e-11,
+              "mean_snapshot_low_k_power_ratio_error": 0.009312988136945206,
+              "defined_power_snapshots": 4
+            },
+            "oracle_final_budget": {
+              "MAE": 0.0015350404839565375,
+              "capacity_weighted_MSE": 2.5632968739944004e-05,
+              "mean_absolute_delta_Q_mass": 4.1037927393855635e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.009312988117264921,
+              "defined_power_snapshots": 4
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.0015350404839975093,
+              "capacity_weighted_MSE": 2.5632968740208136e-05,
+              "mean_absolute_delta_Q_mass": 4.32289179082522e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.009312988117370614,
+              "defined_power_snapshots": 4
+            },
+            "teacher_predicted_budget": {
+              "MAE": 3.922009405747185e-11,
+              "capacity_weighted_MSE": 1.816142045731039e-21,
+              "mean_absolute_delta_Q_mass": 3.9214325716836995e-11,
+              "mean_snapshot_low_k_power_ratio_error": 8.906819032317159e-11,
+              "defined_power_snapshots": 4
+            }
+          }
+        },
+        "9.0": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.004494339438563926,
+              "capacity_weighted_MSE": 0.00017719345703445753,
+              "mean_absolute_delta_Q_mass": 3.5321330762388715e-07,
+              "mean_snapshot_low_k_power_ratio_error": 0.06324208500181425,
+              "defined_power_snapshots": 4
+            },
+            "oracle_final_budget": {
+              "MAE": 0.004494555130059854,
+              "capacity_weighted_MSE": 0.00017719344487632515,
+              "mean_absolute_delta_Q_mass": 7.910298411255737e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.06324228060217812,
+              "defined_power_snapshots": 4
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.00449455928393203,
+              "capacity_weighted_MSE": 0.0001771935083160383,
+              "mean_absolute_delta_Q_mass": 8.87339803392781e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.06324242676713066,
+              "defined_power_snapshots": 4
+            },
+            "teacher_predicted_budget": {
+              "MAE": 3.5321330760506057e-07,
+              "capacity_weighted_MSE": 1.471674185674004e-13,
+              "mean_absolute_delta_Q_mass": 3.532133076054242e-07,
+              "mean_snapshot_low_k_power_ratio_error": 3.2751066506020443e-07,
+              "defined_power_snapshots": 4
+            }
+          }
+        },
+        "8.0": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.013002728230852016,
+              "capacity_weighted_MSE": 0.0009512296413232572,
+              "mean_absolute_delta_Q_mass": 1.978498301509161e-05,
+              "mean_snapshot_low_k_power_ratio_error": 0.02081089015690355,
+              "defined_power_snapshots": 4
+            },
+            "oracle_final_budget": {
+              "MAE": 0.013001979184740605,
+              "capacity_weighted_MSE": 0.0009512298803064205,
+              "mean_absolute_delta_Q_mass": 1.876189889813624e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.020803433737536473,
+              "defined_power_snapshots": 4
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.013002112495058445,
+              "capacity_weighted_MSE": 0.0009512337257846408,
+              "mean_absolute_delta_Q_mass": 1.65243819608351e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.020799568739961735,
+              "defined_power_snapshots": 4
+            },
+            "teacher_predicted_budget": {
+              "MAE": 1.9963192188844813e-05,
+              "capacity_weighted_MSE": 5.533041479516247e-10,
+              "mean_absolute_delta_Q_mass": 1.9784983015086017e-05,
+              "mean_snapshot_low_k_power_ratio_error": 2.9177000786757834e-05,
+              "defined_power_snapshots": 4
+            }
+          }
+        },
+        "7.5": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.026643830120618592,
+              "capacity_weighted_MSE": 0.0025512166237248645,
+              "mean_absolute_delta_Q_mass": 0.00022798699831115389,
+              "mean_snapshot_low_k_power_ratio_error": 0.045282618745371234,
+              "defined_power_snapshots": 4
+            },
+            "oracle_final_budget": {
+              "MAE": 0.026638167154851476,
+              "capacity_weighted_MSE": 0.00255108633474258,
+              "mean_absolute_delta_Q_mass": 2.5355752594937038e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.04531065614385303,
+              "defined_power_snapshots": 4
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.026636598740223262,
+              "capacity_weighted_MSE": 0.0025510753131050275,
+              "mean_absolute_delta_Q_mass": 2.2304124494236403e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.04529718933318228,
+              "defined_power_snapshots": 4
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.00023478303747233344,
+              "capacity_weighted_MSE": 7.948047026481838e-08,
+              "mean_absolute_delta_Q_mass": 0.0002279869983111621,
+              "mean_snapshot_low_k_power_ratio_error": 0.0004115254793554332,
+              "defined_power_snapshots": 4
+            }
+          }
+        },
+        "7.0": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.04609907062491944,
+              "capacity_weighted_MSE": 0.006304257732545189,
+              "mean_absolute_delta_Q_mass": 0.0016605634297558861,
+              "mean_snapshot_low_k_power_ratio_error": 0.08401290556573889,
+              "defined_power_snapshots": 4
+            },
+            "oracle_final_budget": {
+              "MAE": 0.04566332702631394,
+              "capacity_weighted_MSE": 0.00629768593349267,
+              "mean_absolute_delta_Q_mass": 2.9803535851003666e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.08070522294950007,
+              "defined_power_snapshots": 4
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.045573859597460666,
+              "capacity_weighted_MSE": 0.006296490826501329,
+              "mean_absolute_delta_Q_mass": 3.1584826285208834e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.07999809504858173,
+              "defined_power_snapshots": 4
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.0018156294053374724,
+              "capacity_weighted_MSE": 6.919729419208838e-06,
+              "mean_absolute_delta_Q_mass": 0.001660563429755875,
+              "mean_snapshot_low_k_power_ratio_error": 0.005671973893291139,
+              "defined_power_snapshots": 4
+            }
+          }
+        },
+        "6.5": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.04515910424155185,
+              "capacity_weighted_MSE": 0.00943217195622709,
+              "mean_absolute_delta_Q_mass": 0.01953283018866482,
+              "mean_snapshot_low_k_power_ratio_error": 0.3706557609071383,
+              "defined_power_snapshots": 4
+            },
+            "oracle_final_budget": {
+              "MAE": 0.0441980174910668,
+              "capacity_weighted_MSE": 0.0076242121666481675,
+              "mean_absolute_delta_Q_mass": 1.8232913596366284e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.21997502649121717,
+              "defined_power_snapshots": 4
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.03965994252726011,
+              "capacity_weighted_MSE": 0.007342117938310809,
+              "mean_absolute_delta_Q_mass": 2.7370466809193344e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.16205355301527244,
+              "defined_power_snapshots": 4
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.024362895884714013,
+              "capacity_weighted_MSE": 0.002757679464474392,
+              "mean_absolute_delta_Q_mass": 0.01953283018866482,
+              "mean_snapshot_low_k_power_ratio_error": 0.3263041682806429,
+              "defined_power_snapshots": 4
+            }
+          }
+        },
+        "6.0": {
+          "count": 4,
+          "methods": {
+            "deployed": {
+              "MAE": 0.0041379647144813275,
+              "capacity_weighted_MSE": 0.00041958098650194347,
+              "mean_absolute_delta_Q_mass": 0.002821436176089361,
+              "mean_snapshot_low_k_power_ratio_error": 0.6002751028635547,
+              "defined_power_snapshots": 3
+            },
+            "oracle_final_budget": {
+              "MAE": 0.0017116844173042153,
+              "capacity_weighted_MSE": 0.0003098182764834299,
+              "mean_absolute_delta_Q_mass": 1.5683338634243265e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.28271131262591426,
+              "defined_power_snapshots": 3
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.0017233967647688685,
+              "capacity_weighted_MSE": 0.00030933249286712,
+              "mean_absolute_delta_Q_mass": 1.554313338145214e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.285596695287941,
+              "defined_power_snapshots": 3
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.0028214361760894036,
+              "capacity_weighted_MSE": 1.0512358380979119e-05,
+              "mean_absolute_delta_Q_mass": 0.0028214361760894036,
+              "mean_snapshot_low_k_power_ratio_error": 0.04567019584991885,
+              "defined_power_snapshots": 3
+            }
+          }
+        }
+      }
+    },
+    "transfer_resolution": {
+      "summary_path": "${CAMPAIGN_ROOT}/oracle_final_transfer_resolution/summary.json",
+      "summary_sha256": "4c563e35dfd6b9cfa1b7bdda2c96695443ae37178bb32829f9fb7f0d8501cfe2",
+      "seeds": [
+        2131,
+        2132
+      ],
+      "snapshots": 8,
+      "geometry": [
+        [
+          32,
+          50.0
+        ]
+      ],
+      "deployed_fields_bitwise_equal_to_frozen_benchmark": true,
+      "all_saved_fields_checksums_verified": true,
+      "maximum_saved_roundtrip_photon_residual": 7.767758332703966e-17,
+      "all_counterfactuals_capacity_l2": true,
+      "aggregates": {
+        "all": {
+          "count": 8,
+          "methods": {
+            "deployed": {
+              "MAE": 0.13057258171430042,
+              "RMSE": 0.2247581014099651,
+              "capacity_weighted_MSE": 0.04352808779992144,
+              "capacity_weighted_RMSE": 0.19995423555472683,
+              "mean_absolute_delta_Q_mass": 0.002963750192839487,
+              "mean_snapshot_low_k_power_ratio_error": 0.5244440014209093,
+              "defined_power_snapshots": 8
+            },
+            "oracle_final_budget": {
+              "MAE": 0.13050371303270275,
+              "RMSE": 0.22470019004630482,
+              "capacity_weighted_MSE": 0.04350555883833982,
+              "capacity_weighted_RMSE": 0.19989757995065738,
+              "mean_absolute_delta_Q_mass": 2.5797685443892533e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.5247373130383114,
+              "defined_power_snapshots": 8
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.13050288715137992,
+              "RMSE": 0.22469972660293497,
+              "capacity_weighted_MSE": 0.04350553215672816,
+              "capacity_weighted_RMSE": 0.19989746901158978,
+              "mean_absolute_delta_Q_mass": 2.5352834328761192e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.5247302462044916,
+              "defined_power_snapshots": 8
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.0033717330668375537,
+              "RMSE": 0.005704566005208734,
+              "capacity_weighted_MSE": 6.715720163249288e-05,
+              "capacity_weighted_RMSE": 0.005197094741285883,
+              "mean_absolute_delta_Q_mass": 0.002963750192839486,
+              "mean_snapshot_low_k_power_ratio_error": 0.0288000455943894,
+              "defined_power_snapshots": 8
+            }
+          }
+        },
+        "active": {
+          "count": 6,
+          "methods": {
+            "deployed": {
+              "MAE": 0.15306742453174146,
+              "RMSE": 0.24644153433630875,
+              "capacity_weighted_MSE": 0.05219589053638823,
+              "capacity_weighted_RMSE": 0.2227518951461301,
+              "mean_absolute_delta_Q_mass": 0.002373945949441835,
+              "mean_snapshot_low_k_power_ratio_error": 0.42136761485925733,
+              "defined_power_snapshots": 6
+            },
+            "oracle_final_budget": {
+              "MAE": 0.1536495401934017,
+              "RMSE": 0.24631511023705052,
+              "capacity_weighted_MSE": 0.05217542440522264,
+              "capacity_weighted_RMSE": 0.22270998413486384,
+              "mean_absolute_delta_Q_mass": 2.3840906990708262e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.42130267424248985,
+              "defined_power_snapshots": 6
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.1536484390183046,
+              "RMSE": 0.24631449231255742,
+              "capacity_weighted_MSE": 0.05217538882974043,
+              "capacity_weighted_RMSE": 0.22270983621610707,
+              "mean_absolute_delta_Q_mass": 2.3199773636829417e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.4212932517973968,
+              "defined_power_snapshots": 6
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.00277480085555668,
+              "RMSE": 0.004342601709573937,
+              "capacity_weighted_MSE": 6.221299844889346e-05,
+              "capacity_weighted_RMSE": 0.003967988166725452,
+              "mean_absolute_delta_Q_mass": 0.0023739459494418543,
+              "mean_snapshot_low_k_power_ratio_error": 0.015955966157168506,
+              "defined_power_snapshots": 6
+            }
+          }
+        },
+        "late": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.06308805326197724,
+              "RMSE": 0.15970780263093431,
+              "capacity_weighted_MSE": 0.017524679590521078,
+              "capacity_weighted_RMSE": 0.13156125678051694,
+              "mean_absolute_delta_Q_mass": 0.004733162923032442,
+              "mean_snapshot_low_k_power_ratio_error": 0.8336731611058649,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.061066231550605934,
+              "RMSE": 0.1598554294740676,
+              "capacity_weighted_MSE": 0.017495962137691355,
+              "capacity_weighted_RMSE": 0.131460367398038,
+              "mean_absolute_delta_Q_mass": 3.166802080344536e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.8350412294257761,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.061066231550605934,
+              "RMSE": 0.1598554294740676,
+              "capacity_weighted_MSE": 0.017495962137691355,
+              "capacity_weighted_RMSE": 0.131460367398038,
+              "mean_absolute_delta_Q_mass": 3.1812016404556525e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.8350412294257761,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.005162529700680174,
+              "RMSE": 0.009790458892113128,
+              "capacity_weighted_MSE": 8.198981118329113e-05,
+              "capacity_weighted_RMSE": 0.008884414464967174,
+              "mean_absolute_delta_Q_mass": 0.0047331629230323805,
+              "mean_snapshot_low_k_power_ratio_error": 0.06733228390605209,
+              "defined_power_snapshots": 2
+            }
+          }
+        },
+        "early": {
+          "count": 0,
+          "methods": {
+            "deployed": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_final_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_recursive_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "teacher_predicted_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            }
+          }
+        }
+      },
+      "by_redshift": {
+        "8.0": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.08445212891920642,
+              "capacity_weighted_MSE": 0.025754911971359543,
+              "mean_absolute_delta_Q_mass": 4.00463921106674e-05,
+              "mean_snapshot_low_k_power_ratio_error": 0.3020581404580027,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.08443568982744598,
+              "capacity_weighted_MSE": 0.02575486707893932,
+              "mean_absolute_delta_Q_mass": 8.497646283053888e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.30203971213267544,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.08443310496781012,
+              "capacity_weighted_MSE": 0.025754751437294426,
+              "mean_absolute_delta_Q_mass": 1.4566213829164148e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.30205159283767113,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 4.252134378756346e-05,
+              "capacity_weighted_MSE": 3.3200383573276096e-09,
+              "mean_absolute_delta_Q_mass": 4.004639211066908e-05,
+              "mean_snapshot_low_k_power_ratio_error": 9.140387006829898e-05,
+              "defined_power_snapshots": 2
+            }
+          }
+        },
+        "7.5": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.15083833627103477,
+              "capacity_weighted_MSE": 0.05609222773704282,
+              "mean_absolute_delta_Q_mass": 0.000382305628458871,
+              "mean_snapshot_low_k_power_ratio_error": 0.31855754289367694,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.1508993425033567,
+              "capacity_weighted_MSE": 0.056090836418305,
+              "mean_absolute_delta_Q_mass": 7.310635497213818e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.3182602830656275,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.15089655465384355,
+              "capacity_weighted_MSE": 0.056090539454429184,
+              "mean_absolute_delta_Q_mass": 7.688623950499986e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.3182500264844013,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.00041629587298629264,
+              "capacity_weighted_MSE": 2.9732863714303264e-07,
+              "mean_absolute_delta_Q_mass": 0.0003823056284588895,
+              "mean_snapshot_low_k_power_ratio_error": 0.0009946240480906768,
+              "defined_power_snapshots": 2
+            }
+          }
+        },
+        "6.5": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.2239118084049832,
+              "capacity_weighted_MSE": 0.07474053190076231,
+              "mean_absolute_delta_Q_mass": 0.006699485827755968,
+              "mean_snapshot_low_k_power_ratio_error": 0.6434871612260925,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.22561358824940245,
+              "capacity_weighted_MSE": 0.07468056971842361,
+              "mean_absolute_delta_Q_mass": 5.571443919185708e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.6436080275291665,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.22561565743326012,
+              "capacity_weighted_MSE": 0.07468087559749767,
+              "mean_absolute_delta_Q_mass": 4.7344483130824113e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.643578136070118,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.007865585349896185,
+              "capacity_weighted_MSE": 0.00018633834667118005,
+              "mean_absolute_delta_Q_mass": 0.006699485827756003,
+              "mean_snapshot_low_k_power_ratio_error": 0.04678187055334654,
+              "defined_power_snapshots": 2
+            }
+          }
+        },
+        "6.0": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.06308805326197724,
+              "capacity_weighted_MSE": 0.017524679590521078,
+              "mean_absolute_delta_Q_mass": 0.004733162923032442,
+              "mean_snapshot_low_k_power_ratio_error": 0.8336731611058649,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.061066231550605934,
+              "capacity_weighted_MSE": 0.017495962137691355,
+              "mean_absolute_delta_Q_mass": 3.166802080344536e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.8350412294257761,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.061066231550605934,
+              "capacity_weighted_MSE": 0.017495962137691355,
+              "mean_absolute_delta_Q_mass": 3.1812016404556525e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.8350412294257761,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.005162529700680174,
+              "capacity_weighted_MSE": 8.198981118329113e-05,
+              "mean_absolute_delta_Q_mass": 0.0047331629230323805,
+              "mean_snapshot_low_k_power_ratio_error": 0.06733228390605209,
+              "defined_power_snapshots": 2
+            }
+          }
+        }
+      }
+    },
+    "transfer_volume": {
+      "summary_path": "${CAMPAIGN_ROOT}/oracle_final_transfer_volume/summary.json",
+      "summary_sha256": "070c228f92455429af76e18571302ea229d56754f1797845ca26a7a5c27bedd3",
+      "seeds": [
+        2141,
+        2142
+      ],
+      "snapshots": 8,
+      "geometry": [
+        [
+          32,
+          256.0
+        ]
+      ],
+      "deployed_fields_bitwise_equal_to_frozen_benchmark": true,
+      "all_saved_fields_checksums_verified": true,
+      "maximum_saved_roundtrip_photon_residual": 5.918833902257989e-17,
+      "all_counterfactuals_capacity_l2": true,
+      "aggregates": {
+        "all": {
+          "count": 8,
+          "methods": {
+            "deployed": {
+              "MAE": 0.1474833396997836,
+              "RMSE": 0.19418491897737727,
+              "capacity_weighted_MSE": 0.048398429160249376,
+              "capacity_weighted_RMSE": 0.1914530409299103,
+              "mean_absolute_delta_Q_mass": 0.007870581696775457,
+              "mean_snapshot_low_k_power_ratio_error": 1.7761851465703165,
+              "defined_power_snapshots": 6
+            },
+            "oracle_final_budget": {
+              "MAE": 0.14141876919957108,
+              "RMSE": 0.18845444080420884,
+              "capacity_weighted_MSE": 0.04767650971335348,
+              "capacity_weighted_RMSE": 0.18569882224144607,
+              "mean_absolute_delta_Q_mass": 1.036043055297136e-17,
+              "mean_snapshot_low_k_power_ratio_error": 1.7811550911081337,
+              "defined_power_snapshots": 6
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.1414206797191565,
+              "RMSE": 0.18845573932861212,
+              "capacity_weighted_MSE": 0.04767715378984676,
+              "capacity_weighted_RMSE": 0.1856999170781498,
+              "mean_absolute_delta_Q_mass": 9.799218284681282e-18,
+              "mean_snapshot_low_k_power_ratio_error": 1.7811276548517572,
+              "defined_power_snapshots": 6
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.007870581696775472,
+              "RMSE": 0.007870581696775472,
+              "capacity_weighted_MSE": 0.00017769073276311363,
+              "capacity_weighted_RMSE": 0.007870581696775472,
+              "mean_absolute_delta_Q_mass": 0.007870581696775472,
+              "mean_snapshot_low_k_power_ratio_error": 0.008909864844376001,
+              "defined_power_snapshots": 6
+            }
+          }
+        },
+        "active": {
+          "count": 5,
+          "methods": {
+            "deployed": {
+              "MAE": 0.20960601603425016,
+              "RMSE": 0.26235246586574323,
+              "capacity_weighted_MSE": 0.0702460425198207,
+              "capacity_weighted_RMSE": 0.2622796875297757,
+              "mean_absolute_delta_Q_mass": 0.006194623431741015,
+              "mean_snapshot_low_k_power_ratio_error": 1.9827991743360127,
+              "defined_power_snapshots": 5
+            },
+            "oracle_final_budget": {
+              "MAE": 0.2055488669587902,
+              "RMSE": 0.261330172985964,
+              "capacity_weighted_MSE": 0.06967751440334904,
+              "capacity_weighted_RMSE": 0.2607728239022,
+              "mean_absolute_delta_Q_mass": 1.468145266355039e-17,
+              "mean_snapshot_low_k_power_ratio_error": 1.9757871292848783,
+              "defined_power_snapshots": 5
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.20555192379012682,
+              "RMSE": 0.26133225062500925,
+              "capacity_weighted_MSE": 0.0696785449257383,
+              "capacity_weighted_RMSE": 0.260774575640926,
+              "mean_absolute_delta_Q_mass": 1.3733283980468433e-17,
+              "mean_snapshot_low_k_power_ratio_error": 1.975754205777226,
+              "defined_power_snapshots": 5
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.006194623431741019,
+              "RMSE": 0.0061946234317410195,
+              "capacity_weighted_MSE": 0.00017235241761204444,
+              "capacity_weighted_RMSE": 0.0061946234317410195,
+              "mean_absolute_delta_Q_mass": 0.0061946234317410195,
+              "mean_snapshot_low_k_power_ratio_error": 0.006532427114989031,
+              "defined_power_snapshots": 5
+            }
+          }
+        },
+        "late": {
+          "count": 3,
+          "methods": {
+            "deployed": {
+              "MAE": 0.04394554580900609,
+              "RMSE": 0.08057234083010066,
+              "capacity_weighted_MSE": 0.011985740227630505,
+              "capacity_weighted_RMSE": 0.07340862993013457,
+              "mean_absolute_delta_Q_mass": 0.010663845471832863,
+              "mean_snapshot_low_k_power_ratio_error": 0.7431150077418347,
+              "defined_power_snapshots": 1
+            },
+            "oracle_final_budget": {
+              "MAE": 0.03453527293420589,
+              "RMSE": 0.06699488716795017,
+              "capacity_weighted_MSE": 0.011008168563360862,
+              "capacity_weighted_RMSE": 0.060575486140189476,
+              "mean_absolute_delta_Q_mass": 3.1587270353396504e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.8079949002244127,
+              "defined_power_snapshots": 1
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.03453527293420589,
+              "RMSE": 0.06699488716795017,
+              "capacity_weighted_MSE": 0.011008168563360862,
+              "capacity_weighted_RMSE": 0.060575486140189476,
+              "mean_absolute_delta_Q_mass": 3.2424421250360267e-18,
+              "mean_snapshot_low_k_power_ratio_error": 0.8079949002244127,
+              "defined_power_snapshots": 1
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.010663845471832892,
+              "RMSE": 0.010663845471832892,
+              "capacity_weighted_MSE": 0.0001865879246815623,
+              "capacity_weighted_RMSE": 0.010663845471832892,
+              "mean_absolute_delta_Q_mass": 0.010663845471832892,
+              "mean_snapshot_low_k_power_ratio_error": 0.02079705349131085,
+              "defined_power_snapshots": 1
+            }
+          }
+        },
+        "early": {
+          "count": 0,
+          "methods": {
+            "deployed": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_final_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_recursive_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "teacher_predicted_budget": {
+              "MAE": null,
+              "RMSE": null,
+              "capacity_weighted_MSE": null,
+              "capacity_weighted_RMSE": null,
+              "mean_absolute_delta_Q_mass": null,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            }
+          }
+        }
+      },
+      "by_redshift": {
+        "8.0": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.20951391854773194,
+              "capacity_weighted_MSE": 0.06919907259156013,
+              "mean_absolute_delta_Q_mass": 3.423521934858296e-05,
+              "mean_snapshot_low_k_power_ratio_error": 3.3044808770117484,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.2095179242268204,
+              "capacity_weighted_MSE": 0.06919916433106212,
+              "mean_absolute_delta_Q_mass": 1.3385661656555801e-17,
+              "mean_snapshot_low_k_power_ratio_error": 3.3044315684550862,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.20951847085469255,
+              "capacity_weighted_MSE": 0.06919936399352505,
+              "mean_absolute_delta_Q_mass": 1.2463242773621109e-17,
+              "mean_snapshot_low_k_power_ratio_error": 3.3044250349260587,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 3.423521934858842e-05,
+              "capacity_weighted_MSE": 1.1788852621290496e-09,
+              "mean_absolute_delta_Q_mass": 3.423521934858842e-05,
+              "mean_snapshot_low_k_power_ratio_error": 5.108765813939542e-05,
+              "defined_power_snapshots": 2
+            }
+          }
+        },
+        "7.5": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.24899235647841717,
+              "capacity_weighted_MSE": 0.08790166009846868,
+              "mean_absolute_delta_Q_mass": 0.0007850033827369182,
+              "mean_snapshot_low_k_power_ratio_error": 1.248070254713496,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.2491031940482759,
+              "capacity_weighted_MSE": 0.08790188467041671,
+              "mean_absolute_delta_Q_mass": 1.6031792590152623e-17,
+              "mean_snapshot_low_k_power_ratio_error": 1.2478397124270668,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.2491102894987454,
+              "capacity_weighted_MSE": 0.08790426131392687,
+              "mean_absolute_delta_Q_mass": 1.4471981416346617e-17,
+              "mean_snapshot_low_k_power_ratio_error": 1.247763937186963,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.0007850033827369041,
+              "capacity_weighted_MSE": 6.193145137744534e-07,
+              "mean_absolute_delta_Q_mass": 0.0007850033827369041,
+              "mean_snapshot_low_k_power_ratio_error": 0.0008837734442760994,
+              "defined_power_snapshots": 2
+            }
+          }
+        },
+        "6.5": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.12647155481913286,
+              "capacity_weighted_MSE": 0.0362374836036157,
+              "mean_absolute_delta_Q_mass": 0.026033319979125797,
+              "mean_snapshot_low_k_power_ratio_error": 0.776004307985705,
+              "defined_power_snapshots": 2
+            },
+            "oracle_final_budget": {
+              "MAE": 0.10705395852318798,
+              "capacity_weighted_MSE": 0.03360498985193511,
+              "mean_absolute_delta_Q_mass": 1.2024267965177019e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.7911939924422493,
+              "defined_power_snapshots": 2
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.10705395852318798,
+              "capacity_weighted_MSE": 0.03360498985193511,
+              "mean_absolute_delta_Q_mass": 1.2261648948757402e-17,
+              "mean_snapshot_low_k_power_ratio_error": 0.7911939924422492,
+              "defined_power_snapshots": 2
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.02603331997912583,
+              "capacity_weighted_MSE": 0.000688632462715582,
+              "mean_absolute_delta_Q_mass": 0.026033319979125835,
+              "mean_snapshot_low_k_power_ratio_error": 0.025794733430712508,
+              "defined_power_snapshots": 2
+            }
+          }
+        },
+        "6.0": {
+          "count": 2,
+          "methods": {
+            "deployed": {
+              "MAE": 0.004955528953852589,
+              "capacity_weighted_MSE": 0.0002555003473529725,
+              "mean_absolute_delta_Q_mass": 0.0046297682058905314,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_final_budget": {
+              "MAE": 0.0,
+              "capacity_weighted_MSE": 0.0,
+              "mean_absolute_delta_Q_mass": 0.0,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "oracle_recursive_budget": {
+              "MAE": 0.0,
+              "capacity_weighted_MSE": 0.0,
+              "mean_absolute_delta_Q_mass": 0.0,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            },
+            "teacher_predicted_budget": {
+              "MAE": 0.004629768205890561,
+              "capacity_weighted_MSE": 2.150997493783591e-05,
+              "mean_absolute_delta_Q_mass": 0.004629768205890561,
+              "mean_snapshot_low_k_power_ratio_error": null,
+              "defined_power_snapshots": 0
+            }
+          }
+        }
+      }
+    }
+  },
+  "all_inference_source_hashes_match_preblind_freeze": true,
+  "verified_inference_source_file_count": 18
+}

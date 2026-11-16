@@ -70,6 +70,17 @@ def test_sampling_is_stable_and_does_not_repeat() -> None:
         {"field_variance_floor": 0},
         {"k_fraction": 1.1},
         {"regression_test_seeds": [1008, 1008]},
+        {"feature_set": "unknown"},
+        {"allow_empty_test": 1},
+        {"test_seeds": []},
+        {"budget_epochs": 0},
+        {"budget_epochs": True},
+        {"frame_cache_MiB": -1},
+        {"frame_cache_MiB": True},
+        {"frame_cache_MiB": 0.5},
+        {"include_deficit_budget": True},
+        {"deficit_neutral_floor": 0},
+        {"budget_candidate_kinds": []},
     ],
 )
 def test_bad_training_config_is_rejected(tmp_path: Path, change: dict) -> None:
@@ -83,6 +94,11 @@ def test_training_method_is_explicit_and_legacy_remains_default(tmp_path: Path) 
     config = train.validate_config({"input_root": str(tmp_path)})
     assert config["training_method"] == "legacy"
     assert config["v2_epochs"] == 80
+    assert config["feature_set"] == "legacy"
+    assert config["budget_epochs"] is None
+    assert config["frame_cache_MiB"] == 512
+    assert not config["allow_empty_test"]
+    assert not config["include_deficit_budget"]
     improved = train.validate_config(
         {
             "input_root": str(tmp_path),
@@ -103,6 +119,68 @@ def test_training_method_is_explicit_and_legacy_remains_default(tmp_path: Path) 
     assert residual["warmstart_epochs"] == 80
     assert residual["warmstart_learning_rate"] == 3e-4
     assert residual["regression_test_seeds"] == [1008]
+
+
+def test_multiscale_development_training_freezes_before_any_test(
+    tmp_path: Path,
+) -> None:
+    """Opt-in features and deficit budgets train on a collection without test labels."""
+    from research.pc_analytic_emulator.model import Emulator
+    from research.pc_analytic_emulator.test_data import make_campaign, write_collection
+
+    first = make_campaign(tmp_path / "first", seeds=(1001,), n=4)
+    second = make_campaign(tmp_path / "second", seeds=(1007,), n=4)
+    collection = write_collection(tmp_path / "collection", [first, second])
+    config = {
+        "input_root": str(collection),
+        "training_method": "warm_started_v3",
+        "feature_set": "multiscale_local",
+        "allow_empty_test": True,
+        "train_seeds": [1001],
+        "validation_seeds": [1007],
+        "test_seeds": [],
+        "model_seeds": [11],
+        "workers": 1,
+        "threads": 1,
+        "cpus": 1,
+        "epochs": 2,
+        "budget_epochs": 3,
+        "frame_cache_MiB": 0,
+        "warmstart_epochs": 2,
+        "patience": 3,
+        "samples_per_snapshot": 8,
+        "hidden": [4],
+        "budget_hidden": [3],
+        "include_deficit_budget": True,
+        "budget_candidate_kinds": ["deficit_mlp"],
+    }
+    output = tmp_path / "fit"
+    summary = train.run(config, output)
+    assert summary["complete"]
+    assert summary["sample_counts"] == {"train": 2, "validation": 2, "test": 0}
+    assert not summary["test_evaluated"]
+    assert summary["blind_evaluation_pending"]
+    assert summary["maximum_test_photon_residual"] is None
+    assert not (output / "test").exists()
+    assert not (output / "test_slices.png").exists()
+    assert json.loads((output / "test_metrics.json").read_text()) == []
+    model = Emulator.load(output / "model")
+    assert model.feature_set == "multiscale_local"
+    details = json.loads((output / "features.json").read_text())
+    assert details["feature_set"] == "multiscale_local"
+    assert len(details["field_feature_names"]) == 88
+    assert details["training_cells"] == 2 * 4**3
+    legacy_cache = json.loads((output / "legacy_fit_cache/features.json").read_text())
+    assert legacy_cache["training_cells"] == 16
+    assert len(legacy_cache["field_feature_names"]) == 88
+    budgets = summary["budget_selection"]
+    assert [row["kind"] for row in budgets["candidates"]] == ["deficit_mlp"]
+    with np.load(output / "budget/deficit_mlp.npz", allow_pickle=False) as saved:
+        metadata = json.loads(str(saved["metadata_json"]))
+    assert metadata["requested_epochs"] == 3
+    trained = Emulator.load(output / "trials/seed11/trained_model")
+    assert trained.field_model.metadata["frame_cache_max_bytes"] == 0
+    assert train.run(config, output) == summary
 
 
 def test_compact_comparison_retains_each_candidate_and_validation_seed() -> None:

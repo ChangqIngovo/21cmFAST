@@ -5,6 +5,11 @@ analytic coeval teacher in `pc_analytic` and its supervised emulator in
 `pc_analytic_emulator`. Earlier transport experiments remain in other research
 directories; they are not the teacher used by this training workflow.
 
+The [completed improvement and blind validation](pc_analytic_emulator/COMPLETION_20261116.md)
+reports the selected 88-feature emulator, reproducible training pipeline and
+failed geometry-transfer tests. The selected weights are evaluated for L50/N16;
+they are not validated for N32 or a 256 cMpc box.
+
 The [prediction-error investigation](pc_analytic_emulator/ERROR_SOURCES_20261116.md)
 separates absorbed-count errors, projection-induced saturation and spatial
 ranking limitations using fixed-model controls.
@@ -24,8 +29,12 @@ ranking limitations using fixed-model controls.
 | Fixed-field comparisons and frozen-base residual training | [pc_analytic_emulator/warmstart.py](pc_analytic_emulator/warmstart.py) |
 | Field objective, gradients and bounded photon projection | [pc_analytic_emulator/fit.py](pc_analytic_emulator/fit.py), [objectives.py](pc_analytic_emulator/objectives.py), [projection.py](pc_analytic_emulator/projection.py) |
 | Global absorption estimator and deployed model | [pc_analytic_emulator/budget.py](pc_analytic_emulator/budget.py), [model.py](pc_analytic_emulator/model.py) |
+| Native local moments and multiscale spatial features | [pc_analytic_emulator/spatial.py](pc_analytic_emulator/spatial.py) |
 | Standalone inference on native arrays | [pc_analytic_emulator/predict.py](pc_analytic_emulator/predict.py) |
 | Diagnostic replacement of predicted photon budgets | [pc_analytic_emulator/diagnose_errors.py](pc_analytic_emulator/diagnose_errors.py) |
+| Independent saved-field, power, MFP and timing checks | [pc_analytic_emulator/benchmark.py](pc_analytic_emulator/benchmark.py) |
+| Rotation, translation and count-unit checks | [pc_analytic_emulator/audit_symmetry.py](pc_analytic_emulator/audit_symmetry.py) |
+| Reproducible generation, paired fitting and frozen evaluation | [completion workflow](pc_analytic_emulator/completion_20261116/reproduction/README.md) |
 
 ## What the teacher solves
 

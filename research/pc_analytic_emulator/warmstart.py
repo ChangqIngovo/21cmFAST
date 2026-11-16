@@ -206,6 +206,7 @@ def fit_trial(task: dict[str, Any]) -> dict[str, Any]:
                 trained.field_model,
                 budget,
                 radii_cMpc=trained.radii_cMpc,
+                feature_set=trained.feature_set,
                 projection_mode=projection,
                 metadata=dict(trained.metadata)
                 | {
@@ -270,11 +271,13 @@ def fit_trial(task: dict[str, Any]) -> dict[str, Any]:
         patience=config["patience"],
         objective_config=objective,
         on_epoch=log,
+        frame_cache_max_bytes=config.get("frame_cache_MiB", 512) * 1024**2,
     )
     residual = Emulator(
         field,
         base.budget_model,
         radii_cMpc=config["radii_cMpc"],
+        feature_set=config.get("feature_set", "legacy"),
         projection_mode="capacity_l2",
         base_model=base,
         metadata={

@@ -93,6 +93,7 @@ def _recursive_oracle(
         redshift,
         box_len,
         radii_cMpc=model.radii_cMpc,
+        feature_set=model.feature_set,
     )
     layers: list[dict[str, Any]] = []
     if model.base_model is not None:

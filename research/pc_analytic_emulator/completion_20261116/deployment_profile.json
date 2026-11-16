@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "selected_model_sha256": {
+    "base_model/budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+    "base_model/field_model.npz": "fa59c5ff130fdbdc4c177446541a03026eda89bf64c37930681e3cbb7522bb51",
+    "base_model/model.json": "f65f8f9c5ae9f7651059781d8f975dd54fd34885afd91fc06d197288c02d5db0",
+    "budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+    "field_model.npz": "0bca281ff95e89b768d0cec6131329dbf2916a560a8835706ea78abf429aaf67",
+    "model.json": "556855611eeb953f536c8546cec47b8ee337c71a676ac0c18cb33f95b476ffee"
+  },
+  "evaluated_geometry": {
+    "box_len_cMpc": 50,
+    "HII_DIM": 16,
+    "DIM": 96
+  },
+  "evaluated_redshifts": [
+    10,
+    9,
+    8,
+    7.5,
+    7,
+    6.5,
+    6
+  ],
+  "physical_parameters": "exact teacher_physics saved in the model metadata",
+  "failed_transfer_geometries": [
+    {
+      "box_len_cMpc": 50,
+      "HII_DIM": 32
+    },
+    {
+      "box_len_cMpc": 256,
+      "HII_DIM": 32
+    }
+  ],
+  "transfer_status": "Do not treat selected weights as validated on either failed geometry",
+  "teacher_convergence_certified": false,
+  "independent_recombinations": false,
+  "thermal_evolution": false,
+  "post_blind_tuning": false
+}

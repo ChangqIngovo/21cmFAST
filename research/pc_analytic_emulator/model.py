@@ -64,6 +64,7 @@ def field_features(
     box_len: float,
     *,
     radii_cMpc: Sequence[float] = DEFAULT_RADII,
+    feature_set: str = "legacy",
 ) -> tuple[NDArray[np.float32], list[str], NDArray[np.float64]]:
     """Build input-only local and smoothed features for the field head.
 
@@ -75,6 +76,9 @@ def field_features(
         Snapshot redshift and comoving box length in cMpc.
     radii_cMpc
         Physical Gaussian standard deviations, with periodic filtering.
+    feature_set
+        ``legacy`` retains the original input columns. ``multiscale_local``
+        appends periodic native-only neighbourhood and gradient statistics.
 
     Returns
     -------
@@ -82,6 +86,8 @@ def field_features(
         Per-cell feature matrix, ordered names and flattened ES xHII baseline.
         No teacher field or photon reservoir is accepted as an input.
     """
+    if feature_set not in ("legacy", "multiscale_local"):
+        raise ValueError("Unsupported field feature_set")
     photons, atoms, neutral = _arrays(source, capacity, native_es_xHI)
     features, names = build_features(
         atoms, photons, redshift, box_len, radii_cMpc=radii_cMpc
@@ -94,6 +100,12 @@ def field_features(
         columns.append(gaussian_filter(ionized, radius / dx, mode="wrap").ravel())
         names.append(f"native_es_xHII_sigma{radius:g}_cMpc")
     features = np.column_stack((features, *columns)).astype(np.float32)
+    if feature_set == "multiscale_local":
+        from research.pc_analytic_emulator.spatial import spatial_features
+
+        local, local_names = spatial_features(photons, atoms, neutral)
+        features = np.column_stack((features, local)).astype(np.float32)
+        names.extend(local_names)
     return features, names, ionized.ravel()
 
 
@@ -233,6 +245,8 @@ class Emulator:
         replaces native ES as the residual baseline; all native inputs and
         smoothing features remain unchanged. A zero residual with the same
         absorption budget retains this base field within projection tolerance.
+    feature_set
+        Saved field-input convention. Each frozen base retains its own value.
     """
 
     field_model: MLPModel | LatentFieldModel
@@ -241,8 +255,11 @@ class Emulator:
     metadata: dict[str, Any] = field(default_factory=dict)
     projection_mode: str = "log_odds"
     base_model: Emulator | None = None
+    feature_set: str = "legacy"
 
     def _model_kinds(self) -> tuple[str, str]:
+        if self.feature_set not in ("legacy", "multiscale_local"):
+            raise ValueError("Unsupported emulator feature_set")
         seen = {id(self)}
         base = self.base_model
         while base is not None:
@@ -311,6 +328,7 @@ class Emulator:
             redshift,
             box_len,
             radii_cMpc=self.radii_cMpc,
+            feature_set=self.feature_set,
         )
         box_features, _ = budget_features(
             photons,
@@ -417,13 +435,20 @@ class Emulator:
         (directory / "model.json").write_text(
             json.dumps(
                 {
-                    "schema": 3 if self.base_model is not None else 2,
+                    "schema": 4
+                    if self.feature_set != "legacy"
+                    else (3 if self.base_model is not None else 2),
                     "method": "native-ES-residual-with-learned-global-absorption",
                     "radii_cMpc": list(self.radii_cMpc),
                     "metadata": self.metadata,
                     "projection_mode": self.projection_mode,
                     "field_kind": field_kind,
                     "budget_kind": budget_kind,
+                    **(
+                        {"feature_set": self.feature_set}
+                        if self.feature_set != "legacy"
+                        else {}
+                    ),
                     **(
                         {"base_model": "base_model"}
                         if self.base_model is not None
@@ -461,7 +486,7 @@ class Emulator:
         ancestors = ancestors | {directory}
         record = json.loads((directory / "model.json").read_text())
         if (
-            record.get("schema") not in (1, 2, 3)
+            record.get("schema") not in (1, 2, 3, 4)
             or record.get("method")
             != "native-ES-residual-with-learned-global-absorption"
         ):
@@ -495,7 +520,14 @@ class Emulator:
         else:
             raise ValueError("Unsupported saved budget model kind")
         base_model = None
-        if record["schema"] == 3:
+        feature_set = record.get("feature_set", "legacy")
+        if feature_set not in ("legacy", "multiscale_local"):
+            raise ValueError("Unsupported saved field feature_set")
+        if record["schema"] < 4 and feature_set != "legacy":
+            raise ValueError("Nonlegacy feature_set requires schema four")
+        if record["schema"] == 4 and "feature_set" not in record:
+            raise ValueError("Schema four requires an explicit feature_set")
+        if record["schema"] == 3 or (record["schema"] == 4 and "base_model" in record):
             if record.get("base_model") != "base_model":
                 raise ValueError(
                     "Saved residual model requires its local base_model directory"
@@ -510,6 +542,7 @@ class Emulator:
             record["metadata"],
             projection_mode,
             base_model,
+            feature_set,
         )
         if result._model_kinds() != (field_kind, budget_kind):
             raise ValueError(

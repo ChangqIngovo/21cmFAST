@@ -1,0 +1,307 @@
+{
+  "scope": "Read-only development cache measurement; no fitting, no blind labels; timings are local sequential scans, not complete training wall times",
+  "fit_source": "${CAMPAIGN_ROOT}/emulator_source/research/pc_analytic_emulator/fit.py",
+  "measurement_script_sha256": "7faa8979577e8b28c8ac612923b2914530727be0b1dc322a049fc11ce31e45e9",
+  "fit_source_sha256": "3a953a77922547a34270721b975e98ba5bc2c358419229b8f40c00233450789f",
+  "cache_metadata_sha256": "576e7a1c556f36b4e3c851d7a5aa6feb8ffd9ec8ebd1bc615ccd7da3b98dc44d",
+  "training_snapshots": 164,
+  "validation_snapshots": 28,
+  "field_features": 88,
+  "frame_dtype": "float64",
+  "training_arrays_bytes": 499795904,
+  "validation_arrays_bytes": 85331008,
+  "total_arrays_bytes": 585126912,
+  "total_arrays_MiB": 558.0205078125,
+  "per_array_total_bytes": {
+    "features": 553648128,
+    "baseline": 6291456,
+    "global_features": 21504,
+    "source": 6291456,
+    "capacity": 6291456,
+    "native_es_xHI": 6291456,
+    "teacher_xHI": 6291456
+  },
+  "frozen_base_arrays_bytes": 6291456,
+  "runs": [
+    {
+      "cap_MiB": 512,
+      "passes": [
+        {
+          "pass": 1,
+          "accesses": 192,
+          "file_reads": 192,
+          "hits": 0,
+          "elapsed_seconds": 2.361722330999328,
+          "resident_arrays_bytes": 536366336,
+          "resident_frames": 176
+        },
+        {
+          "pass": 2,
+          "accesses": 192,
+          "file_reads": 192,
+          "hits": 0,
+          "elapsed_seconds": 1.4738339909999922,
+          "resident_arrays_bytes": 536366336,
+          "resident_frames": 176
+        }
+      ]
+    },
+    {
+      "cap_MiB": 1024,
+      "passes": [
+        {
+          "pass": 1,
+          "accesses": 192,
+          "file_reads": 192,
+          "hits": 0,
+          "elapsed_seconds": 2.15974330500012,
+          "resident_arrays_bytes": 585126912,
+          "resident_frames": 192
+        },
+        {
+          "pass": 2,
+          "accesses": 192,
+          "file_reads": 0,
+          "hits": 192,
+          "elapsed_seconds": 0.0007523519998358097,
+          "resident_arrays_bytes": 585126912,
+          "resident_frames": 192
+        }
+      ]
+    }
+  ],
+  "training_order_replay": [
+    {
+      "cap_MiB": 512,
+      "phases": [
+        {
+          "phase": "training_normalizer",
+          "frame_accesses": 164,
+          "file_reads": 164,
+          "frame_hits": 0,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 499795904,
+          "elapsed_seconds_without_base_computation": 2.0045825509996575
+        },
+        {
+          "phase": "initial_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 164,
+          "resident_arrays_bytes": 505169856,
+          "elapsed_seconds_without_base_computation": 0.010096883999722195
+        },
+        {
+          "phase": "initial_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 28,
+          "frame_hits": 0,
+          "baseline_recomputations": 28,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.23210354399998323
+        },
+        {
+          "phase": "epoch1_updates",
+          "frame_accesses": 164,
+          "file_reads": 60,
+          "frame_hits": 104,
+          "baseline_recomputations": 60,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.47758936199988966
+        },
+        {
+          "phase": "epoch1_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.007377500999609765
+        },
+        {
+          "phase": "epoch1_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 28,
+          "frame_hits": 0,
+          "baseline_recomputations": 28,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.21126405299946782
+        },
+        {
+          "phase": "epoch2_updates",
+          "frame_accesses": 164,
+          "file_reads": 55,
+          "frame_hits": 109,
+          "baseline_recomputations": 55,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.448928720999902
+        },
+        {
+          "phase": "epoch2_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.011994761000096332
+        },
+        {
+          "phase": "epoch2_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 28,
+          "frame_hits": 0,
+          "baseline_recomputations": 28,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.256674574000499
+        },
+        {
+          "phase": "epoch3_updates",
+          "frame_accesses": 164,
+          "file_reads": 68,
+          "frame_hits": 96,
+          "baseline_recomputations": 68,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.6316768090000551
+        },
+        {
+          "phase": "epoch3_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.011153665999700024
+        },
+        {
+          "phase": "epoch3_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 28,
+          "frame_hits": 0,
+          "baseline_recomputations": 28,
+          "resident_arrays_bytes": 536005664,
+          "elapsed_seconds_without_base_computation": 0.25545427100041707
+        }
+      ]
+    },
+    {
+      "cap_MiB": 1024,
+      "phases": [
+        {
+          "phase": "training_normalizer",
+          "frame_accesses": 164,
+          "file_reads": 164,
+          "frame_hits": 0,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 499795904,
+          "elapsed_seconds_without_base_computation": 1.4348842429999422
+        },
+        {
+          "phase": "initial_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 164,
+          "resident_arrays_bytes": 505169856,
+          "elapsed_seconds_without_base_computation": 0.011776768000345328
+        },
+        {
+          "phase": "initial_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 28,
+          "frame_hits": 0,
+          "baseline_recomputations": 28,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.3109145759999592
+        },
+        {
+          "phase": "epoch1_updates",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.01673166599994147
+        },
+        {
+          "phase": "epoch1_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.006531691000418505
+        },
+        {
+          "phase": "epoch1_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 0,
+          "frame_hits": 28,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.0035842410006807768
+        },
+        {
+          "phase": "epoch2_updates",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.014700601999720675
+        },
+        {
+          "phase": "epoch2_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.008426272999713547
+        },
+        {
+          "phase": "epoch2_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 0,
+          "frame_hits": 28,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.0013213749998612911
+        },
+        {
+          "phase": "epoch3_updates",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.0083436309996614
+        },
+        {
+          "phase": "epoch3_training_score",
+          "frame_accesses": 164,
+          "file_reads": 0,
+          "frame_hits": 164,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.008693417999893427
+        },
+        {
+          "phase": "epoch3_validation_score",
+          "frame_accesses": 28,
+          "file_reads": 0,
+          "frame_hits": 28,
+          "baseline_recomputations": 0,
+          "resident_arrays_bytes": 591418368,
+          "elapsed_seconds_without_base_computation": 0.0015376040000774083
+        }
+      ]
+    }
+  ],
+  "training_order_scope": "Actual normalizer, shuffled updates and ordered scoring cache accesses with zero-filled base placeholders of the correct shape. This measures real file reads and eviction; it does not execute gradients or baseline inference.",
+  "proposal": {
+    "per_worker_frame_cache_MiB": 1024,
+    "default_unchanged_MiB": 512,
+    "accounting": "Bound applies only to cached arrays; network activations, optimizer state, libraries and process overhead are additional. Sum the worker caps when reserving memory."
+  }
+}

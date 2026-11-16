@@ -1,0 +1,10 @@
+{
+  "complete": true,
+  "validation_snapshots": 28,
+  "all_teacher_array_pairs_bitwise_identical": true,
+  "array_pairs_checked": 280,
+  "original": "${CAMPAIGN_ROOT}/teacher_validation",
+  "portable_reproduction": "${CAMPAIGN_ROOT}/portable_smoke/teacher_validation",
+  "native_binary_unchanged": true,
+  "generator_sha256": "1063ae2e2e10ee434cd928e268a264d8ba2aa3ef775a5d6b84a0e9c4c86f054d"
+}

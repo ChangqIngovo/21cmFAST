@@ -153,7 +153,9 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
         ),
         "test_seeds": _integers(
             environment.get("PC_TEST_SEEDS", "1008"), "PC_TEST_SEEDS"
-        ),
+        )
+        if environment.get("PC_TEST_SEEDS", "1008").strip()
+        else [],
         "model_seeds": _integers(
             environment.get("PC_MODEL_SEEDS", "11,23,47,83"), "PC_MODEL_SEEDS", 0
         ),
@@ -163,6 +165,34 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
         "epochs": int(environment.get("PC_EMULATOR_EPOCHS", "200")),
         "samples_per_snapshot": int(environment.get("PC_SAMPLES_PER_SNAPSHOT", "8192")),
     }
+    for env_name, key in (
+        ("PC_ALLOW_EMPTY_TEST", "allow_empty_test"),
+        ("PC_INCLUDE_DEFICIT_BUDGET", "include_deficit_budget"),
+    ):
+        if env_name in environment:
+            text = environment[env_name].strip().lower()
+            if text not in {"true", "false", "1", "0"}:
+                raise ValueError(f"{env_name} must be true/false or 1/0")
+            config[key] = text in {"true", "1"}
+    if not config["test_seeds"] and not config.get("allow_empty_test", False):
+        raise ValueError("Empty PC_TEST_SEEDS requires PC_ALLOW_EMPTY_TEST=true")
+    if "PC_FEATURE_SET" in environment:
+        config["feature_set"] = environment["PC_FEATURE_SET"]
+    if "PC_BUDGET_EPOCHS" in environment:
+        config["budget_epochs"] = int(environment["PC_BUDGET_EPOCHS"])
+    if "PC_FRAME_CACHE_MIB" in environment:
+        config["frame_cache_MiB"] = int(environment["PC_FRAME_CACHE_MIB"])
+    for env_name, key in (
+        ("PC_DEFICIT_RELATIVE_WEIGHT", "deficit_relative_weight"),
+        ("PC_DEFICIT_NEUTRAL_FLOOR", "deficit_neutral_floor"),
+    ):
+        if env_name in environment:
+            config[key] = float(environment[env_name])
+    if "PC_BUDGET_CANDIDATE_KINDS" in environment:
+        config["budget_candidate_kinds"] = [
+            value.strip()
+            for value in environment["PC_BUDGET_CANDIDATE_KINDS"].split(",")
+        ]
     if (
         min(
             config[name]
@@ -243,6 +273,7 @@ def _split_dataset(dataset: Any, config: dict[str, Any]) -> dict[str, Any]:
         train_seeds=config["train_seeds"],
         validation_seeds=config["validation_seeds"],
         test_seeds=config["test_seeds"],
+        allow_empty_test=config.get("allow_empty_test", False),
     )
 
 

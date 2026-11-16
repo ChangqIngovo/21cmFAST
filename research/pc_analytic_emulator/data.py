@@ -363,6 +363,8 @@ def load_dataset(root: str | Path) -> TeacherDataset:
         and checksums of all consumed inputs, including original HDF5 archives.
     """
     root = Path(root).resolve()
+    if (root / "collection_manifest.json").is_file():
+        return _load_collection(root)
     if (root / "results" / "dataset_manifest.json").is_file():
         root = root / "results"
     files = _Files(root)
@@ -447,12 +449,175 @@ def load_dataset(root: str | Path) -> TeacherDataset:
     )
 
 
+def compatibility_signature(dataset: TeacherDataset) -> dict[str, Any]:
+    """Describe the common physical and numerical target of teacher archives.
+
+    Parameters
+    ----------
+    dataset
+        Independently audited campaign or collection of compatible campaigns.
+
+    Returns
+    -------
+    dict
+        Native physics/runtime, solver build and configuration excluding only
+        seed/epoch lists, worker resources, and the template's filesystem path.
+        The campaign scheduling wrapper may differ; all other recorded source
+        implementations must match. Original identities remain in provenance.
+    """
+    configuration = copy.deepcopy(dataset.identity["configuration"])
+    for key in (
+        "seeds",
+        "redshifts",
+        "workers",
+        "threads",
+        "cpus",
+        "native_template_json",
+    ):
+        configuration.pop(key, None)
+    pin = configuration.pop("native_extension_sha256", None)
+    if pin is not None and pin != dataset.identity.get("native_runtime", {}).get(
+        "native_extension_sha256"
+    ):
+        raise ValueError(
+            "Teacher extension pin differs from the resolved native runtime"
+        )
+    return {
+        "configuration": configuration,
+        "physics": dataset.physics,
+        "native_runtime": dataset.identity.get("native_runtime"),
+        "analytic_build": dataset.identity.get("analytic_build"),
+        "implementation_sha256": {
+            name: digest
+            for name, digest in dataset.identity.get(
+                "implementation_sha256", {}
+            ).items()
+            if name != "research/pc_analytic/campaign.py"
+        },
+    }
+
+
+def _load_collection(root: Path) -> TeacherDataset:
+    path = root / "collection_manifest.json"
+    declaration = _json(path)
+    entries = declaration.get("campaigns")
+    if (
+        declaration.get("schema") != 1
+        or declaration.get("kind") != "analytic-teacher-campaign-collection"
+        or not isinstance(entries, list)
+        or not entries
+    ):
+        raise ValueError("Invalid analytic teacher collection manifest")
+    files = _Files(root)
+    manifest_hash = files.digest(path)
+    campaigns, names, roots, used_seeds, used_initial = [], set(), set(), set(), set()
+    common = None
+    for entry in entries:
+        if (
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("name"), str)
+            or not entry["name"]
+        ):
+            raise ValueError("Collection campaigns require nonempty names")
+        campaign_root = Path(entry["path"])
+        if not campaign_root.is_absolute():
+            campaign_root = root / campaign_root
+        campaign_root = campaign_root.resolve()
+        if (campaign_root / "results" / "dataset_manifest.json").is_file():
+            campaign_root = campaign_root / "results"
+        if entry["name"] in names or campaign_root in roots:
+            raise ValueError("Collection campaign names and roots must be unique")
+        if (campaign_root / "collection_manifest.json").exists():
+            raise ValueError("Nested teacher collections are not supported")
+        original = _Files(campaign_root)
+        for filename, key in (
+            ("completion.json", "completion_sha256"),
+            ("identity.json", "identity_sha256"),
+            ("dataset_manifest.json", "manifest_sha256"),
+        ):
+            expected = entry.get(key)
+            if not isinstance(expected, str) or len(expected) != 64:
+                raise ValueError(
+                    "Collection references require complete file checksums"
+                )
+            original.digest(campaign_root / filename, expected)
+        dataset = load_dataset(campaign_root)
+        signature = compatibility_signature(dataset)
+        if common is not None and common != signature:
+            raise ValueError(
+                "Collection campaigns have incompatible physical/runtime/solver settings"
+            )
+        common = signature
+        seeds = {sample.seed for sample in dataset.samples}
+        initial = set(dataset.audit["initial_conditions_sha256"].values())
+        if seeds & used_seeds or initial & used_initial:
+            raise ValueError("Collection campaigns repeat seeds or initial conditions")
+        names.add(entry["name"])
+        roots.add(campaign_root)
+        used_seeds.update(seeds)
+        used_initial.update(initial)
+        campaigns.append(dataset)
+        files.hashes.update(dataset.file_hashes)
+    samples = tuple(
+        sorted(
+            (sample for dataset in campaigns for sample in dataset.samples),
+            key=lambda sample: (sample.seed, -sample.redshift),
+        )
+    )
+    identity = copy.deepcopy(campaigns[0].identity)
+    identity.update(
+        kind="analytic-teacher-campaign-collection",
+        collection_manifest_sha256=manifest_hash,
+        campaigns=[
+            {"root": str(dataset.root), "identity": dataset.identity}
+            for dataset in campaigns
+        ],
+    )
+    identity["configuration"]["seeds"] = sorted(used_seeds)
+    identity["configuration"]["redshifts"] = sorted(
+        {sample.redshift for sample in samples}, reverse=True
+    )
+    audit = {
+        "sample_count": len(samples),
+        "seeds": sorted(used_seeds),
+        "redshifts": identity["configuration"]["redshifts"],
+        "maximum_relative_photon_residual": max(
+            sample.budget["relative_photon_residual"] for sample in samples
+        ),
+        "initial_conditions_sha256": {
+            seed: digest
+            for dataset in campaigns
+            for seed, digest in dataset.audit["initial_conditions_sha256"].items()
+        },
+        "reservoirs": [
+            row for dataset in campaigns for row in dataset.audit["reservoirs"]
+        ],
+        "campaign_count": len(campaigns),
+        "receipt_policy": "Original campaign identities, paths and receipts verified without copying or relabeling",
+    }
+    manifest = {
+        "schema": 1,
+        "kind": "analytic-teacher-campaign-collection",
+        "identity": identity,
+        "teacher_method": "analytic-column-characteristic",
+        "complete": True,
+        "all_photon_ledgers_passed": True,
+        "physical_scope": campaigns[0].manifest.get("physical_scope"),
+        "samples": [sample.metadata for sample in samples],
+        "collection": declaration,
+    }
+    return TeacherDataset(
+        root, samples, manifest, identity, files.hashes, campaigns[0].physics, audit
+    )
+
+
 def split_samples(
     dataset: TeacherDataset,
     *,
     train_seeds: Sequence[int] | None = None,
     validation_seeds: Sequence[int] | None = None,
     test_seeds: Sequence[int] | None = None,
+    allow_empty_test: bool = False,
 ) -> dict[str, tuple[TeacherSample, ...]]:
     """Keep every realization and all of its redshifts in exactly one split.
 
@@ -463,6 +628,9 @@ def split_samples(
     train_seeds, validation_seeds, test_seeds
         Nonempty, disjoint and exhaustive explicit seed lists. If all are None,
         eight sorted seeds are split into the first six, seventh and eighth.
+    allow_empty_test
+        Explicitly allow an empty test list for a development-only collection.
+        Training and validation remain nonempty; blind evaluation is separate.
 
     Returns
     -------
@@ -478,8 +646,12 @@ def split_samples(
     elif any(value is None for value in selections):
         raise ValueError("Provide all three explicit seed splits")
     assigned = []
-    for values in selections:
-        if not values or any(type(value) is not int for value in values):
+    if type(allow_empty_test) is not bool:
+        raise TypeError("allow_empty_test must be boolean")
+    for index, values in enumerate(selections):
+        if (not values and not (allow_empty_test and index == 2)) or any(
+            type(value) is not int for value in values
+        ):
             raise ValueError("Each split requires nonempty integer seed lists")
         assigned.extend(values)
     if len(set(assigned)) != len(assigned) or set(assigned) != set(available):

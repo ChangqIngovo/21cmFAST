@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "frozen_before_generation": true,
+  "created_utc": "2026-11-16T11:53:17.566978+00:00",
+  "source_commit": "eaedadedbf0c46a60c66fe80253c001698dc3ba4",
+  "source_path": "${CAMPAIGN_ROOT}/source",
+  "native_runtime": {
+    "native_extension_sha256": "516152409b12d93515a8096c2fb38d93d6a2aaae976dc6e3db9ad00baeac1f8f",
+    "native_package_version": "4.3.2.dev0+g5d29a9c2",
+    "python_version": [
+      3,
+      12,
+      14
+    ]
+  },
+  "implementation_sha256": {
+    "research/pc_analytic/campaign.py": "576977c4a8c2228f48f220439bb13374182a8ed448656faef149957686a133b7",
+    "research/pc_analytic/solver.py": "ba88bd5789f711037c339c593d283efc2b4ca3dffcaa146b6502341cfa70135b",
+    "research/pc_analytic/transport_kernel.cpp": "05e067f72f8f2c78ed6f6297bc13d9e72324dd5c25140a38f023a43de0b29a52",
+    "research/pc_analytic/absorption.py": "55cd72250317f057d07295d671ab537561c1bd9dfd28f9bd04cf6e8937cf1f0d",
+    "research/pc_analytic/compare.py": "bfe4cf7e28de4e4768b1ed846e7d3adee2b3242deeb792eb4d52b447711d5e47",
+    "research/pc_native_rt/workflow.py": "4a642842ca985d9e878c1f0b887752936acb87ed043c5712db49ed397d503f84",
+    "research/pc_reconsidered/native_driver.py": "ea556e27fb8cbc4afac28047c5fa72f85934e52fc55623e9b467ff0e4f29015b",
+    "research/pc_matched/workflow.py": "20ffb973effd8c1699a6f32f47435e4aabe197c6e9c45a1a2cfacfb9bebcf4be",
+    "research/pc_matched/rt.py": "a1766954846492d0b576660d2b48997dde6eeb06036b2bc4bfd29fc1045e6ca3",
+    "research/pc_coeval/run.py": "8cfc21bb74d7eecf39d55b283748557afc0426085525fa3105ff9f314fa223e8"
+  },
+  "original_template_sha256": "7c93405fa21ba7a8f4f5555a6c34c5eb07f44744f26ce8300d5cc9546cfe7740",
+  "training_development_seeds": [
+    2101,
+    2102,
+    2103,
+    2104,
+    2105,
+    2106,
+    2107,
+    2108,
+    2109,
+    2110,
+    2111,
+    2112
+  ],
+  "new_splits": {
+    "train_new": {
+      "seeds": [
+        2121,
+        2122,
+        2123,
+        2124,
+        2125,
+        2126,
+        2127,
+        2128
+      ],
+      "redshifts": [
+        10,
+        9,
+        8,
+        7.5,
+        7,
+        6.75,
+        6.5,
+        6.25,
+        6,
+        5.75
+      ]
+    },
+    "validation": {
+      "seeds": [
+        2113,
+        2114,
+        2115,
+        2116
+      ],
+      "redshifts": [
+        10,
+        9,
+        8,
+        7.5,
+        7,
+        6.5,
+        6
+      ]
+    },
+    "blind": {
+      "seeds": [
+        2117,
+        2118,
+        2119,
+        2120
+      ],
+      "redshifts": [
+        10,
+        9,
+        8,
+        7.5,
+        7,
+        6.5,
+        6
+      ]
+    }
+  },
+  "campaign_configs": {
+    "train_new": {
+      "path": "${CAMPAIGN_ROOT}/train_new_config.json",
+      "sha256": "3c626deb19769d4298608538e1f6601c3e4760a46c65bf0ea71e10d893a29c93"
+    },
+    "validation": {
+      "path": "${CAMPAIGN_ROOT}/validation_config.json",
+      "sha256": "dcaaca47b341802bdd34c10653cb2a5c56b0766f71b696e1b5f41280f07eb1c3"
+    },
+    "blind": {
+      "path": "${CAMPAIGN_ROOT}/blind_config.json",
+      "sha256": "6211e5c59f605137d6380a4115901b9500fab854d50f2646dae81e6872bcb47e"
+    }
+  },
+  "train_count": 164,
+  "validation_count": 28,
+  "blind_count": 28,
+  "total_count": 220,
+  "blind_policy": "Generate and audit checksums/completeness/ledger only; no inspection of scientific metrics or use for selection until root freezes the model."
+}

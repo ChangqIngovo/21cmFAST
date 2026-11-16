@@ -1,0 +1,38 @@
+{
+  "complete": true,
+  "selection_hash_verified": "493a9cdc3ba74c05131e550173eaaacf356ca3a9451e62bf05935a2668297efe",
+  "validation_selection_is_minimum": true,
+  "candidate_receipts": {
+    "legacy_features": {
+      "completion.json": true,
+      "summary.json": true,
+      "validation_objective_matches": true
+    },
+    "local_features": {
+      "completion.json": true,
+      "summary.json": true,
+      "validation_objective_matches": true
+    }
+  },
+  "physical_kernel_paths_unchanged_against_HEAD": [
+    "research/pc_analytic",
+    "research/pc_native_rt",
+    "research/pc_causal_rt",
+    "research/pc_matched",
+    "src/py21cmfast/src"
+  ],
+  "core_solver_tests": {
+    "passed": 116,
+    "seconds": 3.93,
+    "junit": "core_solver_tests.xml"
+  },
+  "symmetry": {
+    "passed": true,
+    "checks": 55,
+    "maximum_field_absolute_difference": 2.7793484735916252e-08,
+    "maximum_photon_residual": 2.522808956355973e-17,
+    "maximum_budget_error_over_inventory": 3.908548831420104e-17
+  },
+  "model_roundtrip_exact": true,
+  "scope": "Validation-native inference and code-level physics review only; no blind or transfer labels inspected."
+}

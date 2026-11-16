@@ -1,0 +1,307 @@
+{
+  "schema": 1,
+  "scope": "Development and pre-test model selection only; no blind or geometry-transfer scientific metrics included",
+  "complete": true,
+  "selected": "local_features",
+  "selection_rule": "Minimum common projected full-grid validation objective; unchanged previous model wins ties",
+  "selection_used_test": false,
+  "frozen_utc": "2026-11-16T12:31:31.409767+00:00",
+  "selection_sha256": "493a9cdc3ba74c05131e550173eaaacf356ca3a9451e62bf05935a2668297efe",
+  "evaluation_start_receipt_sha256": "1f687169d1041e513902abe6439431026535733b253dc2fcf5a496e962f04152",
+  "selection_frozen_before_evaluation_start": true,
+  "data": {
+    "training_snapshots": 164,
+    "validation_snapshots": 28,
+    "blind_snapshots": 28,
+    "transfer_resolution_snapshots": 8,
+    "transfer_volume_snapshots": 8,
+    "train_seeds": [
+      2101,
+      2102,
+      2103,
+      2104,
+      2105,
+      2106,
+      2107,
+      2108,
+      2109,
+      2110,
+      2111,
+      2112,
+      2121,
+      2122,
+      2123,
+      2124,
+      2125,
+      2126,
+      2127,
+      2128
+    ],
+    "validation_seeds": [
+      2113,
+      2114,
+      2115,
+      2116
+    ],
+    "blind_seeds": [
+      2117,
+      2118,
+      2119,
+      2120
+    ],
+    "transfer_seeds": [
+      2131,
+      2132,
+      2141,
+      2142
+    ],
+    "splits_disjoint": true,
+    "prior_inspected_seeds_reclassified_development": [
+      2101,
+      2102,
+      2103,
+      2104,
+      2105,
+      2106,
+      2107,
+      2108,
+      2109,
+      2110,
+      2111,
+      2112
+    ],
+    "geometry": {
+      "box_len_cMpc": 50,
+      "HII_DIM": 16,
+      "DIM": 96
+    },
+    "collection_manifest_sha256": "81875bf98c3c0fc83dda33b6ffe075a9ac72a9f5e7b14c001ebc67c1e0cfa3f8",
+    "split_protocol_sha256": "22c6f2546c44530d5fc35f3a06d9ce07b71aac5514ebc684e7d1d9fc9fd2ceec"
+  },
+  "matched_configuration_difference": {
+    "feature_set": [
+      "legacy",
+      "multiscale_local"
+    ]
+  },
+  "models": {
+    "previous_model": {
+      "validation_objective": 0.2724725065282344,
+      "validation_field_mse": 0.007232253286151967,
+      "reference_sha256": "d43ccbf102ad2c6e1386fcc858b4b7a537a941401995cdbc3f5390a6bb72adee"
+    },
+    "legacy_features": {
+      "feature_count": 24,
+      "budget_feature_count": 14,
+      "feature_set": "legacy",
+      "validation_objective": 0.14097606017428782,
+      "validation_field_mse": 0.006004077593609739,
+      "model_seed": 83,
+      "field_best_epoch": 68,
+      "field_completed_epochs": 120,
+      "training_wall_seconds": 902.9318551790002,
+      "objective": {
+        "field_variance_floor": 0.005,
+        "front_weight": 1.0,
+        "k_fraction": 0.5,
+        "raw_weight": 0.05,
+        "spectral_power_floor": 1e-06,
+        "spectral_weight": 0.1
+      },
+      "budget_kind": "tabulated",
+      "projection_mode": "capacity_l2",
+      "field_kind": "latent_linear",
+      "selected_kind": "warm_started_residual",
+      "base_kind": "fixed_legacy__tabulated__capacity_l2",
+      "field_checkpoint_selection": "Full-grid projected multiscale validation objective; fixed-field closure ablation and frozen-base residual; auxiliary raw loss and test labels excluded",
+      "budget_checkpoint_selection": "Frozen selected base budget; no budget fitting during residual training",
+      "trial_objectives": {
+        "11": 0.14506944428049542,
+        "23": 0.14631858034207101,
+        "47": 0.14723928707328632,
+        "83": 0.14097606017428782
+      },
+      "model_hashes": {
+        "base_model/budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "base_model/field_model.npz": "8125e58e5364c7d7a67a0d311a16012c4991b22b5bb6081c52cc248fc97a9276",
+        "base_model/model.json": "8f013987bd7ab83c3f33089f3fbf0b457041dacf1dfb20cc67e0669ededb5008",
+        "budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "field_model.npz": "2834270e517e3dbd521b1cc241f742865d2efc4b7608eb55ab35320575b37653",
+        "model.json": "26b266bb7f3c998af2a29f88b1e2c0cd77d0f9826a1d5d2d3f14a757aee8463f"
+      },
+      "summary_sha256": "4d0ffc42ecace3b7f901978220f2ff8fa3d713f24f44df0560f5b4dc4b6a4b95",
+      "training_identity_sha256": "70f67615a1e6f856074fa11d236e94aef478d41980a57b6b7c178b12a1a76484"
+    },
+    "local_features": {
+      "feature_count": 88,
+      "budget_feature_count": 14,
+      "feature_set": "multiscale_local",
+      "validation_objective": 0.10052016168208319,
+      "validation_field_mse": 0.003545936335264903,
+      "model_seed": 83,
+      "field_best_epoch": 105,
+      "field_completed_epochs": 120,
+      "training_wall_seconds": 1591.1868359049995,
+      "objective": {
+        "field_variance_floor": 0.005,
+        "front_weight": 1.0,
+        "k_fraction": 0.5,
+        "raw_weight": 0.05,
+        "spectral_power_floor": 1e-06,
+        "spectral_weight": 0.1
+      },
+      "budget_kind": "tabulated",
+      "projection_mode": "capacity_l2",
+      "field_kind": "latent_linear",
+      "selected_kind": "warm_started_residual",
+      "base_kind": "fixed_legacy__tabulated__capacity_l2",
+      "field_checkpoint_selection": "Full-grid projected multiscale validation objective; fixed-field closure ablation and frozen-base residual; auxiliary raw loss and test labels excluded",
+      "budget_checkpoint_selection": "Frozen selected base budget; no budget fitting during residual training",
+      "trial_objectives": {
+        "11": 0.10232558158195079,
+        "23": 0.10404615390629345,
+        "47": 0.10237372367096872,
+        "83": 0.10052016168208319
+      },
+      "model_hashes": {
+        "base_model/budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "base_model/field_model.npz": "fa59c5ff130fdbdc4c177446541a03026eda89bf64c37930681e3cbb7522bb51",
+        "base_model/model.json": "f65f8f9c5ae9f7651059781d8f975dd54fd34885afd91fc06d197288c02d5db0",
+        "budget_model.npz": "6039cf3a33818be2fc2d1a75f06c40086982df2e173ae61e8fe77114a6d045ac",
+        "field_model.npz": "0bca281ff95e89b768d0cec6131329dbf2916a560a8835706ea78abf429aaf67",
+        "model.json": "556855611eeb953f536c8546cec47b8ee337c71a676ac0c18cb33f95b476ffee"
+      },
+      "summary_sha256": "ec3e1dbd48529d482ea76e501a6006610f55e1e4753065979b672eb90227d29e",
+      "training_identity_sha256": "1a6337e1a257b6eff32f3755a80662aeba1021dd4ae69d57d004337a131765ee"
+    }
+  },
+  "improvements": {
+    "local_vs_matched_legacy_objective_relative_reduction": 0.28696998938819296,
+    "local_vs_matched_legacy_field_mse_relative_reduction": 0.40941197378279803,
+    "local_vs_previous_objective_relative_reduction": 0.6310814512521579,
+    "local_vs_previous_field_mse_relative_reduction": 0.5097051783218762
+  },
+  "budget_candidates": {
+    "constant_efficiency": {
+      "validation_floored_relative_neutral_mse": 0.14891815285472837,
+      "validation_mass_MAE": 0.011570267406778053,
+      "validation_mass_mse": 0.0005837581424685022,
+      "validation_maximum_absolute_mass_error": 0.08211523354340178,
+      "validation_mixed_loss": 0.01547557342794134
+    },
+    "tabulated": {
+      "validation_floored_relative_neutral_mse": 0.01368356560800217,
+      "validation_mass_MAE": 0.002949441982035455,
+      "validation_mass_mse": 4.230668108546541e-05,
+      "validation_maximum_absolute_mass_error": 0.028114017163450772,
+      "validation_mixed_loss": 0.0014106632418856824
+    },
+    "mlp": {
+      "validation_floored_relative_neutral_mse": 0.2142983078804379,
+      "validation_mass_MAE": 0.004630770384786599,
+      "validation_mass_mse": 7.621645639448432e-05,
+      "validation_maximum_absolute_mass_error": 0.0233819444012191,
+      "validation_mixed_loss": 0.02150604724443828
+    },
+    "sigmoid_mlp": {
+      "validation_floored_relative_neutral_mse": 0.21620961065609048,
+      "validation_mass_MAE": 0.005169233461746847,
+      "validation_mass_mse": 8.509561059455747e-05,
+      "validation_maximum_absolute_mass_error": 0.02837180659419547,
+      "validation_mixed_loss": 0.02170605667620361
+    },
+    "local_k3": {
+      "validation_floored_relative_neutral_mse": 0.10574214285411378,
+      "validation_mass_MAE": 0.0046263602641679665,
+      "validation_mass_mse": 0.00011231523438776202,
+      "validation_maximum_absolute_mass_error": 0.040797440173996224,
+      "validation_mixed_loss": 0.010686529519799141
+    },
+    "local_k5": {
+      "validation_floored_relative_neutral_mse": 0.1420311248014568,
+      "validation_mass_MAE": 0.004582474405022388,
+      "validation_mass_mse": 0.00011059754384842984,
+      "validation_maximum_absolute_mass_error": 0.04091549641490366,
+      "validation_mixed_loss": 0.01431371002399411
+    },
+    "deficit_mlp": {
+      "validation_floored_relative_neutral_mse": 0.04793216410403556,
+      "validation_mass_MAE": 0.012293252681707247,
+      "validation_mass_mse": 0.00032182468195774344,
+      "validation_maximum_absolute_mass_error": 0.04609808585241629,
+      "validation_mixed_loss": 0.0051150410923613
+    }
+  },
+  "kernel_study": {
+    "candidate_count": 24,
+    "best_kernel_name": "load_ES_logit_b0.5_r0.01",
+    "best_kernel_validation_metrics": {
+      "count": 28,
+      "mass_mse": 4.410427628570844e-05,
+      "mass_MAE": 0.003307740174218874,
+      "maximum_absolute_mass_error": 0.020343922537863008,
+      "floored_relative_neutral_mse": 0.030531728082966576,
+      "floored_relative_neutral_MAE": 0.06473795566723166,
+      "mixed_loss": 0.003097277084582366,
+      "relative_weight": 0.1,
+      "neutral_floor": 0.01,
+      "neutral_floor_active_count": 2
+    },
+    "tabulated_validation_mixed_loss": 0.0014106632418856824,
+    "production_integrated": false,
+    "decision": "Rejected by validation; not deployed",
+    "report_sha256": "3db8fbdc4030cf55ab8beec538b9d53574f8f53383880151ebfe7f5a67280641"
+  },
+  "physics": {
+    "changed": false,
+    "source_convention": "Native cumulative n_ion without an emissivity time integral or extra density multiplier",
+    "teacher_method": "analytic-column-characteristic",
+    "analytic_settings": {
+      "directions": 96,
+      "exposure_steps": 32,
+      "boundary": "source_periodic_cube",
+      "transport_mode": "characteristic",
+      "exhaustion_tolerance": 1e-07,
+      "batch_tail_tolerance": 0.0001,
+      "max_sweeps": 10000
+    },
+    "native_runtime": {
+      "native_extension_sha256": "516152409b12d93515a8096c2fb38d93d6a2aaae976dc6e3db9ad00baeac1f8f",
+      "native_package_version": "4.3.2.dev0+g5d29a9c2",
+      "python_version": [
+        3,
+        12,
+        14
+      ]
+    },
+    "physical_mapping": {
+      "analytic_MFP_prescription": "resolved neutral opacity and explicitly selected domain boundary; native ES maximum filtering radius is not applied",
+      "atom_convention": "native effective H+He nuclei, each assigned hydrogen opacity; no independent helium chemistry",
+      "native_ES_MFP_prescription": "maximum excursion-set filtering radius",
+      "native_ES_R_BUBBLE_MAX_applied_to_analytic": false,
+      "native_ES_R_BUBBLE_MAX_cMpc": 16.666666666666668,
+      "time_treatment": "independent frozen coeval cumulative-budget solutions; no cosmic propagation clock"
+    },
+    "native_ES_photon_conservation": "no-photoncons",
+    "physical_scope": "Initially neutral, frozen coeval density; no recombinations, thermal evolution, photoheating feedback or independent helium chemistry",
+    "independent_teacher_maximum_relative_photon_residual_all220": 1.0855467573456024e-16,
+    "teacher_solver_source_sha256": "05e067f72f8f2c78ed6f6297bc13d9e72324dd5c25140a38f023a43de0b29a52"
+  },
+  "provenance": {
+    "teacher_source_base_commit": "eaedadedbf0c46a60c66fe80253c001698dc3ba4",
+    "training_source_base_commit": "eaedadedbf0c46a60c66fe80253c001698dc3ba4",
+    "training_source_identity_sha256": "698261b6989b51bec4a5616c821b589f39d17ca8cf2dfbbab2366717263a358d",
+    "all_frozen_training_source_hashes_verified": true,
+    "all_current_inference_source_hashes_verified": true,
+    "selected_model_file_hashes_verified": true,
+    "training_summaries_receipts_config_hashes_verified": true,
+    "development_protocol_sha256": "7b7b03e4eb6e7324eb11d6b08249d94eba22f673d274848234c8925163373eab"
+  },
+  "common_validation_objective_definition": {
+    "aggregation": "Equal weight per full validation snapshot",
+    "field": "Mean front-weighted squared xHII residual divided by max(teacher variance,0.005); weights normalized to mean one; front is periodic six-neighbor crossing of xHII=0.5",
+    "fourier": "0.1 times equal-shell mean squared complex brightness Fourier residual normalized by max(teacher shell variance,1e-6 times fully-neutral mean-square brightness); modes through half Nyquist; numerically zero-reference shells excluded",
+    "auxiliary_raw_weight": 0.05,
+    "auxiliary_raw_in_selection": false
+  }
+}

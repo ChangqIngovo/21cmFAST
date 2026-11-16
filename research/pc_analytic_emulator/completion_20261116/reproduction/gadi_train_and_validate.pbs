@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#PBS -N pc_completion
+#PBS -l jobfs=4GB
+#PBS -l wd
+#PBS -j oe
+set -euo pipefail
+: "${PC_COMPLETION_RUN:?Use the prepared resubmit.sh}"
+: "${PBS_JOBID:?Launch with qsub}"
+: "${PBS_NCPUS:?Missing CPU allocation}"
+[[ ${PBS_NNODES:-1} == 1 ]] || { echo 'This workflow requires a single node.' >&2; exit 2; }
+run=$(realpath "$PC_COMPLETION_RUN")
+cd "$run"
+test -f PREPARED
+exec 9> run.lock
+flock -n 9 || { echo 'Another process owns this run.' >&2; exit 2; }
+exec > >(tee "$run/run_${PBS_JOBID}.log") 2>&1
+trap 'status=$?; if (( status != 0 )); then printf "%s\n" "$status" > "$run/FAILED"; fi' EXIT
+sha256sum --quiet -c prepared.sha256
+sha256sum --quiet -c source.sha256
+sha256sum --quiet -c interpreter.sha256
+source settings.env
+[[ $PBS_NCPUS =~ ^[1-9][0-9]*$ ]] && (( PBS_NCPUS >= pc_cpus )) || {
+    echo 'Allocated CPUs do not cover the frozen workflow request.' >&2; exit 2;
+}
+PC_MODULES=()
+source runtime.env
+if (( ${#PC_MODULES[@]} )); then
+    module --force purge
+    module load "${PC_MODULES[@]}"
+fi
+pc_python=$(cat python_path.txt)
+unset PYTHONPATH PYTHONHOME
+export PYTHONNOUSERSITE=1 PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 MPLBACKEND=Agg
+export OPENBLAS_NUM_THREADS="$pc_threads" MKL_NUM_THREADS="$pc_threads" OMP_NUM_THREADS="$pc_threads" OMP_THREAD_LIMIT="$pc_threads"
+export NUMEXPR_NUM_THREADS=1 OMP_DYNAMIC=FALSE OMP_WAIT_POLICY=PASSIVE
+export TMPDIR="${PBS_JOBFS:-$run/tmp}"
+mkdir -p "$TMPDIR"
+cd "$run/source"
+"$pc_python" -m research.pc_analytic_emulator.completion_20261116.reproduction.train_and_validate \
+    --campaign-root "$pc_campaign" --previous-model "$pc_previous" --output "$run/results" \
+    --workers "$pc_workers" --threads "$pc_threads" --cpus "$pc_cpus" --rays "$pc_rays" \
+    --frame-cache-mib "$pc_cache_mib"
+cd "$run"
+sha256sum --quiet -c prepared.sha256
+sha256sum --quiet -c source.sha256
+sha256sum --quiet -c interpreter.sha256
+test -f results/COMPLETED
+printf 'Paired training, frozen selection and blind evaluation completed.\n' > COMPLETED
+printf 'Summary: %s/results/summary.json\n' "$run"
