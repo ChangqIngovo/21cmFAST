@@ -103,8 +103,14 @@ def _fit_standardizer(features, floor):
     scale = features.std(axis=0)
     if floor is not None:
         floor = np.asarray(floor, dtype=np.float64)
-        if (floor.shape != scale.shape or not np.isfinite(floor).all() or np.any(floor < 0)):
-            raise ValueError("Feature scale floor must be finite, nonnegative and match the feature count")
+        if (
+            floor.shape != scale.shape
+            or not np.isfinite(floor).all()
+            or np.any(floor < 0)
+        ):
+            raise ValueError(
+                "Feature scale floor must be finite, nonnegative and match the feature count"
+            )
         scale = np.maximum(scale, floor)
     scale[scale == 0] = 1.0
     if not np.all(np.isfinite(mean)) or not np.all(np.isfinite(scale)):
@@ -351,6 +357,7 @@ def train(
     sample_weight_train: np.ndarray | None = None,
     sample_weight_validation: np.ndarray | None = None,
     feature_scale_floor: np.ndarray | None = None,
+    zero_constant_features: bool = False,
 ) -> tuple[MLPModel, list[dict]]:
     """Fit a small network using Adam and validation-based early stopping.
 
@@ -390,6 +397,11 @@ def train(
         training inputs only. These can keep nearly constant smoothed fields
         on the scale of their unsmoothed physical channel. Omitting this
         preserves independent per-column standardization.
+    zero_constant_features : bool
+        Opt in to zero first-layer weights for features exactly constant in
+        training. Their means use the exact observed value and their scales
+        are at least one, so their training gradients remain exactly zero.
+        Validation never determines which features are constant.
 
     Returns
     -------
@@ -434,7 +446,14 @@ def train(
     _validate_training_options(
         epochs, batch_size, patience, hidden, learning_rate, min_delta
     )
+    if type(zero_constant_features) is not bool:
+        raise ValueError("zero_constant_features must be boolean")
     mean, scale, feature_scale_floor = _fit_standardizer(x_train, feature_scale_floor)
+    constant = np.zeros(x_train.shape[1], dtype=bool)
+    if zero_constant_features:
+        constant = np.max(x_train, axis=0) == np.min(x_train, axis=0)
+        mean[constant] = x_train[0, constant]
+        scale[constant] = np.maximum(scale[constant], 1.0)
     standardized = (x_train - mean) / scale
     validation_standardized = (x_validation - mean) / scale
     rng = np.random.default_rng(seed)
@@ -443,6 +462,7 @@ def train(
         rng.normal(scale=np.sqrt(2.0 / (left + right)), size=(left, right))
         for left, right in itertools.pairwise(widths)
     ]
+    weights[0][constant] = 0.0
     biases = [np.zeros(width, dtype=np.float64) for width in widths[1:]]
     if residual:
         weights[-1].fill(0.0)
@@ -463,8 +483,11 @@ def train(
         if residual
         else None,
         "standardizer_scope": "training samples only",
-        "feature_scale_floor": (feature_scale_floor.tolist()
-                                if feature_scale_floor is not None else None),
+        "feature_scale_floor": (
+            feature_scale_floor.tolist() if feature_scale_floor is not None else None
+        ),
+        "zero_constant_features": zero_constant_features,
+        "constant_feature_indices": np.flatnonzero(constant).tolist(),
         "seed": int(seed),
         "hidden": [int(width) for width in hidden],
         "requested_epochs": int(epochs),

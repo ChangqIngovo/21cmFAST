@@ -15,7 +15,9 @@ from research.pc_analytic.compare import independent_budget
 from research.pc_analytic_emulator.data import load_dataset, split_samples
 
 
-def write_collection(root: Path, campaigns: list[Path]) -> Path:
+def write_collection(
+    root: Path, campaigns: list[Path], *, allow_mixed_geometry: bool = False
+) -> Path:
     """Write checksummed references to original synthetic campaign archives."""
     root.mkdir(parents=True, exist_ok=True)
     _write(
@@ -23,6 +25,7 @@ def write_collection(root: Path, campaigns: list[Path]) -> Path:
         {
             "schema": 1,
             "kind": "analytic-teacher-campaign-collection",
+            "allow_mixed_geometry": allow_mixed_geometry,
             "campaigns": [
                 {
                     "name": f"campaign{index}",
@@ -56,6 +59,9 @@ def make_campaign(
     seeds: tuple[int, ...] = tuple(range(1001, 1009)),
     redshifts: tuple[float, ...] = (8.0, 7.5),
     n: int = 4,
+    box_len: float = 256.0,
+    native_changes: dict | None = None,
+    identity_changes: dict | None = None,
 ) -> Path:
     """Construct an explicitly synthetic receipt-complete unit-test campaign.
 
@@ -63,8 +69,10 @@ def make_campaign(
     ----------
     root
         Destination results directory.
-    seeds, redshifts, n
+    seeds, redshifts, n, box_len
         Independent fixture identities, epochs and cube dimension.
+    native_changes, identity_changes
+        Optional fixture-only native parameter-group and identity overrides.
 
     Returns
     -------
@@ -80,13 +88,15 @@ def make_campaign(
             "redshifts": list(redshifts),
             "dimension": n,
             "highres_dimension": 3 * n,
-            "box_len": 256.0,
+            "box_len": box_len,
             "brightness": "native",
             "analytic": {"directions": 6, "boundary": "source_periodic_cube"},
         },
         "native_runtime": {"native_extension_sha256": "unit-test-native-hash"},
         "scope": "Synthetic unit-test fixture; not native physical data",
     }
+    for key, value in (identity_changes or {}).items():
+        identity[key] = copy.deepcopy(value)
     rows = []
     for seed in seeds:
         inputs = {
@@ -96,7 +106,7 @@ def make_campaign(
             "simulation_options": {
                 "HII_DIM": n,
                 "DIM": 3 * n,
-                "BOX_LEN": 256.0,
+                "BOX_LEN": box_len,
                 "N_THREADS": 1,
             },
             "matter_options": {"SOURCE_MODEL": "L-INTEGRAL"},
@@ -110,6 +120,8 @@ def make_campaign(
                 "PHOTON_CONS_TYPE": "no-photoncons",
             },
         }
+        for group, changes in (native_changes or {}).items():
+            inputs[group].update(changes)
         _write(root / "seeds" / f"seed{seed}" / "native_inputs.json", inputs)
         for z in redshifts:
             name = f"z{z:.12g}".replace(".", "p")
@@ -191,7 +203,7 @@ def make_campaign(
                 "seed": seed,
                 "redshift": z,
                 "dimension": n,
-                "box_len": 256.0,
+                "box_len": box_len,
                 "input": {
                     "inputs": inputs,
                     "receipt_sha256": _digest(native / "receipt.json"),
@@ -333,6 +345,114 @@ def test_collection_rejects_duplicate_incompatible_or_changed_campaigns(
         path.write_bytes(b"corrupt original")
     with pytest.raises(ValueError, match=r"repeat|incompatible|checksum"):
         load_dataset(collection)
+
+
+def test_mixed_geometry_is_explicit_and_keeps_original_sample_inputs(
+    tmp_path: Path,
+) -> None:
+    """Opt-in changes only geometry compatibility, preserving every original audit."""
+    from research.pc_analytic_emulator.data import sample_geometries
+
+    first = make_campaign(tmp_path / "a", seeds=(1,), n=4, box_len=50)
+    second = make_campaign(tmp_path / "b", seeds=(2,), n=6, box_len=80)
+    collection = write_collection(tmp_path / "strict", [first, second])
+    with pytest.raises(ValueError, match="incompatible"):
+        load_dataset(collection)
+    collection = write_collection(
+        tmp_path / "mixed", [first, second], allow_mixed_geometry=True
+    )
+    before = {
+        str(p): _digest(p)
+        for root in (first, second)
+        for p in root.rglob("*")
+        if p.is_file()
+    }
+    dataset = load_dataset(collection)
+    expected = [
+        {"DIM": 12, "HII_DIM": 4, "BOX_LEN": 50.0},
+        {"DIM": 18, "HII_DIM": 6, "BOX_LEN": 80.0},
+    ]
+    assert dataset.identity["allow_mixed_geometry"] is True
+    assert dataset.identity["geometries"] == expected
+    assert dataset.audit["geometries"] == expected
+    assert sample_geometries(dataset.samples) == expected
+    assert dataset.physics == load_dataset(first).physics
+    assert [(s.dimension, s.box_len) for s in dataset.samples] == [(4, 50)] * 2 + [
+        (6, 80)
+    ] * 2
+    assert all(
+        dataset.file_hashes[path] == digest == _digest(Path(path))
+        for path, digest in before.items()
+    )
+
+
+@pytest.mark.parametrize(
+    ("native_changes", "identity_changes"),
+    [
+        ({"astro_params": {"F_STAR10": -1.1}}, None),
+        ({"astro_params": {"R_BUBBLE_MAX": 25}}, None),
+        ({"cosmo_params": {"hlittle": 0.7}}, None),
+        ({"matter_options": {"HMF": "different"}}, None),
+        ({"simulation_options": {"UNRELATED_OPTION": 1}}, None),
+        (None, {"native_runtime": {"native_extension_sha256": "different"}}),
+        (None, {"analytic_build": {"kernel_sha256": "different"}}),
+        (None, {"implementation_sha256": {"solver.py": "different"}}),
+    ],
+)
+def test_mixed_geometry_retains_all_other_physics_and_runtime_checks(
+    tmp_path: Path, native_changes: dict | None, identity_changes: dict | None
+) -> None:
+    """Changing geometry does not grant permission to mix physical target models."""
+    first = make_campaign(tmp_path / "a", seeds=(1,), n=4, box_len=50)
+    second = make_campaign(
+        tmp_path / "b",
+        seeds=(2,),
+        n=6,
+        box_len=80,
+        native_changes=native_changes,
+        identity_changes=identity_changes,
+    )
+    collection = write_collection(
+        tmp_path / "mixed", [first, second], allow_mixed_geometry=True
+    )
+    with pytest.raises(ValueError, match="incompatible"):
+        load_dataset(collection)
+
+
+@pytest.mark.parametrize("flag", [None, 0, 1, "true", [], {}])
+def test_collection_rejects_nonboolean_mixed_geometry_flag(
+    tmp_path: Path, flag: object
+) -> None:
+    """A malformed opt-in cannot weaken geometry checks through truthiness."""
+    campaign = make_campaign(tmp_path / "a", seeds=(1,))
+    collection = write_collection(tmp_path / "mixed", [campaign])
+    path = collection / "collection_manifest.json"
+    declaration = json.loads(path.read_text())
+    declaration["allow_mixed_geometry"] = flag
+    _write(path, declaration)
+    with pytest.raises(TypeError, match="allow_mixed_geometry"):
+        load_dataset(collection)
+
+
+@pytest.mark.parametrize(
+    "records",
+    [
+        [],
+        {},
+        [{"DIM": 12, "HII_DIM": 4}],
+        [{"DIM": 12.5, "HII_DIM": 4, "BOX_LEN": 50}],
+        [{"DIM": 12, "HII_DIM": True, "BOX_LEN": 50}],
+        [{"DIM": 2, "HII_DIM": 4, "BOX_LEN": 50}],
+        [{"DIM": 12, "HII_DIM": 4, "BOX_LEN": float("nan")}],
+        [{"DIM": 12, "HII_DIM": 4, "BOX_LEN": 50}] * 2,
+    ],
+)
+def test_training_geometry_metadata_is_unambiguous(records: object) -> None:
+    """Only finite, complete, unique native geometry records may authorize inference."""
+    from research.pc_analytic_emulator.data import validate_geometries
+
+    with pytest.raises((TypeError, ValueError), match="geometr"):
+        validate_geometries(records)
 
 
 def _mutate_fields(root: Path, **changes: np.ndarray) -> None:

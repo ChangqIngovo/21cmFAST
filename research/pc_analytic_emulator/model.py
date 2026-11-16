@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from research.pc_analytic_emulator.latent import LatentFieldModel
 
 DEFAULT_RADII = (6.25, 12.5, 25.0, 50.0)
+FEATURE_SETS = ("legacy", "multiscale_local", "multiscale_geometry")
 
 
 def _arrays(
@@ -79,6 +80,9 @@ def field_features(
     feature_set
         ``legacy`` retains the original input columns. ``multiscale_local``
         appends periodic native-only neighbourhood and gradient statistics.
+        ``multiscale_geometry`` additionally supplies log1p of the comoving
+        box length, distinguishing domains with equal cell widths. This is
+        an input coordinate, not an assertion of geometry generalization.
 
     Returns
     -------
@@ -86,7 +90,7 @@ def field_features(
         Per-cell feature matrix, ordered names and flattened ES xHII baseline.
         No teacher field or photon reservoir is accepted as an input.
     """
-    if feature_set not in ("legacy", "multiscale_local"):
+    if feature_set not in FEATURE_SETS:
         raise ValueError("Unsupported field feature_set")
     photons, atoms, neutral = _arrays(source, capacity, native_es_xHI)
     features, names = build_features(
@@ -100,12 +104,17 @@ def field_features(
         columns.append(gaussian_filter(ionized, radius / dx, mode="wrap").ravel())
         names.append(f"native_es_xHII_sigma{radius:g}_cMpc")
     features = np.column_stack((features, *columns)).astype(np.float32)
-    if feature_set == "multiscale_local":
+    if feature_set in ("multiscale_local", "multiscale_geometry"):
         from research.pc_analytic_emulator.spatial import spatial_features
 
         local, local_names = spatial_features(photons, atoms, neutral)
         features = np.column_stack((features, local)).astype(np.float32)
         names.extend(local_names)
+    if feature_set == "multiscale_geometry":
+        features = np.column_stack(
+            (features, np.full(len(features), np.log1p(box_len), dtype=np.float32))
+        )
+        names.append("log1p_box_cMpc")
     return features, names, ionized.ravel()
 
 
@@ -258,7 +267,7 @@ class Emulator:
     feature_set: str = "legacy"
 
     def _model_kinds(self) -> tuple[str, str]:
-        if self.feature_set not in ("legacy", "multiscale_local"):
+        if self.feature_set not in FEATURE_SETS:
             raise ValueError("Unsupported emulator feature_set")
         seen = {id(self)}
         base = self.base_model
@@ -521,7 +530,7 @@ class Emulator:
             raise ValueError("Unsupported saved budget model kind")
         base_model = None
         feature_set = record.get("feature_set", "legacy")
-        if feature_set not in ("legacy", "multiscale_local"):
+        if feature_set not in FEATURE_SETS:
             raise ValueError("Unsupported saved field feature_set")
         if record["schema"] < 4 and feature_set != "legacy":
             raise ValueError("Nonlegacy feature_set requires schema four")

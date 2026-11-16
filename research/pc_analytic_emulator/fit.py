@@ -316,12 +316,31 @@ def _warm_frame(frame: dict[str, Any], base_model: Emulator | None) -> dict[str,
     return dict(frame, baseline=baseline)
 
 
-def _normalizer(frames: Sequence[FrameRecord]) -> tuple[np.ndarray, np.ndarray, int]:
+def _normalizer(
+    frames: Sequence[FrameRecord],
+    *,
+    field_feature_scale_floor: float = 0.0,
+    zero_constant_features: bool = False,
+) -> tuple[np.ndarray, np.ndarray, int, np.ndarray]:
+    if (
+        isinstance(field_feature_scale_floor, bool)
+        or not isinstance(field_feature_scale_floor, (int, float))
+        or not np.isfinite(field_feature_scale_floor)
+        or field_feature_scale_floor < 0
+    ):
+        raise ValueError("Field feature scale floor must be finite and nonnegative")
+    if type(zero_constant_features) is not bool:
+        raise ValueError("zero_constant_features must be boolean")
     if not frames:
         raise ValueError("At least one training snapshot is required")
     mean, second, count = None, None, 0
+    minimum, maximum = None, None
     for record in frames:
         features = _load_frame(record)["features"]
+        if zero_constant_features:
+            lo, hi = np.min(features, axis=0), np.max(features, axis=0)
+            minimum = lo if minimum is None else np.minimum(minimum, lo)
+            maximum = hi if maximum is None else np.maximum(maximum, hi)
         batch_count = len(features)
         batch_mean = np.mean(features, axis=0)
         batch_second = np.sum((features - batch_mean) ** 2, axis=0)
@@ -337,21 +356,37 @@ def _normalizer(frames: Sequence[FrameRecord]) -> tuple[np.ndarray, np.ndarray, 
         count = total
     scale = np.sqrt(np.maximum(second / count, 0))
     scale[scale == 0] = 1.0
+    scale = np.maximum(scale, field_feature_scale_floor)
+    constant = np.zeros(len(mean), dtype=bool)
+    if zero_constant_features:
+        constant = minimum == maximum
+        mean[constant] = minimum[constant]
+        scale[constant] = np.maximum(scale[constant], 1.0)
     if not np.isfinite(mean).all() or not np.isfinite(scale).all():
         raise FloatingPointError("Whole-grid feature normalization overflowed")
-    return mean, scale, count
+    return mean, scale, count, constant
 
 
 def _initialize(
-    frames: Sequence[FrameRecord], *, seed: int, hidden: tuple[int, ...]
+    frames: Sequence[FrameRecord],
+    *,
+    seed: int,
+    hidden: tuple[int, ...],
+    field_feature_scale_floor: float = 0.0,
+    zero_constant_features: bool = False,
 ) -> LatentFieldModel:
-    mean, scale, count = _normalizer(frames)
+    mean, scale, count, constant = _normalizer(
+        frames,
+        field_feature_scale_floor=field_feature_scale_floor,
+        zero_constant_features=zero_constant_features,
+    )
     widths = (len(mean), *hidden, 1)
     random = np.random.default_rng(seed)
     weights = [
         random.normal(scale=np.sqrt(2 / (left + right)), size=(left, right))
         for left, right in itertools.pairwise(widths)
     ]
+    weights[0][constant] = 0.0
     biases = [np.zeros(width) for width in widths[1:]]
     weights[-1].fill(0)
     return LatentFieldModel(
@@ -363,6 +398,9 @@ def _initialize(
             "training_cells": count,
             "training_snapshots": len(frames),
             "standardizer_scope": "all training cells only; streaming snapshot moments",
+            "field_feature_scale_floor": field_feature_scale_floor,
+            "zero_constant_features": zero_constant_features,
+            "constant_feature_indices": np.flatnonzero(constant).tolist(),
             "initialization": "zero final layer gives the unmodified ES field",
         },
     )
@@ -559,6 +597,8 @@ def fit_field(
     on_epoch: Callable[[dict[str, Any]], None] | None = None,
     base_model: Emulator | None = None,
     frame_cache_max_bytes: int = FRAME_CACHE_MAX_BYTES,
+    field_feature_scale_floor: float = 0.0,
+    zero_constant_features: bool = False,
 ) -> tuple[LatentFieldModel, list[dict[str, Any]]]:
     """Train full snapshots with differentiation through a fixed photon budget.
 
@@ -598,6 +638,12 @@ def fit_field(
         Nonnegative per-worker array cache cap in bytes; default 512 MiB.
         Zero disables storage. Frozen-base arrays share the cap. Activations,
         optimizer state and interpreter/library memory are additional.
+    field_feature_scale_floor
+        Nonnegative minimum field-feature standard deviation in input units.
+        Default zero preserves the original independently fitted scales.
+    zero_constant_features
+        Opt in to zero first-layer weights for exact training constants.
+        Their means are the exact training value; validation support is unused.
 
     Returns
     -------
@@ -611,7 +657,13 @@ def fit_field(
     options = _options(objective_config)
     if not training_frames or not validation_frames:
         raise ValueError("Training and validation each require at least one snapshot")
-    model = _initialize(training_frames, seed=seed, hidden=hidden)
+    model = _initialize(
+        training_frames,
+        seed=seed,
+        hidden=hidden,
+        field_feature_scale_floor=field_feature_scale_floor,
+        zero_constant_features=zero_constant_features,
+    )
     base_digest = _inference_digest(base_model) if base_model is not None else None
     model.metadata.update(
         training_method="warm_started_v3"

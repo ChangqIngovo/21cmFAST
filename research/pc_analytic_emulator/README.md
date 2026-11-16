@@ -1,12 +1,19 @@
 # Emulator of the analytic coeval photon-conserving teacher
 
+The [mixed-geometry workflow](refinement_20261117/reproduction/README.md) adds
+optional feature-normalization safeguards, an explicit box-size descriptor and
+geometry-aware dataset validation. It supports native generation or training
+from supplied teacher archives, followed by immutable validation selection and
+separate blind evaluation. Model weights and experiment outputs are supplied
+separately from this source code.
+
 The complete source map and execution sequence are in
 [PHOTON_CONSERVATION.md](../PHOTON_CONSERVATION.md); independently generated
 simulation results are in [the validation report](../pc_analytic/VALIDATION_20261116.md).
 Controlled budget replacements, Fourier attribution, ranking limits and late
 teacher refinement are in [the error-source report](ERROR_SOURCES_20261116.md).
 
-The [completed improvement report](COMPLETION_20261116.md) adds 164 training
+The earlier [improvement report](COMPLETION_20261116.md) adds 164 training
 snapshots, 28 validation snapshots and 44 frozen-model blind/transfer checks.
 Its selected model uses 88 native features and a tabulated absorption budget.
 Same-geometry active field MAE is 0.02282 and low-k power error is 9.89%; grid/box
@@ -289,6 +296,40 @@ Schema 3 stores the complete base recursively in `model/base_model/`, alongside
 the residual `model/field_model.npz` and its budget estimator. Inference therefore
 does not need an earlier training directory or any teacher arrays. Schema 1 and
 2 files remain readable with their existing predictions.
+
+### Field features, normalization and geometry
+
+`feature_set="legacy"` retains the original 24 descriptors.
+`"multiscale_local"` adds 64 native-input spatial descriptors, and
+`"multiscale_geometry"` additionally records `log1p(BOX_LEN)` in cMpc, for 89
+features. The existing cell-width feature and the new box-size feature distinguish
+changes of grid spacing from changes of periodic volume. Schema 4 records the
+feature set; every frozen base retains its own feature set and normalization.
+Earlier model schemas retain their original inference behavior.
+
+Two optional controls apply to newly fitted field networks, including both the
+legacy base and residual head:
+
+| JSON setting | Gadi environment variable | Default | Effect |
+| --- | --- | --- | --- |
+| `feature_set` | `PC_FEATURE_SET` | `"legacy"` | Select the native-input descriptors |
+| `field_feature_scale_floor` | `PC_FIELD_FEATURE_SCALE_FLOOR` | `0.0` | Lower bound on nonconstant training feature standard deviations |
+| `zero_constant_features` | `PC_ZERO_CONSTANT_FEATURES` | `false` | Initialize exact training-constant first-layer rows to zero |
+| `budget_epochs` | `PC_BUDGET_EPOCHS` | `null` | Separate budget fitting limit; null uses `epochs` |
+| `frame_cache_MiB` | `PC_FRAME_CACHE_MIB` | `512` | Per-worker snapshot cache limit; zero disables caching |
+
+For exact training-constant features, zeroing also stores the exact observed
+value as the mean. Their standardized training inputs and weight gradients are
+then zero. Varying features use their training mean and a standard deviation
+bounded below by the configured floor. These options prevent unlearned constant
+coordinates and almost-constant descriptors from dominating a new prediction.
+They do not change the teacher physics, photon projection, budget-head
+normalization or existing saved models. No inference clipping is added.
+
+New models record the geometries represented in their training split. A
+standalone prediction checks that support; a separately frozen benchmark can
+explicitly measure unsupported transfer. Robust normalization alone does not
+establish accuracy at a different grid or box size.
 
 ## Results and interpretation
 

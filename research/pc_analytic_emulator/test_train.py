@@ -71,6 +71,9 @@ def test_sampling_is_stable_and_does_not_repeat() -> None:
         {"k_fraction": 1.1},
         {"regression_test_seeds": [1008, 1008]},
         {"feature_set": "unknown"},
+        {"field_feature_scale_floor": -1},
+        {"field_feature_scale_floor": True},
+        {"zero_constant_features": 1},
         {"allow_empty_test": 1},
         {"test_seeds": []},
         {"budget_epochs": 0},
@@ -95,6 +98,8 @@ def test_training_method_is_explicit_and_legacy_remains_default(tmp_path: Path) 
     assert config["training_method"] == "legacy"
     assert config["v2_epochs"] == 80
     assert config["feature_set"] == "legacy"
+    assert config["field_feature_scale_floor"] == 0
+    assert config["zero_constant_features"] is False
     assert config["budget_epochs"] is None
     assert config["frame_cache_MiB"] == 512
     assert not config["allow_empty_test"]
@@ -146,6 +151,8 @@ def test_multiscale_development_training_freezes_before_any_test(
         "epochs": 2,
         "budget_epochs": 3,
         "frame_cache_MiB": 0,
+        "field_feature_scale_floor": 0.01,
+        "zero_constant_features": True,
         "warmstart_epochs": 2,
         "patience": 3,
         "samples_per_snapshot": 8,
@@ -180,6 +187,83 @@ def test_multiscale_development_training_freezes_before_any_test(
     assert metadata["requested_epochs"] == 3
     trained = Emulator.load(output / "trials/seed11/trained_model")
     assert trained.field_model.metadata["frame_cache_max_bytes"] == 0
+    assert trained.field_model.metadata["field_feature_scale_floor"] == 0.01
+    assert trained.field_model.metadata["zero_constant_features"]
+    assert trained.base_model.field_model.metadata["zero_constant_features"]
+    assert min(trained.base_model.field_model.scale) >= 0.01
+    assert train.run(config, output) == summary
+
+
+def test_mixed_geometry_training_retains_each_frame_and_training_support(
+    tmp_path: Path,
+) -> None:
+    """Full-grid training uses each cube's length and records only fitted geometry."""
+    from research.pc_analytic_emulator.model import Emulator, field_features
+    from research.pc_analytic_emulator.test_data import make_campaign, write_collection
+
+    campaigns = [
+        make_campaign(tmp_path / "small", seeds=(1,), redshifts=(8,), n=4, box_len=50),
+        make_campaign(tmp_path / "large", seeds=(2,), redshifts=(8,), n=6, box_len=80),
+        make_campaign(tmp_path / "val", seeds=(3,), redshifts=(8,), n=5, box_len=60),
+    ]
+    collection = write_collection(
+        tmp_path / "collection", campaigns, allow_mixed_geometry=True
+    )
+    config = {
+        "input_root": str(collection),
+        "training_method": "warm_started_v3",
+        "feature_set": "multiscale_local",
+        "allow_empty_test": True,
+        "train_seeds": [1, 2],
+        "validation_seeds": [3],
+        "test_seeds": [],
+        "model_seeds": [11],
+        "workers": 1,
+        "threads": 1,
+        "cpus": 1,
+        "epochs": 2,
+        "budget_epochs": 2,
+        "warmstart_epochs": 2,
+        "patience": 2,
+        "samples_per_snapshot": 8,
+        "hidden": [4],
+        "budget_hidden": [3],
+    }
+    output = tmp_path / "fit"
+    summary = train.run(config, output)
+    model = Emulator.load(output / "model")
+    supported = [
+        {"DIM": 12, "HII_DIM": 4, "BOX_LEN": 50.0},
+        {"DIM": 18, "HII_DIM": 6, "BOX_LEN": 80.0},
+    ]
+    assert model.metadata["training_geometries"] == supported
+    assert summary["training_geometries"] == supported
+    assert summary["validation_geometries"] == [
+        {"DIM": 15, "HII_DIM": 5, "BOX_LEN": 60.0}
+    ]
+    details = json.loads((output / "fit_cache/features.json").read_text())
+    assert details["training_cells"] == 4**3 + 6**3
+    for row in details["training_snapshots"] + details["validation_snapshots"]:
+        with np.load(row["cache"]) as frame:
+            assert frame["source"].shape == (row["dimension"],) * 3
+            assert float(frame["box_len"]) == row["box_len"]
+            expected, _, _ = field_features(
+                frame["source"],
+                frame["capacity"],
+                frame["native_es_xHI"],
+                row["redshift"],
+                row["box_len"],
+                feature_set="multiscale_local",
+            )
+            np.testing.assert_array_equal(frame["features"], expected)
+            prediction = model.predict(
+                frame["source"],
+                frame["capacity"],
+                frame["native_es_xHI"],
+                row["redshift"],
+                row["box_len"],
+            )
+            assert prediction["xHI"].shape == frame["source"].shape
     assert train.run(config, output) == summary
 
 

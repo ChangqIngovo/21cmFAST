@@ -31,6 +31,7 @@ ARRAY_NAMES = {
     "native_es_xHI",
 }
 NATIVE_NAMES = ("source", "capacity", "native_es_xhi", "native_brightness")
+GEOMETRY_KEYS = ("DIM", "HII_DIM", "BOX_LEN")
 
 
 @dataclass(frozen=True)
@@ -449,23 +450,102 @@ def load_dataset(root: str | Path) -> TeacherDataset:
     )
 
 
-def compatibility_signature(dataset: TeacherDataset) -> dict[str, Any]:
+def validate_geometries(value: Any) -> list[dict[str, int | float]]:
+    """Validate explicit native geometries recorded in a trained model.
+
+    Parameters
+    ----------
+    value
+        Nonempty list of unique DIM, HII_DIM and BOX_LEN dictionaries.
+
+    Returns
+    -------
+    list of dict
+        Deterministically sorted grids with integer dimensions and cMpc lengths.
+    """
+    if not isinstance(value, list) or not value:
+        raise ValueError("Training geometries must be a nonempty list")
+    records = []
+    seen = set()
+    for record in value:
+        if not isinstance(record, dict) or set(record) != set(GEOMETRY_KEYS):
+            raise ValueError("Training geometry requires exactly DIM, HII_DIM, BOX_LEN")
+        high, low, length = (record[key] for key in GEOMETRY_KEYS)
+        if (
+            type(high) is not int
+            or type(low) is not int
+            or not 2 <= low <= high
+            or type(length) not in (int, float)
+            or not np.isfinite(length)
+            or length <= 0
+        ):
+            raise ValueError(
+                "Training geometry contains invalid dimensions or box length"
+            )
+        key = (high, low, float(length))
+        if key in seen:
+            raise ValueError("Training geometries contain a duplicate grid")
+        seen.add(key)
+        records.append(dict(zip(GEOMETRY_KEYS, key, strict=True)))
+    return sorted(records, key=lambda row: tuple(row[key] for key in GEOMETRY_KEYS))
+
+
+def sample_geometries(
+    samples: Sequence[TeacherSample],
+) -> list[dict[str, int | float]]:
+    """List the distinct original native grids present in audited samples.
+
+    Parameters
+    ----------
+    samples
+        Audited snapshots, usually restricted to one training or validation split.
+
+    Returns
+    -------
+    list of dict
+        Sorted geometry records, or an empty list when the split is empty.
+        Validation or test geometries are never inferred from the training split.
+    """
+    records = {}
+    for sample in samples:
+        options = sample.metadata["input"]["inputs"]["simulation_options"]
+        record = {key: options[key] for key in GEOMETRY_KEYS}
+        records[tuple(record.values())] = record
+    return validate_geometries(list(records.values())) if records else []
+
+
+def compatibility_signature(
+    dataset: TeacherDataset, *, allow_mixed_geometry: bool = False
+) -> dict[str, Any]:
     """Describe the common physical and numerical target of teacher archives.
 
     Parameters
     ----------
     dataset
         Independently audited campaign or collection of compatible campaigns.
+    allow_mixed_geometry
+        Explicitly exclude native DIM, HII_DIM and BOX_LEN and their campaign
+        configuration counterparts. All other physical and numerical settings
+        remain part of the comparison. The default requires identical geometry.
 
     Returns
     -------
     dict
         Native physics/runtime, solver build and configuration excluding only
-        seed/epoch lists, worker resources, and the template's filesystem path.
+        seed/epoch lists, worker resources, and the template's filesystem path;
+        optionally excluding only the three declared geometry parameters.
         The campaign scheduling wrapper may differ; all other recorded source
         implementations must match. Original identities remain in provenance.
     """
+    if type(allow_mixed_geometry) is not bool:
+        raise TypeError("allow_mixed_geometry must be boolean")
     configuration = copy.deepcopy(dataset.identity["configuration"])
+    physics = copy.deepcopy(dataset.physics)
+    if allow_mixed_geometry:
+        for key in ("dimension", "highres_dimension", "box_len"):
+            configuration.pop(key, None)
+        for key in GEOMETRY_KEYS:
+            physics["simulation_options"].pop(key, None)
     for key in (
         "seeds",
         "redshifts",
@@ -484,7 +564,7 @@ def compatibility_signature(dataset: TeacherDataset) -> dict[str, Any]:
         )
     return {
         "configuration": configuration,
-        "physics": dataset.physics,
+        "physics": physics,
         "native_runtime": dataset.identity.get("native_runtime"),
         "analytic_build": dataset.identity.get("analytic_build"),
         "implementation_sha256": {
@@ -500,6 +580,9 @@ def compatibility_signature(dataset: TeacherDataset) -> dict[str, Any]:
 def _load_collection(root: Path) -> TeacherDataset:
     path = root / "collection_manifest.json"
     declaration = _json(path)
+    allow_mixed_geometry = declaration.get("allow_mixed_geometry", False)
+    if type(allow_mixed_geometry) is not bool:
+        raise TypeError("allow_mixed_geometry must be boolean")
     entries = declaration.get("campaigns")
     if (
         declaration.get("schema") != 1
@@ -542,7 +625,9 @@ def _load_collection(root: Path) -> TeacherDataset:
                 )
             original.digest(campaign_root / filename, expected)
         dataset = load_dataset(campaign_root)
-        signature = compatibility_signature(dataset)
+        signature = compatibility_signature(
+            dataset, allow_mixed_geometry=allow_mixed_geometry
+        )
         if common is not None and common != signature:
             raise ValueError(
                 "Collection campaigns have incompatible physical/runtime/solver settings"
@@ -577,6 +662,12 @@ def _load_collection(root: Path) -> TeacherDataset:
     identity["configuration"]["redshifts"] = sorted(
         {sample.redshift for sample in samples}, reverse=True
     )
+    if allow_mixed_geometry:
+        identity.update(
+            allow_mixed_geometry=True,
+            geometries=sample_geometries(samples),
+            canonical_geometry_scope="Configuration and physics retain the first campaign geometry; each sample keeps its original audited native geometry",
+        )
     audit = {
         "sample_count": len(samples),
         "seeds": sorted(used_seeds),
@@ -595,6 +686,8 @@ def _load_collection(root: Path) -> TeacherDataset:
         "campaign_count": len(campaigns),
         "receipt_policy": "Original campaign identities, paths and receipts verified without copying or relabeling",
     }
+    if allow_mixed_geometry:
+        audit.update(allow_mixed_geometry=True, geometries=sample_geometries(samples))
     manifest = {
         "schema": 1,
         "kind": "analytic-teacher-campaign-collection",

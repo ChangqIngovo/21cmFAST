@@ -175,6 +175,120 @@ def test_local_deficit_duplicate_inputs_average_labels() -> None:
     np.testing.assert_allclose(model.predict(training[:1]), [0.9], atol=1e-15)
 
 
+@pytest.mark.parametrize("geometry_column", [2, 3])
+def test_local_geometry_separates_native_domains_and_roundtrips(
+    tmp_path: Path, geometry_column: int
+) -> None:
+    """Equal load/structure can retain different measured escape by geometry."""
+    training = np.repeat(_native_globals()[:1], 6, axis=0)
+    training[:3, geometry_column] = np.log1p(2.0)
+    training[3:, geometry_column] = np.log1p(8.0)
+    efficiencies = np.array([0.8, 0.8, 0.8, 0.95, 0.95, 0.95])
+    original = LocalDeficitBudgetModel.from_training(training, efficiencies)
+    model = LocalDeficitBudgetModel.from_training(
+        training, efficiencies, include_geometry=True
+    )
+    np.testing.assert_allclose(original.predict(training[[0, 3]]), [0.875, 0.875])
+    np.testing.assert_allclose(model.predict(training[[0, 3]]), [0.8, 0.95])
+    np.testing.assert_array_equal(model.feature_indices, [0, 2, 3, 4, 5, 6, 7, 8, 9])
+    constant = np.ptp(training[:, model.feature_indices], axis=0) == 0
+    np.testing.assert_array_equal(model.scale[constant], 1.0)
+    model.save(tmp_path / "geometry_budget.npz")
+    restored = load_budget(tmp_path / "geometry_budget.npz")
+    np.testing.assert_array_equal(restored.feature_indices, model.feature_indices)
+    np.testing.assert_array_equal(restored.predict(training), model.predict(training))
+
+
+def test_local_geometry_constant_training_coordinate_has_safe_scale() -> None:
+    """An unseen geometry cannot be divided by rounding-level training scatter."""
+    training = _native_globals()
+    training[:, 2:4] = np.log1p([50 / 16, 50])
+    model = LocalDeficitBudgetModel.from_training(
+        training, np.linspace(0.8, 0.95, 6), include_geometry=True
+    )
+    np.testing.assert_array_equal(model.scale[1:3], [1.0, 1.0])
+    query = training[:1].copy()
+    query[:, 2:4] = np.log1p([256 / 32, 256])
+    coordinates = (query[:, model.feature_indices] - model.mean) / model.scale
+    assert np.max(np.abs(coordinates[:, 1:3])) < 2.0
+    assert 0.8 <= model.predict(query)[0] <= 0.95
+
+
+@pytest.mark.parametrize("value", [None, 0, 1, "true"])
+def test_local_geometry_requires_explicit_boolean(value: object) -> None:
+    """Non-boolean values cannot silently enable a new distance convention."""
+    with pytest.raises(ValueError, match="include_geometry must be a boolean"):
+        LocalDeficitBudgetModel.from_training(
+            _native_globals(), np.ones(6), include_geometry=value
+        )
+
+
+def test_v3_geometry_candidates_retain_original_local_models() -> None:
+    """Mixed-geometry candidates are additive and share the validation metric."""
+    training = _native_globals()
+    training[:, 2] = np.log1p([2, 2, 2, 4, 4, 4])
+    training[:, 3] = np.log1p([50, 50, 50, 256, 256, 256])
+    eta = np.linspace(0.8, 0.95, 6)
+    options = {"seed": 11, "epochs": 2, "patience": 2, "learning_rate": 0.001}
+    original, _ = fit_budget_v3(
+        training, eta, np.ones(6), training[:2], eta[:2], np.ones(2), **options
+    )
+    expanded, report = fit_budget_v3(
+        training,
+        eta,
+        np.ones(6),
+        training[:2],
+        eta[:2],
+        np.ones(2),
+        include_geometry_local=True,
+        **options,
+    )
+    assert set(expanded) - set(original) == {"local_geometry_k3", "local_geometry_k5"}
+    for name in ("local_k3", "local_k5"):
+        np.testing.assert_array_equal(
+            expanded[name].predict(training), original[name].predict(training)
+        )
+    assert report["local_geometry_feature_indices"] == [0, 2, 3, 4, 5, 6, 7, 8, 9]
+    assert report["local_constant_coordinate_scale"] == 1.0
+    changed, _ = fit_budget_v3(
+        training,
+        eta,
+        np.ones(6),
+        training[:2] * 1.2,
+        np.array([0.2, 0.4]),
+        np.ones(2),
+        include_geometry_local=True,
+        **options,
+    )
+    for name in ("local_geometry_k3", "local_geometry_k5"):
+        np.testing.assert_array_equal(expanded[name].mean, changed[name].mean)
+        np.testing.assert_array_equal(expanded[name].scale, changed[name].scale)
+        np.testing.assert_array_equal(
+            expanded[name].predict(training), changed[name].predict(training)
+        )
+
+
+def test_training_geometry_budget_configuration_is_opt_in(tmp_path: Path) -> None:
+    """The shared training entry point admits only explicitly enabled models."""
+    from research.pc_analytic_emulator.train import validate_config
+
+    default = validate_config({"input_root": str(tmp_path)})
+    assert default["include_geometry_budget"] is False
+    settings = {
+        "input_root": str(tmp_path),
+        "training_method": "warm_started_v3",
+        "include_geometry_budget": True,
+        "budget_candidate_kinds": ["tabulated", "local_geometry_k3"],
+    }
+    assert validate_config(settings)["include_geometry_budget"] is True
+    with pytest.raises(ValueError, match="enabled candidate"):
+        validate_config({**settings, "include_geometry_budget": False})
+    with pytest.raises(TypeError, match="include_geometry_budget"):
+        validate_config({**settings, "include_geometry_budget": 1})
+    with pytest.raises(ValueError, match="warm_started_v3"):
+        validate_config({**settings, "training_method": "legacy"})
+
+
 def test_local_deficit_normalization_and_table_are_training_only() -> None:
     """Changing validation labels may change ranks, never the local fit."""
     training = _native_globals()

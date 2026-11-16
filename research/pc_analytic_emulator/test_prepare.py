@@ -98,6 +98,8 @@ def test_development_and_spatial_controls_are_explicit(tmp_path: Path) -> None:
         {
             "PC_TRAINING_METHOD": "warm_started_v3",
             "PC_FEATURE_SET": "multiscale_local",
+            "PC_FIELD_FEATURE_SCALE_FLOOR": "0.01",
+            "PC_ZERO_CONSTANT_FEATURES": "true",
             "PC_ALLOW_EMPTY_TEST": "true",
             "PC_TEST_SEEDS": "",
             "PC_INCLUDE_DEFICIT_BUDGET": "1",
@@ -109,6 +111,8 @@ def test_development_and_spatial_controls_are_explicit(tmp_path: Path) -> None:
         },
     )
     assert config["feature_set"] == "multiscale_local"
+    assert config["field_feature_scale_floor"] == 0.01
+    assert config["zero_constant_features"] is True
     assert config["test_seeds"] == []
     assert config["allow_empty_test"]
     assert config["include_deficit_budget"]
@@ -425,6 +429,21 @@ def test_external_test_rejects_reused_or_different_targets(
     elif change == "implementation":
         external.identity["implementation_sha256"] = {"solver.py": "changed"}
     with pytest.raises(ValueError, match=expected):
+        prepare.validate_external_test(dataset, external)
+
+
+@pytest.mark.parametrize("mixed_side", ["training", "external"])
+def test_legacy_external_path_requires_separate_benchmark_for_mixed_geometry(
+    mixed_side: str,
+) -> None:
+    """The legacy external API cannot infer geometry support from a canonical row."""
+    dataset = SimpleNamespace(
+        identity={"allow_mixed_geometry": mixed_side == "training"}
+    )
+    external = SimpleNamespace(
+        identity={"allow_mixed_geometry": mixed_side == "external"}
+    )
+    with pytest.raises(ValueError, match="separate frozen benchmark"):
         prepare.validate_external_test(dataset, external)
 
 

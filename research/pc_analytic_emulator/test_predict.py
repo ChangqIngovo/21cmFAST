@@ -234,6 +234,78 @@ def test_trained_model_requires_physical_parameters(tmp_path: Path) -> None:
     assert not (tmp_path / "out").exists()
 
 
+@pytest.mark.parametrize("fault", [None, "untrained", "physics", "malformed"])
+def test_explicit_training_geometries_allow_only_recorded_native_grids(
+    tmp_path: Path, fault: str | None
+) -> None:
+    """Mixed training authorizes its actual grids while preserving source physics."""
+    model_path, inputs = _fixture(tmp_path)
+    native_path = _native_inputs(tmp_path, model_path)
+    model = Emulator.load(model_path)
+    model.metadata["training_geometries"] = [
+        {"DIM": 128, "HII_DIM": 4, "BOX_LEN": 256.0},
+        {"DIM": 192, "HII_DIM": 6, "BOX_LEN": 128.0},
+    ]
+    if fault == "malformed":
+        model.metadata["training_geometries"][1]["DIM"] = 192.5
+    model.save(model_path)
+    native = json.loads(native_path.read_text())
+    box_len = 64.0 if fault == "untrained" else 128.0
+    native["simulation_options"].update(DIM=192, HII_DIM=6, BOX_LEN=box_len)
+    if fault == "physics":
+        native["astro_params"]["F_STAR10"] = -0.8
+    native_path.write_text(json.dumps(native))
+    with np.load(inputs) as data:
+        arrays = {name: np.resize(data[name], (6, 6, 6)) for name in data.files}
+    np.savez(inputs, **arrays)
+    output = tmp_path / "out"
+    if fault:
+        with pytest.raises((TypeError, ValueError), match=r"geometr|physical"):
+            predict.run(
+                model_path,
+                inputs,
+                redshift=7.5,
+                box_len=box_len,
+                output=output,
+                native_inputs=native_path,
+            )
+        assert not output.exists()
+    else:
+        expected = Emulator.load(model_path).predict(
+            arrays["source"], arrays["capacity"], arrays["native_es_xHI"], 7.5, box_len
+        )
+        report = predict.run(
+            model_path,
+            inputs,
+            redshift=7.5,
+            box_len=box_len,
+            output=output,
+            native_inputs=native_path,
+        )
+        compatibility = report["physical_compatibility"]
+        assert compatibility["training_geometry_supported"] is True
+        assert (
+            compatibility["training_geometries"]
+            == model.metadata["training_geometries"]
+        )
+        with np.load(output / "fields.npz") as saved:
+            np.testing.assert_array_equal(saved["xHI"], expected["xHI"])
+
+
+def test_explicit_geometry_support_requires_recorded_physics(tmp_path: Path) -> None:
+    """Geometry metadata alone cannot replace the physical input contract."""
+    model_path, inputs = _fixture(tmp_path)
+    model = Emulator.load(model_path)
+    model.metadata["training_geometries"] = [
+        {"DIM": 128, "HII_DIM": 4, "BOX_LEN": 256.0}
+    ]
+    model.save(model_path)
+    with pytest.raises(ValueError, match="teacher_physics"):
+        predict.run(
+            model_path, inputs, redshift=7.5, box_len=256, output=tmp_path / "out"
+        )
+
+
 @pytest.mark.parametrize("fault", [None, "F_STAR10", "grid", "box", "redshift"])
 def test_native_parameters_match_training_except_realization_and_threads(
     tmp_path: Path, fault: str | None

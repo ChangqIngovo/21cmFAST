@@ -29,7 +29,10 @@ def test_local_features_are_optional_and_keep_legacy_columns() -> None:
 
 
 @pytest.mark.parametrize("with_base", [False, True])
-def test_local_model_roundtrip_and_legacy_base(tmp_path: Path, with_base: bool) -> None:
+@pytest.mark.parametrize("feature_set", ["multiscale_local", "multiscale_geometry"])
+def test_local_model_roundtrip_and_legacy_base(
+    tmp_path: Path, with_base: bool, feature_set: str
+) -> None:
     """Keep each layer's input convention when nesting an older base model."""
     from research.pc_analytic_emulator.latent import LatentFieldModel
 
@@ -38,7 +41,7 @@ def test_local_model_roundtrip_and_legacy_base(tmp_path: Path, with_base: bool) 
     neutral = np.linspace(0.1, 0.9, 64).reshape(source.shape)
     base = fixture_model(source, atoms, neutral)
     features, _, _ = field_features(
-        source, atoms, neutral, 7.5, 50, feature_set="multiscale_local"
+        source, atoms, neutral, 7.5, 50, feature_set=feature_set
     )
     width = features.shape[1]
     weight = np.zeros((width, 1))
@@ -48,14 +51,14 @@ def test_local_model_roundtrip_and_legacy_base(tmp_path: Path, with_base: bool) 
         base.budget_model,
         projection_mode="capacity_l2",
         base_model=base if with_base else None,
-        feature_set="multiscale_local",
+        feature_set=feature_set,
     )
     before = model.predict(source, atoms, neutral, 7.5, 50)
     model.save(tmp_path)
     record = json.loads((tmp_path / "model.json").read_text())
     assert record["schema"] == 4
     restored = Emulator.load(tmp_path)
-    assert restored.feature_set == "multiscale_local"
+    assert restored.feature_set == feature_set
     if with_base:
         assert restored.base_model.feature_set == "legacy"
     after = restored.predict(source, atoms, neutral, 7.5, 50)
@@ -67,6 +70,43 @@ def test_local_model_roundtrip_and_legacy_base(tmp_path: Path, with_base: bool) 
     assert len(hashes) == (6 if with_base else 3)
     if with_base:
         assert "base_model/field_model.npz" in hashes
+
+
+def test_geometry_features_represent_box_length_independently_of_cell_width() -> None:
+    """Distinguish equal-dx boxes with an explicit native-only domain coordinate."""
+    first = np.ones((4, 4, 4))
+    second = np.ones((8, 8, 8))
+    small, names, _ = field_features(
+        first * 0.4,
+        first,
+        first * 0.6,
+        7.5,
+        50,
+        feature_set="multiscale_geometry",
+    )
+    large, other_names, _ = field_features(
+        second * 0.4,
+        second,
+        second * 0.6,
+        7.5,
+        100,
+        feature_set="multiscale_geometry",
+    )
+    old, old_names, _ = field_features(
+        first * 0.4,
+        first,
+        first * 0.6,
+        7.5,
+        50,
+        feature_set="multiscale_local",
+    )
+    assert names == other_names == [*old_names, "log1p_box_cMpc"]
+    assert len(names) == 89
+    np.testing.assert_array_equal(small[:, :-1], old)
+    np.testing.assert_allclose(small[:, -1], np.log1p(50), rtol=1e-7)
+    np.testing.assert_allclose(large[:, -1], np.log1p(100), rtol=1e-7)
+    dx = names.index("log1p_dx_cMpc")
+    assert small[0, dx] == large[0, dx]
 
 
 def test_invalid_saved_feature_set_is_rejected(tmp_path: Path) -> None:

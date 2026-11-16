@@ -33,6 +33,7 @@ from research.pc_analytic.compare import physical_mapping
 from research.pc_analytic_emulator.data import (
     TeacherSample,
     load_dataset,
+    sample_geometries,
     split_samples,
 )
 from research.pc_analytic_emulator.evaluation import (
@@ -69,10 +70,13 @@ DEFAULTS = {
     "sampling_seed": 2026,
     "training_method": "legacy",
     "feature_set": "legacy",
+    "field_feature_scale_floor": 0.0,
+    "zero_constant_features": False,
     "allow_empty_test": False,
     "budget_epochs": None,
     "frame_cache_MiB": 512,
     "include_deficit_budget": False,
+    "include_geometry_budget": False,
     "deficit_relative_weight": 0.1,
     "deficit_neutral_floor": 0.01,
     "budget_candidate_kinds": None,
@@ -189,9 +193,18 @@ def _validate_optins(result: dict[str, Any]) -> None:
         "warm_started_v3",
     }:
         raise ValueError("Unknown training_method")
-    if result["feature_set"] not in {"legacy", "multiscale_local"}:
+    if result["feature_set"] not in {
+        "legacy",
+        "multiscale_local",
+        "multiscale_geometry",
+    }:
         raise ValueError("Unknown feature_set")
-    for name in ("allow_empty_test", "include_deficit_budget"):
+    for name in (
+        "allow_empty_test",
+        "include_deficit_budget",
+        "include_geometry_budget",
+        "zero_constant_features",
+    ):
         if type(result[name]) is not bool:
             raise TypeError(f"{name} must be boolean")
     if result["budget_epochs"] is not None and (
@@ -200,7 +213,11 @@ def _validate_optins(result: dict[str, Any]) -> None:
         raise ValueError("budget_epochs must be null or a positive integer")
     if type(result["frame_cache_MiB"]) is not int or result["frame_cache_MiB"] < 0:
         raise ValueError("frame_cache_MiB must be a nonnegative integer per worker")
-    for name in ("deficit_relative_weight", "deficit_neutral_floor"):
+    for name in (
+        "deficit_relative_weight",
+        "deficit_neutral_floor",
+        "field_feature_scale_floor",
+    ):
         value = result[name]
         if (
             isinstance(value, bool)
@@ -222,6 +239,8 @@ def _validate_optins(result: dict[str, Any]) -> None:
     }
     if result["include_deficit_budget"]:
         allowed.add("deficit_mlp")
+    if result["include_geometry_budget"]:
+        allowed.update(("local_geometry_k3", "local_geometry_k5"))
     if kinds is not None and (
         not isinstance(kinds, list)
         or not kinds
@@ -231,11 +250,13 @@ def _validate_optins(result: dict[str, Any]) -> None:
         raise ValueError(
             "budget_candidate_kinds requires unique enabled candidate names"
         )
-    if (result["include_deficit_budget"] or kinds is not None) and result[
-        "training_method"
-    ] != "warm_started_v3":
+    if (
+        result["include_deficit_budget"]
+        or result["include_geometry_budget"]
+        or kinds is not None
+    ) and result["training_method"] != "warm_started_v3":
         raise ValueError(
-            "Deficit budgets and candidate filtering require warm_started_v3"
+            "Deficit/geometry budgets and candidate filtering require warm_started_v3"
         )
     if not result["test_seeds"] and result["external_test_root"] is not None:
         raise ValueError(
@@ -648,6 +669,7 @@ def _prepare_v3_budget(
             learning_rate=config["learning_rate"],
             hidden=tuple(config["budget_hidden"]),
             include_deficit=config.get("include_deficit_budget", False),
+            include_geometry_local=config.get("include_geometry_budget", False),
             deficit_relative_weight=config.get("deficit_relative_weight", 0.1),
             deficit_neutral_floor=config.get("deficit_neutral_floor", 0.01),
         )
@@ -767,6 +789,12 @@ def _fit_legacy_trial(task: dict[str, Any]) -> dict[str, Any]:
         baseline_train=arrays["baseline_train"],
         baseline_validation=arrays["baseline_validation"],
         on_epoch=callback("field"),
+        zero_constant_features=config.get("zero_constant_features", False),
+        feature_scale_floor=(
+            np.full(arrays["x_train"].shape[1], config["field_feature_scale_floor"])
+            if config.get("field_feature_scale_floor", 0) > 0
+            else None
+        ),
     )
     budget, budget_history = fit_network(
         arrays["global_train"],
@@ -957,6 +985,8 @@ def _fit_v2_trial(task: dict[str, Any]) -> dict[str, Any]:
         objective_config=objective,
         on_epoch=log,
         frame_cache_max_bytes=config.get("frame_cache_MiB", 512) * 1024**2,
+        field_feature_scale_floor=config.get("field_feature_scale_floor", 0.0),
+        zero_constant_features=config.get("zero_constant_features", False),
     )
     width = len(details["field_feature_names"])
     zero = LatentFieldModel(
@@ -1681,6 +1711,8 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
         model = Emulator.load(selected["model_directory"])
         model.metadata.update(
             teacher_physics=dataset.physics,
+            training_geometries=sample_geometries(splits["train"]),
+            validation_geometries=sample_geometries(splits["validation"]),
             physical_mapping=physical_mapping(dataset.physics),
             split_seeds=seed_roles,
             teacher_identity=dataset.identity,
@@ -1726,6 +1758,8 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
             "feature_set": model.feature_set,
             "sample_counts": counts,
             "split_seeds": seed_roles,
+            "training_geometries": sample_geometries(splits["train"]),
+            "validation_geometries": sample_geometries(splits["validation"]),
             "selected_model_seed": selected["model_seed"],
             "selected_kind": selected["selected_kind"],
             "selection_scope": selection_scope,

@@ -93,6 +93,13 @@ def _physical_compatibility(
     box_len: float,
 ) -> dict[str, Any]:
     expected = model.metadata.get("teacher_physics")
+    geometries = None
+    if "training_geometries" in model.metadata:
+        from research.pc_analytic_emulator.data import validate_geometries
+
+        if expected is None:
+            raise ValueError("Training geometries require recorded teacher_physics")
+        geometries = validate_geometries(model.metadata["training_geometries"])
     if native_path is None:
         if expected is not None:
             raise ValueError(
@@ -126,7 +133,30 @@ def _physical_compatibility(
     common = copy.deepcopy(inputs)
     common.pop("random_seed", None)
     common["simulation_options"].pop("N_THREADS", None)
-    if expected is not None and common != expected:
+    comparison = copy.deepcopy(expected)
+    geometry_report = {}
+    if geometries is not None:
+        from research.pc_analytic_emulator.data import (
+            GEOMETRY_KEYS,
+            validate_geometries,
+        )
+
+        geometry = validate_geometries(
+            [{key: simulation[key] for key in GEOMETRY_KEYS}]
+        )[0]
+        if geometry not in geometries:
+            raise ValueError(
+                "Native geometry is outside the recorded training geometries"
+            )
+        for key in GEOMETRY_KEYS:
+            common["simulation_options"].pop(key, None)
+            comparison["simulation_options"].pop(key, None)
+        geometry_report = {
+            "training_geometries": geometries,
+            "evaluation_geometry": geometry,
+            "training_geometry_supported": True,
+        }
+    if expected is not None and common != comparison:
         raise ValueError("Native physical parameters differ from model training")
     hashes = record.get("array_sha256")
     if hashes is not None:
@@ -142,7 +172,12 @@ def _physical_compatibility(
         "sha256": native_hash,
         "training_parameters_matched": expected is not None,
         "native_array_hashes_verified": hashes is not None,
-        "scope": "Native parameter groups compared exactly except random_seed and N_THREADS; archived array hashes checked when supplied",
+        **geometry_report,
+        "scope": (
+            "Native physics matched exactly except random_seed, N_THREADS and explicitly recorded training geometry; current geometry belongs to the training support; archived array hashes checked when supplied"
+            if geometries is not None
+            else "Native parameter groups compared exactly except random_seed and N_THREADS; archived array hashes checked when supplied"
+        ),
     }
 
 
@@ -228,7 +263,9 @@ def run(
     native_inputs
         Full native InputParameters JSON or archived native.json. Required when
         the model records teacher_physics; all parameter groups except seed and
-        thread count must match training, including geometry. Archived array
+        thread count must match training. New models with explicit
+        training_geometries accept any recorded training grid; other models
+        require the original exact geometry. Archived array
         checksums, when present, must agree with the inference input arrays.
 
     Returns

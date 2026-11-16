@@ -5,6 +5,7 @@ from __future__ import annotations
 import copy
 import hashlib
 import json
+from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
@@ -276,3 +277,153 @@ def test_frozen_base_cannot_hide_incompatible_training_physics(tmp_path: Path) -
     base.metadata["teacher_physics"]["cosmo_params"]["OMm"] = 0.4
     with pytest.raises(ValueError, match="physical parameters differ"):
         benchmark._physics_compatibility(fitted, physics)
+
+
+def test_explicit_training_geometries_replace_the_canonical_transfer_assumption(
+    tmp_path: Path,
+) -> None:
+    """A second trained geometry is supported even when canonical inputs differ."""
+    teacher, model = _fixture(tmp_path)
+    fitted, physics = _model_physics(teacher, model)
+    trained = [
+        {"DIM": 24, "HII_DIM": 8, "BOX_LEN": 256.0},
+        {"DIM": 48, "HII_DIM": 16, "BOX_LEN": 128.0},
+    ]
+    fitted.metadata["training_geometries"] = copy.deepcopy(trained)
+    before = copy.deepcopy(fitted.metadata)
+    physics["simulation_options"].update(trained[1])
+    report = benchmark._physics_compatibility(fitted, physics)
+    assert report["training_geometries"] == trained
+    assert report["evaluated_geometry"] == trained[1]
+    assert report["trained_geometry_supported"] is True
+    assert report["geometry_transfer"] is False
+    assert report["geometry"]["HII_DIM"]["changed"] is True
+    assert fitted.metadata == before
+
+
+def test_explicit_training_geometries_allow_disclosed_benchmark_transfer(
+    tmp_path: Path,
+) -> None:
+    """Benchmarks may test unseen geometry without classifying it as trained."""
+    teacher, model = _fixture(tmp_path)
+    fitted, physics = _model_physics(teacher, model)
+    fitted.metadata["training_geometries"] = [
+        {"DIM": 48, "HII_DIM": 16, "BOX_LEN": 128.0}
+    ]
+    report = benchmark._physics_compatibility(fitted, physics)
+    assert report["evaluated_geometry"] == {
+        "DIM": 24,
+        "HII_DIM": 8,
+        "BOX_LEN": 256.0,
+    }
+    assert report["trained_geometry_supported"] is False
+    assert report["geometry_transfer"] is True
+    assert all(not item["changed"] for item in report["geometry"].values())
+
+
+@pytest.mark.parametrize(
+    "geometries",
+    [
+        [],
+        None,
+        {"DIM": 24, "HII_DIM": 8, "BOX_LEN": 256},
+        [{"DIM": 24, "HII_DIM": 8}],
+        [{"DIM": True, "HII_DIM": 8, "BOX_LEN": 256}],
+        [{"DIM": 24, "HII_DIM": 32, "BOX_LEN": 256}],
+        [{"DIM": 24, "HII_DIM": 8, "BOX_LEN": np.nan}],
+        [{"DIM": 24, "HII_DIM": 8, "BOX_LEN": 256}] * 2,
+    ],
+)
+def test_malformed_training_geometry_metadata_is_rejected(
+    tmp_path: Path, geometries: object
+) -> None:
+    """An invalid opt-in declaration cannot waive the geometry contract."""
+    teacher, model = _fixture(tmp_path)
+    fitted, physics = _model_physics(teacher, model)
+    fitted.metadata["training_geometries"] = geometries
+    with pytest.raises((ValueError, TypeError), match=r"[Gg]eometr"):
+        benchmark._physics_compatibility(fitted, physics)
+
+
+def test_mixed_geometry_permission_keeps_physics_and_frozen_base_checks(
+    tmp_path: Path,
+) -> None:
+    """Support sets are model-local and never weaken nongeometry matching."""
+    teacher, model = _fixture(tmp_path)
+    base, physics = _model_physics(teacher, model)
+    fitted = residual_model(base)
+    fitted.metadata["teacher_physics"] = copy.deepcopy(physics)
+    fitted.metadata["training_geometries"] = [
+        {"DIM": 48, "HII_DIM": 16, "BOX_LEN": 128.0}
+    ]
+    physics["simulation_options"].update(fitted.metadata["training_geometries"][0])
+    report = benchmark._physics_compatibility(fitted, physics)
+    assert report["geometry_transfer"] is False
+    assert report["frozen_base"]["geometry_transfer"] is True
+    assert "training_geometries" not in report["frozen_base"]
+    physics["astro_params"]["R_BUBBLE_MAX"] = 30
+    with pytest.raises(ValueError, match="physical parameters differ"):
+        benchmark._physics_compatibility(fitted, physics)
+
+
+def test_training_geometry_support_requires_recorded_physics(tmp_path: Path) -> None:
+    """A support declaration alone cannot certify physical compatibility."""
+    teacher, model = _fixture(tmp_path)
+    fitted, physics = _model_physics(teacher, model)
+    fitted.metadata.pop("teacher_physics")
+    fitted.metadata["training_geometries"] = [
+        {"DIM": 24, "HII_DIM": 8, "BOX_LEN": 256.0}
+    ]
+    with pytest.raises(ValueError, match="require recorded teacher_physics"):
+        benchmark._physics_compatibility(fitted, physics)
+
+
+def test_benchmark_evaluates_each_selected_geometry_before_predictions(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A mixed dataset retains per-grid reports and uses each native cube size."""
+    teacher, model = _fixture(tmp_path)
+    small = make_campaign(tmp_path / "small", seeds=(32,), redshifts=(8.0,), n=4)
+    original = benchmark.load_dataset(teacher)
+    other = benchmark.load_dataset(small)
+    mixed = replace(
+        original,
+        samples=original.samples + other.samples,
+        file_hashes={**original.file_hashes, **other.file_hashes},
+    )
+    monkeypatch.setattr(benchmark, "load_dataset", lambda _: mixed)
+    fitted, _ = _model_physics(teacher, model)
+    fitted.save(tmp_path / "previous")
+    fitted.metadata["training_geometries"] = [
+        {"DIM": 12, "HII_DIM": 4, "BOX_LEN": 256.0},
+        {"DIM": 24, "HII_DIM": 8, "BOX_LEN": 256.0},
+    ]
+    fitted.save(model)
+    seen_geometries = []
+    compatibility = benchmark._physics_compatibility
+
+    def check_geometry(fitted: Emulator, physics: dict) -> dict:
+        seen_geometries.append(physics["simulation_options"]["HII_DIM"])
+        return compatibility(fitted, physics)
+
+    prediction = Emulator.predict
+
+    def check_prediction(self: Emulator, *args: object, **kwargs: object) -> dict:
+        assert seen_geometries == [4, 8, 4, 8]
+        return prediction(self, *args, **kwargs)
+
+    monkeypatch.setattr(benchmark, "_physics_compatibility", check_geometry)
+    monkeypatch.setattr(Emulator, "predict", check_prediction)
+    report = benchmark.run(
+        teacher, model, tmp_path / "previous", tmp_path / "mixed_report", rays=8
+    )
+    selected = report["physical_compatibility"]["selected"]
+    previous = report["physical_compatibility"]["previous"]
+    assert selected["geometry_transfer"] is False
+    assert previous["geometry_transfer"] is True
+    assert selected["trained_geometry_supported"] is True
+    assert selected["training_geometries"] == fitted.metadata["training_geometries"]
+    assert len(selected["by_geometry"]) == 2
+    assert all(item["trained_geometry_supported"] for item in selected["by_geometry"])
+    assert {row["dimension"] for row in report["snapshots"]} == {4, 8}
+    assert report["maximum_relative_photon_residual"] < 1e-12

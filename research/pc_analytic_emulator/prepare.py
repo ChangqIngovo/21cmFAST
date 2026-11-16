@@ -168,6 +168,7 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
     for env_name, key in (
         ("PC_ALLOW_EMPTY_TEST", "allow_empty_test"),
         ("PC_INCLUDE_DEFICIT_BUDGET", "include_deficit_budget"),
+        ("PC_ZERO_CONSTANT_FEATURES", "zero_constant_features"),
     ):
         if env_name in environment:
             text = environment[env_name].strip().lower()
@@ -185,6 +186,7 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
     for env_name, key in (
         ("PC_DEFICIT_RELATIVE_WEIGHT", "deficit_relative_weight"),
         ("PC_DEFICIT_NEUTRAL_FLOOR", "deficit_neutral_floor"),
+        ("PC_FIELD_FEATURE_SCALE_FLOOR", "field_feature_scale_floor"),
     ):
         if env_name in environment:
             config[key] = float(environment[env_name])
@@ -291,6 +293,8 @@ def validate_external_test(dataset: Any, external: Any) -> None:
     dataset, external
         Independently audited teacher datasets. Neither is modified or combined.
         The external archive is used only after validation selects the final model.
+        Mixed-geometry collections require the separate frozen benchmark, whose
+        compatibility report checks every evaluated geometry explicitly.
 
     Raises
     ------
@@ -298,6 +302,13 @@ def validate_external_test(dataset: Any, external: Any) -> None:
         Physical settings or teacher methods differ, or an initial realization
         has appeared anywhere in the original campaign.
     """
+    if dataset.identity.get("allow_mixed_geometry") or external.identity.get(
+        "allow_mixed_geometry"
+    ):
+        raise ValueError(
+            "Mixed-geometry archives cannot use legacy external_test_root; "
+            "use the separate frozen benchmark"
+        )
     if dataset.physics != external.physics:
         raise ValueError("External test physical settings differ from training")
     old_seeds = {sample.seed for sample in dataset.samples}

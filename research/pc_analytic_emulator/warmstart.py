@@ -272,6 +272,8 @@ def fit_trial(task: dict[str, Any]) -> dict[str, Any]:
         objective_config=objective,
         on_epoch=log,
         frame_cache_max_bytes=config.get("frame_cache_MiB", 512) * 1024**2,
+        field_feature_scale_floor=config.get("field_feature_scale_floor", 0.0),
+        zero_constant_features=config.get("zero_constant_features", False),
     )
     residual = Emulator(
         field,

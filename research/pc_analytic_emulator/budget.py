@@ -222,6 +222,7 @@ class LocalDeficitBudgetModel:
         efficiencies: np.ndarray,
         *,
         neighbors: int = 3,
+        include_geometry: bool = False,
     ) -> LocalDeficitBudgetModel:
         """Fit coordinates using training snapshots only.
 
@@ -236,12 +237,19 @@ class LocalDeficitBudgetModel:
         neighbors
             Positive number of nearest neighbors; clipped to training count
             only when evaluating a query.
+        include_geometry
+            Include log1p cell width and box length as native coordinates.
+            This allows mixed-geometry training examples to have distinct
+            efficiencies at equal photon load and structure summaries. It
+            does not establish accuracy outside the training geometry support.
 
         Returns
         -------
         LocalDeficitBudgetModel
             Empirical interpolation model with a fixed training normalizer.
         """
+        if type(include_geometry) is not bool:
+            raise ValueError("include_geometry must be a boolean")
         x = np.asarray(features, dtype=np.float64)
         y = np.asarray(efficiencies, dtype=np.float64)
         if (
@@ -255,7 +263,10 @@ class LocalDeficitBudgetModel:
             or np.any((y < 0) | (y > 1))
         ):
             raise ValueError("Invalid native-input training absorption data")
-        indices = np.asarray([0, 4, 5, 6, 7, 8, 9], dtype=np.int64)
+        indices = np.asarray(
+            [0, 2, 3, 4, 5, 6, 7, 8, 9] if include_geometry else [0, 4, 5, 6, 7, 8, 9],
+            dtype=np.int64,
+        )
         coordinates = x[:, indices]
         mean = np.mean(coordinates, axis=0)
         scale = np.std(coordinates, axis=0)
@@ -832,6 +843,7 @@ def fit_budget_v3(
     learning_rate: float,
     hidden: tuple[int, ...] = (8,),
     include_deficit: bool = False,
+    include_geometry_local: bool = False,
     deficit_relative_weight: float = 0.1,
     deficit_neutral_floor: float = 0.01,
 ) -> tuple[
@@ -854,6 +866,9 @@ def fit_budget_v3(
     include_deficit
         Opt in to a trainable absorption-deficit candidate and common mixed
         budget-error ranking. False preserves the original candidates/ranking.
+    include_geometry_local
+        Retain two additional local-deficit candidates with native cell width
+        and box length coordinates. False preserves the original candidate set.
     deficit_relative_weight, deficit_neutral_floor
         Relative-neutral coefficient and denominator floor for deficit fitting
         and, when enabled, the common validation ranking of every candidate.
@@ -874,6 +889,8 @@ def fit_budget_v3(
         raise ValueError("V3 budget fitting requires complete native global features")
     if type(include_deficit) is not bool:
         raise ValueError("include_deficit must be a boolean")
+    if type(include_geometry_local) is not bool:
+        raise ValueError("include_geometry_local must be a boolean")
     if include_deficit:
         _relative_controls(deficit_relative_weight, deficit_neutral_floor)
     candidates, report = _fit_base_candidates(
@@ -927,9 +944,14 @@ def fit_budget_v3(
                 "validation_efficiencies": predicted.tolist(),
             }
         )
-    for neighbors in (3, 5):
-        name = f"local_k{neighbors}"
-        model = LocalDeficitBudgetModel.from_training(xt, yt, neighbors=neighbors)
+    local_settings = [(False, neighbors) for neighbors in (3, 5)]
+    if include_geometry_local:
+        local_settings.extend((True, neighbors) for neighbors in (3, 5))
+    for include_geometry, neighbors in local_settings:
+        name = f"local_{'geometry_' if include_geometry else ''}k{neighbors}"
+        model = LocalDeficitBudgetModel.from_training(
+            xt, yt, neighbors=neighbors, include_geometry=include_geometry
+        )
         models[name] = model
         predicted = predict_efficiency(model, xv)
         error = sv * (predicted - yv)
@@ -1000,6 +1022,10 @@ def fit_budget_v3(
         sigmoid_network_history=sigmoid_history,
         sigmoid_fit_scope="Training native features and efficiency labels; weighted validation MSE chooses checkpoint",
         local_feature_indices=[0, 4, 5, 6, 7, 8, 9],
+        local_geometry_feature_indices=(
+            [0, 2, 3, 4, 5, 6, 7, 8, 9] if include_geometry_local else None
+        ),
+        local_constant_coordinate_scale=1.0,
         local_fit_scope="Training native features and efficiencies only; no validation/test samples in normalizer or neighbor table",
         local_extrapolation="Convex nearest-training-deficit average; no out-of-support accuracy is certified",
         local_zero_deficit_scope="Exact zero only from zero local training deficits; no forced photon-load or redshift threshold",

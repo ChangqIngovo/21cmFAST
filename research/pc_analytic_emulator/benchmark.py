@@ -20,7 +20,12 @@ from typing import Any
 import numpy as np
 
 from research.pc_analytic.validation_20261116.reproduction import recompute
-from research.pc_analytic_emulator.data import TeacherSample, load_dataset
+from research.pc_analytic_emulator.data import (
+    TeacherSample,
+    load_dataset,
+    sample_geometries,
+    validate_geometries,
+)
 from research.pc_analytic_emulator.model import Emulator
 
 LOGGER = logging.getLogger(__name__)
@@ -78,10 +83,17 @@ def _physics_compatibility(model: Emulator, physics: dict) -> dict:
 
     Only DIM, HII_DIM and BOX_LEN may change scientific geometry. Random seed
     and N_THREADS are ignored as realization/runtime controls. This is not a
-    guarantee of accuracy at another geometry. Metadata-free synthetic models
-    remain usable with an explicit unavailable compatibility result.
+    guarantee of accuracy at another geometry. Explicit training_geometries
+    records define the trained support set independently of canonical native
+    inputs. Metadata-free synthetic models remain usable with an explicit
+    unavailable compatibility result.
     """
     expected = model.metadata.get("teacher_physics")
+    trained_geometries = None
+    if "training_geometries" in model.metadata:
+        trained_geometries = validate_geometries(model.metadata["training_geometries"])
+        if expected is None:
+            raise ValueError("Training geometries require recorded teacher_physics")
     if expected is None:
         report = {
             "available": False,
@@ -126,8 +138,51 @@ def _physics_compatibility(model: Emulator, physics: dict) -> dict:
             ],
             "scope": "Cosmology, astrophysics, flags and other native options matched exactly; recorded grid/box transfer is evaluated, not assumed accurate",
         }
+        if trained_geometries is not None:
+            evaluated_geometry = validate_geometries(
+                [{key: item["evaluation"] for key, item in geometry.items()}]
+            )[0]
+            supported = evaluated_geometry in trained_geometries
+            report.update(
+                training_geometries=trained_geometries,
+                evaluated_geometry=evaluated_geometry,
+                trained_geometry_supported=supported,
+                geometry_transfer=not supported,
+                geometry_comparison_scope="Per-key geometry differences refer to canonical native inputs; geometry_transfer tests membership in the complete training geometry set",
+            )
     if model.base_model is not None:
         report["frozen_base"] = _physics_compatibility(model.base_model, physics)
+    return report
+
+
+def _sample_compatibility(
+    model: Emulator, physics: dict, samples: list[TeacherSample]
+) -> dict:
+    """Check every selected geometry before evaluating any teacher snapshot."""
+    geometries, reports = sample_geometries(samples), []
+    for geometry in geometries:
+        evaluated = copy.deepcopy(physics)
+        evaluated["simulation_options"].update(geometry)
+        reports.append(_physics_compatibility(model, evaluated))
+    if len(reports) == 1:
+        return reports[0]
+    transfers = [report["geometry_transfer"] for report in reports]
+    available = all(report["available"] for report in reports)
+    report = {
+        "available": available,
+        "physical_parameters_matched": True if available else None,
+        "geometry_transfer": any(transfers) if available else None,
+        "evaluated_geometries": geometries,
+        "by_geometry": reports,
+        "scope": "Each selected grid/box is checked separately; transfer is true when at least one evaluated geometry is outside the recorded training support",
+    }
+    if "training_geometries" in model.metadata:
+        report.update(
+            training_geometries=reports[0]["training_geometries"],
+            trained_geometry_supported=all(
+                item["trained_geometry_supported"] for item in reports
+            ),
+        )
     return report
 
 
@@ -523,7 +578,7 @@ def run(
     )
     models = {name: Emulator.load(root) for name, root in roots.items()}
     physical_compatibility = {
-        name: _physics_compatibility(fitted, dataset.physics)
+        name: _sample_compatibility(fitted, dataset.physics, samples)
         for name, fitted in models.items()
     }
     if any(_model_hashes(roots[name]) != hashes for name, hashes in before.items()):

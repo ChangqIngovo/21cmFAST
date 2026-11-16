@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+#PBS -N pc_geometry_refinement
+#PBS -q normal
+#PBS -l ncpus=4,mem=32GB,walltime=48:00:00
+#PBS -j oe
+set -euo pipefail
+
+pc_run=${PC_RUN:?Set PC_RUN to the prepared campaign root}
+pc_python=${PC_PYTHON:?Set PC_PYTHON to the same interpreter used for preparation}
+pc_stage=${PC_STAGE:-development}
+[[ $pc_run = /* && -d $pc_run/source && -x $pc_python ]] || {
+    echo 'PC_RUN needs a prepared source directory; PC_PYTHON must be executable.' >&2
+    exit 2
+}
+if [[ -n ${PC_RUNTIME_ENV:-} ]]; then
+    PC_MODULES=()
+    source "$PC_RUNTIME_ENV"
+    if (( ${#PC_MODULES[@]} )); then
+        module --force purge
+        module load "${PC_MODULES[@]}"
+    fi
+fi
+unset PYTHONPATH PYTHONHOME
+export PYTHONDONTWRITEBYTECODE=1 PYTHONNOUSERSITE=1 PYTHONUNBUFFERED=1
+export OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 OMP_NUM_THREADS=1
+export OMP_DYNAMIC=FALSE OMP_WAIT_POLICY=PASSIVE MPLBACKEND=Agg
+cd "$pc_run/source"
+pc_module=research.pc_analytic_emulator.refinement_20261117.reproduction.run_campaign
+case "$pc_stage" in
+    development)
+        "$pc_python" -m "$pc_module" generate --output-root "$pc_run"
+        "$pc_python" -m "$pc_module" train --output-root "$pc_run"
+        "$pc_python" -m "$pc_module" freeze --output-root "$pc_run"
+        echo "Frozen validation selection: $pc_run/selection.json"
+        ;;
+    train-freeze)
+        "$pc_python" -m "$pc_module" train --output-root "$pc_run"
+        "$pc_python" -m "$pc_module" freeze --output-root "$pc_run"
+        echo "Frozen validation selection: $pc_run/selection.json"
+        ;;
+    generate|collections|train|freeze)
+        "$pc_python" -m "$pc_module" "$pc_stage" --output-root "$pc_run"
+        ;;
+    evaluate)
+        pc_freeze=${PC_FREEZE_RECORD:?Set PC_FREEZE_RECORD to the existing selection.json}
+        "$pc_python" -m "$pc_module" evaluate --output-root "$pc_run" --freeze-record "$pc_freeze"
+        ;;
+    *) echo 'PC_STAGE must be development,train-freeze,generate,collections,train,freeze or evaluate.' >&2; exit 2 ;;
+esac
