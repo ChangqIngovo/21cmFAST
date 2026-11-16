@@ -5,6 +5,10 @@ analytic coeval teacher in `pc_analytic` and its supervised emulator in
 `pc_analytic_emulator`. Earlier transport experiments remain in other research
 directories; they are not the teacher used by this training workflow.
 
+The [prediction-error investigation](pc_analytic_emulator/ERROR_SOURCES_20261116.md)
+separates absorbed-count errors, projection-induced saturation and spatial
+ranking limitations using fixed-model controls.
+
 ## Complete source entry points
 
 | Component | Source |
@@ -21,6 +25,7 @@ directories; they are not the teacher used by this training workflow.
 | Field objective, gradients and bounded photon projection | [pc_analytic_emulator/fit.py](pc_analytic_emulator/fit.py), [objectives.py](pc_analytic_emulator/objectives.py), [projection.py](pc_analytic_emulator/projection.py) |
 | Global absorption estimator and deployed model | [pc_analytic_emulator/budget.py](pc_analytic_emulator/budget.py), [model.py](pc_analytic_emulator/model.py) |
 | Standalone inference on native arrays | [pc_analytic_emulator/predict.py](pc_analytic_emulator/predict.py) |
+| Diagnostic replacement of predicted photon budgets | [pc_analytic_emulator/diagnose_errors.py](pc_analytic_emulator/diagnose_errors.py) |
 
 ## What the teacher solves
 

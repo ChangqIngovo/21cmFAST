@@ -1,0 +1,1582 @@
+{
+  "distance": "RMS Euclidean difference standardized using training snapshots only",
+  "features_used": [
+    "log1p_photons_per_atom",
+    "redshift",
+    "log1p_density_std_over_mean",
+    "log1p_source_std_over_mean_capacity",
+    "native_es_Q_volume",
+    "native_es_Q_mass",
+    "native_es_xHII_std",
+    "native_es_front_fraction",
+    "log1p_source_std_sigma6.25_cMpc",
+    "log1p_source_std_sigma12.5_cMpc",
+    "log1p_source_std_sigma25_cMpc",
+    "log1p_source_std_sigma50_cMpc"
+  ],
+  "constant_features_omitted_from_distance": [
+    "log1p_dx_cMpc",
+    "log1p_box_cMpc"
+  ],
+  "training_mean": [
+    0.4129932146647867,
+    7.714285714285714,
+    0.19561253759947303,
+    0.7593176000336993,
+    0.46686445564107587,
+    0.5009677184717327,
+    0.2423903794353158,
+    0.32540457589285715,
+    0.22010983874474008,
+    0.06520310004101637,
+    0.0015520486633192638,
+    2.860713148129481e-06
+  ],
+  "training_std": [
+    0.25025735931523657,
+    1.305404777321219,
+    0.030324465637274308,
+    0.46184488681744107,
+    0.3329171198831702,
+    0.3282058413078882,
+    0.11925812505502865,
+    0.21642089717735521,
+    0.15951556291391863,
+    0.04990744841727328,
+    0.0012267920298538173,
+    2.268710385113933e-06
+  ],
+  "by_split": {
+    "train": {
+      "nearest_training_different_seed_distance": {
+        "minimum": 0.07526554231504388,
+        "median": 0.22220011786271007,
+        "mean": 0.23203247214205588,
+        "maximum": 0.4851560812744605
+      },
+      "any_feature_outside_training_range": 0,
+      "count": 35,
+      "nearest_pairs": [
+        {
+          "query": {
+            "seed": 2101,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.12531069423339672,
+          "query_eta": 0.9999999999980477,
+          "neighbor_eta": 0.9999999977091703,
+          "absolute_eta_difference": 2.288877420930646e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2101,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.15203299489149324,
+          "query_eta": 0.9999999998905722,
+          "neighbor_eta": 0.999999999728686,
+          "absolute_eta_difference": 1.6188617113499504e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2101,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.2021172706116197,
+          "query_eta": 0.9999359989805766,
+          "neighbor_eta": 0.9999865313322732,
+          "absolute_eta_difference": 5.05323516966083e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2101,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.24667045896233522,
+          "query_eta": 0.9982118988431153,
+          "neighbor_eta": 0.9996059178795983,
+          "absolute_eta_difference": 0.0013940190364829519,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2101,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.3207026507691155,
+          "query_eta": 0.9804006976258436,
+          "neighbor_eta": 0.9915762694195982,
+          "absolute_eta_difference": 0.011175571793754613,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2101,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.32482824641577795,
+          "query_eta": 0.9315147098287353,
+          "neighbor_eta": 0.9378709210860892,
+          "absolute_eta_difference": 0.006356211257353861,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2101,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.39968144746752304,
+          "query_eta": 0.9992345749818804,
+          "neighbor_eta": 0.9966988793925154,
+          "absolute_eta_difference": 0.00253569558936495,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2102,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.08780667327558904,
+          "query_eta": 0.9999999977091703,
+          "neighbor_eta": 0.9999999994331761,
+          "absolute_eta_difference": 1.7240058269862857e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2102,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.11856371421801086,
+          "query_eta": 0.999999999728686,
+          "neighbor_eta": 0.9999999995208813,
+          "absolute_eta_difference": 2.078047733888866e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2102,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.14564281549474545,
+          "query_eta": 0.9999865313322732,
+          "neighbor_eta": 0.9997957873074292,
+          "absolute_eta_difference": 0.00019074402484398068,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2102,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.2033960422772549,
+          "query_eta": 0.9996059178795983,
+          "neighbor_eta": 0.9987767714530303,
+          "absolute_eta_difference": 0.0008291464265679505,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2102,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.2699237615052053,
+          "query_eta": 0.9925274918302486,
+          "neighbor_eta": 0.9915762694195982,
+          "absolute_eta_difference": 0.0009512224106503764,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2102,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.4851560812744605,
+          "query_eta": 0.9363592141074604,
+          "neighbor_eta": 0.9378709210860892,
+          "absolute_eta_difference": 0.0015117069786287907,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2102,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.30495479631386185,
+          "query_eta": 0.9988156135037579,
+          "neighbor_eta": 0.9966988793925154,
+          "absolute_eta_difference": 0.0021167341112424687,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2103,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.09230542860726149,
+          "query_eta": 0.9999999999307347,
+          "neighbor_eta": 0.9999999993794804,
+          "absolute_eta_difference": 5.512543754804256e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2103,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.11950242264933132,
+          "query_eta": 0.9999999974800088,
+          "neighbor_eta": 0.9999999999529228,
+          "absolute_eta_difference": 2.472913984696845e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2103,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.17559932724465593,
+          "query_eta": 0.9999999997288879,
+          "neighbor_eta": 0.9999999968940084,
+          "absolute_eta_difference": 2.8348794423038726e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2103,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.22220011786271007,
+          "query_eta": 0.9998609830833669,
+          "neighbor_eta": 0.9999840087234656,
+          "absolute_eta_difference": 0.0001230256400986951,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2103,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.2937717274021701,
+          "query_eta": 0.997371337300564,
+          "neighbor_eta": 0.9987282310738297,
+          "absolute_eta_difference": 0.0013568937732656439,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2103,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.39341025193622553,
+          "query_eta": 0.9754325375340421,
+          "neighbor_eta": 0.9915762694195982,
+          "absolute_eta_difference": 0.016143731885556067,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2103,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.4771350183072911,
+          "query_eta": 0.9700084983491873,
+          "neighbor_eta": 0.9988156135037579,
+          "absolute_eta_difference": 0.028807115154570573,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2104,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.07526554231504388,
+          "query_eta": 0.9999999993794804,
+          "neighbor_eta": 0.9999999994331761,
+          "absolute_eta_difference": 5.369571454139077e-11,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2104,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.11474467963852228,
+          "query_eta": 0.9999999999529228,
+          "neighbor_eta": 0.9999999995208813,
+          "absolute_eta_difference": 4.3204151367604027e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2104,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2103,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.17559932724465593,
+          "query_eta": 0.9999999968940084,
+          "neighbor_eta": 0.9999999997288879,
+          "absolute_eta_difference": 2.8348794423038726e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2104,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2103,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.22220011786271007,
+          "query_eta": 0.9999840087234656,
+          "neighbor_eta": 0.9998609830833669,
+          "absolute_eta_difference": 0.0001230256400986951,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2104,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.24873033832231212,
+          "query_eta": 0.9987282310738297,
+          "neighbor_eta": 0.9987767714530303,
+          "absolute_eta_difference": 4.854037920065668e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2104,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.32151786702391505,
+          "query_eta": 0.9717348497100566,
+          "neighbor_eta": 0.9804006976258436,
+          "absolute_eta_difference": 0.00866584791578695,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2104,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2105,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.36361082688434926,
+          "query_eta": 0.9890210863736074,
+          "neighbor_eta": 0.9378709210860892,
+          "absolute_eta_difference": 0.05115016528751826,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2105,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.07526554231504388,
+          "query_eta": 0.9999999994331761,
+          "neighbor_eta": 0.9999999993794804,
+          "absolute_eta_difference": 5.369571454139077e-11,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2105,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.11474467963852228,
+          "query_eta": 0.9999999995208813,
+          "neighbor_eta": 0.9999999999529228,
+          "absolute_eta_difference": 4.3204151367604027e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2105,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.14564281549474545,
+          "query_eta": 0.9997957873074292,
+          "neighbor_eta": 0.9999865313322732,
+          "absolute_eta_difference": 0.00019074402484398068,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2105,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.2033960422772549,
+          "query_eta": 0.9987767714530303,
+          "neighbor_eta": 0.9996059178795983,
+          "absolute_eta_difference": 0.0008291464265679505,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2105,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.2699237615052053,
+          "query_eta": 0.9915762694195982,
+          "neighbor_eta": 0.9925274918302486,
+          "absolute_eta_difference": 0.0009512224106503764,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2105,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.32482824641577795,
+          "query_eta": 0.9378709210860892,
+          "neighbor_eta": 0.9315147098287353,
+          "absolute_eta_difference": 0.006356211257353861,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2105,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.30495479631386185,
+          "query_eta": 0.9966988793925154,
+          "neighbor_eta": 0.9988156135037579,
+          "absolute_eta_difference": 0.0021167341112424687,
+          "out_of_range_features": []
+        }
+      ]
+    },
+    "validation": {
+      "nearest_training_different_seed_distance": {
+        "minimum": 0.051650741711390384,
+        "median": 0.16434703657887914,
+        "mean": 0.22569965040805912,
+        "maximum": 0.5916488489740197
+      },
+      "any_feature_outside_training_range": 5,
+      "count": 14,
+      "nearest_pairs": [
+        {
+          "query": {
+            "seed": 2106,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.051650741711390384,
+          "query_eta": 0.999999999997765,
+          "neighbor_eta": 0.9999999993794804,
+          "absolute_eta_difference": 6.182846457036817e-10,
+          "out_of_range_features": [
+            "log1p_source_std_sigma6.25_cMpc",
+            "log1p_source_std_sigma12.5_cMpc",
+            "log1p_source_std_sigma25_cMpc",
+            "log1p_source_std_sigma50_cMpc"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2106,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.06158749606152568,
+          "query_eta": 0.999999997362416,
+          "neighbor_eta": 0.9999999999529228,
+          "absolute_eta_difference": 2.5905068090636973e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2106,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.08041640405822689,
+          "query_eta": 0.9999999996885605,
+          "neighbor_eta": 0.9999999968940084,
+          "absolute_eta_difference": 2.7945520342242958e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2106,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.10735838547221703,
+          "query_eta": 0.9999983277403143,
+          "neighbor_eta": 0.9999840087234656,
+          "absolute_eta_difference": 1.4319016848673982e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2106,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.12738324070484103,
+          "query_eta": 0.9996140137652898,
+          "neighbor_eta": 0.9987282310738297,
+          "absolute_eta_difference": 0.000885782691460113,
+          "out_of_range_features": [
+            "native_es_front_fraction"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2106,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.15445556491905144,
+          "query_eta": 0.9783485695685988,
+          "neighbor_eta": 0.9717348497100566,
+          "absolute_eta_difference": 0.0066137198585422,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2106,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.1997780382186452,
+          "query_eta": 0.990176574022704,
+          "neighbor_eta": 0.9890210863736074,
+          "absolute_eta_difference": 0.0011554876490965649,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2107,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.14822419842733064,
+          "query_eta": 0.999999999970522,
+          "neighbor_eta": 0.9999999999980477,
+          "absolute_eta_difference": 2.7525648427229044e-11,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2107,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.17423850823870685,
+          "query_eta": 0.9999999999906248,
+          "neighbor_eta": 0.9999999998905722,
+          "absolute_eta_difference": 1.0005263284540433e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2107,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.22963941209350522,
+          "query_eta": 0.9999641814103998,
+          "neighbor_eta": 0.9999359989805766,
+          "absolute_eta_difference": 2.8182429823164767e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2107,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.27965691409164556,
+          "query_eta": 0.999028644453541,
+          "neighbor_eta": 0.9982118988431153,
+          "absolute_eta_difference": 0.0008167456104256621,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2107,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.3700632922895084,
+          "query_eta": 0.9816620920328293,
+          "neighbor_eta": 0.9804006976258436,
+          "absolute_eta_difference": 0.0012613944069856942,
+          "out_of_range_features": [
+            "native_es_xHII_std"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2107,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2103,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.5836940604522135,
+          "query_eta": 0.9059699577727862,
+          "neighbor_eta": 0.9700084983491873,
+          "absolute_eta_difference": 0.06403854057640113,
+          "out_of_range_features": [
+            "log1p_density_std_over_mean"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2107,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.5916488489740197,
+          "query_eta": 0.9967196411011999,
+          "neighbor_eta": 0.9992345749818804,
+          "absolute_eta_difference": 0.00251493388068047,
+          "out_of_range_features": [
+            "log1p_density_std_over_mean",
+            "log1p_source_std_sigma12.5_cMpc",
+            "log1p_source_std_sigma25_cMpc",
+            "log1p_source_std_sigma50_cMpc"
+          ]
+        }
+      ]
+    },
+    "regression": {
+      "nearest_training_different_seed_distance": {
+        "minimum": 0.03753978512840543,
+        "median": 0.11702561254803957,
+        "mean": 0.14769453570032298,
+        "maximum": 0.31858117990285656
+      },
+      "any_feature_outside_training_range": 1,
+      "count": 7,
+      "nearest_pairs": [
+        {
+          "query": {
+            "seed": 2108,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.03753978512840543,
+          "query_eta": 0.999999999996427,
+          "neighbor_eta": 0.9999999993794804,
+          "absolute_eta_difference": 6.169466049144035e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2108,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.039860550021039214,
+          "query_eta": 0.9999999999037907,
+          "neighbor_eta": 0.9999999999529228,
+          "absolute_eta_difference": 4.91320317763666e-11,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2108,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.08053176194011923,
+          "query_eta": 0.9999999988104628,
+          "neighbor_eta": 0.9999999968940084,
+          "absolute_eta_difference": 1.9164543285654645e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2108,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.11702561254803957,
+          "query_eta": 0.9999569220933036,
+          "neighbor_eta": 0.9999840087234656,
+          "absolute_eta_difference": 2.7086630162043157e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2108,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.14737708201880176,
+          "query_eta": 0.9976879211693085,
+          "neighbor_eta": 0.9987282310738297,
+          "absolute_eta_difference": 0.0010403099045211972,
+          "out_of_range_features": [
+            "native_es_front_fraction"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2108,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.31858117990285656,
+          "query_eta": 0.959447473313014,
+          "neighbor_eta": 0.9363592141074604,
+          "absolute_eta_difference": 0.023088259205553685,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2108,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.2929457783429992,
+          "query_eta": 0.9948022003495548,
+          "neighbor_eta": 0.9890210863736074,
+          "absolute_eta_difference": 0.005781113975947383,
+          "out_of_range_features": []
+        }
+      ]
+    },
+    "external": {
+      "nearest_training_different_seed_distance": {
+        "minimum": 0.025750554039318654,
+        "median": 0.11995446285717708,
+        "mean": 0.1881769863717044,
+        "maximum": 0.7282336230638935
+      },
+      "any_feature_outside_training_range": 3,
+      "count": 28,
+      "nearest_pairs": [
+        {
+          "query": {
+            "seed": 2109,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.05120439897681819,
+          "query_eta": 0.9999999995165275,
+          "neighbor_eta": 0.9999999999980477,
+          "absolute_eta_difference": 4.815201570806948e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2109,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.08603891734930785,
+          "query_eta": 0.9999999997634758,
+          "neighbor_eta": 0.9999999998905722,
+          "absolute_eta_difference": 1.2709644447994606e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2109,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.1402604311317749,
+          "query_eta": 0.9999844383477152,
+          "neighbor_eta": 0.9999359989805766,
+          "absolute_eta_difference": 4.8439367138608524e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2109,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.18628437404514706,
+          "query_eta": 0.99875699011193,
+          "neighbor_eta": 0.9982118988431153,
+          "absolute_eta_difference": 0.0005450912688146348,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2109,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.27334806751004054,
+          "query_eta": 0.9823668111008124,
+          "neighbor_eta": 0.9804006976258436,
+          "absolute_eta_difference": 0.001966113474968778,
+          "out_of_range_features": [
+            "native_es_xHII_std"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2109,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2103,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.38560518325063864,
+          "query_eta": 0.8964666991237148,
+          "neighbor_eta": 0.9700084983491873,
+          "absolute_eta_difference": 0.07354179922547255,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2109,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.4848245335188938,
+          "query_eta": 0.997216574700336,
+          "neighbor_eta": 0.9992345749818804,
+          "absolute_eta_difference": 0.0020180002815444187,
+          "out_of_range_features": [
+            "log1p_source_std_sigma12.5_cMpc",
+            "log1p_source_std_sigma25_cMpc",
+            "log1p_source_std_sigma50_cMpc"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2110,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.03791752493277212,
+          "query_eta": 0.9999999998622123,
+          "neighbor_eta": 0.9999999977091703,
+          "absolute_eta_difference": 2.153042077956968e-09,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2110,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.025750554039318654,
+          "query_eta": 0.9999999998441692,
+          "neighbor_eta": 0.999999999728686,
+          "absolute_eta_difference": 1.1548317857545953e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2110,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.04843631494213891,
+          "query_eta": 0.9999595328171238,
+          "neighbor_eta": 0.9999865313322732,
+          "absolute_eta_difference": 2.699851514942342e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2110,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.06106437318876411,
+          "query_eta": 0.9991580753026184,
+          "neighbor_eta": 0.9996059178795983,
+          "absolute_eta_difference": 0.0004478425769799399,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2110,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.07986069320984782,
+          "query_eta": 0.9918012631585763,
+          "neighbor_eta": 0.9925274918302486,
+          "absolute_eta_difference": 0.0007262286716722688,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2110,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.09182621953600088,
+          "query_eta": 0.9456495960816287,
+          "neighbor_eta": 0.9363592141074604,
+          "absolute_eta_difference": 0.009290381974168316,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2110,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.11596842324060919,
+          "query_eta": 0.9972116640114055,
+          "neighbor_eta": 0.9988156135037579,
+          "absolute_eta_difference": 0.00160394949235243,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2111,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.08129231366366058,
+          "query_eta": 0.9999999996237149,
+          "neighbor_eta": 0.9999999999980477,
+          "absolute_eta_difference": 3.743327869898394e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2111,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.12394050247374497,
+          "query_eta": 0.9999999999886425,
+          "neighbor_eta": 0.9999999998905722,
+          "absolute_eta_difference": 9.807032963493612e-11,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2111,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.21829741994710208,
+          "query_eta": 0.9999279654147932,
+          "neighbor_eta": 0.9999865313322732,
+          "absolute_eta_difference": 5.856591747999129e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2111,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.28962066560987576,
+          "query_eta": 0.9988972054050401,
+          "neighbor_eta": 0.9996059178795983,
+          "absolute_eta_difference": 0.0007087124745581708,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2111,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2103,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.3309407160007541,
+          "query_eta": 0.987290427639167,
+          "neighbor_eta": 0.9754325375340421,
+          "absolute_eta_difference": 0.011857890105124835,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2111,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2102,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.5592312662969547,
+          "query_eta": 0.9146396926042357,
+          "neighbor_eta": 0.9363592141074604,
+          "absolute_eta_difference": 0.021719521503224648,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2111,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 6.0
+          },
+          "standardized_RMS_distance": 0.7282336230638935,
+          "query_eta": 0.9867600036741683,
+          "neighbor_eta": 0.9992345749818804,
+          "absolute_eta_difference": 0.012474571307712123,
+          "out_of_range_features": [
+            "log1p_source_std_sigma12.5_cMpc",
+            "log1p_source_std_sigma25_cMpc",
+            "log1p_source_std_sigma50_cMpc"
+          ]
+        },
+        {
+          "query": {
+            "seed": 2112,
+            "redshift": 10.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 10.0
+          },
+          "standardized_RMS_distance": 0.0376788681341899,
+          "query_eta": 0.999999999260405,
+          "neighbor_eta": 0.9999999993794804,
+          "absolute_eta_difference": 1.190754161939367e-10,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2112,
+            "redshift": 9.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 9.0
+          },
+          "standardized_RMS_distance": 0.049766993640344113,
+          "query_eta": 0.9999999999671834,
+          "neighbor_eta": 0.9999999999529228,
+          "absolute_eta_difference": 1.426059270670521e-11,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2112,
+            "redshift": 8.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 8.0
+          },
+          "standardized_RMS_distance": 0.0785941499067838,
+          "query_eta": 0.9999998377555704,
+          "neighbor_eta": 0.9999999968940084,
+          "absolute_eta_difference": 1.591384379828753e-07,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2112,
+            "redshift": 7.5
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.5
+          },
+          "standardized_RMS_distance": 0.1064003233090369,
+          "query_eta": 0.9999446609353653,
+          "neighbor_eta": 0.9999840087234656,
+          "absolute_eta_difference": 3.934778810033013e-05,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2112,
+            "redshift": 7.0
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 7.0
+          },
+          "standardized_RMS_distance": 0.14463804927784846,
+          "query_eta": 0.9980974220747015,
+          "neighbor_eta": 0.9987282310738297,
+          "absolute_eta_difference": 0.0006308089991281518,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2112,
+            "redshift": 6.5
+          },
+          "training_neighbor": {
+            "seed": 2104,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.20227756581394862,
+          "query_eta": 0.9666816471095814,
+          "neighbor_eta": 0.9717348497100566,
+          "absolute_eta_difference": 0.0050532026004752595,
+          "out_of_range_features": []
+        },
+        {
+          "query": {
+            "seed": 2112,
+            "redshift": 6.0
+          },
+          "training_neighbor": {
+            "seed": 2101,
+            "redshift": 6.5
+          },
+          "standardized_RMS_distance": 0.24965315239751365,
+          "query_eta": 0.9959024874164455,
+          "neighbor_eta": 0.9315147098287353,
+          "absolute_eta_difference": 0.0643877775877102,
+          "out_of_range_features": []
+        }
+      ]
+    }
+  },
+  "closest_different_seed_pairs_with_eta_difference_at_least_0p01": [
+    {
+      "a": {
+        "seed": 2101,
+        "redshift": 6.5,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2112,
+        "redshift": 6.0,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.24965315239751368,
+      "eta_a": 0.9315147098287353,
+      "eta_b": 0.9959024874164455,
+      "absolute_eta_difference": 0.0643877775877102
+    },
+    {
+      "a": {
+        "seed": 2101,
+        "redshift": 7.0,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2112,
+        "redshift": 6.5,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.276461485270903,
+      "eta_a": 0.9804006976258436,
+      "eta_b": 0.9666816471095814,
+      "absolute_eta_difference": 0.01371905051626221
+    },
+    {
+      "a": {
+        "seed": 2109,
+        "redshift": 6.5,
+        "split": "external"
+      },
+      "b": {
+        "seed": 2111,
+        "redshift": 6.5,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.3093461739806585,
+      "eta_a": 0.8964666991237148,
+      "eta_b": 0.9146396926042357,
+      "absolute_eta_difference": 0.018172993480520927
+    },
+    {
+      "a": {
+        "seed": 2102,
+        "redshift": 6.5,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2108,
+        "redshift": 6.5,
+        "split": "regression"
+      },
+      "standardized_RMS_distance": 0.31858117990285656,
+      "eta_a": 0.9363592141074604,
+      "eta_b": 0.959447473313014,
+      "absolute_eta_difference": 0.023088259205553685
+    },
+    {
+      "a": {
+        "seed": 2101,
+        "redshift": 7.0,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2105,
+        "redshift": 7.0,
+        "split": "train"
+      },
+      "standardized_RMS_distance": 0.32070265076911547,
+      "eta_a": 0.9804006976258436,
+      "eta_b": 0.9915762694195982,
+      "absolute_eta_difference": 0.011175571793754613
+    },
+    {
+      "a": {
+        "seed": 2102,
+        "redshift": 6.5,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2112,
+        "redshift": 6.5,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.32760822516480476,
+      "eta_a": 0.9363592141074604,
+      "eta_b": 0.9666816471095814,
+      "absolute_eta_difference": 0.030322433002121008
+    },
+    {
+      "a": {
+        "seed": 2101,
+        "redshift": 7.0,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2102,
+        "redshift": 7.0,
+        "split": "train"
+      },
+      "standardized_RMS_distance": 0.33006691616710754,
+      "eta_a": 0.9804006976258436,
+      "eta_b": 0.9925274918302486,
+      "absolute_eta_difference": 0.01212679420440499
+    },
+    {
+      "a": {
+        "seed": 2104,
+        "redshift": 6.5,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2108,
+        "redshift": 6.5,
+        "split": "regression"
+      },
+      "standardized_RMS_distance": 0.3301786167814942,
+      "eta_a": 0.9717348497100566,
+      "eta_b": 0.959447473313014,
+      "absolute_eta_difference": 0.012287376397042582
+    },
+    {
+      "a": {
+        "seed": 2103,
+        "redshift": 6.5,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2111,
+        "redshift": 7.0,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.3309407160007541,
+      "eta_a": 0.9754325375340421,
+      "eta_b": 0.987290427639167,
+      "absolute_eta_difference": 0.011857890105124835
+    },
+    {
+      "a": {
+        "seed": 2106,
+        "redshift": 6.5,
+        "split": "validation"
+      },
+      "b": {
+        "seed": 2112,
+        "redshift": 6.5,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.34878089626575043,
+      "eta_a": 0.9783485695685988,
+      "eta_b": 0.9666816471095814,
+      "absolute_eta_difference": 0.01166692245901746
+    },
+    {
+      "a": {
+        "seed": 2102,
+        "redshift": 7.0,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2109,
+        "redshift": 7.0,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.35731353287872897,
+      "eta_a": 0.9925274918302486,
+      "eta_b": 0.9823668111008124,
+      "absolute_eta_difference": 0.010160680729436211
+    },
+    {
+      "a": {
+        "seed": 2101,
+        "redshift": 7.0,
+        "split": "train"
+      },
+      "b": {
+        "seed": 2110,
+        "redshift": 7.0,
+        "split": "external"
+      },
+      "standardized_RMS_distance": 0.3600023347117171,
+      "eta_a": 0.9804006976258436,
+      "eta_b": 0.9918012631585763,
+      "absolute_eta_difference": 0.01140056553273272
+    }
+  ],
+  "interpretation": "Finite-sample proximity is evidence of limited coverage or feature resolution; it does not prove that the feature map is non-identifiable."
+}

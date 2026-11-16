@@ -1,0 +1,12 @@
+{
+  "new_tests_passed": 30,
+  "ruff_check": "passed",
+  "simulation_repeats": 4,
+  "angular_refinements": 4,
+  "exposure_refinements": 4,
+  "oracle_snapshots": 28,
+  "ranking_snapshots": 28,
+  "budget_snapshots": 84,
+  "training_only_LOSO_probes": 20,
+  "trained_model_changed": false
+}

@@ -3,6 +3,8 @@
 The complete source map and execution sequence are in
 [PHOTON_CONSERVATION.md](../PHOTON_CONSERVATION.md); independently generated
 simulation results are in [the validation report](../pc_analytic/VALIDATION_20261116.md).
+Controlled budget replacements, Fourier attribution, ranking limits and late
+teacher refinement are in [the error-source report](ERROR_SOURCES_20261116.md).
 
 This workflow trains on completed `pc_analytic.campaign` outputs. The labels are
 our **analytic-column-characteristic** neutral fields, not SCRIPT or C²-Ray.
