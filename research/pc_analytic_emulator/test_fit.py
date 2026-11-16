@@ -37,24 +37,32 @@ def _frame(path: Path, *, offset: float = 0.0, saturated: bool = False) -> dict:
     return {"cache": str(path), "seed": 1, "redshift": 8.0}
 
 
-def test_projected_network_gradient_matches_finite_difference(tmp_path: Path) -> None:
+@pytest.mark.parametrize("budget_mode", ["residual", "sigmoid"])
+def test_projected_network_gradient_matches_finite_difference(
+    tmp_path: Path,
+    budget_mode: str,
+) -> None:
     """Differentiate latent network parameters through a fixed photon budget."""
     record = _frame(tmp_path / "frame.npz")
     frame = fit._load_frame(record)
     model = fit._initialize([record], seed=4, hidden=(3,))
     model.weights[-1][:] = np.array([[0.11], [-0.09], [0.07]])
     model.biases[-1][0] = 0.06
+    budget = _budget()
+    if budget_mode == "sigmoid":
+        budget.output_mode = "sigmoid"
+        budget.biases[-1][0] = np.log(4.0)
     options = {"spectral_weight": 0.1, "raw_weight": 0.05}
-    _, gradients = fit._frame_gradient(model, frame, _budget(), options)
+    _, gradients = fit._frame_gradient(model, frame, budget, options)
     parameters = [*model.weights, *model.biases]
     step = 1e-6
     for parameter, gradient in zip(parameters, gradients, strict=True):
         for index in np.ndindex(parameter.shape):
             original = parameter[index]
             parameter[index] = original + step
-            plus, _ = fit._frame_gradient(model, frame, _budget(), options)
+            plus, _ = fit._frame_gradient(model, frame, budget, options)
             parameter[index] = original - step
-            minus, _ = fit._frame_gradient(model, frame, _budget(), options)
+            minus, _ = fit._frame_gradient(model, frame, budget, options)
             parameter[index] = original
             numeric = (plus["optimization_loss"] - minus["optimization_loss"]) / (
                 2 * step

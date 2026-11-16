@@ -15,6 +15,7 @@ from research.pc_analytic.compare import (
     independent_budget,
     load_native_snapshot,
     pair_statistics,
+    physical_mapping,
     run_c2ray_cached,
     validate_physics,
 )
@@ -84,6 +85,24 @@ def test_snapshot_validates_unchanged_native_arrays(tmp_path: Path) -> None:
     assert data["metadata"]["source_per_atom"] == 0.25
     assert data["metadata"]["native_h5_reextracted"] is False
     assert data["metadata"]["nH_mean_comoving_cm3"] > 0
+    assert (
+        data["metadata"]["physical_mapping"][
+            "native_ES_R_BUBBLE_MAX_applied_to_analytic"
+        ]
+        is False
+    )
+
+
+def test_physical_mapping_distinguishes_native_filter_radius_from_absorption() -> None:
+    """Retaining an ES parameter does not apply its MFP prescription to PC."""
+    inputs = {"astro_params": {"R_BUBBLE_MAX": 50.0}}
+    record = physical_mapping(inputs)
+    assert record["native_ES_R_BUBBLE_MAX_cMpc"] == 50.0
+    assert record["native_ES_R_BUBBLE_MAX_applied_to_analytic"] is False
+    assert "resolved neutral opacity" in record["analytic_MFP_prescription"]
+    assert "H+He" in record["atom_convention"]
+    assert inputs == {"astro_params": {"R_BUBBLE_MAX": 50.0}}
+    assert physical_mapping({})["native_ES_R_BUBBLE_MAX_cMpc"] is None
 
 
 def test_tampered_snapshot_is_rejected(tmp_path: Path) -> None:

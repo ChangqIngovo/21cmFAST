@@ -1,0 +1,169 @@
+{
+  "models": [
+    {
+      "path": "budget_model.npz",
+      "all_arrays_identical": true,
+      "different_arrays": []
+    },
+    {
+      "path": "field_model.npz",
+      "all_arrays_identical": true,
+      "different_arrays": []
+    },
+    {
+      "path": "base_model/budget_model.npz",
+      "all_arrays_identical": true,
+      "different_arrays": []
+    },
+    {
+      "path": "base_model/field_model.npz",
+      "all_arrays_identical": true,
+      "different_arrays": []
+    }
+  ],
+  "snapshot_count": 28,
+  "maximum_xHI_difference": 0.0,
+  "maximum_absorbed_count_difference": 0.0,
+  "rows": [
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/teacher/z10/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/teacher/z6/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/teacher/z6p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/teacher/z7/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/teacher/z7p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/teacher/z8/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/teacher/z9/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2110/teacher/z10/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2110/teacher/z6/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2110/teacher/z6p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2110/teacher/z7/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2110/teacher/z7p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2110/teacher/z8/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2110/teacher/z9/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2111/teacher/z10/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2111/teacher/z6/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2111/teacher/z6p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2111/teacher/z7/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2111/teacher/z7p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2111/teacher/z8/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2111/teacher/z9/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2112/teacher/z10/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2112/teacher/z6/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2112/teacher/z6p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2112/teacher/z7/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2112/teacher/z7p5/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2112/teacher/z8/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    },
+    {
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2112/teacher/z9/fields.npz",
+      "maximum_xHI_difference": 0.0,
+      "absorbed_count_difference": 0.0
+    }
+  ]
+}

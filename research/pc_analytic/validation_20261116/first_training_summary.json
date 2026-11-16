@@ -1,0 +1,55 @@
+{
+  "complete": true,
+  "elapsed_seconds": 95.1645651880001,
+  "selected_kind": "warm_started_residual",
+  "selected_model_seed": 47,
+  "selected_validation_objective": 0.1299819350485104,
+  "selected_validation_mse": 0.005888035709892619,
+  "maximum_test_photon_residual": 2.949393489567433e-17,
+  "sample_counts": {
+    "test": 7,
+    "train": 35,
+    "validation": 14
+  },
+  "test_used_for_selection": false,
+  "test_metrics_mean_over_active_snapshots": {
+    "constrained": {
+      "MAE": 0.03383804678057632,
+      "RMSE": 0.07345143887131468,
+      "delta_Q_mass": -0.0014517032577495816,
+      "delta_Q_volume": -0.0018405738211100438
+    },
+    "native_es": {
+      "MAE": 0.04954325482571357,
+      "RMSE": 0.12515766388814198,
+      "delta_Q_mass": -0.009874474274639862,
+      "delta_Q_volume": -0.008090307192116102
+    },
+    "raw": {
+      "MAE": 0.03656214818287776,
+      "RMSE": 0.07443166663974464,
+      "delta_Q_mass": -0.0024797599144651644,
+      "delta_Q_volume": -0.0030295826374073624
+    }
+  },
+  "test_metrics_mean_over_snapshots": {
+    "constrained": {
+      "MAE": 0.030102198502191712,
+      "RMSE": 0.07298013824212128,
+      "delta_Q_mass": -0.0005017742708646066,
+      "delta_Q_volume": -0.0004794762992537431
+    },
+    "native_es": {
+      "MAE": 0.043637762862570977,
+      "RMSE": 0.11751920067861797,
+      "delta_Q_mass": -0.008278663742568037,
+      "delta_Q_volume": -0.006631341546047435
+    },
+    "raw": {
+      "MAE": 0.03310346669844553,
+      "RMSE": 0.07309373474179438,
+      "delta_Q_mass": -0.002258045508158083,
+      "delta_Q_volume": -0.002491730037515428
+    }
+  }
+}

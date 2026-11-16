@@ -286,6 +286,51 @@ def test_residual_preparation_records_regression_and_new_split(
 
 
 @pytest.mark.parametrize(
+    ("method", "declared", "expected"),
+    [
+        ("warm_started_v3", "1008,2108", [2108]),
+        ("warm_started_v3", "1008", []),
+        ("legacy", "2108", [2108]),
+    ],
+)
+def test_preparation_honors_configured_regression_seeds(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    method: str,
+    declared: str,
+    expected: list[int],
+) -> None:
+    """Only requested inspected seeds receive regression labels in the manifest."""
+    run, _, _ = _prepared_fixture(tmp_path, monkeypatch)
+    manifest = prepare.prepare(
+        run,
+        {
+            "PC_TRAINING_METHOD": method,
+            "PC_TEST_SEEDS": "2108",
+            "PC_REGRESSION_TEST_SEEDS": declared,
+        },
+    )
+    interpretation = manifest["test_interpretation"]
+    assert interpretation["previously_inspected_regression_seeds"] == expected
+    assert interpretation["other_requested_test_seeds"] == ([] if expected else [2108])
+    assert interpretation["known_regression_test_seeds"] == [
+        int(value) for value in declared.split(",")
+    ]
+    assert prepare.verify(run, 16) == manifest
+
+
+def test_empty_regression_override_preserves_known_1008_policy(tmp_path: Path) -> None:
+    """An empty environment override cannot relabel the previously inspected seed."""
+    config = prepare._validated_config(
+        prepare.configuration(
+            tmp_path,
+            {"PC_TRAINING_METHOD": "warm_started_v3", "PC_REGRESSION_TEST_SEEDS": ""},
+        )
+    )
+    assert config["regression_test_seeds"] == [1008]
+
+
+@pytest.mark.parametrize(
     "name", ["source/code.py", "experiment_config.json", "runtime.env"]
 )
 def test_verify_rejects_frozen_mutation(tmp_path, monkeypatch, name):

@@ -1,0 +1,42 @@
+{
+  "source": {
+    "different_snapshots": 1,
+    "maximum_absolute_difference": 2.384185791015625e-07
+  },
+  "capacity": {
+    "different_snapshots": 0,
+    "maximum_absolute_difference": 0.0
+  },
+  "teacher_xHI": {
+    "different_snapshots": 1,
+    "maximum_absolute_difference": 1.6027760085801646e-07
+  },
+  "ionized": {
+    "different_snapshots": 1,
+    "maximum_absolute_difference": 2.384185793236071e-07
+  },
+  "remaining_photons": {
+    "different_snapshots": 1,
+    "maximum_absolute_difference": 4.5891291067264845e-22
+  },
+  "escaped_by_direction": {
+    "different_snapshots": 0,
+    "maximum_absolute_difference": 0.0
+  },
+  "unemitted_source": {
+    "different_snapshots": 0,
+    "maximum_absolute_difference": 0.0
+  },
+  "native_es_xHI": {
+    "different_snapshots": 1,
+    "maximum_absolute_difference": 2.384185791015625e-07
+  },
+  "teacher_brightness": {
+    "different_snapshots": 1,
+    "maximum_absolute_difference": 6.67572021484375e-06
+  },
+  "native_brightness": {
+    "different_snapshots": 1,
+    "maximum_absolute_difference": 6.67572021484375e-06
+  }
+}

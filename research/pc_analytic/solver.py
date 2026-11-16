@@ -132,6 +132,8 @@ def _angles(
 ) -> tuple[np.ndarray, np.ndarray]:
     vectors, weights = angular_quadrature(count)
     if rotation is not None:
+        if np.iscomplexobj(rotation):
+            raise ValueError("rotation must be real")
         rotation = np.asarray(rotation, dtype=float)
         if (
             rotation.shape != (3, 3)
@@ -142,6 +144,8 @@ def _angles(
             raise ValueError("rotation must be a proper orthogonal 3x3 matrix")
         vectors = np.ascontiguousarray(vectors @ rotation.T)
     if emission_weights is not None:
+        if np.iscomplexobj(emission_weights):
+            raise ValueError("emission_weights must be real")
         weights = np.asarray(emission_weights, dtype=float)
         if (
             weights.shape != (count,)
@@ -189,12 +193,16 @@ def solve(
 ) -> dict[str, Any]:
     """Transport normalized photon and atom counts through one frozen snapshot.
 
-    ``capacity=1`` is one cell's mean cosmological hydrogen inventory, so the
+    ``capacity=1`` is one cell's chosen mean absorber inventory, so the
     optical depth per normalized atom count and unit-cell chord is
     ``sigma * nH_mean_comoving * (1+z)^2 * dx_comoving``.
     ``source`` uses the identical count unit. There is no extra density factor
     on sources. If the grid is refined, normalized source/capacity arrays must
     refer to the mean inventory of the NEW cell (not the original base cell).
+    Native 21cmFAST adapters use effective H+He nuclei, each assigned the
+    specified H cross section, without independent helium chemistry. A
+    standalone calculation can instead supply consistent pure-H counts and
+    mean density; the solver does not convert between these conventions.
 
     ``emission_weights`` is an optional normalized angular distribution for
     controlled beam tests. The default is an isotropic positive quadrature.
@@ -205,13 +213,15 @@ def solve(
     Parameters
     ----------
     source, capacity : ndarray
-        Photon and atom counts in common mean-hydrogen-cell units, shape (N,N,N).
+        Photon and atom counts in common mean-absorber-cell units, shape (N,N,N).
     box_len : float
         Comoving box side length in Mpc.
     redshift : float
         Frozen redshift used to convert comoving lengths and density.
     nH_mean_comoving_cm3 : float
-        Physical mean hydrogen density at z=0, in cm^-3.
+        Mean absorber number density at z=0, in cm^-3, matching the source and
+        capacity normalization. Native adapters supply effective H+He nuclei
+        density; the parameter name is retained for API compatibility.
     sigma_cm2 : float
         Monochromatic photoionization cross section, in cm^2.
     directions : int, optional
@@ -301,6 +311,8 @@ def solve(
     boundary_code = _boundary_code(boundary, transport_mode)
     vectors, weights = _angles(directions, rotation, emission_weights)
     angular_source = np.ascontiguousarray(weights[:, None, None, None] * source)
+    if np.iscomplexobj(initial_ionized):
+        raise ValueError("initial_ionized must be real")
     ions = (
         np.zeros_like(capacity)
         if initial_ionized is None

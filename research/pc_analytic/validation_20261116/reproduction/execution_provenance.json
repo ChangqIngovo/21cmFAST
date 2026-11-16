@@ -1,0 +1,107 @@
+{
+  "base_commit": "5d29a9c2220da47a17769b59ff619d6e5ca52bfe",
+  "source_file_sha256": {
+    "research/pc_analytic/solver.py": "ba88bd5789f711037c339c593d283efc2b4ca3dffcaa146b6502341cfa70135b",
+    "research/pc_analytic/absorption.py": "55cd72250317f057d07295d671ab537561c1bd9dfd28f9bd04cf6e8937cf1f0d",
+    "research/pc_analytic/transport_kernel.cpp": "05e067f72f8f2c78ed6f6297bc13d9e72324dd5c25140a38f023a43de0b29a52",
+    "research/pc_analytic/compare.py": "bfe4cf7e28de4e4768b1ed846e7d3adee2b3242deeb792eb4d52b447711d5e47",
+    "research/pc_analytic/campaign.py": "576977c4a8c2228f48f220439bb13374182a8ed448656faef149957686a133b7",
+    "research/pc_analytic_emulator/train.py": "bc34a5df3479931fa27cba1b7d8a84776416602abf2723ace8fa460cf63f5fff",
+    "research/pc_analytic_emulator/warmstart.py": "fca2e5090df3648b37c4147c9d8a09bdbad908035b1ad30cd1d5fe0d86c73c1a"
+  },
+  "package_version_override": "4.3.2.dev0+g5d29a9c2",
+  "package_version_override_reason": "Fork has no release tags; default setuptools_scm major zero cannot be read by native HDF5 compatibility handler. Override changes packaging metadata, not native source or physics.",
+  "physical_template_source": "PC_SCRIPT_C2Ray_validation_20261103/inputs/native/seed222/z8/native.json identity.inputs",
+  "test_used_for_selection": false,
+  "final_training_source_sha256": {
+    "research/pc_analytic_emulator/__init__.py": "6ce057a0363be8cc27a3d3fc7f9ebf660e7632f990faa34a8e7dc86c6958a97b",
+    "research/pc_analytic_emulator/data.py": "e836c6b6e8c0f67abfa1b2b31ee60313ed9baadd1b82f7359edb05d9a6e8e391",
+    "research/pc_analytic_emulator/model.py": "06f7c98156a95b2878c6b964c0790841a0dd5c7224afd649f416f630659aa1ac",
+    "research/pc_analytic_emulator/evaluation.py": "446b49ddfcf32ed73838387e0d00fd4a1b26ed25b2832d7a214d9fa7b4022601",
+    "research/pc_analytic_emulator/train.py": "bc34a5df3479931fa27cba1b7d8a84776416602abf2723ace8fa460cf63f5fff",
+    "research/pc_analytic_emulator/warmstart.py": "fca2e5090df3648b37c4147c9d8a09bdbad908035b1ad30cd1d5fe0d86c73c1a",
+    "research/pc_analytic/compare.py": "bfe4cf7e28de4e4768b1ed846e7d3adee2b3242deeb792eb4d52b447711d5e47",
+    "research/pc_analytic_emulator/fit.py": "3a953a77922547a34270721b975e98ba5bc2c358419229b8f40c00233450789f",
+    "research/pc_analytic_emulator/objectives.py": "7cef634a4a0f88138011b040baab378faa5fb3717845ec579bc223f6fefd491f",
+    "research/pc_analytic_emulator/projection.py": "d84fff04f996db1e6cedd5ee62ed01118b86ede9e8180d7cd558ded8cff51529",
+    "research/pc_analytic_emulator/budget.py": "4b4338de4119684aa54e489b46822b61b752efbcf740a17c0d1bb79599f94f6f",
+    "research/pc_analytic_emulator/latent.py": "f5f480ce2b74cab70c20b4da81f92c94609f8015ce7b9ab75385cb9d2b89a460",
+    "research/pc_analytic_emulator/prepare.py": "2b170154815c0cb19a57ce182e52cb0513d97890d342964f1dc571200d939724",
+    "research/pc_field_emulator/model.py": "14ab8ba2b1823acfc9fd4ecc862ba2191b720487b7d36662d5be9c4b1ba118a6",
+    "research/pc_field_emulator/features.py": "464c6c11fe0e906e083822cc954b5d444c07ba61999405ae9db161931ab5e027",
+    "research/pc_field_emulator/evaluation.py": "63d8d1815b5a4226e6c438e49f7c5851dee9a25b2f701c8d5365403142bfab30"
+  },
+  "training_runtime": {
+    "native_extension_sha256": "516152409b12d93515a8096c2fb38d93d6a2aaae976dc6e3db9ad00baeac1f8f",
+    "native_package_version": "4.3.2.dev0+g5d29a9c2",
+    "python_version": [
+      3,
+      12,
+      14
+    ],
+    "packages": {
+      "numpy": "2.5.5",
+      "scipy": "1.18.1",
+      "h5py": "3.16.0",
+      "astropy": "8.0.2",
+      "classy": "3.3.4.0",
+      "cosmotile": "0.3.0",
+      "cffi": "2.1.1",
+      "21cmFAST": "4.3.2.dev0+g5d29a9c2"
+    },
+    "configuration_sha256": {
+      "native_template.json": "7c93405fa21ba7a8f4f5555a6c34c5eb07f44744f26ce8300d5cc9546cfe7740",
+      "campaign_config.json": "684fb15a29b2da39a2f48e80994e8ee743ccfc48c193a0210a24889b4af2d3df",
+      "training_config.json": "6a2553a4219a16d1bfb7bcb99fef8a752703c72387fc2e16dccaaa1cd0969b5d"
+    }
+  },
+  "final_protocol": {
+    "base_campaign_snapshots": 56,
+    "external_campaign_snapshots": 28,
+    "training_seeds": [
+      2101,
+      2102,
+      2103,
+      2104,
+      2105
+    ],
+    "validation_seeds": [
+      2106,
+      2107
+    ],
+    "inspected_regression_seed": [
+      2108
+    ],
+    "untouched_external_test_seeds": [
+      2109,
+      2110,
+      2111,
+      2112
+    ],
+    "candidate_addition": "direct sigmoid absorption efficiency MLP",
+    "other_hyperparameters_changed": false,
+    "external_labels_consulted_for_candidate_design": false,
+    "runtime_source_sha256": {
+      "research/pc_analytic_emulator/budget.py": "4b4338de4119684aa54e489b46822b61b752efbcf740a17c0d1bb79599f94f6f",
+      "research/pc_analytic_emulator/model.py": "06f7c98156a95b2878c6b964c0790841a0dd5c7224afd649f416f630659aa1ac",
+      "research/pc_analytic_emulator/fit.py": "3a953a77922547a34270721b975e98ba5bc2c358419229b8f40c00233450789f",
+      "research/pc_analytic_emulator/train.py": "bc34a5df3479931fa27cba1b7d8a84776416602abf2723ace8fa460cf63f5fff",
+      "research/pc_analytic_emulator/warmstart.py": "fca2e5090df3648b37c4147c9d8a09bdbad908035b1ad30cd1d5fe0d86c73c1a"
+    }
+  },
+  "final_model_selected_on_validation_only": true,
+  "new_candidate_selected": false,
+  "selected_model_seed": 47,
+  "training_source_equals_main_and_frozen_copy": true,
+  "regression_seed": 2108,
+  "external_test_seeds": [
+    2109,
+    2110,
+    2111,
+    2112
+  ],
+  "total_native_snapshots": 84,
+  "training_seed_count": 5,
+  "validation_seed_count": 2,
+  "external_test_used_for_selection": false
+}

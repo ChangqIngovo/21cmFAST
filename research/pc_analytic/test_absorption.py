@@ -36,6 +36,44 @@ def test_extreme_small_absorption_and_opaque_capacity() -> None:
     assert absorbed(0.5, 1.0, 1e6) == 0.5
 
 
+@pytest.mark.parametrize(
+    ("photons", "neutral", "coefficient", "expected"),
+    [
+        (1e100, 1e100, 1e-300, 1e-100),
+        (1e-100, 1e100, 1e-300, 1e-300),
+        (1e100, 1e-100, 1e-300, 1e-300),
+        (1e100, 1e100, 1e-260, 1e-60),
+    ],
+)
+def test_thin_absorption_survives_underflowing_intermediate_products(
+    photons: float, neutral: float, coefficient: float, expected: float
+) -> None:
+    """Retain representable k*P*H when intermediate optical-depth products vanish."""
+    # Both k*P and k*H are tiny, so the independently known optically-thin
+    # limit is k*P*H, with corrections far below double-precision accuracy.
+    assert absorbed(photons, neutral, coefficient) == pytest.approx(
+        expected, rel=4e-15, abs=0
+    )
+
+
+@pytest.mark.parametrize("argument", [0, 1, 2])
+def test_complex_column_inputs_rejected(argument: int) -> None:
+    """Reject complex arrays instead of discarding their imaginary components."""
+    values = [np.array([1.0]), np.array([1.0]), np.array([1.0])]
+    values[argument] = np.array([1 + 2j])
+    with pytest.raises(ValueError, match="real"):
+        absorbed(*values)
+
+
+@pytest.mark.parametrize("argument", [0, 1, 2])
+def test_complex_shared_inputs_rejected(argument: int) -> None:
+    """Apply the same physical input contract before the shared-angle update."""
+    values = [np.ones((2, 1)), np.ones(1), np.ones(1)]
+    values[argument] = values[argument].astype(complex) * (1 + 2j)
+    with pytest.raises(ValueError, match="real"):
+        shared_absorption(*values)
+
+
 def test_weak_illumination_is_beer_lambert() -> None:
     """Recover fixed-opacity Beer-Lambert attenuation for weak illumination."""
     photons = 1e-9

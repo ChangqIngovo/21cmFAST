@@ -12,6 +12,12 @@ from research.pc_analytic_emulator.budget import (
     fit_budget,
     fit_budget_v3,
     load_budget,
+    predict_efficiency,
+)
+from research.pc_field_emulator.model import (
+    _residual_fraction,
+    _residual_slope,
+    _sigmoid,
 )
 
 
@@ -196,6 +202,7 @@ def test_local_deficit_normalization_and_table_are_training_only() -> None:
         "constant_efficiency",
         "tabulated",
         "mlp",
+        "sigmoid_mlp",
         "local_k3",
         "local_k5",
     }
@@ -207,7 +214,7 @@ def test_local_deficit_normalization_and_table_are_training_only() -> None:
         np.testing.assert_array_equal(a.deficits, b.deficits)
         np.testing.assert_array_equal(a.predict(validation), b.predict(validation))
     assert not report["test_used"]
-    assert report["retained_candidate_count"] == 5
+    assert report["retained_candidate_count"] == 6
 
 
 @pytest.mark.parametrize("neighbors", [0, -1, True, 1.5])
@@ -253,9 +260,99 @@ def test_v3_zero_photon_labels_keep_all_non_network_candidates() -> None:
         learning_rate=1e-3,
     )
     assert "mlp" not in models
+    assert "sigmoid_mlp" not in models
     assert report["selected_kind"] == "constant_efficiency"
     assert report["retained_candidate_count"] == 4
     for model in models.values():
         np.testing.assert_array_equal(
             model.predict(training, baseline=np.ones(6)), np.ones(6)
         )
+
+
+def test_direct_sigmoid_can_leave_the_positive_residual_dead_region() -> None:
+    """Finite absorption deficits give no gradient on the old positive branch."""
+    target = 0.8
+    residual_logit = np.array([0.5])
+    sigmoid_logit = residual_logit.copy()
+    for _ in range(500):
+        amplitude = np.tanh(residual_logit)
+        legacy = _residual_fraction(amplitude, np.ones(1), np.ones(1))
+        legacy_error = legacy - target
+        legacy_slope = _residual_slope(amplitude, np.ones(1), np.ones(1), legacy_error)
+        residual_logit -= 0.5 * 2 * legacy_error * legacy_slope
+        direct = _sigmoid(sigmoid_logit)
+        sigmoid_logit -= 0.5 * 2 * (direct - target) * direct * (1 - direct)
+    assert legacy[0] == 1
+    assert legacy_slope[0] == 0
+    assert residual_logit[0] == 0.5
+    assert direct[0] == pytest.approx(target, abs=1e-6)
+    assert direct[0] * (1 - direct[0]) > 0
+
+
+def test_sigmoid_budget_fits_finite_deficit_and_keeps_training_only_prior(
+    tmp_path: Path,
+) -> None:
+    """The new v3 candidate learns bounded deficits and restores its activation."""
+    training = _native_globals()
+    efficiencies = np.array([0.9, 0.9, 0.9, 0.8, 0.8, 0.8])
+    validation = training[[1, 4]].copy()
+    options = {
+        "seed": 11,
+        "epochs": 500,
+        "patience": 100,
+        "learning_rate": 0.02,
+        "hidden": (),
+    }
+    models, report = fit_budget_v3(
+        training,
+        efficiencies,
+        np.ones(6),
+        validation,
+        np.array([0.9, 0.8]),
+        np.ones(2),
+        **options,
+    )
+    smooth = models["sigmoid_mlp"]
+    predicted = predict_efficiency(smooth, validation)
+    assert smooth.output_mode == "sigmoid"
+    assert smooth.metadata["initial_efficiency_prior"] == pytest.approx(0.85)
+    assert report["sigmoid_network_history"]
+    assert np.all((predicted > 0) & (predicted < 1))
+    np.testing.assert_allclose(predicted, [0.9, 0.8], atol=0.003)
+    smooth.save(tmp_path / "budget.npz")
+    restored = load_budget(tmp_path / "budget.npz")
+    assert restored.output_mode == "sigmoid"
+    np.testing.assert_array_equal(predict_efficiency(restored, validation), predicted)
+
+    # Initialization and training updates use no validation labels. With one
+    # epoch there is only one checkpoint, so both parameter sets must match.
+    options.update(epochs=1, patience=1)
+    first, _ = fit_budget_v3(
+        training,
+        efficiencies,
+        np.ones(6),
+        validation,
+        np.array([0.9, 0.8]),
+        np.ones(2),
+        **options,
+    )
+    changed, _ = fit_budget_v3(
+        training,
+        efficiencies,
+        np.ones(6),
+        validation,
+        np.array([0.2, 0.3]),
+        np.ones(2),
+        **options,
+    )
+    first, changed = first["sigmoid_mlp"], changed["sigmoid_mlp"]
+    assert (
+        first.metadata["initial_efficiency_prior"]
+        == changed.metadata["initial_efficiency_prior"]
+    )
+    for a, b in zip(
+        first.weights + first.biases, changed.weights + changed.biases, strict=True
+    ):
+        np.testing.assert_array_equal(a, b)
+    np.testing.assert_array_equal(first.mean, changed.mean)
+    np.testing.assert_array_equal(first.scale, changed.scale)

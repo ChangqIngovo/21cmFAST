@@ -1,0 +1,17 @@
+{
+  "base_commit": "5d29a9c2220da47a17769b59ff619d6e5ca52bfe",
+  "source_file_sha256": {
+    "research/pc_analytic/solver.py": "ba88bd5789f711037c339c593d283efc2b4ca3dffcaa146b6502341cfa70135b",
+    "research/pc_analytic/absorption.py": "55cd72250317f057d07295d671ab537561c1bd9dfd28f9bd04cf6e8937cf1f0d",
+    "research/pc_analytic/transport_kernel.cpp": "05e067f72f8f2c78ed6f6297bc13d9e72324dd5c25140a38f023a43de0b29a52",
+    "research/pc_analytic/compare.py": "bfe4cf7e28de4e4768b1ed846e7d3adee2b3242deeb792eb4d52b447711d5e47",
+    "research/pc_analytic/campaign.py": "576977c4a8c2228f48f220439bb13374182a8ed448656faef149957686a133b7",
+    "research/pc_analytic_emulator/train.py": "bc34a5df3479931fa27cba1b7d8a84776416602abf2723ace8fa460cf63f5fff",
+    "research/pc_analytic_emulator/warmstart.py": "fca2e5090df3648b37c4147c9d8a09bdbad908035b1ad30cd1d5fe0d86c73c1a"
+  },
+  "package_version_override": "4.3.2.dev0+g5d29a9c2",
+  "package_version_override_reason": "Fork has no release tags; default setuptools_scm major zero cannot be read by native HDF5 compatibility handler. Override changes packaging metadata, not native source or physics.",
+  "physical_template_source": "PC_SCRIPT_C2Ray_validation_20261103/inputs/native/seed222/z8/native.json identity.inputs",
+  "heldout_seed": 2108,
+  "test_used_for_selection": false
+}

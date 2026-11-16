@@ -30,6 +30,7 @@ from research.pc_analytic.compare import (
     _write_json,
     independent_budget,
     load_native_snapshot,
+    physical_mapping,
     validate_physics,
 )
 from research.pc_analytic.solver import build_identity, solve
@@ -673,6 +674,9 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
             "teacher_method": "analytic-column-characteristic",
             "source_convention": "Cumulative native n_ion; no extra density multiplier or emissivity time integral",
             "physical_scope": "Frozen coeval density, initially neutral, no recombinations/thermal evolution/photoheating feedback/independent helium chemistry",
+            "physical_mapping": physical_mapping(
+                json.loads(Path(config["native_template_json"]).read_text())
+            ),
             "samples": rows,
             "all_photon_ledgers_passed": True,
             "maximum_relative_photon_residual": max(

@@ -1,0 +1,68 @@
+{
+  "complete": true,
+  "elapsed_seconds": 94.05415238500018,
+  "selected_kind": "warm_started_residual",
+  "selected_model_seed": 47,
+  "selected_validation_objective": 0.1299819350485104,
+  "selected_validation_mse": 0.005888035709892619,
+  "maximum_test_photon_residual": 2.949393489567433e-17,
+  "sample_counts": {
+    "test": 7,
+    "train": 35,
+    "validation": 14
+  },
+  "internal_test_role": "Regression",
+  "test_used_for_selection": false,
+  "external": {
+    "maximum_photon_residual": 2.656174039279669e-17,
+    "sample_count": 28,
+    "seeds": [
+      2109,
+      2110,
+      2111,
+      2112
+    ],
+    "used_for_selection": false,
+    "test_metrics_mean_over_active_snapshots": {
+      "constrained": {
+        "MAE": 0.03219126605687522,
+        "RMSE": 0.06687258667632177,
+        "delta_Q_mass": 0.0020642479319489693,
+        "delta_Q_volume": 0.0025420015389663454
+      },
+      "native_es": {
+        "MAE": 0.04778579694545312,
+        "RMSE": 0.1235198378017633,
+        "delta_Q_mass": -0.01670657818905956,
+        "delta_Q_volume": -0.01618046089239591
+      },
+      "raw": {
+        "MAE": 0.03389897634962085,
+        "RMSE": 0.06682241325734779,
+        "delta_Q_mass": 0.001847893316981792,
+        "delta_Q_volume": 0.0021107829288410183
+      }
+    },
+    "test_metrics_mean_over_snapshots": {
+      "constrained": {
+        "MAE": 0.029197246773411904,
+        "RMSE": 0.06607462285287193,
+        "delta_Q_mass": 0.0011301251843807598,
+        "delta_Q_volume": 0.001278495636421673
+      },
+      "native_es": {
+        "MAE": 0.04403045529133474,
+        "RMSE": 0.12305825059402545,
+        "delta_Q_mass": -0.015306175249419149,
+        "delta_Q_volume": -0.015250366011669373
+      },
+      "raw": {
+        "MAE": 0.032272482265084786,
+        "RMSE": 0.06720340076440685,
+        "delta_Q_mass": -0.0006678662579332466,
+        "delta_Q_volume": -0.0009435265071735388
+      }
+    }
+  },
+  "external_active_snapshots": 24
+}

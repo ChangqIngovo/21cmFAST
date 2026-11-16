@@ -1,0 +1,433 @@
+{
+  "method": "Reconstruct absorption from saved capacity*(1-teacher_xHI) in longdouble, plus separately saved remaining_photons, escaped_by_direction and unemitted_source; normalize by sum(source).",
+  "count": 84,
+  "maximum_relative_photon_residual": 1.0202696734665038e-16,
+  "worst": {
+    "dataset": "teacher_results_external",
+    "relative_path": "seeds/seed2110/teacher/z7p5/fields.npz",
+    "relative_photon_residual": 1.0202696734665038e-16
+  },
+  "all_below_1e_minus_12": true,
+  "snapshots": [
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2101/teacher/z10/fields.npz",
+      "relative_photon_residual": 2.5974634987767914e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2101/teacher/z6/fields.npz",
+      "relative_photon_residual": 5.928517811248126e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2101/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 7.234278904562838e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2101/teacher/z7/fields.npz",
+      "relative_photon_residual": 7.017705725397487e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2101/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.56498382839381e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2101/teacher/z8/fields.npz",
+      "relative_photon_residual": 5.703324450782499e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2101/teacher/z9/fields.npz",
+      "relative_photon_residual": 3.218667280976593e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2102/teacher/z10/fields.npz",
+      "relative_photon_residual": 2.077931872096134e-18
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2102/teacher/z6/fields.npz",
+      "relative_photon_residual": 7.238497872871906e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2102/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 8.644391021146529e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2102/teacher/z7/fields.npz",
+      "relative_photon_residual": 6.318167715371467e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2102/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 7.691875201372318e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2102/teacher/z8/fields.npz",
+      "relative_photon_residual": 7.409572616352035e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2102/teacher/z9/fields.npz",
+      "relative_photon_residual": 5.0273265786855996e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2103/teacher/z10/fields.npz",
+      "relative_photon_residual": 5.663641375235262e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2103/teacher/z6/fields.npz",
+      "relative_photon_residual": 7.729886724472736e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2103/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 8.879583383954128e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2103/teacher/z7/fields.npz",
+      "relative_photon_residual": 6.53649913815144e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2103/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.827768786592793e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2103/teacher/z8/fields.npz",
+      "relative_photon_residual": 7.06312633621621e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2103/teacher/z9/fields.npz",
+      "relative_photon_residual": 4.463587424434045e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2104/teacher/z10/fields.npz",
+      "relative_photon_residual": 2.8695370531835796e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2104/teacher/z6/fields.npz",
+      "relative_photon_residual": 7.818969689873396e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2104/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 8.667236082958038e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2104/teacher/z7/fields.npz",
+      "relative_photon_residual": 8.529783020025568e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2104/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.99286657807851e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2104/teacher/z8/fields.npz",
+      "relative_photon_residual": 5.4412555116536476e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2104/teacher/z9/fields.npz",
+      "relative_photon_residual": 8.038351231820151e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2105/teacher/z10/fields.npz",
+      "relative_photon_residual": 7.409037617843274e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2105/teacher/z6/fields.npz",
+      "relative_photon_residual": 6.289604759621408e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2105/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 7.840392436144609e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2105/teacher/z7/fields.npz",
+      "relative_photon_residual": 8.497047633865747e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2105/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.418419247642439e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2105/teacher/z8/fields.npz",
+      "relative_photon_residual": 5.142781826017388e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2105/teacher/z9/fields.npz",
+      "relative_photon_residual": 5.0974184932101495e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2106/teacher/z10/fields.npz",
+      "relative_photon_residual": 5.810512855874298e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2106/teacher/z6/fields.npz",
+      "relative_photon_residual": 7.83081240575262e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2106/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 8.726797704335723e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2106/teacher/z7/fields.npz",
+      "relative_photon_residual": 8.998920751677137e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2106/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.980648169660465e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2106/teacher/z8/fields.npz",
+      "relative_photon_residual": 7.432674810597605e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2106/teacher/z9/fields.npz",
+      "relative_photon_residual": 2.727751264333442e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2107/teacher/z10/fields.npz",
+      "relative_photon_residual": 3.426265254888574e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2107/teacher/z6/fields.npz",
+      "relative_photon_residual": 6.329698477101879e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2107/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 6.033849072866928e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2107/teacher/z7/fields.npz",
+      "relative_photon_residual": 9.3224236366432e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2107/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 4.543031301234753e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2107/teacher/z8/fields.npz",
+      "relative_photon_residual": 5.857341162960581e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2107/teacher/z9/fields.npz",
+      "relative_photon_residual": 1.6080394857456644e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2108/teacher/z10/fields.npz",
+      "relative_photon_residual": 1.2055064969843688e-18
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2108/teacher/z6/fields.npz",
+      "relative_photon_residual": 7.714785552380588e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2108/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 6.876238710881977e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2108/teacher/z7/fields.npz",
+      "relative_photon_residual": 6.905381540092622e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2108/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 7.122239490385313e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2108/teacher/z8/fields.npz",
+      "relative_photon_residual": 7.209278458158068e-17
+    },
+    {
+      "dataset": "teacher_results_verified",
+      "relative_path": "seeds/seed2108/teacher/z9/fields.npz",
+      "relative_photon_residual": 7.335629686248303e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2109/teacher/z10/fields.npz",
+      "relative_photon_residual": 8.282876572879241e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2109/teacher/z6/fields.npz",
+      "relative_photon_residual": 6.220448320074761e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2109/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 7.091227876659438e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2109/teacher/z7/fields.npz",
+      "relative_photon_residual": 6.469112460214037e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2109/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.54651961089428e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2109/teacher/z8/fields.npz",
+      "relative_photon_residual": 4.136734090399873e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2109/teacher/z9/fields.npz",
+      "relative_photon_residual": 6.268299421160739e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2110/teacher/z10/fields.npz",
+      "relative_photon_residual": 3.852750395470436e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2110/teacher/z6/fields.npz",
+      "relative_photon_residual": 6.645506667621434e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2110/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 7.307107358837051e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2110/teacher/z7/fields.npz",
+      "relative_photon_residual": 7.604461323309352e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2110/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 1.0202696734665038e-16
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2110/teacher/z8/fields.npz",
+      "relative_photon_residual": 6.446267481789224e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2110/teacher/z9/fields.npz",
+      "relative_photon_residual": 3.610531473832831e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2111/teacher/z10/fields.npz",
+      "relative_photon_residual": 3.817071333125621e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2111/teacher/z6/fields.npz",
+      "relative_photon_residual": 6.554871909241875e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2111/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 7.412401435195476e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2111/teacher/z7/fields.npz",
+      "relative_photon_residual": 8.451377935852244e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2111/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.385490635006883e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2111/teacher/z8/fields.npz",
+      "relative_photon_residual": 5.680955183457326e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2111/teacher/z9/fields.npz",
+      "relative_photon_residual": 3.8136424259476034e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2112/teacher/z10/fields.npz",
+      "relative_photon_residual": 5.747789560618391e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2112/teacher/z6/fields.npz",
+      "relative_photon_residual": 6.841016489783212e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2112/teacher/z6p5/fields.npz",
+      "relative_photon_residual": 7.813762775601349e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2112/teacher/z7/fields.npz",
+      "relative_photon_residual": 8.319467608818546e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2112/teacher/z7p5/fields.npz",
+      "relative_photon_residual": 6.489308069321891e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2112/teacher/z8/fields.npz",
+      "relative_photon_residual": 3.219223496642038e-17
+    },
+    {
+      "dataset": "teacher_results_external",
+      "relative_path": "seeds/seed2112/teacher/z9/fields.npz",
+      "relative_photon_residual": 5.651169020400246e-17
+    }
+  ]
+}

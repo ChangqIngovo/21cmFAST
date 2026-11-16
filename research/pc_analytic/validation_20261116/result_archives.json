@@ -1,0 +1,19 @@
+{
+  "date": "2026-11-16",
+  "files": [
+    {
+      "name": "PC_native_teachers_20261116.tar.zst",
+      "bytes": 174253713,
+      "sha256": "8029b42685bead065fa5fe177720aebb2adfc2faddc0d60855ef1d55cc0741c2"
+    },
+    {
+      "name": "PC_models_and_diagnostics_20261116.tar.zst",
+      "bytes": 42422394,
+      "sha256": "0c520ae8d9c4c43ee6470c48086fc8d4a95b38d7fbdebcafe89ac11c975e04aa"
+    }
+  ],
+  "contents": {
+    "PC_native_teachers_20261116.tar.zst": "84 genuine native and analytic teacher snapshots with receipts, including the complete HDF5 native outputs",
+    "PC_models_and_diagnostics_20261116.tar.zst": "Initial/final training outputs, selected/candidate model weights, independent inference and FFT/MFP audits, original SCRIPT rerun reports"
+  }
+}

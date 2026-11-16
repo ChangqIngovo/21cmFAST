@@ -29,6 +29,7 @@ from typing import Any
 
 import numpy as np
 
+from research.pc_analytic.compare import physical_mapping
 from research.pc_analytic_emulator.data import (
     TeacherSample,
     load_dataset,
@@ -256,6 +257,8 @@ def _implementation_hashes() -> dict[str, str]:
         "research/pc_analytic_emulator/model.py",
         "research/pc_analytic_emulator/evaluation.py",
         "research/pc_analytic_emulator/train.py",
+        "research/pc_analytic_emulator/warmstart.py",
+        "research/pc_analytic/compare.py",
         "research/pc_analytic_emulator/fit.py",
         "research/pc_analytic_emulator/objectives.py",
         "research/pc_analytic_emulator/projection.py",
@@ -1575,6 +1578,7 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
         model = Emulator.load(selected["model_directory"])
         model.metadata.update(
             teacher_physics=dataset.physics,
+            physical_mapping=physical_mapping(dataset.physics),
             split_seeds=seed_roles,
             teacher_identity=dataset.identity,
         )
@@ -1646,6 +1650,7 @@ def run(config: dict[str, Any], output: str | Path) -> dict[str, Any]:
             ),
             "conservation_scope": "Global predicted absorption plus separately predicted unabsorbed photons; not source-resolved transport or independently measured escape",
             "physical_scope": dataset.manifest.get("physical_scope"),
+            "physical_mapping": physical_mapping(dataset.physics),
             "parallelism": {
                 "workers": config["workers"],
                 "threads_per_worker": config["threads"],

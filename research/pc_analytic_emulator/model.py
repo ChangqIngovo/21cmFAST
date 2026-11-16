@@ -18,6 +18,7 @@ import numpy as np
 from numpy.typing import ArrayLike, NDArray
 from scipy.ndimage import gaussian_filter
 
+from research.pc_analytic_emulator.budget import predict_efficiency
 from research.pc_analytic_emulator.projection import project_capacity_l2
 from research.pc_field_emulator.features import build_features
 from research.pc_field_emulator.model import MLPModel, project_global_budget
@@ -263,7 +264,7 @@ class Emulator:
             raise ValueError("Latent field models require capacity_l2 projection")
         if self.base_model is not None and field_mode != "latent_linear":
             raise ValueError("Frozen-base corrections require a latent field model")
-        if budget_mode not in ("residual", "efficiency"):
+        if budget_mode not in ("residual", "sigmoid", "efficiency"):
             raise ValueError("Unsupported budget model output mode")
         budget_kind = (
             getattr(self.budget_model, "budget_kind", "tabulated")
@@ -301,7 +302,7 @@ class Emulator:
             their field-derived ledger. The unabsorbed reservoir combines
             retained and escaped photons without resolving their transport.
         """
-        field_kind, budget_kind = self._model_kinds()
+        field_kind, _ = self._model_kinds()
         photons, atoms, _ = _arrays(source, capacity, native_es_xHI)
         features, _, baseline = field_features(
             photons,
@@ -333,11 +334,7 @@ class Emulator:
                 atoms.shape
             )
             latent = raw
-        efficiency = float(
-            self.budget_model.predict(box_features)[0]
-            if budget_kind in ("tabulated", "local_deficit")
-            else self.budget_model.predict(box_features, baseline=np.ones(1))[0]
-        )
+        efficiency = float(predict_efficiency(self.budget_model, box_features)[0])
         if not np.isfinite(efficiency) or not 0 <= efficiency <= 1:
             raise ValueError("Predicted absorption efficiency must lie in [0,1]")
         total_source = np.sum(photons, dtype=np.longdouble)

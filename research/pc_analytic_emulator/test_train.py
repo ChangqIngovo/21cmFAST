@@ -11,6 +11,28 @@ import pytest
 from research.pc_analytic_emulator import train
 
 
+def test_frozen_training_identity_covers_residual_and_physics_audit(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Editing the v3 trainer or the shared photon audit invalidates resume."""
+    before = train._implementation_hashes()
+    for name in (
+        "research/pc_analytic_emulator/warmstart.py",
+        "research/pc_analytic/compare.py",
+    ):
+        assert name in before
+    identity = tmp_path / "identity.json"
+    train._freeze(identity, before)
+    original = train._digest
+    monkeypatch.setattr(
+        train,
+        "_digest",
+        lambda path: "changed" if path.name == "warmstart.py" else original(path),
+    )
+    with pytest.raises(ValueError, match="identity changed"):
+        train._freeze(identity, train._implementation_hashes())
+
+
 def test_sampling_is_stable_and_does_not_repeat() -> None:
     """Sampling uses a stable realization identifier without repeated cells."""
     first = train._sampling_indices(1001, 7.5, 1000, 100, 2026)

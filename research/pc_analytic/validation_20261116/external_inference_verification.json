@@ -1,0 +1,662 @@
+{
+  "complete": true,
+  "snapshot_count": 28,
+  "seeds": [
+    2109,
+    2110,
+    2111,
+    2112
+  ],
+  "training_completion_receipt_files_verified": 272,
+  "external_completion_receipt_files_verified": 2,
+  "training_files_unchanged": true,
+  "saved_model_roundtrip_verified": true,
+  "maximum_relative_photon_residual": 2.656174039279669e-17,
+  "snapshots": [
+    {
+      "seed": 2109,
+      "redshift": 10.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 8.361605090990224e-18
+    },
+    {
+      "seed": 2109,
+      "redshift": 9.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 5.918652226327595e-19
+    },
+    {
+      "seed": 2109,
+      "redshift": 8.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.4512923731767543e-18
+    },
+    {
+      "seed": 2109,
+      "redshift": 7.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.2979853231408973e-17
+    },
+    {
+      "seed": 2109,
+      "redshift": 7.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 8.524417272471609e-18
+    },
+    {
+      "seed": 2109,
+      "redshift": 6.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.3676427920268924e-18
+    },
+    {
+      "seed": 2109,
+      "redshift": 6.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 0.0
+    },
+    {
+      "seed": 2110,
+      "redshift": 10.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 3.4559689775338763e-18
+    },
+    {
+      "seed": 2110,
+      "redshift": 9.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 6.133807837650269e-18
+    },
+    {
+      "seed": 2110,
+      "redshift": 8.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.4999446350295124e-17
+    },
+    {
+      "seed": 2110,
+      "redshift": 7.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 2.656174039279669e-17
+    },
+    {
+      "seed": 2110,
+      "redshift": 7.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 2.613188350773337e-17
+    },
+    {
+      "seed": 2110,
+      "redshift": 6.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.061672343529952e-18
+    },
+    {
+      "seed": 2110,
+      "redshift": 6.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 4.152144122225201e-20
+    },
+    {
+      "seed": 2111,
+      "redshift": 10.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.1450270140452704e-17
+    },
+    {
+      "seed": 2111,
+      "redshift": 9.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.5110901084729195e-17
+    },
+    {
+      "seed": 2111,
+      "redshift": 8.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 2.451245214328466e-18
+    },
+    {
+      "seed": 2111,
+      "redshift": 7.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.833911185775784e-17
+    },
+    {
+      "seed": 2111,
+      "redshift": 7.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.596658385435999e-17
+    },
+    {
+      "seed": 2111,
+      "redshift": 6.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 5.9419192543430346e-18
+    },
+    {
+      "seed": 2111,
+      "redshift": 6.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 2.5721140539023916e-18
+    },
+    {
+      "seed": 2112,
+      "redshift": 10.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.3570950870470844e-17
+    },
+    {
+      "seed": 2112,
+      "redshift": 9.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 2.0108713821374972e-17
+    },
+    {
+      "seed": 2112,
+      "redshift": 8.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.137913554461567e-17
+    },
+    {
+      "seed": 2112,
+      "redshift": 7.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.9671336942997678e-17
+    },
+    {
+      "seed": 2112,
+      "redshift": 7.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.5656688662628564e-17
+    },
+    {
+      "seed": 2112,
+      "redshift": 6.5,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 2.842070374520678e-18
+    },
+    {
+      "seed": 2112,
+      "redshift": 6.0,
+      "native_receipt_files_verified": 3,
+      "arrays_bitwise_identical_to_external_evaluation": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "resaved_reloaded_model_bitwise_identical": {
+        "xHI": true,
+        "xHII": true,
+        "raw_xHI": true,
+        "predicted_absorbed_photons": true,
+        "predicted_unabsorbed_photons": true
+      },
+      "physics_matched": true,
+      "native_array_hashes_verified": true,
+      "output_hash_verified": true,
+      "relative_photon_residual": 1.395680762977767e-18
+    }
+  ],
+  "scope": "Standalone CLI uses only native source/atom/ES arrays and native parameter/hash metadata; all28 external predictions reproduce evaluation and resaved-reloaded model bitwise."
+}

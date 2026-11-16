@@ -1,0 +1,40 @@
+{
+  "complete": true,
+  "seed": 2109,
+  "redshift": 7.5,
+  "selected_model": {
+    "comparison_with_external_evaluation": {
+      "xHI": true,
+      "xHII": true,
+      "raw_xHI": true,
+      "predicted_absorbed_photons": true,
+      "predicted_unabsorbed_photons": true
+    },
+    "relative_photon_residual": 1.2979853231408973e-17,
+    "physical_compatibility": {
+      "native_array_hashes_verified": true,
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/native/seed2109/z7p5/native.json",
+      "scope": "Native parameter groups compared exactly except random_seed and N_THREADS; archived array hashes checked when supplied",
+      "sha256": "3cb8c44b0f98f59bacc58223e0dd781cf77d9b7c7fe9dee8658b67799fc98d44",
+      "training_parameters_matched": true
+    }
+  },
+  "sigmoid_candidate": {
+    "selected_for_deployment": false,
+    "saved_model_and_cli_equal_direct_prediction": {
+      "xHI": true,
+      "xHII": true,
+      "raw_xHI": true,
+      "predicted_absorbed_photons": true,
+      "predicted_unabsorbed_photons": true
+    },
+    "relative_photon_residual": 3.3049542261486714e-17,
+    "physical_compatibility": {
+      "native_array_hashes_verified": true,
+      "path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/teacher_results_external/seeds/seed2109/native/seed2109/z7p5/native.json",
+      "scope": "Native parameter groups compared exactly except random_seed and N_THREADS; archived array hashes checked when supplied",
+      "sha256": "3cb8c44b0f98f59bacc58223e0dd781cf77d9b7c7fe9dee8658b67799fc98d44",
+      "training_parameters_matched": true
+    }
+  }
+}

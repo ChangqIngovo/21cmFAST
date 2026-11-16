@@ -21,6 +21,7 @@ from typing import TYPE_CHECKING, Any
 
 import numpy as np
 
+from research.pc_analytic_emulator.budget import predict_efficiency
 from research.pc_analytic_emulator.latent import LatentFieldModel
 from research.pc_analytic_emulator.objectives import projected_objective
 from research.pc_analytic_emulator.projection import (
@@ -357,9 +358,7 @@ def _initialize(
 
 
 def _target_count(frame: dict[str, Any], budget_model: Any) -> tuple[float, float]:
-    values = np.asarray(
-        budget_model.predict(frame["global_features"], baseline=np.ones(1)), dtype=float
-    )
+    values = predict_efficiency(budget_model, frame["global_features"])
     if values.shape != (1,) or not np.isfinite(values).all() or not 0 <= values[0] <= 1:
         raise ValueError("Frozen budget model must predict one efficiency in [0, 1]")
     source = np.sum(frame["source"], dtype=np.longdouble)

@@ -1,0 +1,42 @@
+{
+  "files": 275,
+  "all_output_bytes_and_mtimes_unchanged": true,
+  "elapsed_seconds": 1.4932173449997208,
+  "all_main_and_frozen_implementation_files_identical": true,
+  "implementation_checks": {
+    "research/pc_analytic_emulator/__init__.py": true,
+    "research/pc_analytic_emulator/data.py": true,
+    "research/pc_analytic_emulator/model.py": true,
+    "research/pc_analytic_emulator/evaluation.py": true,
+    "research/pc_analytic_emulator/train.py": true,
+    "research/pc_analytic_emulator/warmstart.py": true,
+    "research/pc_analytic/compare.py": true,
+    "research/pc_analytic_emulator/fit.py": true,
+    "research/pc_analytic_emulator/objectives.py": true,
+    "research/pc_analytic_emulator/projection.py": true,
+    "research/pc_analytic_emulator/budget.py": true,
+    "research/pc_analytic_emulator/latent.py": true,
+    "research/pc_analytic_emulator/prepare.py": true,
+    "research/pc_field_emulator/model.py": true,
+    "research/pc_field_emulator/features.py": true,
+    "research/pc_field_emulator/evaluation.py": true
+  },
+  "frozen_source_sha256": {
+    "research/pc_analytic_emulator/__init__.py": "6ce057a0363be8cc27a3d3fc7f9ebf660e7632f990faa34a8e7dc86c6958a97b",
+    "research/pc_analytic_emulator/data.py": "e836c6b6e8c0f67abfa1b2b31ee60313ed9baadd1b82f7359edb05d9a6e8e391",
+    "research/pc_analytic_emulator/model.py": "06f7c98156a95b2878c6b964c0790841a0dd5c7224afd649f416f630659aa1ac",
+    "research/pc_analytic_emulator/evaluation.py": "446b49ddfcf32ed73838387e0d00fd4a1b26ed25b2832d7a214d9fa7b4022601",
+    "research/pc_analytic_emulator/train.py": "bc34a5df3479931fa27cba1b7d8a84776416602abf2723ace8fa460cf63f5fff",
+    "research/pc_analytic_emulator/warmstart.py": "fca2e5090df3648b37c4147c9d8a09bdbad908035b1ad30cd1d5fe0d86c73c1a",
+    "research/pc_analytic/compare.py": "bfe4cf7e28de4e4768b1ed846e7d3adee2b3242deeb792eb4d52b447711d5e47",
+    "research/pc_analytic_emulator/fit.py": "3a953a77922547a34270721b975e98ba5bc2c358419229b8f40c00233450789f",
+    "research/pc_analytic_emulator/objectives.py": "7cef634a4a0f88138011b040baab378faa5fb3717845ec579bc223f6fefd491f",
+    "research/pc_analytic_emulator/projection.py": "d84fff04f996db1e6cedd5ee62ed01118b86ede9e8180d7cd558ded8cff51529",
+    "research/pc_analytic_emulator/budget.py": "4b4338de4119684aa54e489b46822b61b752efbcf740a17c0d1bb79599f94f6f",
+    "research/pc_analytic_emulator/latent.py": "f5f480ce2b74cab70c20b4da81f92c94609f8015ce7b9ab75385cb9d2b89a460",
+    "research/pc_analytic_emulator/prepare.py": "2b170154815c0cb19a57ce182e52cb0513d97890d342964f1dc571200d939724",
+    "research/pc_field_emulator/model.py": "14ab8ba2b1823acfc9fd4ecc862ba2191b720487b7d36662d5be9c4b1ba118a6",
+    "research/pc_field_emulator/features.py": "464c6c11fe0e906e083822cc954b5d444c07ba61999405ae9db161931ab5e027",
+    "research/pc_field_emulator/evaluation.py": "63d8d1815b5a4226e6c438e49f7c5851dee9a25b2f701c8d5365403142bfab30"
+  }
+}

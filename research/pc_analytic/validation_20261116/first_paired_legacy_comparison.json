@@ -1,0 +1,1669 @@
+{
+  "legacy_selection": {
+    "model_seed": 47,
+    "validation_objective": 0.13515683740499282,
+    "criterion": "Minimum legacy-reference validation objective among all four initializations; held-out labels excluded",
+    "model_path": "/workspace/scratch/c8ee7ea91934/pc_native_campaign_20261116/emulator_results/trials/seed47/legacy_reference/model"
+  },
+  "final_selection": {
+    "model_seed": 47,
+    "validation_objective": 0.1299819350485104,
+    "kind": "warm_started_residual"
+  },
+  "model_artifact_sha256": {
+    "model.json": "1d80d4b60d06eeee8a77de2fc116c771a7a7670f7ba70558cb348a2fec5ce5a0",
+    "budget_model.npz": "d9da23cff7855b01552c962e82e84a02eaf3c13e11068d0215cf86a2387502a4",
+    "field_model.npz": "7ba59eb152ff12a49b069982bd02958603e7225ab60357aa7a77e95f750d41fb"
+  },
+  "scope": "Postselection held-out comparison; no model updates. Metrics use independent recomputation functions. Legacy inference uses verified frozen training implementation.",
+  "all_snapshots": {
+    "count": 7,
+    "redshifts": [
+      10.0,
+      9.0,
+      8.0,
+      7.5,
+      7.0,
+      6.5,
+      6.0
+    ],
+    "metrics": {
+      "final": {
+        "MAE": 0.030102198502191712,
+        "RMSE": 0.07298013824212128,
+        "mean_absolute_delta_Q_mass": 0.002418811653520852,
+        "maximum_absolute_delta_Q_mass": 0.010222050735349106,
+        "mean_snapshot_low_k_power_ratio_error": 0.273812413857574,
+        "defined_power_snapshots": 7
+      },
+      "legacy": {
+        "MAE": 0.029246187828877786,
+        "RMSE": 0.07241680248329908,
+        "mean_absolute_delta_Q_mass": 0.0024188116535008145,
+        "maximum_absolute_delta_Q_mass": 0.010222050735284573,
+        "mean_snapshot_low_k_power_ratio_error": 0.25620168791057557,
+        "defined_power_snapshots": 7
+      },
+      "native_es": {
+        "MAE": 0.0436377628329902,
+        "RMSE": 0.11751920070631648,
+        "mean_absolute_delta_Q_mass": 0.02051193894735179,
+        "maximum_absolute_delta_Q_mass": 0.04152026371274466,
+        "mean_snapshot_low_k_power_ratio_error": 0.25274937891470334,
+        "defined_power_snapshots": 7
+      }
+    }
+  },
+  "active_snapshots": {
+    "count": 6,
+    "redshifts": [
+      10.0,
+      9.0,
+      8.0,
+      7.5,
+      7.0,
+      6.5
+    ],
+    "metrics": {
+      "final": {
+        "MAE": 0.03383804678057632,
+        "RMSE": 0.07345143887131468,
+        "mean_absolute_delta_Q_mass": 0.0019556469873667865,
+        "maximum_absolute_delta_Q_mass": 0.010222050735349106,
+        "mean_snapshot_low_k_power_ratio_error": 0.15278114950050295,
+        "defined_power_snapshots": 6
+      },
+      "legacy": {
+        "MAE": 0.03283936766171008,
+        "RMSE": 0.07279421381935543,
+        "mean_absolute_delta_Q_mass": 0.0019556469873434094,
+        "maximum_absolute_delta_Q_mass": 0.010222050735284573,
+        "mean_snapshot_low_k_power_ratio_error": 0.13223530256233815,
+        "defined_power_snapshots": 6
+      },
+      "native_es": {
+        "MAE": 0.04954325479120267,
+        "RMSE": 0.1251576639204569,
+        "mean_absolute_delta_Q_mass": 0.02371456219693327,
+        "maximum_absolute_delta_Q_mass": 0.04152026371274466,
+        "mean_snapshot_low_k_power_ratio_error": 0.1940741910163155,
+        "defined_power_snapshots": 6
+      }
+    }
+  },
+  "rows": [
+    {
+      "redshift": 10.0,
+      "teacher_xHI_mass": 0.9111223544150907,
+      "field_metrics": {
+        "teacher": {
+          "MAE": 0.0,
+          "RMSE": 0.0,
+          "maximum_absolute_error": 0.0,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "delta_Q_mass": -0.0,
+          "delta_Q_volume": -0.0,
+          "xHI_mass": 0.9111223544150907,
+          "xHI_volume": 0.9244240245206101,
+          "field_correlation": 1.0
+        },
+        "final": {
+          "MAE": 0.002319480193069292,
+          "RMSE": 0.011337524837493689,
+          "maximum_absolute_error": 0.30870057932676565,
+          "p95_absolute_error": 0.004360623303557326,
+          "p99_absolute_error": 0.027874374347406732,
+          "delta_Q_mass": 3.175669033853415e-13,
+          "delta_Q_volume": 4.4834551312609224e-05,
+          "xHI_mass": 0.9111223544147732,
+          "xHI_volume": 0.9243791899692976,
+          "field_correlation": 0.99458713159223
+        },
+        "legacy": {
+          "MAE": 0.0017554780201096305,
+          "RMSE": 0.011388025896310225,
+          "maximum_absolute_error": 0.31022379363508534,
+          "p95_absolute_error": 0.0034203358200514955,
+          "p99_absolute_error": 0.033860871655475945,
+          "delta_Q_mass": 3.1485408498588975e-13,
+          "delta_Q_volume": -4.389094940300263e-05,
+          "xHI_mass": 0.911122354414776,
+          "xHI_volume": 0.9244679154700132,
+          "field_correlation": 0.9945516095211339
+        },
+        "native_es": {
+          "MAE": 0.0010146528202879912,
+          "RMSE": 0.012051705428757623,
+          "maximum_absolute_error": 0.31714454969791595,
+          "p95_absolute_error": 7.183178399317036e-08,
+          "p99_absolute_error": 0.01494634638666285,
+          "delta_Q_mass": -0.0012561231291074086,
+          "delta_Q_volume": -0.0010146247042057334,
+          "xHI_mass": 0.9123784775441982,
+          "xHI_volume": 0.925438642501831,
+          "field_correlation": 0.9940430957331206
+        }
+      },
+      "low_k_21cm": {
+        "k_cMpc_inv": [
+          0.16036478039875374,
+          0.28033098430515113,
+          0.39385005511326293,
+          0.464489334882893
+        ],
+        "modes": [
+          18,
+          62,
+          98,
+          72
+        ],
+        "maximum_included_mode_k_cMpc_inv": 0.47019053434155983,
+        "mode_selection": "0 < |k| < 0.5 k_Nyquist",
+        "normalization": "Full complex FFT; P=V/N^6 times shell mean squared amplitude; shell label=floor(|k|/k_fundamental+0.5)",
+        "P_teacher": [
+          5143.01262821421,
+          2944.6983545964977,
+          1544.9506984582122,
+          988.9221625567133
+        ],
+        "Delta2_teacher": [
+          1.0745208112577231,
+          3.2864299398189183,
+          4.781648145974491,
+          5.020646091157636
+        ],
+        "comparisons": {
+          "final": {
+            "P": [
+              5032.5295379532,
+              2980.949657778836,
+              1424.4551857323013,
+              890.5618242442666
+            ],
+            "power_ratio": [
+              0.9785178263699165,
+              1.0123107017483648,
+              0.9220068880863579,
+              0.9005378360030375
+            ],
+            "cross_correlation": [
+              0.9987398228557206,
+              0.9964755231416754,
+              0.9953998808474636,
+              0.9946522422377306
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.052812037822263236,
+            "maximum_absolute_power_ratio_error": 0.0994621639969625,
+            "minimum_cross_correlation": 0.9946522422377306
+          },
+          "legacy": {
+            "P": [
+              4973.840060058596,
+              2928.0412538655505,
+              1439.0205049708395,
+              918.1173602094377
+            ],
+            "power_ratio": [
+              0.9671063284527933,
+              0.9943433592425701,
+              0.9314345800205236,
+              0.9284020471700016
+            ],
+            "cross_correlation": [
+              0.9982573259290988,
+              0.996469009117865,
+              0.9956214157195629,
+              0.9946892961756338
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.044678421278527836,
+            "maximum_absolute_power_ratio_error": 0.07159795282999837,
+            "minimum_cross_correlation": 0.9946892961756338
+          },
+          "native_es": {
+            "P": [
+              5138.326776341818,
+              3021.2168829156512,
+              1398.7178843281733,
+              894.6826072908261
+            ],
+            "power_ratio": [
+              0.9990888896817625,
+              1.02598518391526,
+              0.9053479089811912,
+              0.9047047797753419
+            ],
+            "cross_correlation": [
+              0.9967733000005691,
+              0.994356859145885,
+              0.9942732725561688,
+              0.9938983929000879
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.054210901369241116,
+            "maximum_absolute_power_ratio_error": 0.09529522022465808,
+            "minimum_cross_correlation": 0.9938983929000879
+          }
+        }
+      },
+      "legacy_photon_residual": 3.0534631182896375e-14,
+      "MFP": {
+        "ionized": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.013427734375,
+            "restricted_mean_cMpc": 1.8291385034572558,
+            "restricted_mean_MC_standard_error_cMpc": 0.00790106421107277,
+            "cap_fraction": 0.0,
+            "quantiles_cMpc": {
+              "0.16": 0.4295966836174946,
+              "0.5": 1.5461049743344608,
+              "0.84": 3.14246990979703
+            },
+            "below_one_cell_fraction": 0.836639404296875
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9898711538187053,
+            "restricted_mean_difference_cMpc": -0.018716640518645987,
+            "paired_difference_MC_standard_error_cMpc": 0.006712030429967424,
+            "restricted_CDF_maximum_difference": 0.0042724609375,
+            "restricted_wasserstein_distance_cMpc": 0.01872969448775618,
+            "cap_fraction_difference": 0.0
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9933078667921276,
+            "restricted_mean_difference_cMpc": -0.012366092772339082,
+            "paired_difference_MC_standard_error_cMpc": 0.007298399870063277,
+            "restricted_CDF_maximum_difference": 0.00341796875,
+            "restricted_wasserstein_distance_cMpc": 0.01286946297315617,
+            "cap_fraction_difference": 0.0
+          }
+        },
+        "neutral": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.986572265625,
+            "restricted_mean_cMpc": 44.13059405761464,
+            "restricted_mean_MC_standard_error_cMpc": 0.0709034228020309,
+            "cap_fraction": 0.774169921875,
+            "quantiles_cMpc": {
+              "0.16": 34.15297095874156,
+              "0.5": null,
+              "0.84": null
+            },
+            "below_one_cell_fraction": 0.014739990234375
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9904520967956757,
+            "restricted_mean_difference_cMpc": -0.4254164757433583,
+            "paired_difference_MC_standard_error_cMpc": 0.06803408383989383,
+            "restricted_CDF_maximum_difference": 0.0179443359375,
+            "restricted_wasserstein_distance_cMpc": 0.42864506855692885,
+            "cap_fraction_difference": -0.017913818359375
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9935790539355365,
+            "restricted_mean_difference_cMpc": -0.28609174048236996,
+            "paired_difference_MC_standard_error_cMpc": 0.07281070730213245,
+            "restricted_CDF_maximum_difference": 0.0120849609375,
+            "restricted_wasserstein_distance_cMpc": 0.2888432439743742,
+            "cap_fraction_difference": -0.0120849609375
+          }
+        }
+      },
+      "maximum_field_difference_final_vs_legacy": 0.021530078121594687
+    },
+    {
+      "redshift": 9.0,
+      "teacher_xHI_mass": 0.8299841960045216,
+      "field_metrics": {
+        "teacher": {
+          "MAE": 0.0,
+          "RMSE": 0.0,
+          "maximum_absolute_error": 0.0,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "delta_Q_mass": -0.0,
+          "delta_Q_volume": -0.0,
+          "xHI_mass": 0.8299841960045216,
+          "xHI_volume": 0.8565752709198148,
+          "field_correlation": 1.0
+        },
+        "final": {
+          "MAE": 0.010158613233805645,
+          "RMSE": 0.03762838679613567,
+          "maximum_absolute_error": 0.7434320594788293,
+          "p95_absolute_error": 0.034537967523148194,
+          "p99_absolute_error": 0.1744259538194729,
+          "delta_Q_mass": 1.6357107995513502e-11,
+          "delta_Q_volume": -3.5450673955933834e-05,
+          "xHI_mass": 0.8299841959881644,
+          "xHI_volume": 0.8566107215937706,
+          "field_correlation": 0.9793638473026844
+        },
+        "legacy": {
+          "MAE": 0.009666807327950517,
+          "RMSE": 0.03766822849089394,
+          "maximum_absolute_error": 0.7431641047202943,
+          "p95_absolute_error": 0.03492976940889453,
+          "p99_absolute_error": 0.17574463871881002,
+          "delta_Q_mass": 1.6341062612440022e-11,
+          "delta_Q_volume": -0.00014718836679266555,
+          "xHI_mass": 0.8299841959881805,
+          "xHI_volume": 0.8567224592866074,
+          "field_correlation": 0.9793295394780105
+        },
+        "native_es": {
+          "MAE": 0.00657688187569065,
+          "RMSE": 0.04130365004918442,
+          "maximum_absolute_error": 0.7446584905814766,
+          "p95_absolute_error": 0.013745028020016509,
+          "p99_absolute_error": 0.20857276264902813,
+          "delta_Q_mass": -0.007554003629510556,
+          "delta_Q_volume": -0.006328271871983614,
+          "xHI_mass": 0.8375381996340321,
+          "xHI_volume": 0.8629035949707031,
+          "field_correlation": 0.976014680812555
+        }
+      },
+      "low_k_21cm": {
+        "k_cMpc_inv": [
+          0.16036478039875374,
+          0.28033098430515113,
+          0.39385005511326293,
+          0.464489334882893
+        ],
+        "modes": [
+          18,
+          62,
+          98,
+          72
+        ],
+        "maximum_included_mode_k_cMpc_inv": 0.47019053434155983,
+        "mode_selection": "0 < |k| < 0.5 k_Nyquist",
+        "normalization": "Full complex FFT; P=V/N^6 times shell mean squared amplitude; shell label=floor(|k|/k_fundamental+0.5)",
+        "P_teacher": [
+          3431.687295087268,
+          3312.9771056366203,
+          2722.7504318512206,
+          1698.8118077254019
+        ],
+        "Delta2_teacher": [
+          0.7169765432950848,
+          3.6974473575208484,
+          8.426957939437948,
+          8.624675616550197
+        ],
+        "comparisons": {
+          "final": {
+            "P": [
+              3053.0673364687955,
+              2767.5429784057264,
+              2137.282944247824,
+              1358.1935962954185
+            ],
+            "power_ratio": [
+              0.8896694465254754,
+              0.8353643536193156,
+              0.7849720338836446,
+              0.7994962067716912
+            ],
+            "cross_correlation": [
+              0.9798152569857245,
+              0.9767735713975835,
+              0.9750430098200111,
+              0.9704341854981281
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.1726244897999683,
+            "maximum_absolute_power_ratio_error": 0.21502796611635544,
+            "minimum_cross_correlation": 0.9704341854981281
+          },
+          "legacy": {
+            "P": [
+              2857.7449609533887,
+              2796.792191237571,
+              2170.1367452101545,
+              1406.7490627355992
+            ],
+            "power_ratio": [
+              0.8327521464570729,
+              0.8441930330515038,
+              0.7970384357756434,
+              0.8280782228722229
+            ],
+            "cross_correlation": [
+              0.979111324307302,
+              0.9759702202627386,
+              0.9751643520539887,
+              0.9697769744000886
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.17448454046088926,
+            "maximum_absolute_power_ratio_error": 0.20296156422435663,
+            "minimum_cross_correlation": 0.9697769744000886
+          },
+          "native_es": {
+            "P": [
+              2187.3229059220957,
+              2263.1259721489973,
+              1943.3330357429243,
+              1322.2572980686887
+            ],
+            "power_ratio": [
+              0.637389924499654,
+              0.6831094511032294,
+              0.7137389505146956,
+              0.778342422660168
+            ],
+            "cross_correlation": [
+              0.9468239259250908,
+              0.9525287700266126,
+              0.9768189793210474,
+              0.9735127784066736
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.29685481280556325,
+            "maximum_absolute_power_ratio_error": 0.36261007550034596,
+            "minimum_cross_correlation": 0.9468239259250908
+          }
+        }
+      },
+      "legacy_photon_residual": 9.43526919980133e-14,
+      "MFP": {
+        "ionized": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.052001953125,
+            "restricted_mean_cMpc": 2.3648784304289916,
+            "restricted_mean_MC_standard_error_cMpc": 0.011294501736520518,
+            "cap_fraction": 0.0,
+            "quantiles_cMpc": {
+              "0.16": 0.5253904714911046,
+              "0.5": 1.8720632846830625,
+              "0.84": 4.119817796486228
+            },
+            "below_one_cell_fraction": 0.735992431640625
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9434246998037147,
+            "restricted_mean_difference_cMpc": -0.14181704926432082,
+            "paired_difference_MC_standard_error_cMpc": 0.013177995500851103,
+            "restricted_CDF_maximum_difference": 0.02471923828125,
+            "restricted_wasserstein_distance_cMpc": 0.1418191132153072,
+            "cap_fraction_difference": 0.0
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9491424629162988,
+            "restricted_mean_difference_cMpc": -0.1274843583160485,
+            "paired_difference_MC_standard_error_cMpc": 0.013305039061080189,
+            "restricted_CDF_maximum_difference": 0.021514892578125,
+            "restricted_wasserstein_distance_cMpc": 0.12748741676867603,
+            "cap_fraction_difference": 0.0
+          }
+        },
+        "neutral": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.947998046875,
+            "restricted_mean_cMpc": 34.1529511355257,
+            "restricted_mean_MC_standard_error_cMpc": 0.09784015844803946,
+            "cap_fraction": 0.444854736328125,
+            "quantiles_cMpc": {
+              "0.16": 10.39094691763373,
+              "0.5": 42.68291925569074,
+              "0.84": null
+            },
+            "below_one_cell_fraction": 0.051544189453125
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0029797775446825,
+            "restricted_mean_difference_cMpc": 0.10146585121328325,
+            "paired_difference_MC_standard_error_cMpc": 0.10871532584923745,
+            "restricted_CDF_maximum_difference": 0.004241943359375,
+            "restricted_wasserstein_distance_cMpc": 0.1023994731741941,
+            "cap_fraction_difference": 0.003692626953125
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0051033555651863,
+            "restricted_mean_difference_cMpc": 0.1737768369285503,
+            "paired_difference_MC_standard_error_cMpc": 0.11077795586859387,
+            "restricted_CDF_maximum_difference": 0.007049560546875,
+            "restricted_wasserstein_distance_cMpc": 0.17440374713762177,
+            "cap_fraction_difference": 0.00634765625
+          }
+        }
+      },
+      "maximum_field_difference_final_vs_legacy": 0.03127148242215583
+    },
+    {
+      "redshift": 8.0,
+      "teacher_xHI_mass": 0.6714510782328017,
+      "field_metrics": {
+        "teacher": {
+          "MAE": 0.0,
+          "RMSE": 0.0,
+          "maximum_absolute_error": 0.0,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "delta_Q_mass": -0.0,
+          "delta_Q_volume": -0.0,
+          "xHI_mass": 0.6714510782328017,
+          "xHI_volume": 0.7203630735583623,
+          "field_correlation": 1.0
+        },
+        "final": {
+          "MAE": 0.03025362969730741,
+          "RMSE": 0.07065569616681272,
+          "maximum_absolute_error": 0.8396523226962436,
+          "p95_absolute_error": 0.1306292175497207,
+          "p99_absolute_error": 0.33054660200830155,
+          "delta_Q_mass": 3.908211695209591e-10,
+          "delta_Q_volume": -0.0004672431667623005,
+          "xHI_mass": 0.6714510778419805,
+          "xHI_volume": 0.7208303167251247,
+          "field_correlation": 0.9710160218356224
+        },
+        "legacy": {
+          "MAE": 0.029788654363089404,
+          "RMSE": 0.07055946018259208,
+          "maximum_absolute_error": 0.841484247724169,
+          "p95_absolute_error": 0.1272741397171966,
+          "p99_absolute_error": 0.34339618639475983,
+          "delta_Q_mass": 3.908184569858755e-10,
+          "delta_Q_volume": -0.00048805979611416287,
+          "xHI_mass": 0.6714510778419832,
+          "xHI_volume": 0.7208511333544765,
+          "field_correlation": 0.9710942934850824
+        },
+        "native_es": {
+          "MAE": 0.028893791843330185,
+          "RMSE": 0.0914746902140143,
+          "maximum_absolute_error": 0.9432345628738403,
+          "p95_absolute_error": 0.20371864105839765,
+          "p99_absolute_error": 0.43430922705878316,
+          "delta_Q_mass": -0.027647327476654004,
+          "delta_Q_volume": -0.02513196660458805,
+          "xHI_mass": 0.6990984057094557,
+          "xHI_volume": 0.7454950213432312,
+          "field_correlation": 0.9546729558719107
+        }
+      },
+      "low_k_21cm": {
+        "k_cMpc_inv": [
+          0.16036478039875374,
+          0.28033098430515113,
+          0.39385005511326293,
+          0.464489334882893
+        ],
+        "modes": [
+          18,
+          62,
+          98,
+          72
+        ],
+        "maximum_included_mode_k_cMpc_inv": 0.47019053434155983,
+        "mode_selection": "0 < |k| < 0.5 k_Nyquist",
+        "normalization": "Full complex FFT; P=V/N^6 times shell mean squared amplitude; shell label=floor(|k|/k_fundamental+0.5)",
+        "P_teacher": [
+          28369.10394882343,
+          18881.59428347013,
+          7090.556022608796,
+          3713.34728333221
+        ],
+        "Delta2_teacher": [
+          5.927108252178063,
+          21.07279907561632,
+          21.94538899737755,
+          18.85224462456469
+        ],
+        "comparisons": {
+          "final": {
+            "P": [
+              31195.632412641055,
+              17177.376598480365,
+              5636.582225041654,
+              2776.908915301626
+            ],
+            "power_ratio": [
+              1.0996340409241177,
+              0.9097418544533752,
+              0.794942202990706,
+              0.7478182629904033
+            ],
+            "cross_correlation": [
+              0.9980654012047909,
+              0.9888276521110702,
+              0.9780220427794416,
+              0.9634275518986628
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.1617829301224083,
+            "maximum_absolute_power_ratio_error": 0.2521817370095967,
+            "minimum_cross_correlation": 0.9634275518986628
+          },
+          "legacy": {
+            "P": [
+              28242.593171282675,
+              17270.654551572152,
+              5768.617460242724,
+              2822.5442969977125
+            ],
+            "power_ratio": [
+              0.9955405437630679,
+              0.914682006841537,
+              0.813563483857829,
+              0.7601078169195298
+            ],
+            "cross_correlation": [
+              0.9982532204432139,
+              0.9884185553221982,
+              0.9783147406490219,
+              0.9642133583571487
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.1290265371545091,
+            "maximum_absolute_power_ratio_error": 0.23989218308047022,
+            "minimum_cross_correlation": 0.9642133583571487
+          },
+          "native_es": {
+            "P": [
+              17055.20576380946,
+              12694.61594207535,
+              6328.399362715343,
+              3223.9060274456147
+            ],
+            "power_ratio": [
+              0.6011894416748683,
+              0.6723275456240915,
+              0.8925110164191276,
+              0.8681940528203465
+            ],
+            "cross_correlation": [
+              0.994895246630111,
+              0.9896284887309086,
+              0.9851751632612642,
+              0.9553795214231832
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.24144448586539155,
+            "maximum_absolute_power_ratio_error": 0.3988105583251317,
+            "minimum_cross_correlation": 0.9553795214231832
+          }
+        }
+      },
+      "legacy_photon_residual": 8.240029550392898e-15,
+      "MFP": {
+        "ionized": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.187255859375,
+            "restricted_mean_cMpc": 4.258083276790918,
+            "restricted_mean_MC_standard_error_cMpc": 0.022975243704768732,
+            "cap_fraction": 0.0,
+            "quantiles_cMpc": {
+              "0.16": 0.7805375702861179,
+              "0.5": 2.887200640147882,
+              "0.84": 8.0169282669385
+            },
+            "below_one_cell_fraction": 0.530792236328125
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9909368138311561,
+            "restricted_mean_difference_cMpc": -0.0389447651165502,
+            "paired_difference_MC_standard_error_cMpc": 0.027848282287146482,
+            "restricted_CDF_maximum_difference": 0.0076904296875,
+            "restricted_wasserstein_distance_cMpc": 0.04278602578874699,
+            "cap_fraction_difference": 0.0
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0003563477878747,
+            "restricted_mean_difference_cMpc": 0.0015312364371690822,
+            "paired_difference_MC_standard_error_cMpc": 0.026865495644181493,
+            "restricted_CDF_maximum_difference": 0.004425048828125,
+            "restricted_wasserstein_distance_cMpc": 0.03099269126301334,
+            "cap_fraction_difference": 0.0
+          }
+        },
+        "neutral": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.812744140625,
+            "restricted_mean_cMpc": 18.372218276280343,
+            "restricted_mean_MC_standard_error_cMpc": 0.08488169928451926,
+            "cap_fraction": 0.084075927734375,
+            "quantiles_cMpc": {
+              "0.16": 3.387781335483931,
+              "0.5": 13.726002772370448,
+              "0.84": 36.922249900537686
+            },
+            "below_one_cell_fraction": 0.1480712890625
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9828292620576669,
+            "restricted_mean_difference_cMpc": -0.32097593917879025,
+            "paired_difference_MC_standard_error_cMpc": 0.10945789595703131,
+            "restricted_CDF_maximum_difference": 0.013336181640625,
+            "restricted_wasserstein_distance_cMpc": 0.3212065034711988,
+            "cap_fraction_difference": -0.00152587890625
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0018351294570584,
+            "restricted_mean_difference_cMpc": 0.03430443135130337,
+            "paired_difference_MC_standard_error_cMpc": 0.10892616018783857,
+            "restricted_CDF_maximum_difference": 0.005462646484375,
+            "restricted_wasserstein_distance_cMpc": 0.10737876244797132,
+            "cap_fraction_difference": 0.00360107421875
+          }
+        }
+      },
+      "maximum_field_difference_final_vs_legacy": 0.03800790602364057
+    },
+    {
+      "redshift": 7.5,
+      "teacher_xHI_mass": 0.5406015199461339,
+      "field_metrics": {
+        "teacher": {
+          "MAE": 0.0,
+          "RMSE": 0.0,
+          "maximum_absolute_error": 0.0,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "delta_Q_mass": -0.0,
+          "delta_Q_volume": -0.0,
+          "xHI_mass": 0.5406015199461339,
+          "xHI_volume": 0.60013763055023,
+          "field_correlation": 1.0
+        },
+        "final": {
+          "MAE": 0.04446470347119649,
+          "RMSE": 0.08992947953743939,
+          "maximum_absolute_error": 0.8327138568482636,
+          "p95_absolute_error": 0.189028878525846,
+          "p99_absolute_error": 0.37449811893866514,
+          "delta_Q_mass": 1.979077740552543e-05,
+          "delta_Q_volume": -0.0005118820281164297,
+          "xHI_mass": 0.5405817291687284,
+          "xHI_volume": 0.6006495125783462,
+          "field_correlation": 0.9667458363627578
+        },
+        "legacy": {
+          "MAE": 0.04389087753693663,
+          "RMSE": 0.08969043099424685,
+          "maximum_absolute_error": 0.8370037781381802,
+          "p95_absolute_error": 0.19035200846396083,
+          "p99_absolute_error": 0.37002446786124993,
+          "delta_Q_mass": 1.979077740753436e-05,
+          "delta_Q_volume": -0.0007728094954241134,
+          "xHI_mass": 0.5405817291687264,
+          "xHI_volume": 0.600910440045654,
+          "field_correlation": 0.9669019438151489
+        },
+        "native_es": {
+          "MAE": 0.05540361923778728,
+          "RMSE": 0.13936557335818492,
+          "maximum_absolute_error": 0.9130918979644775,
+          "p95_absolute_error": 0.3395088292925219,
+          "p99_absolute_error": 0.611930393996374,
+          "delta_Q_mass": -0.03990011144182138,
+          "delta_Q_volume": -0.03998414604082885,
+          "xHI_mass": 0.5805016313879553,
+          "xHI_volume": 0.6401217579841614,
+          "field_correlation": 0.9280164954719113
+        }
+      },
+      "low_k_21cm": {
+        "k_cMpc_inv": [
+          0.16036478039875374,
+          0.28033098430515113,
+          0.39385005511326293,
+          0.464489334882893
+        ],
+        "modes": [
+          18,
+          62,
+          98,
+          72
+        ],
+        "maximum_included_mode_k_cMpc_inv": 0.47019053434155983,
+        "mode_selection": "0 < |k| < 0.5 k_Nyquist",
+        "normalization": "Full complex FFT; P=V/N^6 times shell mean squared amplitude; shell label=floor(|k|/k_fundamental+0.5)",
+        "P_teacher": [
+          66092.62545870034,
+          30654.32624360281,
+          7608.837426875181,
+          4566.132855327315
+        ],
+        "Delta2_teacher": [
+          13.808618928220449,
+          34.211753945764535,
+          23.549478576596215,
+          23.18174062611407
+        ],
+        "comparisons": {
+          "final": {
+            "P": [
+              74657.47161896521,
+              29129.549199504265,
+              5927.995587139132,
+              3506.8153215516104
+            ],
+            "power_ratio": [
+              1.129588529746285,
+              0.9502589933968375,
+              0.7790934744118535,
+              0.7680055383102142
+            ],
+            "cross_correlation": [
+              0.9976082977131975,
+              0.9925723373908518,
+              0.9694869095856928,
+              0.9494680582568242
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.15805763090684496,
+            "maximum_absolute_power_ratio_error": 0.23199446168978577,
+            "minimum_cross_correlation": 0.9494680582568242
+          },
+          "legacy": {
+            "P": [
+              69394.93929247843,
+              29559.47742781122,
+              6026.974148395422,
+              3524.7623817568924
+            ],
+            "power_ratio": [
+              1.0499649364941877,
+              0.9642840358946049,
+              0.7921018429316864,
+              0.7719360109385661
+            ],
+            "cross_correlation": [
+              0.9972765636682669,
+              0.9918088642967271,
+              0.9694302685496764,
+              0.9507069263337254
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.13041076168233257,
+            "maximum_absolute_power_ratio_error": 0.22806398906143388,
+            "minimum_cross_correlation": 0.9507069263337254
+          },
+          "native_es": {
+            "P": [
+              45970.24716950649,
+              27615.162736317638,
+              8520.361556924337,
+              4787.569960378992
+            ],
+            "power_ratio": [
+              0.6955427606402498,
+              0.9008569464833889,
+              1.1197980820078455,
+              1.0484955458081613
+            ],
+            "cross_correlation": [
+              0.9925844115646448,
+              0.9872931253139947,
+              0.9526084958589921,
+              0.9253205567646329
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.14297348017309203,
+            "maximum_absolute_power_ratio_error": 0.3044572393597502,
+            "minimum_cross_correlation": 0.9253205567646329
+          }
+        }
+      },
+      "legacy_photon_residual": 4.367905496932513e-15,
+      "MFP": {
+        "ionized": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.325439453125,
+            "restricted_mean_cMpc": 6.423884294891714,
+            "restricted_mean_MC_standard_error_cMpc": 0.034856477175554935,
+            "cap_fraction": 0.000152587890625,
+            "quantiles_cMpc": {
+              "0.16": 1.0687050524518624,
+              "0.5": 4.256399706449844,
+              "0.84": 12.508770202183134
+            },
+            "below_one_cell_fraction": 0.407684326171875
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.012002599800548,
+            "restricted_mean_difference_cMpc": 0.07618884810355825,
+            "paired_difference_MC_standard_error_cMpc": 0.0420427828368532,
+            "restricted_CDF_maximum_difference": 0.008575439453125,
+            "restricted_wasserstein_distance_cMpc": 0.10401414844351502,
+            "cap_fraction_difference": 9.1552734375e-05
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.019986698395214,
+            "restricted_mean_difference_cMpc": 0.12686947439962726,
+            "paired_difference_MC_standard_error_cMpc": 0.0440101659474682,
+            "restricted_CDF_maximum_difference": 0.010467529296875,
+            "restricted_wasserstein_distance_cMpc": 0.13621361161696682,
+            "cap_fraction_difference": 0.0001220703125
+          }
+        },
+        "neutral": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.674560546875,
+            "restricted_mean_cMpc": 12.770969338470707,
+            "restricted_mean_MC_standard_error_cMpc": 0.06583799298376947,
+            "cap_fraction": 0.02166748046875,
+            "quantiles_cMpc": {
+              "0.16": 2.241121952679113,
+              "0.5": 9.080078937436186,
+              "0.84": 23.98413831850126
+            },
+            "below_one_cell_fraction": 0.21600341796875
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 0.9961543280064399,
+            "restricted_mean_difference_cMpc": -0.04930256059205221,
+            "paired_difference_MC_standard_error_cMpc": 0.0824284892489733,
+            "restricted_CDF_maximum_difference": 0.00543212890625,
+            "restricted_wasserstein_distance_cMpc": 0.08037868864092348,
+            "cap_fraction_difference": 0.000579833984375
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0019316633689639,
+            "restricted_mean_difference_cMpc": 0.024764449607575994,
+            "paired_difference_MC_standard_error_cMpc": 0.08469644095945471,
+            "restricted_CDF_maximum_difference": 0.004119873046875,
+            "restricted_wasserstein_distance_cMpc": 0.07212565632518415,
+            "cap_fraction_difference": 0.00140380859375
+          }
+        }
+      },
+      "maximum_field_difference_final_vs_legacy": 0.05175853779391415
+    },
+    {
+      "redshift": 7.0,
+      "teacher_xHI_mass": 0.35616802070828457,
+      "field_metrics": {
+        "teacher": {
+          "MAE": 0.0,
+          "RMSE": 0.0,
+          "maximum_absolute_error": 0.0,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "delta_Q_mass": -0.0,
+          "delta_Q_volume": -0.0,
+          "xHI_mass": 0.35616802070828457,
+          "xHI_volume": 0.4154243290647747,
+          "field_correlation": 1.0
+        },
+        "final": {
+          "MAE": 0.06352296404397675,
+          "RMSE": 0.11399242717317781,
+          "maximum_absolute_error": 0.7878337532098163,
+          "p95_absolute_error": 0.26742774314808626,
+          "p99_absolute_error": 0.41822213735748726,
+          "delta_Q_mass": 0.0014920400039502438,
+          "delta_Q_volume": 0.0016336114679606079,
+          "xHI_mass": 0.3546759807043343,
+          "xHI_volume": 0.4137907175968141,
+          "field_correlation": 0.9537822350147508
+        },
+        "legacy": {
+          "MAE": 0.060994625551257134,
+          "RMSE": 0.11180679472234056,
+          "maximum_absolute_error": 0.784393132200434,
+          "p95_absolute_error": 0.262101853660733,
+          "p99_absolute_error": 0.4142875104659958,
+          "delta_Q_mass": 0.0014920400038939755,
+          "delta_Q_volume": 0.0011833724606840467,
+          "xHI_mass": 0.3546759807043906,
+          "xHI_volume": 0.4142409566040907,
+          "field_correlation": 0.9553702052559998
+        },
+        "native_es": {
+          "MAE": 0.09880778092554429,
+          "RMSE": 0.21271440409189138,
+          "maximum_absolute_error": 0.986897844913343,
+          "p95_absolute_error": 0.5573765407466764,
+          "p99_absolute_error": 0.8071432330587309,
+          "delta_Q_mass": -0.024409543791761617,
+          "delta_Q_volume": -0.02770639332111683,
+          "xHI_mass": 0.38057756450004615,
+          "xHI_volume": 0.4431307315826416,
+          "field_correlation": 0.861496833733531
+        }
+      },
+      "low_k_21cm": {
+        "k_cMpc_inv": [
+          0.16036478039875374,
+          0.28033098430515113,
+          0.39385005511326293,
+          0.464489334882893
+        ],
+        "modes": [
+          18,
+          62,
+          98,
+          72
+        ],
+        "maximum_included_mode_k_cMpc_inv": 0.47019053434155983,
+        "mode_selection": "0 < |k| < 0.5 k_Nyquist",
+        "normalization": "Full complex FFT; P=V/N^6 times shell mean squared amplitude; shell label=floor(|k|/k_fundamental+0.5)",
+        "P_teacher": [
+          109569.39707649263,
+          28118.50668144696,
+          7326.567534608603,
+          4080.1935669747754
+        ],
+        "Delta2_teacher": [
+          22.89214628596645,
+          31.381653090769007,
+          22.675848558261094,
+          20.714681760429897
+        ],
+        "comparisons": {
+          "final": {
+            "P": [
+              136163.470972427,
+              27055.172445918062,
+              5796.526618784366,
+              3294.2379386208304
+            ],
+            "power_ratio": [
+              1.2427144312692393,
+              0.9621838297611123,
+              0.7911653842543916,
+              0.8073729553628297
+            ],
+            "cross_correlation": [
+              0.99209651548629,
+              0.9888236803942382,
+              0.9535765167265261,
+              0.9349572042863206
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.17049806547272642,
+            "maximum_absolute_power_ratio_error": 0.2427144312692393,
+            "minimum_cross_correlation": 0.9349572042863206
+          },
+          "legacy": {
+            "P": [
+              128445.32520072443,
+              27662.41932277117,
+              5804.185296842438,
+              3332.002764388114
+            ],
+            "power_ratio": [
+              1.1722737244876333,
+              0.9837798157689247,
+              0.7922107138745575,
+              0.8166286009951726
+            ],
+            "cross_correlation": [
+              0.9930560963995667,
+              0.9891018481107349,
+              0.9557524582721795,
+              0.9370274481574536
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.1449136484622446,
+            "maximum_absolute_power_ratio_error": 0.20778928612544245,
+            "minimum_cross_correlation": 0.9370274481574536
+          },
+          "native_es": {
+            "P": [
+              102155.87205088364,
+              31719.72355833174,
+              8231.771946071423,
+              4398.301776481487
+            ],
+            "power_ratio": [
+              0.9323394558753165,
+              1.1280728353636547,
+              1.1235509544117208,
+              1.077963999571366
+            ],
+            "cross_correlation": [
+              0.9787946622371612,
+              0.959130657574539,
+              0.893178899354499,
+              0.8516249999695877
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.09931208336785621,
+            "maximum_absolute_power_ratio_error": 0.12807283536365466,
+            "minimum_cross_correlation": 0.8516249999695877
+          }
+        }
+      },
+      "legacy_photon_residual": 8.720051433833393e-14,
+      "MFP": {
+        "ionized": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.55322265625,
+            "restricted_mean_cMpc": 12.797958699516478,
+            "restricted_mean_MC_standard_error_cMpc": 0.06542817574839171,
+            "cap_fraction": 0.0169677734375,
+            "quantiles_cMpc": {
+              "0.16": 2.091610391400015,
+              "0.5": 9.226847881052802,
+              "0.84": 24.228375793485814
+            },
+            "below_one_cell_fraction": 0.230377197265625
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.1555291121592384,
+            "restricted_mean_difference_cMpc": 1.7225486861745982,
+            "paired_difference_MC_standard_error_cMpc": 0.07949021743238643,
+            "restricted_CDF_maximum_difference": 0.05859375,
+            "restricted_wasserstein_distance_cMpc": 1.7225487013566991,
+            "cap_fraction_difference": 0.00897216796875
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.1577293534292117,
+            "restricted_mean_difference_cMpc": 1.7469172603678305,
+            "paired_difference_MC_standard_error_cMpc": 0.08123085851905647,
+            "restricted_CDF_maximum_difference": 0.0609130859375,
+            "restricted_wasserstein_distance_cMpc": 1.7469175580148026,
+            "cap_fraction_difference": 0.00885009765625
+          }
+        },
+        "neutral": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.44677734375,
+            "restricted_mean_cMpc": 9.088798821435613,
+            "restricted_mean_MC_standard_error_cMpc": 0.04842369778822048,
+            "cap_fraction": 0.00335693359375,
+            "quantiles_cMpc": {
+              "0.16": 1.6328349908725037,
+              "0.5": 6.416730573566523,
+              "0.84": 16.800034965592047
+            },
+            "below_one_cell_fraction": 0.287872314453125
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0876659484259252,
+            "restricted_mean_difference_cMpc": 0.7325577948695416,
+            "paired_difference_MC_standard_error_cMpc": 0.06261792940535515,
+            "restricted_CDF_maximum_difference": 0.037994384765625,
+            "restricted_wasserstein_distance_cMpc": 0.7325578020200763,
+            "cap_fraction_difference": 0.001007080078125
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0883875519045374,
+            "restricted_mean_difference_cMpc": 0.7385876874624322,
+            "paired_difference_MC_standard_error_cMpc": 0.062091755496010426,
+            "restricted_CDF_maximum_difference": 0.0369873046875,
+            "restricted_wasserstein_distance_cMpc": 0.738587751426236,
+            "cap_fraction_difference": 0.001251220703125
+          }
+        }
+      },
+      "maximum_field_difference_final_vs_legacy": 0.055997860115346576
+    },
+    {
+      "redshift": 6.5,
+      "teacher_xHI_mass": 0.1249890090143866,
+      "field_metrics": {
+        "teacher": {
+          "MAE": 0.0,
+          "RMSE": 0.0,
+          "maximum_absolute_error": 0.0,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "delta_Q_mass": -0.0,
+          "delta_Q_volume": -0.0,
+          "xHI_mass": 0.1249890090143866,
+          "xHI_volume": 0.1574469007653216,
+          "field_correlation": 1.0
+        },
+        "final": {
+          "MAE": 0.05230889004410236,
+          "RMSE": 0.11716511871682878,
+          "maximum_absolute_error": 0.7398499503999707,
+          "p95_absolute_error": 0.28139893016869655,
+          "p99_absolute_error": 0.4770089609931276,
+          "delta_Q_mass": -0.010222050735349106,
+          "delta_Q_volume": -0.011707313077098816,
+          "xHI_mass": 0.1352110597497357,
+          "xHI_volume": 0.1691542138424204,
+          "field_correlation": 0.9205443107936717
+        },
+        "legacy": {
+          "MAE": 0.050939763170917154,
+          "RMSE": 0.11565234262974895,
+          "maximum_absolute_error": 0.7075566860214627,
+          "p95_absolute_error": 0.27549344002553267,
+          "p99_absolute_error": 0.4662840860030855,
+          "delta_Q_mass": -0.010222050735284573,
+          "delta_Q_volume": -0.012036206905782198,
+          "xHI_mass": 0.13521105974967118,
+          "xHI_volume": 0.16948310767110383,
+          "field_correlation": 0.9222755174063538
+        },
+        "native_es": {
+          "MAE": 0.10656280204457562,
+          "RMSE": 0.2540359603807089,
+          "maximum_absolute_error": 0.9948353513722467,
+          "p95_absolute_error": 0.7097833980697941,
+          "p99_absolute_error": 0.9285523633196738,
+          "delta_Q_mass": 0.04152026371274466,
+          "delta_Q_volume": 0.05162355927747294,
+          "xHI_mass": 0.08346874530164194,
+          "xHI_volume": 0.1058233380317688,
+          "field_correlation": 0.61776869809271
+        }
+      },
+      "low_k_21cm": {
+        "k_cMpc_inv": [
+          0.16036478039875374,
+          0.28033098430515113,
+          0.39385005511326293,
+          0.464489334882893
+        ],
+        "modes": [
+          18,
+          62,
+          98,
+          72
+        ],
+        "maximum_included_mode_k_cMpc_inv": 0.47019053434155983,
+        "mode_selection": "0 < |k| < 0.5 k_Nyquist",
+        "normalization": "Full complex FFT; P=V/N^6 times shell mean squared amplitude; shell label=floor(|k|/k_fundamental+0.5)",
+        "P_teacher": [
+          70413.81271903259,
+          10630.993427227659,
+          3719.6767498964705,
+          2136.886987310757
+        ],
+        "Delta2_teacher": [
+          14.711437174299885,
+          11.86471783594505,
+          11.512461499591314,
+          10.848733809696677
+        ],
+        "comparisons": {
+          "final": {
+            "P": [
+              100165.68854762733,
+              11392.50577652455,
+              3376.182984815388,
+              1672.8799312630888
+            ],
+            "power_ratio": [
+              1.422528970946533,
+              1.0716313441927767,
+              0.9076549420347768,
+              0.782858401589307
+            ],
+            "cross_correlation": [
+              0.9905079854021631,
+              0.974775559263289,
+              0.934312643025921,
+              0.9145471298285517
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.20091174287880648,
+            "maximum_absolute_power_ratio_error": 0.42252897094653297,
+            "minimum_cross_correlation": 0.9145471298285517
+          },
+          "legacy": {
+            "P": [
+              94468.10446587531,
+              11588.945812719308,
+              3520.2657230824366,
+              1721.777025522004
+            ],
+            "power_ratio": [
+              1.3416132548144342,
+              1.0901093949543965,
+              0.9463902268336666,
+              0.8057407975930616
+            ],
+            "cross_correlation": [
+              0.9904521919140044,
+              0.9780134779377619,
+              0.9359602988008515,
+              0.913298000804542
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.16989790633552562,
+            "maximum_absolute_power_ratio_error": 0.34161325481443416,
+            "minimum_cross_correlation": 0.913298000804542
+          },
+          "native_es": {
+            "P": [
+              34671.76146920346,
+              6897.0787857628075,
+              2947.034048082172,
+              1598.2831389241107
+            ],
+            "power_ratio": [
+              0.49240000122634764,
+              0.6487708635110521,
+              0.7922822993057653,
+              0.7479493058898394
+            ],
+            "cross_correlation": [
+              0.958662277379911,
+              0.7939617935363323,
+              0.7627067730407361,
+              0.5986517684862942
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.3296493825167489,
+            "maximum_absolute_power_ratio_error": 0.5075999987736524,
+            "minimum_cross_correlation": 0.5986517684862942
+          }
+        }
+      },
+      "legacy_photon_residual": 7.076380389429496e-14,
+      "MFP": {
+        "ionized": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.82666015625,
+            "restricted_mean_cMpc": 29.95027580722003,
+            "restricted_mean_MC_standard_error_cMpc": 0.10013369991553776,
+            "cap_fraction": 0.3223876953125,
+            "quantiles_cMpc": {
+              "0.16": 7.326466934764654,
+              "0.5": 30.919136467189723,
+              "0.84": null
+            },
+            "below_one_cell_fraction": 0.08038330078125
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.1018825172252646,
+            "restricted_mean_difference_cMpc": 2.76926935778463,
+            "paired_difference_MC_standard_error_cMpc": 0.11828816128453287,
+            "restricted_CDF_maximum_difference": 0.07470703125,
+            "restricted_wasserstein_distance_cMpc": 2.7692700496139553,
+            "cap_fraction_difference": 0.0728759765625
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.1028386831688157,
+            "restricted_mean_difference_cMpc": 2.795258910463024,
+            "paired_difference_MC_standard_error_cMpc": 0.11870861393855084,
+            "restricted_CDF_maximum_difference": 0.07684326171875,
+            "restricted_wasserstein_distance_cMpc": 2.7952732242663294,
+            "cap_fraction_difference": 0.074981689453125
+          }
+        },
+        "neutral": {
+          "legacy": {
+            "status": "measured",
+            "phase_volume_fraction": 0.17333984375,
+            "restricted_mean_cMpc": 6.76841933973275,
+            "restricted_mean_MC_standard_error_cMpc": 0.035123884309563834,
+            "cap_fraction": 0.0001220703125,
+            "quantiles_cMpc": {
+              "0.16": 1.2393033723365163,
+              "0.5": 4.818797735851006,
+              "0.84": 12.575453901578427
+            },
+            "below_one_cell_fraction": 0.363250732421875
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.281324554256541,
+            "restricted_mean_difference_cMpc": 1.4860579604489756,
+            "paired_difference_MC_standard_error_cMpc": 0.04040502515048407,
+            "restricted_CDF_maximum_difference": 0.108245849609375,
+            "restricted_wasserstein_distance_cMpc": 1.4860580594286246,
+            "cap_fraction_difference": 0.0001220703125
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.2970096004604836,
+            "restricted_mean_difference_cMpc": 1.5689120427489631,
+            "paired_difference_MC_standard_error_cMpc": 0.04086057442523305,
+            "restricted_CDF_maximum_difference": 0.1141357421875,
+            "restricted_wasserstein_distance_cMpc": 1.5689120427489631,
+            "cap_fraction_difference": 9.1552734375e-05
+          }
+        }
+      },
+      "maximum_field_difference_final_vs_legacy": 0.07273357732260655
+    },
+    {
+      "redshift": 6.0,
+      "teacher_xHI_mass": 0.005197799650445243,
+      "field_metrics": {
+        "teacher": {
+          "MAE": 0.0,
+          "RMSE": 0.0,
+          "maximum_absolute_error": 0.0,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.0,
+          "delta_Q_mass": -0.0,
+          "delta_Q_volume": -0.0,
+          "xHI_mass": 0.005197799650445243,
+          "xHI_volume": 0.007687108831884061,
+          "field_correlation": 1.0
+        },
+        "final": {
+          "MAE": 0.007687108831884061,
+          "RMSE": 0.07015233446696097,
+          "maximum_absolute_error": 0.9796019881981499,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.364116801926285,
+          "delta_Q_mass": 0.005197799650445243,
+          "delta_Q_volume": 0.007687108831884061,
+          "xHI_mass": 0.0,
+          "xHI_volume": 0.0,
+          "field_correlation": null
+        },
+        "legacy": {
+          "MAE": 0.007687108831884061,
+          "RMSE": 0.07015233446696097,
+          "maximum_absolute_error": 0.9796019881981499,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.364116801926285,
+          "delta_Q_mass": 0.005197799650445243,
+          "delta_Q_volume": 0.007687108831884061,
+          "xHI_mass": 0.0,
+          "xHI_volume": 0.0,
+          "field_correlation": null
+        },
+        "native_es": {
+          "MAE": 0.008204811083715378,
+          "RMSE": 0.07168842142147389,
+          "maximum_absolute_error": 0.9822682738304138,
+          "p95_absolute_error": 0.0,
+          "p99_absolute_error": 0.3686033236052781,
+          "delta_Q_mass": 0.0012961994498629195,
+          "delta_Q_volume": 0.002122452330364568,
+          "xHI_mass": 0.003901600200582323,
+          "xHI_volume": 0.00556465657427907,
+          "field_correlation": 0.46620325948470615
+        }
+      },
+      "low_k_21cm": {
+        "k_cMpc_inv": [
+          0.16036478039875374,
+          0.28033098430515113,
+          0.39385005511326293,
+          0.464489334882893
+        ],
+        "modes": [
+          18,
+          62,
+          98,
+          72
+        ],
+        "maximum_included_mode_k_cMpc_inv": 0.47019053434155983,
+        "mode_selection": "0 < |k| < 0.5 k_Nyquist",
+        "normalization": "Full complex FFT; P=V/N^6 times shell mean squared amplitude; shell label=floor(|k|/k_fundamental+0.5)",
+        "P_teacher": [
+          1235.6145533978065,
+          642.1204974812134,
+          266.75149963587523,
+          128.56474616797186
+        ],
+        "Delta2_teacher": [
+          0.2581548303100066,
+          0.7166384375498601,
+          0.8256003346532018,
+          0.6527086910865791
+        ],
+        "comparisons": {
+          "final": {
+            "P": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "power_ratio": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cross_correlation": [
+              null,
+              null,
+              null,
+              null
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 1.0,
+            "maximum_absolute_power_ratio_error": 1.0,
+            "minimum_cross_correlation": null
+          },
+          "legacy": {
+            "P": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "power_ratio": [
+              0.0,
+              0.0,
+              0.0,
+              0.0
+            ],
+            "cross_correlation": [
+              null,
+              null,
+              null,
+              null
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 1.0,
+            "maximum_absolute_power_ratio_error": 1.0,
+            "minimum_cross_correlation": null
+          },
+          "native_es": {
+            "P": [
+              373.70871939124237,
+              161.23691534719504,
+              107.3224163607243,
+              80.3424933907008
+            ],
+            "power_ratio": [
+              0.30244765114135613,
+              0.2511007139308964,
+              0.40233107033033744,
+              0.6249185393772883
+            ],
+            "cross_correlation": [
+              0.9287560628899029,
+              0.8693145206624833,
+              0.7143873236657903,
+              0.5888660398123355
+            ],
+            "defined_shells": 4,
+            "mean_absolute_power_ratio_error": 0.6048005063050305,
+            "maximum_absolute_power_ratio_error": 0.7488992860691036,
+            "minimum_cross_correlation": 0.5888660398123355
+          }
+        }
+      },
+      "legacy_photon_residual": 0.0,
+      "MFP": {
+        "ionized": {
+          "legacy": {
+            "status": "all_censored",
+            "phase_volume_fraction": 1.0,
+            "restricted_mean_cMpc": 50.0,
+            "restricted_mean_MC_standard_error_cMpc": 0.0,
+            "cap_fraction": 1.0,
+            "quantiles_cMpc": {
+              "0.16": null,
+              "0.5": null,
+              "0.84": null
+            },
+            "below_one_cell_fraction": 0.0
+          },
+          "legacy_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0340532914813771,
+            "restricted_mean_difference_cMpc": 1.6465926737969394,
+            "paired_difference_MC_standard_error_cMpc": 0.03992455990825086,
+            "restricted_CDF_maximum_difference": 0.065704345703125,
+            "restricted_wasserstein_distance_cMpc": 1.6465926737969396,
+            "cap_fraction_difference": 0.065704345703125
+          },
+          "final_vs_teacher": {
+            "available": true,
+            "restricted_mean_ratio": 1.0340532914813771,
+            "restricted_mean_difference_cMpc": 1.6465926737969394,
+            "paired_difference_MC_standard_error_cMpc": 0.03992455990825086,
+            "restricted_CDF_maximum_difference": 0.065704345703125,
+            "restricted_wasserstein_distance_cMpc": 1.6465926737969396,
+            "cap_fraction_difference": 0.065704345703125
+          }
+        },
+        "neutral": {
+          "legacy": {
+            "status": "empty_phase",
+            "phase_volume_fraction": 0,
+            "restricted_mean_cMpc": null,
+            "cap_fraction": null
+          },
+          "legacy_vs_teacher": {
+            "available": false,
+            "reason": "empty phase"
+          },
+          "final_vs_teacher": {
+            "available": false,
+            "reason": "empty phase"
+          }
+        }
+      },
+      "maximum_field_difference_final_vs_legacy": 0.0
+    }
+  ],
+  "script_sha256": "8cdfb3d466a15530a783a6a3e0e7eab4eb876b6adeed176aad3b0d1a54860c62"
+}

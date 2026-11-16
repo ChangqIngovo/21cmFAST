@@ -279,6 +279,53 @@ def test_local_deficit_budget_roundtrip_in_recursive_base(tmp_path: Path) -> Non
 
 
 @pytest.mark.parametrize("projection_mode", ["log_odds", "capacity_l2"])
+def test_sigmoid_budget_schema3_roundtrip_and_training_target(
+    tmp_path: Path,
+    projection_mode: str,
+) -> None:
+    """Direct efficiency survives a frozen-base deployment with finite escape."""
+    from research.pc_analytic_emulator.fit import _target_count
+
+    source = np.full((4, 4, 4), 0.75)
+    capacity = np.ones_like(source)
+    es = np.linspace(0, 1, source.size).reshape(source.shape)
+    features, _ = budget_features(source, capacity, es, 7.5, 256)
+    base = fixture_model(source, capacity, es)
+    width = features.shape[1]
+    base.budget_model = MLPModel(
+        [np.zeros((width, 1))],
+        [np.array([np.log(4.0)])],
+        np.zeros(width),
+        np.ones(width),
+        {},
+        output_mode="sigmoid",
+    )
+    base.projection_mode = projection_mode
+    model = residual_model(base)
+    before = model.predict(source, capacity, es, 7.5, 256)
+    model.save(tmp_path)
+    restored = Emulator.load(tmp_path)
+    after = restored.predict(source, capacity, es, 7.5, 256)
+
+    assert json.loads((tmp_path / "model.json").read_text())["schema"] == 3
+    for candidate in (restored, restored.base_model):
+        assert candidate.budget_model.output_mode == "sigmoid"
+        assert candidate._model_kinds()[1] == "mlp"
+    np.testing.assert_array_equal(before["xHII"], after["xHII"])
+    assert before["photon_ledger"] == after["photon_ledger"]
+    assert after["absorption_efficiency"] == pytest.approx(0.8)
+    assert after["predicted_unabsorbed_photons"] == pytest.approx(0.2 * source.sum())
+    assert np.isfinite(after["xHII"]).all()
+    assert np.all((after["xHII"] >= 0) & (after["xHII"] <= 1))
+    target, efficiency = _target_count(
+        {"source": source, "capacity": capacity, "global_features": features},
+        restored.budget_model,
+    )
+    assert efficiency == after["absorption_efficiency"]
+    assert target == after["predicted_absorbed_photons"]
+
+
+@pytest.mark.parametrize("projection_mode", ["log_odds", "capacity_l2"])
 @pytest.mark.parametrize(
     ("source_per_atom", "efficiency"), [(0, 1), (0.7, 0.75), (2, 1)]
 )

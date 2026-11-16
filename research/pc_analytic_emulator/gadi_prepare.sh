@@ -35,6 +35,7 @@ while (( $# )); do
             echo 'PC_RESIDUAL_EPOCHS=80 and PC_RESIDUAL_LEARNING_RATE=0.0003 control the v3 residual fit.'
             echo 'V2 and v3 residual fits use every training cell; PC_EMULATOR_EPOCHS controls budget fitting and the retained legacy competitors.'
             echo 'Seed 1008 is a previously inspected regression test; an optional external archive must contain new initial conditions.'
+            echo 'PC_REGRESSION_TEST_SEEDS records additional previously inspected test seeds; v2/v3 always retain seed1008 in the known set.'
             echo 'The external archive remains separate and never selects model parameters or checkpoints.'
             echo 'Resources: 4 workers x 4 BLAS threads, 16 CPUs on one node, 64GB, 4 hours.'
             echo 'PC_TRAIN_SEEDS, PC_VALIDATION_SEEDS, PC_TEST_SEEDS, PC_MODEL_SEEDS select splits/trials.'

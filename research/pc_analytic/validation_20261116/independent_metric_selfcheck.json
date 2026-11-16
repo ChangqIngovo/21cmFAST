@@ -1,0 +1,11 @@
+{
+  "complete": true,
+  "axis_aligned_uniform_slab_rays": 1024,
+  "axis_aligned_slab_maximum_distance_error": 0.0,
+  "full_and_empty_phase_tests_passed": true,
+  "full_complex_vs_real_fft_maximum_absolute_error": 5.684341886080802e-14,
+  "script_sha256": "5df114d3c3f7dd7b766feeeb3217c88225a8551560b21ef0b5c20b12305175f0",
+  "recompute_sha256": "0d64d3273f69d6cf697e70d13382cc90c782bb9b7ad221d1fe660a4be89a32f7",
+  "randomized_kernel_comparison_rays_per_phase": 2048,
+  "randomized_cpp_DDA_maximum_distance_error_cMpc": 6.750155989720952e-14
+}

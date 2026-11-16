@@ -198,6 +198,11 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
                 environment.get("PC_RESIDUAL_LEARNING_RATE", "0.0003")
             ),
         )
+    if "PC_REGRESSION_TEST_SEEDS" in environment:
+        declared = environment["PC_REGRESSION_TEST_SEEDS"].strip()
+        config["regression_test_seeds"] = (
+            _integers(declared, "PC_REGRESSION_TEST_SEEDS", 0) if declared else []
+        )
     if environment.get("PC_EXTERNAL_TEST_ROOT"):
         config["external_test_root"] = str(
             Path(environment["PC_EXTERNAL_TEST_ROOT"]).resolve()
@@ -349,10 +354,19 @@ def prepare(run: Path, environment: Mapping[str, str]) -> dict[str, Any]:
         "scope": "Train on completed analytic coeval photon-conserving teachers; physical seeds are disjoint across train, validation and test; no simulation or reference reruns",
         "network_required_on_compute": False,
     }
-    if config.get("training_method") in ("projected_multiscale_v2", "warm_started_v3"):
+    if config.get("training_method") in (
+        "projected_multiscale_v2",
+        "warm_started_v3",
+    ) or config.get("regression_test_seeds"):
+        known_regression = set(config.get("regression_test_seeds", []))
+        requested_tests = set(config["test_seeds"])
         manifest["test_interpretation"] = {
-            "previously_inspected_regression_seeds": [1008],
-            "scope": "Seed 1008 is an inspected regression test, not a fresh held-out realization for this improvement",
+            "known_regression_test_seeds": sorted(known_regression),
+            "previously_inspected_regression_seeds": sorted(
+                known_regression & requested_tests
+            ),
+            "other_requested_test_seeds": sorted(requested_tests - known_regression),
+            "scope": "Requested seeds marked in regression_test_seeds are previously inspected regression tests; other test seeds remain excluded from fitting and selection, but this metadata does not certify their historical novelty",
         }
     if external is not None:
         manifest["external_test"] = {

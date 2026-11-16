@@ -1,0 +1,24 @@
+{
+  "native_extension_sha256": "516152409b12d93515a8096c2fb38d93d6a2aaae976dc6e3db9ad00baeac1f8f",
+  "native_package_version": "4.3.2.dev0+g5d29a9c2",
+  "python_version": [
+    3,
+    12,
+    14
+  ],
+  "packages": {
+    "numpy": "2.5.5",
+    "scipy": "1.18.1",
+    "h5py": "3.16.0",
+    "astropy": "8.0.2",
+    "classy": "3.3.4.0",
+    "cosmotile": "0.3.0",
+    "cffi": "2.1.1",
+    "21cmFAST": "4.3.2.dev0+g5d29a9c2"
+  },
+  "configuration_sha256": {
+    "native_template.json": "7c93405fa21ba7a8f4f5555a6c34c5eb07f44744f26ce8300d5cc9546cfe7740",
+    "campaign_config.json": "684fb15a29b2da39a2f48e80994e8ee743ccfc48c193a0210a24889b4af2d3df",
+    "training_config.json": "6a2553a4219a16d1bfb7bcb99fef8a752703c72387fc2e16dccaaa1cd0969b5d"
+  }
+}

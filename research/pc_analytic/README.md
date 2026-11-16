@@ -1,5 +1,9 @@
 # Analytic absorption on shared native 21cmFAST inputs
 
+For the complete solver → teacher → emulator → inference workflow, see
+[PHOTON_CONSERVATION.md](../PHOTON_CONSERVATION.md). The current independent
+simulation and reference checks are in [VALIDATION_20261116.md](VALIDATION_20261116.md).
+
 This experiment compares a directional analytic-absorption model, the author's
 unmodified SCRIPT allocation kernel, and the native CPU short-characteristics
 kernel from pyC2Ray. It preserves the archived native cumulative `n_ion` and
@@ -111,6 +115,12 @@ recombination, collisional ionization, thermal/spin-temperature evolution,
 photoheating feedback, frequency evolution or separate helium chemistry.
 `PHOTON_CONS_TYPE=no-photoncons` is required for the native ES control. The
 native source-model and switches are validated from each archived receipt.
+
+Native ES limits its filtering scale with `R_BUBBLE_MAX`. This analytic solver
+does not apply that radius as a photon path cutoff or unresolved absorption
+sink: propagation uses resolved neutral opacity and the selected domain
+boundary. Native inputs, teacher manifests and training reports expose this
+distinction under `physical_mapping`.
 
 The existing native effective-atom convention is retained: the count unit is
 the mean number of **H+He nuclei** in an original cell, and every effective atom

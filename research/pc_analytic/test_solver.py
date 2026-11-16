@@ -223,6 +223,89 @@ def test_sweep_limit_keeps_unemitted_and_in_flight_inventory() -> None:
     assert result["unemitted_source"].sum() > 0
 
 
+@pytest.mark.parametrize("boundary", ["periodic", "open", "source_periodic_cube"])
+@pytest.mark.parametrize("max_sweeps", [1, 10000])
+def test_initial_ions_are_excluded_from_new_photon_consumption(
+    boundary: str, max_sweeps: int
+) -> None:
+    """Close all four photon reservoirs independently of the initial ionized field."""
+    capacity = np.ones((4, 4, 4))
+    initial = 0.3 * capacity
+    source = np.zeros_like(capacity)
+    source[1, 2, 2] = 8
+    result = run(
+        source,
+        capacity,
+        initial_ionized=initial,
+        boundary=boundary,
+        max_sweeps=max_sweeps,
+    )
+    newly_ionized = np.sum(
+        result["ionized"].astype(np.longdouble) - initial.astype(np.longdouble)
+    )
+    reservoirs = sum(
+        np.sum(result[name], dtype=np.longdouble)
+        for name in ("remaining_radiation", "escaped", "unemitted_source")
+    )
+    assert newly_ionized + reservoirs == pytest.approx(
+        np.sum(source, dtype=np.longdouble), rel=2e-13
+    )
+    np.testing.assert_array_equal(initial, 0.3 * capacity)
+    assert result["audit"]["complete"] == (max_sweeps == 10000)
+
+
+def test_disconnected_periodic_beams_do_not_claim_completion() -> None:
+    """Retain circulating photons when sampled rays cannot reach neutral cells."""
+    source = np.zeros((5, 5, 5))
+    source[2, 2, 2] = 1
+    capacity = np.zeros_like(source)
+    capacity[0, 0, 0] = 1
+    result = run(
+        source,
+        capacity,
+        directions=6,
+        exposure_steps=1,
+        max_sweeps=20,
+        boundary="periodic",
+    )
+    assert not result["audit"]["complete"]
+    assert result["audit"]["termination"] == "sweep_limit"
+    assert result["audit"]["ledger_passed"]
+    assert result["remaining_radiation"].sum() == pytest.approx(1, abs=3e-16)
+    assert result["ionized"].sum() == 0
+    assert result["escaped"].sum() == 0
+
+
+@pytest.mark.parametrize("scale", [1e-200, 1e-100, 1.0, 1e100, 1e200])
+def test_transport_is_invariant_to_consistent_count_unit_rescaling(
+    scale: float,
+) -> None:
+    """Preserve fields when count units and opacity per count change reciprocally."""
+    rng = np.random.default_rng(213)
+    capacity = np.exp(rng.normal(0, 0.4, (4, 4, 4)))
+    source = np.zeros_like(capacity)
+    source[1, 2, 2] = 12
+    source[3, 1, 1] = 7
+    kwargs = {
+        "box_len": 4,
+        "redshift": 0,
+        "nH_mean_comoving_cm3": 1,
+        "directions": 26,
+        "boundary": "source_periodic_cube",
+        "exposure_steps": 2,
+    }
+    original = run(source, capacity, sigma_cm2=1 / MPC_CM, **kwargs)
+    rescaled = run(
+        source * scale, capacity * scale, sigma_cm2=1 / (MPC_CM * scale), **kwargs
+    )
+    assert original["audit"]["complete"]
+    assert rescaled["audit"]["complete"]
+    for name in ("ionized", "remaining_radiation", "escaped", "unemitted_source"):
+        np.testing.assert_allclose(
+            rescaled[name] / scale, original[name], rtol=2e-11, atol=2e-13
+        )
+
+
 def test_exposure_refinement_on_two_source_overlap() -> None:
     """Fine simultaneous doses reduce the controlled two-source field changes."""
     source = np.zeros((8, 8, 8))
@@ -366,3 +449,18 @@ def test_reject_bad_physical_inputs() -> None:
         run(capacity, capacity, sigma_cm2=-1)
     with pytest.raises(ValueError, match="orthogonal"):
         run(capacity, capacity, rotation=np.ones((3, 3)))
+
+
+@pytest.mark.parametrize(
+    "argument", ["initial_ionized", "rotation", "emission_weights"]
+)
+def test_complex_optional_fields_rejected(argument: str) -> None:
+    """Never silently drop an imaginary component from a physical input array."""
+    capacity = np.ones((4, 4, 4))
+    values = {
+        "initial_ionized": capacity.astype(complex) * (0.2 + 1j),
+        "rotation": np.eye(3, dtype=complex) * (1 + 1j),
+        "emission_weights": np.ones(24, dtype=complex) * ((1 + 1j) / 24),
+    }
+    with pytest.raises(ValueError, match="real"):
+        run(capacity, capacity, **{argument: values[argument]})

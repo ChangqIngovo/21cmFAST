@@ -394,7 +394,7 @@ def constant_efficiency_model(feature_count: int) -> MLPModel:
 def load_budget(
     path: str | Path,
 ) -> MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel:
-    """Restore a tagged table or legacy-format residual budget network.
+    """Restore a tagged table or a residual/direct-sigmoid budget network.
 
     Parameters
     ----------
@@ -413,6 +413,44 @@ def load_budget(
     if kind == "local_deficit":
         return LocalDeficitBudgetModel.load(path)
     return MLPModel.load(path)
+
+
+def predict_efficiency(
+    model: MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel,
+    features: np.ndarray,
+) -> np.ndarray:
+    """Apply the saved budget head's output convention consistently.
+
+    Parameters
+    ----------
+    model
+        Fitted absorption predictor. Residual networks use an eta=1 baseline;
+        sigmoid networks and empirical tables predict efficiencies directly.
+    features
+        Native input features, with one row per snapshot and no teacher data.
+
+    Returns
+    -------
+    ndarray
+        Finite efficiencies in [0, 1], with one value per input snapshot.
+    """
+    inputs = np.asarray(features, dtype=np.float64)
+    if inputs.ndim != 2 or not len(inputs):
+        raise ValueError("Budget prediction requires a nonempty feature matrix")
+    if model.output_mode == "residual":
+        values = model.predict(inputs, baseline=np.ones(len(inputs)))
+    elif model.output_mode in ("sigmoid", "efficiency"):
+        values = model.predict(inputs)
+    else:
+        raise ValueError("Unsupported budget model output mode")
+    values = np.asarray(values, dtype=np.float64)
+    if (
+        values.shape != (len(inputs),)
+        or not np.isfinite(values).all()
+        or np.any((values < 0) | (values > 1))
+    ):
+        raise ValueError("Budget model must predict one efficiency in [0, 1] per row")
+    return values
 
 
 def _arrays(
@@ -511,7 +549,7 @@ def _fit_base_candidates(
         candidates.append(("mlp", network))
     records = []
     for name, model in candidates:
-        predicted = model.predict(xv, baseline=np.ones(len(xv)))
+        predicted = predict_efficiency(model, xv)
         error = sv * (predicted - yv)
         records.append(
             {
@@ -623,12 +661,14 @@ def fit_budget_v3(
     Returns
     -------
     tuple
-        All candidate models and a validation budget-error ranking. No model
+        All candidate models and a validation budget-error ranking. A direct
+        sigmoid network avoids the positive-residual eta=1 plateau while the
+        original residual network remains eligible. No model
         is discarded: the caller compares them with fixed field predictors
         and projections before residual fitting. Local tables and normalizers
         depend only on training snapshots; validation selects among models.
     """
-    xt, yt, _ = _arrays(x_train, eta_train, mass_scale_train)
+    xt, yt, st = _arrays(x_train, eta_train, mass_scale_train)
     xv, yv, sv = _arrays(x_validation, eta_validation, mass_scale_validation)
     if xt.shape[1] < 10 or xv.shape[1] != xt.shape[1]:
         raise ValueError("V3 budget fitting requires complete native global features")
@@ -646,11 +686,48 @@ def fit_budget_v3(
         hidden=hidden,
     )
     models = dict(candidates)
+    sigmoid_history: list[dict[str, Any]] = []
+    if np.any(st > 0) and np.any(sv > 0):
+        # No baseline: train() uses a direct sigmoid, with its initial output
+        # bias derived only from the clipped mean training efficiency. Keep
+        # the original optimizer, weights and validation selection criterion.
+        smooth, sigmoid_history = train(
+            xt,
+            yt,
+            xv,
+            yv,
+            seed=seed,
+            hidden=hidden,
+            epochs=epochs,
+            patience=patience,
+            learning_rate=learning_rate,
+            batch_size=len(xt),
+            min_delta=1e-14,
+            sample_weight_train=st**2,
+            sample_weight_validation=sv**2,
+        )
+        smooth.metadata.update(
+            budget_parameterization="direct_sigmoid_efficiency",
+            initial_efficiency_prior=float(np.clip(yt.mean(), 1e-4, 1 - 1e-4)),
+            initial_efficiency_prior_scope="Training efficiency labels only",
+        )
+        models["sigmoid_mlp"] = smooth
+        predicted = predict_efficiency(smooth, xv)
+        error = sv * (predicted - yv)
+        report["candidates"].append(
+            {
+                "kind": "sigmoid_mlp",
+                "validation_mass_mse": float(np.mean(error**2)),
+                "validation_mass_MAE": float(np.mean(np.abs(error))),
+                "validation_maximum_absolute_mass_error": float(np.max(np.abs(error))),
+                "validation_efficiencies": predicted.tolist(),
+            }
+        )
     for neighbors in (3, 5):
         name = f"local_k{neighbors}"
         model = LocalDeficitBudgetModel.from_training(xt, yt, neighbors=neighbors)
         models[name] = model
-        predicted = model.predict(xv)
+        predicted = predict_efficiency(model, xv)
         error = sv * (predicted - yv)
         report["candidates"].append(
             {
@@ -667,6 +744,8 @@ def fit_budget_v3(
         selection="Budget-error ranking only; all candidates retained for fixed-field validation",
         retained_candidate_count=len(models),
         ranking=[item["kind"] for item in ranked],
+        sigmoid_network_history=sigmoid_history,
+        sigmoid_fit_scope="Training native features and efficiency labels; weighted validation MSE chooses checkpoint",
         local_feature_indices=[0, 4, 5, 6, 7, 8, 9],
         local_fit_scope="Training native features and efficiencies only; no validation/test samples in normalizer or neighbor table",
         local_extrapolation="Convex nearest-training-deficit average; no out-of-support accuracy is certified",

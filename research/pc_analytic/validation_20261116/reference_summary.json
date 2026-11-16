@@ -1,0 +1,392 @@
+{
+  "complete": true,
+  "snapshots": [
+    {
+      "seed": 222,
+      "redshift": 8.0,
+      "dimension": 16,
+      "box_len_cMpc": 50.0,
+      "input_receipt_sha256": "a11d7781762771e4c3e232e3561b3b737303663f53f3cf074db28d18b2cc0bb4",
+      "source_per_atom": 0.3737816527029884,
+      "maximum_analytic_independent_field_residual": 9.026874479119041e-17,
+      "analytic_source_cube_xHI_mass": 0.6262600471637804,
+      "analytic_closed_xHI_mass": 0.6262183472978957,
+      "analytic_source_cube_escaped_over_emitted": 0.00011156178963952472,
+      "script_residual": 1.0507241124615045e-10,
+      "analytic_source_cube_vs_SCRIPT": {
+        "MAE": 0.017844343086384447,
+        "RMSE": 0.06819562266838766,
+        "delta_Q_mass": -4.16999060429894e-05,
+        "maximum_P21_ratio_error_all_defined_shells": 0.07725491061956147,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.03043242530129553,
+          "mean_absolute_ratio_minus_one": 0.016765590175697453,
+          "valid_bins": 3
+        }
+      },
+      "analytic_closed_vs_SCRIPT": {
+        "MAE": 0.017852830896984438,
+        "RMSE": 0.0681816072621916,
+        "delta_Q_mass": -4.015824653063261e-11,
+        "maximum_P21_ratio_error_all_defined_shells": 0.07733553471195465,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.030557336039163552,
+          "mean_absolute_ratio_minus_one": 0.016617567235501562,
+          "valid_bins": 3
+        }
+      },
+      "boundary_difference": {
+        "MAE": 3.82465340603222e-05,
+        "RMSE": 0.0005443387183918172,
+        "delta_Q_mass": -4.169986588474217e-05,
+        "maximum_P21_ratio_error_all_defined_shells": 0.0005304961235670369,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.0005304961235670369,
+          "mean_absolute_ratio_minus_one": 0.00023139071041640888,
+          "valid_bins": 3
+        }
+      },
+      "analytic_vs_archived_C2Ray": {
+        "MAE": 0.01636900555764002,
+        "RMSE": 0.04385140539722797,
+        "delta_Q_mass": 0.006402215470677825,
+        "maximum_P21_ratio_error_all_defined_shells": 0.12454554780748439,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.11664049956515332,
+          "mean_absolute_ratio_minus_one": 0.0908655603908904,
+          "valid_bins": 3
+        }
+      },
+      "C2Ray_rerun_today": false,
+      "C2Ray_strict_residual": null,
+      "numerical_refinements": [
+        {
+          "coarse": "d24_e32",
+          "fine": "d96_e32",
+          "axis": "directions",
+          "MAE": 0.011274211175364344,
+          "RMSE": 0.04072096369367309,
+          "delta_Q_mass": 2.6734909774547325e-05,
+          "maximum_P21_ratio_error_all_defined_shells": 0.04463004280488014,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.016570136647586553,
+            "mean_absolute_ratio_minus_one": 0.01088720025064823,
+            "valid_bins": 3
+          }
+        },
+        {
+          "coarse": "d96_e32",
+          "fine": "d384_e32",
+          "axis": "directions",
+          "MAE": 0.007241456345158267,
+          "RMSE": 0.027719378193634313,
+          "delta_Q_mass": 1.4779651193523339e-07,
+          "maximum_P21_ratio_error_all_defined_shells": 0.035533469999793676,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.01338519015322015,
+            "mean_absolute_ratio_minus_one": 0.0052286138021101864,
+            "valid_bins": 3
+          }
+        },
+        {
+          "coarse": "d96_e16",
+          "fine": "d96_e32",
+          "axis": "exposure_steps",
+          "MAE": 0.0005829257780424099,
+          "RMSE": 0.002055083996093695,
+          "delta_Q_mass": -2.3448548201411375e-06,
+          "maximum_P21_ratio_error_all_defined_shells": 0.0021994390274978626,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.0008346257564366688,
+            "mean_absolute_ratio_minus_one": 0.0005668234538438824,
+            "valid_bins": 3
+          }
+        },
+        {
+          "coarse": "d96_e32",
+          "fine": "d96_e64",
+          "axis": "exposure_steps",
+          "MAE": 0.0002691169460036127,
+          "RMSE": 0.0009592985898958275,
+          "delta_Q_mass": -1.5475984746622751e-06,
+          "maximum_P21_ratio_error_all_defined_shells": 0.001484047676868161,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.00042838211013462857,
+            "mean_absolute_ratio_minus_one": 0.00033858802917478376,
+            "valid_bins": 3
+          }
+        }
+      ],
+      "grid_sensitivity": {
+        "closed_periodic": {
+          "MAE": 0.027642298553194892,
+          "RMSE": 0.057589301436311115,
+          "delta_Q_mass": 8.839485141790877e-13,
+          "maximum_P21_ratio_error_all_defined_shells": 0.5966163499418846,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.0005870136936909631,
+            "mean_absolute_ratio_minus_one": 0.0005870136936909631,
+            "valid_bins": 1
+          }
+        },
+        "script": {
+          "MAE": 0.030829963609590887,
+          "RMSE": 0.06891723882708439,
+          "delta_Q_mass": -3.506944716237833e-11,
+          "maximum_P21_ratio_error_all_defined_shells": 0.5005383168112749,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.02464942382979407,
+            "mean_absolute_ratio_minus_one": 0.02464942382979407,
+            "valid_bins": 1
+          }
+        },
+        "source_periodic_cube": {
+          "MAE": 0.027631019929859685,
+          "RMSE": 0.05757750267112316,
+          "delta_Q_mass": 2.0508974459303787e-05,
+          "maximum_P21_ratio_error_all_defined_shells": 0.5943223991763391,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.0006730481525721865,
+            "mean_absolute_ratio_minus_one": 0.0006730481525721865,
+            "valid_bins": 1
+          }
+        }
+      },
+      "grid_input_physical_photon_relative_change": 0.0,
+      "grid_input_physical_atom_relative_change": 0.0,
+      "mfp_source_cube_vs_script": {
+        "ionized": {
+          "analytic_restricted_mean_cMpc": 6.632725998485074,
+          "script_restricted_mean_cMpc": 6.665157809516236,
+          "cdf_max_difference": 0.012699999999999934,
+          "censored_fraction_analytic": 0.0007,
+          "censored_fraction_script": 0.0002
+        },
+        "neutral": {
+          "analytic_restricted_mean_cMpc": 22.035431305224918,
+          "script_restricted_mean_cMpc": 22.11045483706832,
+          "cdf_max_difference": 0.013399999999999967,
+          "censored_fraction_analytic": 0.135,
+          "censored_fraction_script": 0.1416
+        }
+      },
+      "report_path": "/workspace/scratch/c8ee7ea91934/pc_autonomous_diagnostics_20261116/release_z8/diagnostics.json",
+      "report_sha256": "2fce51bbd04bb877e2d404f6f4ab09cfbd8a7d88a445cbba94c83017e6a679f3",
+      "all_receipt_hashes_verified": true,
+      "all_current_implementation_hashes_match": true,
+      "rerun_script_bitwise_matches_archive": true
+    },
+    {
+      "seed": 222,
+      "redshift": 7.5,
+      "dimension": 16,
+      "box_len_cMpc": 50.0,
+      "input_receipt_sha256": "5fa3a13e325bc1ffdf7ee9c7dab6215eade7359ae16abdd2c6d4453ab93e6b8a",
+      "source_per_atom": 0.5247757543783318,
+      "maximum_analytic_independent_field_residual": 9.849593715965999e-17,
+      "analytic_source_cube_xHI_mass": 0.4774301257823886,
+      "analytic_closed_xHI_mass": 0.47522424562406423,
+      "analytic_source_cube_escaped_over_emitted": 0.004203471843107199,
+      "script_residual": 5.408106425558278e-10,
+      "analytic_source_cube_vs_SCRIPT": {
+        "MAE": 0.04036614564626359,
+        "RMSE": 0.12073259356296966,
+        "delta_Q_mass": -0.0022058804445246895,
+        "maximum_P21_ratio_error_all_defined_shells": 0.13071240239455206,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.07246966612465444,
+          "mean_absolute_ratio_minus_one": 0.05918344248980312,
+          "valid_bins": 3
+        }
+      },
+      "analytic_closed_vs_SCRIPT": {
+        "MAE": 0.04082063647789982,
+        "RMSE": 0.12146417017398072,
+        "delta_Q_mass": -2.862003526039362e-10,
+        "maximum_P21_ratio_error_all_defined_shells": 0.13193535867443118,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.06641945606962674,
+          "mean_absolute_ratio_minus_one": 0.05332391181402418,
+          "valid_bins": 3
+        }
+      },
+      "boundary_difference": {
+        "MAE": 0.002259849262845841,
+        "RMSE": 0.009669933561556423,
+        "delta_Q_mass": -0.002205880158324336,
+        "maximum_P21_ratio_error_all_defined_shells": 0.012299834421783618,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.012299834421783618,
+          "mean_absolute_ratio_minus_one": 0.008206139090991512,
+          "valid_bins": 3
+        }
+      },
+      "analytic_vs_archived_C2Ray": {
+        "MAE": 0.024231946522138014,
+        "RMSE": 0.05711849235659821,
+        "delta_Q_mass": 0.011003095681484991,
+        "maximum_P21_ratio_error_all_defined_shells": 0.17571956951457612,
+        "below_half_nyquist": {
+          "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+          "maximum_absolute_ratio_minus_one": 0.08440430507179997,
+          "mean_absolute_ratio_minus_one": 0.06003215965259819,
+          "valid_bins": 3
+        }
+      },
+      "C2Ray_rerun_today": false,
+      "C2Ray_strict_residual": null,
+      "numerical_refinements": [
+        {
+          "coarse": "d24_e32",
+          "fine": "d96_e32",
+          "axis": "directions",
+          "MAE": 0.01860704391173779,
+          "RMSE": 0.05607339641489662,
+          "delta_Q_mass": 6.7478630235837705e-06,
+          "maximum_P21_ratio_error_all_defined_shells": 0.04049611154487709,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.026921956230664845,
+            "mean_absolute_ratio_minus_one": 0.01873145513507272,
+            "valid_bins": 3
+          }
+        },
+        {
+          "coarse": "d96_e32",
+          "fine": "d384_e32",
+          "axis": "directions",
+          "MAE": 0.012116138772963012,
+          "RMSE": 0.040100647527932076,
+          "delta_Q_mass": 1.0643885595024045e-07,
+          "maximum_P21_ratio_error_all_defined_shells": 0.03192276385616588,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.008300236208892864,
+            "mean_absolute_ratio_minus_one": 0.005718249877256147,
+            "valid_bins": 3
+          }
+        },
+        {
+          "coarse": "d96_e16",
+          "fine": "d96_e32",
+          "axis": "exposure_steps",
+          "MAE": 0.0010218794571031473,
+          "RMSE": 0.003120405150241999,
+          "delta_Q_mass": -0.0001272069702172718,
+          "maximum_P21_ratio_error_all_defined_shells": 0.0018977470652640216,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.0017836414792160582,
+            "mean_absolute_ratio_minus_one": 0.0010514868238019985,
+            "valid_bins": 3
+          }
+        },
+        {
+          "coarse": "d96_e32",
+          "fine": "d96_e64",
+          "axis": "exposure_steps",
+          "MAE": 0.0004975252420787342,
+          "RMSE": 0.0015338120162881822,
+          "delta_Q_mass": -6.387294332488568e-05,
+          "maximum_P21_ratio_error_all_defined_shells": 0.0010840919653720693,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.0008902661244806209,
+            "mean_absolute_ratio_minus_one": 0.0005899801916951312,
+            "valid_bins": 3
+          }
+        }
+      ],
+      "grid_sensitivity": {
+        "closed_periodic": {
+          "MAE": 0.039758391513382986,
+          "RMSE": 0.07443901964346823,
+          "delta_Q_mass": -3.437994389578902e-11,
+          "maximum_P21_ratio_error_all_defined_shells": 0.4760778088906965,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.004871302327409177,
+            "mean_absolute_ratio_minus_one": 0.004871302327409177,
+            "valid_bins": 1
+          }
+        },
+        "script": {
+          "MAE": 0.0464263290737948,
+          "RMSE": 0.09194003417594691,
+          "delta_Q_mass": 1.470511333288534e-09,
+          "maximum_P21_ratio_error_all_defined_shells": 0.42616472962662644,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.053647450861821655,
+            "mean_absolute_ratio_minus_one": 0.053647450861821655,
+            "valid_bins": 1
+          }
+        },
+        "source_periodic_cube": {
+          "MAE": 0.03983851480118788,
+          "RMSE": 0.07450376209607963,
+          "delta_Q_mass": 0.0010070489503257551,
+          "maximum_P21_ratio_error_all_defined_shells": 0.49295105157635444,
+          "below_half_nyquist": {
+            "band_scope": "diagnostic cut only; no accuracy or convergence guarantee",
+            "maximum_absolute_ratio_minus_one": 0.011069332311429703,
+            "mean_absolute_ratio_minus_one": 0.011069332311429703,
+            "valid_bins": 1
+          }
+        }
+      },
+      "grid_input_physical_photon_relative_change": 0.0,
+      "grid_input_physical_atom_relative_change": 0.0,
+      "mfp_source_cube_vs_script": {
+        "ionized": {
+          "analytic_restricted_mean_cMpc": 11.63856940950462,
+          "script_restricted_mean_cMpc": 11.401070505149884,
+          "cdf_max_difference": 0.013300000000000034,
+          "censored_fraction_analytic": 0.0127,
+          "censored_fraction_script": 0.0093
+        },
+        "neutral": {
+          "analytic_restricted_mean_cMpc": 17.11906807510409,
+          "script_restricted_mean_cMpc": 17.072449006787437,
+          "cdf_max_difference": 0.010299999999999976,
+          "censored_fraction_analytic": 0.0606,
+          "censored_fraction_script": 0.0616
+        }
+      },
+      "report_path": "/workspace/scratch/c8ee7ea91934/pc_autonomous_diagnostics_20261116/release_z7p5/diagnostics.json",
+      "report_sha256": "3c02f4e1b4ff217ff0cd523bcd88627d43b842252cdf44b144afe88c1d0766e8",
+      "all_receipt_hashes_verified": true,
+      "all_current_implementation_hashes_match": true,
+      "rerun_script_bitwise_matches_archive": true
+    }
+  ],
+  "source_scope": "Unchanged archived genuine native21cmFAST realizations; current analytic and SCRIPT executables rerun, not new native density realizations",
+  "brightness_scope": "Common saturated-temperature proxy with unchanged density and xHI; not native brightness routine rerun",
+  "comparison_truth_error": false,
+  "spatial_convergence_certified": false,
+  "refinement_scope": "Angular and dose comparisons holdnativearraysfixed; N8/N16 changes both resolvedinputsubstructure andtransportgrid",
+  "implementation_sha256": {
+    "research/pc_analytic/compare.py": "bfe4cf7e28de4e4768b1ed846e7d3adee2b3242deeb792eb4d52b447711d5e47",
+    "research/pc_analytic/diagnostics.py": "56225f5375ba9593ff6bde6656c1353ca821b14472a338dd5d2085d71b9be03a",
+    "research/pc_analytic/solver.py": "ba88bd5789f711037c339c593d283efc2b4ca3dffcaa146b6502341cfa70135b",
+    "research/pc_analytic/transport_kernel.cpp": "05e067f72f8f2c78ed6f6297bc13d9e72324dd5c25140a38f023a43de0b29a52",
+    "research/pc_coeval/mfp.py": "267efeb8e4d8e6788fdfe8a34d2ee1420e650799f5da14d0e6eb5a55f015a4bc",
+    "research/pc_coeval/mfp_kernel.cpp": "4eb2e11e5034b9bd11d91f8bd73a23e1b12ec5127e4d889c0f02e0cc071dede5",
+    "research/pc_field_emulator/evaluation.py": "63d8d1815b5a4226e6c438e49f7c5851dee9a25b2f701c8d5365403142bfab30",
+    "research/pc_script_reference/kernel.py": "002ba45076fa88f6db0c93cd562ccb557033e52560c16b6111e5b75072bb59ba"
+  }
+}

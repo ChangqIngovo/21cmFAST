@@ -1,0 +1,21 @@
+{
+  "pytest": {
+    "passed": 618,
+    "skipped": 1,
+    "subtests_passed": 10,
+    "skip_reason": "Pinned pyC2Ray source and Fortran compiler unavailable as a complete test backend"
+  },
+  "scope": [
+    "research/pc_analytic",
+    "research/pc_analytic_emulator",
+    "research/pc_coeval/test_mfp.py",
+    "research/pc_coeval/test_photon_audit.py",
+    "research/pc_field_emulator/test_model.py",
+    "research/pc_field_emulator/test_features.py",
+    "research/pc_field_emulator/test_evaluation.py"
+  ],
+  "ruff_check": "passed",
+  "ruff_format": "passed",
+  "bash_syntax_launchers": 6,
+  "git_diff_check": "passed"
+}

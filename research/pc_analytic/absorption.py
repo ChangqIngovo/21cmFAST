@@ -34,6 +34,8 @@ def absorbed(
     ndarray or float
         Absorbed photon counts; equal to the newly ionized atom counts.
     """
+    if any(np.iscomplexobj(value) for value in (photons, neutral, coefficient)):
+        raise ValueError("Photon counts, neutral counts and coefficient must be real")
     p, h, k = np.broadcast_arrays(
         np.asarray(photons, dtype=float),
         np.asarray(neutral, dtype=float),
@@ -59,8 +61,28 @@ def absorbed(
             b = kk * np.maximum(pp, hh)
         small = a < 0.5
         val = np.empty_like(a)
-        product = np.expm1(-a[small]) * np.expm1(-b[small])
-        val[small] = -np.log1p(-product) / kk[small]
+        low = a[small]
+        attenuation = -np.expm1(-b[small])
+        product = (-np.expm1(-low)) * attenuation
+        # Factor out the smaller count before multiplying optical depths.
+        # k*P*k*H can underflow even when the final k*P*H is representable.
+        # Both dimensionless ratios tend to one at zero, including when k*P
+        # itself underflows, so the optically thin limit remains resolved.
+        column_ratio = np.divide(
+            -np.expm1(-low), low, out=np.ones_like(low), where=low > 0
+        )
+        logarithm_ratio = np.divide(
+            -np.log1p(-product),
+            product,
+            out=np.ones_like(product),
+            where=product > 0,
+        )
+        val[small] = (
+            np.minimum(pp[small], hh[small])
+            * attenuation
+            * column_ratio
+            * logarithm_ratio
+        )
         # This equivalent expression preserves the opaque limit, even when
         # the product coefficient * count overflows but the count is finite.
         with np.errstate(over="ignore"):
@@ -100,6 +122,12 @@ def shared_absorption(
     remaining_neutral : ndarray
         Neutral atom counts after all directions' shared absorption.
     """
+    if any(
+        np.iscomplexobj(value) for value in (directional_photons, neutral, coefficient)
+    ):
+        raise ValueError(
+            "Directional photons, neutral counts and coefficient must be real"
+        )
     photons = np.asarray(directional_photons, dtype=float)
     neutral = np.asarray(neutral, dtype=float)
     if photons.ndim != neutral.ndim + 1 or photons.shape[1:] != neutral.shape:

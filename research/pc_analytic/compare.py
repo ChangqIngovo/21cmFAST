@@ -88,6 +88,33 @@ def validate_physics(inputs: dict[str, Any]) -> None:
         raise ValueError("Matched native snapshots require SOURCE_MODEL=L-INTEGRAL")
 
 
+def physical_mapping(inputs: dict[str, Any]) -> dict[str, Any]:
+    """Record the shared count convention and distinct propagation prescriptions.
+
+    Parameters
+    ----------
+    inputs
+        Native input dictionary. Missing legacy R_BUBBLE_MAX metadata is
+        reported as unknown, rather than inferred from the box size.
+
+    Returns
+    -------
+    dict
+        Physical interpretation only; no fields or solver settings are changed.
+        Native R_BUBBLE_MAX limits ES filtering. The analytic solver does not
+        convert that radius into an unresolved absorption sink or a ray cutoff.
+    """
+    radius = inputs.get("astro_params", {}).get("R_BUBBLE_MAX")
+    return {
+        "native_ES_R_BUBBLE_MAX_cMpc": None if radius is None else float(radius),
+        "native_ES_R_BUBBLE_MAX_applied_to_analytic": False,
+        "native_ES_MFP_prescription": "maximum excursion-set filtering radius",
+        "analytic_MFP_prescription": "resolved neutral opacity and explicitly selected domain boundary; native ES maximum filtering radius is not applied",
+        "atom_convention": "native effective H+He nuclei, each assigned hydrogen opacity; no independent helium chemistry",
+        "time_treatment": "independent frozen coeval cumulative-budget solutions; no cosmic propagation clock",
+    }
+
+
 def _block_mean(value: np.ndarray, target: int) -> np.ndarray:
     n = value.shape[0]
     factor = n // target
@@ -274,6 +301,7 @@ def load_native_snapshot(
                 "count_conversion": "source and capacity multiplied by the same native effective H+He-nuclei atoms-per-base-cell factor; every effective atom has H opacity",
                 "density_definition": opacity["density_definition"],
                 "density_formula": opacity["density_formula"],
+                "physical_mapping": physical_mapping(inputs),
                 "native_h5_reextracted": native is not None,
                 "brightness_mode": brightness,
             },

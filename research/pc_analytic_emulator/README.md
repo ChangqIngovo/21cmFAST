@@ -1,5 +1,9 @@
 # Emulator of the analytic coeval photon-conserving teacher
 
+The complete source map and execution sequence are in
+[PHOTON_CONSERVATION.md](../PHOTON_CONSERVATION.md); independently generated
+simulation results are in [the validation report](../pc_analytic/VALIDATION_20261116.md).
+
 This workflow trains on completed `pc_analytic.campaign` outputs. The labels are
 our **analytic-column-characteristic** neutral fields, not SCRIPT or C²-Ray.
 It reads the existing teacher archive and does not rerun the simulations.
@@ -131,6 +135,10 @@ is refitted on the new training split. Previous model checkpoints trained on
 seed 1006 are not imported, because that seed now belongs to validation.
 Explicit `PC_TRAIN_SEEDS`, `PC_VALIDATION_SEEDS` and `PC_TEST_SEEDS` settings can
 select other disjoint groups; all redshifts of a seed remain together.
+Use `PC_REGRESSION_TEST_SEEDS` to record previously inspected test seeds, or
+`regression_test_seeds` in the JSON configuration. The frozen manifest reports
+their intersection with the requested test split; labels outside that list
+remain excluded from fitting and selection, without implying historical novelty.
 Assess the change against the freshly refitted legacy candidates within this
 same run. The earlier 42/7/7 run used different training and validation samples,
 so its validation score is not directly comparable to the new 35/14/7 score.
@@ -144,7 +152,11 @@ not introduce teacher fields as inference inputs. New predictions retain the
 independent unabsorbed-photon reservoir and global conservation audit.
 
 The budget comparison retains a constant estimator, a tabulated estimator,
-an MLP, and local interpolation using either three or five training neighbours.
+the original residual MLP, a direct-sigmoid MLP, and local interpolation using
+either three or five training neighbours. The direct-sigmoid candidate predicts
+efficiency without the flat positive-residual branch about eta=1. Its
+initialization and standardization use training labels and features only;
+validation still selects the complete field/budget/projection combination.
 The local estimators interpolate the absorption deficit `1 - eta`, where
 `eta = absorbed photons / min(source photons, atom capacity)`, using photon load,
 density/source scatter and native-ES statistics. Their tables and feature
@@ -152,6 +164,13 @@ normalization use training data only. They introduce no redshift switch and
 do not force complete absorption whenever the photon supply exceeds the atom
 count. Validation compares each budget with the fixed field and projection;
 the scalar budget fit alone does not determine the deployed model.
+
+The standalone `predict` command accepts native `source.npz` and `native.json`
+without teacher labels, checks the declared physical parameters and input hashes,
+and audits the saved field's global photon ledger. See the complete workflow
+above for an executable example. Predictions on a different astrophysical
+parameter set require a model trained for that set; native ES features alone
+do not establish such generalization.
 
 V3 expands validation within the existing campaign; it does not create a fresh
 external test. Seed 1008 retains its regression label. An additional

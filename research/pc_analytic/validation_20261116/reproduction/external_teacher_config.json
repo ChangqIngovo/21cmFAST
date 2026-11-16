@@ -1,0 +1,36 @@
+{
+  "analytic": {
+    "batch_tail_tolerance": 0.0001,
+    "boundary": "source_periodic_cube",
+    "directions": 96,
+    "exhaustion_tolerance": 1e-07,
+    "exposure_steps": 32,
+    "max_sweeps": 10000,
+    "transport_mode": "characteristic"
+  },
+  "box_len": 50.0,
+  "brightness": "native",
+  "cpus": 4,
+  "dimension": 16,
+  "highres_dimension": 96,
+  "native_template_json": "native_template.json",
+  "native_template_sha256": "7c93405fa21ba7a8f4f5555a6c34c5eb07f44744f26ce8300d5cc9546cfe7740",
+  "redshifts": [
+    10,
+    9,
+    8,
+    7.5,
+    7,
+    6.5,
+    6
+  ],
+  "seeds": [
+    2109,
+    2110,
+    2111,
+    2112
+  ],
+  "sigma_cm2": 2.7173135802469135e-18,
+  "threads": 2,
+  "workers": 2
+}
