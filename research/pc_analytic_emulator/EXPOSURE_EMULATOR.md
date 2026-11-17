@@ -1,5 +1,9 @@
 # Pure coeval photon-conserving emulator
 
+The [low-k refinement](LOW_K_REFINEMENT.md) trains through the deployed
+photon-budget projection and reduces the worst independent snapshot mean
+low-k power error to 0.879%. Use its refined model and training recipe.
+
 The model takes the same 21cmFAST cumulative source, atom-capacity and
 excursion-set arrays used by the analytic teacher. It predicts one coeval
 neutral field and a global unabsorbed reservoir. All snapshots follow the
