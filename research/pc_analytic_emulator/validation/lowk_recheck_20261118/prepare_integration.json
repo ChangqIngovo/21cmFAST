@@ -1,0 +1,53 @@
+{
+  "schema": 1,
+  "cache_schema": 2,
+  "cache_sha256": "9151334ea6b2b81093c674827d4796844cd57188633153ea81b45bd45fff5148",
+  "source_files_audited": 315,
+  "preparation_workers": 2,
+  "records": [
+    {
+      "seed": 2501,
+      "redshift": 7.5,
+      "box_len": 50.0,
+      "dimension": 16,
+      "max_xHI_difference": 1.1102230246251565e-16
+    },
+    {
+      "seed": 2502,
+      "redshift": 7.5,
+      "box_len": 50.0,
+      "dimension": 16,
+      "max_xHI_difference": 1.1102230246251565e-16
+    },
+    {
+      "seed": 2511,
+      "redshift": 7.5,
+      "box_len": 50.0,
+      "dimension": 32,
+      "max_xHI_difference": 2.220446049250313e-16
+    },
+    {
+      "seed": 2512,
+      "redshift": 7.5,
+      "box_len": 50.0,
+      "dimension": 32,
+      "max_xHI_difference": 4.440892098500626e-16
+    },
+    {
+      "seed": 2521,
+      "redshift": 7.5,
+      "box_len": 256.0,
+      "dimension": 32,
+      "max_xHI_difference": 2.220446049250313e-16
+    },
+    {
+      "seed": 2522,
+      "redshift": 7.5,
+      "box_len": 256.0,
+      "dimension": 32,
+      "max_xHI_difference": 2.220446049250313e-16
+    }
+  ],
+  "all_descriptor_parity_checks_passed": true,
+  "scope": "Input-pipeline integration check on previously designated development cohorts; no weights fitted or selected"
+}

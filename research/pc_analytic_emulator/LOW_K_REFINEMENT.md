@@ -5,6 +5,9 @@ from 1.471% to 0.879% on 42 fresh snapshots. All 35 non-late snapshots meet a
 1% mean-power target. The inference graph remains the same pure exposure
 emulator; it neither calls the teacher nor substitutes a teacher field.
 
+The [subsequent audit](LOW_K_AUDIT.md) independently reproduces these results
+and documents the stricter training-input interface below.
+
 ## Cause and correction
 
 On the previously inspected seeds 2501–2522, the four >1% cases occurred at
@@ -91,10 +94,17 @@ OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
 python -m research.pc_analytic_emulator.exposure_refine fit \
   --model /path/to/base_model \
   --cache /path/to/deployed_cache \
+  --legacy-cache-sha256 9cab68cbd66f8292b70966af009769bb1c8631706fbe304c514c60da3108502b \
   --output /path/to/refitted_model
 ```
 
-To prepare descriptors from new supervised arrays:
+This explicit checksum applies only to the released schema-1 cache. Its
+compact source archives do not carry complete native/teacher receipts.
+Pinning the historical cache permits reproduction; it does not supply those
+missing receipts. Newly prepared schema-2 caches are independently audited
+and do not use this option.
+
+To prepare descriptors from audited teacher campaigns:
 
 ```bash
 python -m research.pc_analytic_emulator.exposure_refine prepare \
@@ -102,13 +112,21 @@ python -m research.pc_analytic_emulator.exposure_refine prepare \
   --workers 4 --output /path/to/deployed_cache
 ```
 
-The manifest is `{ "schema": 1, "records": [...] }`. Each record has
-`split` (`train` or `validation`), `seed`, `redshift`, `dim`, `box_len`,
-`native_archive` and `native_sha256`. Paths are relative to the manifest.
-Each numeric NPZ contains `source`, `capacity`, `native_es_xHI`, and
-`teacher_xHI`. The teacher field is used only for the supervised objective.
-The preparer rejects repeated snapshots, overlapping seeds and unsupported
-geometries. Training cannot consume validation or test-labelled records.
+The manifest is `{ "schema": 2, "records": [...] }`. Each record declares
+`split` (`train` or `validation`), `seed`, `redshift`, `dim`, `box_len`, and
+`teacher_root`, the path to a complete analytic-teacher campaign relative to
+the manifest. It also supplies `native_archive` and `native_sha256`: the
+campaign's teacher `fields.npz` path and SHA256, containing both unchanged
+native inputs and supervised labels. Paths are relative to the manifest.
+The preparer verifies the campaign receipts, native inputs,
+photon ledger and physical/numerical signature before selecting that sample.
+Loose NPZ labels are no longer sufficient. The teacher field is used only
+for the supervised objective. The cache records the verified sample identity
+and signature; fitting rechecks its hashes and split bindings.
+
+The preparer rejects repeated snapshots, unsupported geometries and shared
+realizations across training and validation. Test-labelled records are
+rejected; validation labels are used only for candidate selection.
 
 Inference uses the unchanged entry point:
 

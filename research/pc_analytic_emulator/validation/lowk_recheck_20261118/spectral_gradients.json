@@ -1,0 +1,164 @@
+{
+  "schema": 1,
+  "model_sha256": "2eb742b4af26e7587c69e06101a87af205835cad404e6d8f0005b325dbfaeadb",
+  "weights_sha256": "4546d825481cb243822c5b2c0128d8f1176de6e5aef270c29e90a6cfdf7f4c54",
+  "cache_manifest_sha256": "9cab68cbd66f8292b70966af009769bb1c8631706fbe304c514c60da3108502b",
+  "finite_difference_step": 1e-07,
+  "direction_random_seed": 125,
+  "loss_weights": {
+    "field": 1,
+    "spectral": 10,
+    "power": 1
+  },
+  "rtol": 1e-05,
+  "atol": 1e-09,
+  "checks": [
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 16,
+        "BOX_LEN": 50.0
+      },
+      "redshift": 8,
+      "seed": 2103,
+      "cache_sha256": "c698557bb68ca6dfaf411e3ed87edb294adf23da3fba61866ae5e5900a75b3a6",
+      "late": false,
+      "analytic_directional_derivative": 0.0018817613837544547,
+      "central_difference": 0.0018817613898784095,
+      "absolute_error": 6.1239548588415404e-12,
+      "relative_error": 3.2543737541383393e-09,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 16,
+        "BOX_LEN": 50.0
+      },
+      "redshift": 6.5,
+      "seed": 2101,
+      "cache_sha256": "38fd7ba99e5cf9b9b14df86212ecf31312b46ed87bb0915d0ae74bdb7ea8d1a5",
+      "late": false,
+      "analytic_directional_derivative": 0.016885564375889502,
+      "central_difference": 0.016885564372518674,
+      "absolute_error": 3.3708279223443327e-12,
+      "relative_error": 1.9962779136701276e-10,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 16,
+        "BOX_LEN": 50.0
+      },
+      "redshift": 6,
+      "seed": 2103,
+      "cache_sha256": "ac96b9f80425e26ed21a773f06af9d45db47452d04addb5dfab6856aa6c74aea",
+      "late": true,
+      "analytic_directional_derivative": 0.0046010105273680294,
+      "central_difference": 0.004601010529059306,
+      "absolute_error": 1.69127645915923e-12,
+      "relative_error": 3.6758804377844164e-10,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 32,
+        "BOX_LEN": 50.0
+      },
+      "redshift": 8,
+      "seed": 2241,
+      "cache_sha256": "7b3fc69408a477c6a2d73a333200cad64785089bd699710e2322891a68eb7c41",
+      "late": false,
+      "analytic_directional_derivative": 0.0011522972865101455,
+      "central_difference": 0.0011522972916014167,
+      "absolute_error": 5.091271154666899e-12,
+      "relative_error": 4.418366001786183e-09,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 32,
+        "BOX_LEN": 50.0
+      },
+      "redshift": 6.5,
+      "seed": 2131,
+      "cache_sha256": "41f11a3d8ae843de8f3a6457bcec2669e6112b164011e81f6e48f4603fdcadee",
+      "late": false,
+      "analytic_directional_derivative": -0.002884779929054596,
+      "central_difference": -0.0028847799583148204,
+      "absolute_error": 2.926022445171039e-11,
+      "relative_error": 1.0142965900799092e-08,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 32,
+        "BOX_LEN": 50.0
+      },
+      "redshift": 6,
+      "seed": 2241,
+      "cache_sha256": "5a497754cb646c4adbffd58cf2e5bb7046997ab4982ea5b7d1950faa3f1516ea",
+      "late": true,
+      "analytic_directional_derivative": 0.002114968047777877,
+      "central_difference": 0.002114968047700269,
+      "absolute_error": 7.76080588682504e-14,
+      "relative_error": 3.669467203052569e-11,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 32,
+        "BOX_LEN": 256.0
+      },
+      "redshift": 8,
+      "seed": 2251,
+      "cache_sha256": "cae43ed7fa2d7ee0b78f8624fdbcc8c070966c7c0362d973304b263ffc02d5c2",
+      "late": false,
+      "analytic_directional_derivative": 0.0009347606506528562,
+      "central_difference": 0.0009347606505536539,
+      "absolute_error": 9.920233037807868e-14,
+      "relative_error": 1.061259160928455e-10,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 32,
+        "BOX_LEN": 256.0
+      },
+      "redshift": 6.5,
+      "seed": 2141,
+      "cache_sha256": "baa506af2511f83b32f2a53fee5263eb0215887b16e1a5eaa6fe7abb2a29435f",
+      "late": true,
+      "analytic_directional_derivative": 0.0005405044933485372,
+      "central_difference": 0.000540504492563005,
+      "absolute_error": 7.855322295413636e-13,
+      "relative_error": 1.4533315434157243e-09,
+      "passed": true
+    },
+    {
+      "geometry": {
+        "DIM": 96,
+        "HII_DIM": 32,
+        "BOX_LEN": 256.0
+      },
+      "redshift": 6,
+      "seed": 2251,
+      "cache_sha256": "9838802e6c96532c228f7e6db1141afc032fc50ca4fab15af0b2d4ec520b68cf",
+      "late": true,
+      "analytic_directional_derivative": 0.0,
+      "central_difference": 0.0,
+      "absolute_error": 0.0,
+      "relative_error": 0.0,
+      "passed": true
+    }
+  ],
+  "all_passed": true,
+  "maximum_absolute_error": 2.926022445171039e-11,
+  "maximum_relative_error": 1.0142965900799092e-08
+}

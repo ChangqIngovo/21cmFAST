@@ -1,0 +1,307 @@
+{
+  "schema": 1,
+  "scope": "Post-release readback and replay audit; no fitting or model selection",
+  "code_root": "21cmFAST_lowk",
+  "model_manifest_sha256": "2eb742b4af26e7587c69e06101a87af205835cad404e6d8f0005b325dbfaeadb",
+  "evaluation_sha256": "3067b517c20f44b10dd63abe1ad85425fbad53a764685ba6d373149deb494d3a",
+  "freeze_sha256": "1b3f6d5dd95ce376e9251d02b2da3a45b0292188131938606f84583a0f3adadd",
+  "cache_manifest_sha256": "9cab68cbd66f8292b70966af009769bb1c8631706fbe304c514c60da3108502b",
+  "implementation_sha256": {
+    "exposure_emulator.py": "872bb10997505cfd2dbfbd0388e4868bc089fe481f1898f24f326087fe1ba94b",
+    "exposure_features.cpp": "10e602718923718c34386edd0903162bf7a0b64806a377508465641ac61453bc",
+    "exposure_features.py": "ca9aadb912f7e9a3fbe8d2df0188564d5d7123ad6f05e85317b8716492ae6713",
+    "exposure_onset.py": "1cd2b2aec8d016f6bb5f540c4d90dd8ff9fbadd0fdf8965da6fcccb739d94888",
+    "projection.py": "d84fff04f996db1e6cedd5ee62ed01118b86ede9e8180d7cd558ded8cff51529"
+  },
+  "frozen_files_verified": {
+    "model.json": "2eb742b4af26e7587c69e06101a87af205835cad404e6d8f0005b325dbfaeadb",
+    "weights.npz": "4546d825481cb243822c5b2c0128d8f1176de6e5aef270c29e90a6cfdf7f4c54",
+    "fit.json": "0067bd93f91e0285169833e5ab2e63c7e4b0fa5429ba0b9544ca7b838e66f7fc",
+    "onset.npz": "0378bfe60057303f96234d0f2a21fe059e556e9f4440089f00c6e8c6e1e2eeca"
+  },
+  "split_audit": {
+    "model_development_seeds": [
+      2101,
+      2102,
+      2103,
+      2104,
+      2105,
+      2106,
+      2107,
+      2108,
+      2109,
+      2110,
+      2111,
+      2112,
+      2115,
+      2116,
+      2121,
+      2122,
+      2123,
+      2124,
+      2125,
+      2126,
+      2127,
+      2128,
+      2131,
+      2132,
+      2141,
+      2142,
+      2241,
+      2242,
+      2243,
+      2244,
+      2251,
+      2252,
+      2253,
+      2254,
+      2401,
+      2402,
+      2411,
+      2412,
+      2421,
+      2422,
+      2501,
+      2502,
+      2511,
+      2512,
+      2521,
+      2522,
+      2701,
+      2702,
+      2703,
+      2704,
+      2705,
+      2706,
+      2711,
+      2712,
+      2713,
+      2714,
+      2715,
+      2716,
+      2721,
+      2722,
+      2723,
+      2724
+    ],
+    "fresh_test_seeds": [
+      2801,
+      2802,
+      2811,
+      2812,
+      2821,
+      2822
+    ],
+    "disjoint": true,
+    "cache_seeds": {
+      "train": [
+        2101,
+        2102,
+        2103,
+        2104,
+        2105,
+        2106,
+        2108,
+        2109,
+        2110,
+        2111,
+        2112,
+        2115,
+        2116,
+        2121,
+        2122,
+        2123,
+        2124,
+        2125,
+        2126,
+        2127,
+        2128,
+        2131,
+        2132,
+        2141,
+        2142,
+        2241,
+        2242,
+        2244,
+        2251,
+        2252,
+        2254
+      ],
+      "validation": [
+        2501,
+        2502,
+        2511,
+        2512,
+        2521,
+        2522
+      ]
+    },
+    "independent_test_realizations": 6,
+    "snapshots_per_test_seed": {
+      "2801": 7,
+      "2802": 7,
+      "2811": 7,
+      "2812": 7,
+      "2821": 7,
+      "2822": 7
+    }
+  },
+  "direct_native_inference_replay": [
+    {
+      "seed": 2801,
+      "redshift": 6.5,
+      "dimension": 16,
+      "box_len": 50.0,
+      "native_source_sha256": "13fdaf424c257707a552c04416411a1e13053b41cfc2418a62ddd434f581562a",
+      "saved_prediction_sha256": "9f90d73814e703eb8ddd07ff5f610acded09f20ef16d9d8aa8915c08df8b116d",
+      "fields": {
+        "xHI": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "xHII": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "raw_xHI": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "raw_xHII": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "predicted_absorbed_photons": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "predicted_unabsorbed_photons": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "absorption_efficiency": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      }
+    },
+    {
+      "seed": 2811,
+      "redshift": 6.5,
+      "dimension": 32,
+      "box_len": 50.0,
+      "native_source_sha256": "7eeb914e7cfae6d8e40ec0aee960e9f5a7b5cc149f530a180d37ca44ff07bd9a",
+      "saved_prediction_sha256": "b20403548094c3267dd5d6bec275b4ce9da5c40492dd590eb82eacb3b58b3933",
+      "fields": {
+        "xHI": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "xHII": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "raw_xHI": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "raw_xHII": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "predicted_absorbed_photons": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "predicted_unabsorbed_photons": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "absorption_efficiency": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      }
+    },
+    {
+      "seed": 2821,
+      "redshift": 6.5,
+      "dimension": 32,
+      "box_len": 256.0,
+      "native_source_sha256": "bb82526f2af97d632db1ac4a72e003c4afee59dde6aab04f66ce319536c68032",
+      "saved_prediction_sha256": "0c44c9e5166efc693bfa43a6cb608663373c71fed9355bc777bf02c929b80a84",
+      "fields": {
+        "xHI": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "xHII": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "raw_xHI": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "raw_xHII": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "predicted_absorbed_photons": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "predicted_unabsorbed_photons": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        },
+        "absorption_efficiency": {
+          "bitwise_equal": true,
+          "maximum_absolute_difference": 0.0
+        }
+      }
+    }
+  ],
+  "saved_predictions_read_back": 84,
+  "all_field_bounds_and_native_input_equalities_passed": true,
+  "maximum_absolute_recomputed_metric_difference": 6.661338147750939e-16,
+  "recomputed_summary": {
+    "base": {
+      "snapshots": 42,
+      "mean_MAE": 0.001000840154548636,
+      "max_MAE": 0.003460620920218394,
+      "max_abs_delta_Q_mass": 0.0011237424220953273,
+      "nonlate_snapshots": 35,
+      "mean_nonlate_snapshot_mean_lowk_relative_power_error": 0.005387326967863182,
+      "max_nonlate_snapshot_mean_lowk_relative_power_error": 0.014713278604925745,
+      "lowk_shell_count": 232,
+      "lowk_shells_above_one_percent": 29,
+      "maximum_lowk_shell_relative_power_error": 0.016798045052086374,
+      "late_count": 7,
+      "maximum_late_brightness_residual_over_neutral_rms": 0.003615524067308022,
+      "max_independent_relative_photon_residual": 2.7674032151408658e-17
+    },
+    "model": {
+      "snapshots": 42,
+      "mean_MAE": 0.0006366979957881799,
+      "max_MAE": 0.002199035049895081,
+      "max_abs_delta_Q_mass": 0.0011237424220953299,
+      "nonlate_snapshots": 35,
+      "mean_nonlate_snapshot_mean_lowk_relative_power_error": 0.0020503059895437227,
+      "max_nonlate_snapshot_mean_lowk_relative_power_error": 0.008785616354131609,
+      "lowk_shell_count": 232,
+      "lowk_shells_above_one_percent": 4,
+      "maximum_lowk_shell_relative_power_error": 0.011000952709590228,
+      "late_count": 7,
+      "maximum_late_brightness_residual_over_neutral_rms": 0.003958758118040422,
+      "max_independent_relative_photon_residual": 2.7009855379774852e-17
+    }
+  },
+  "confirmed_result_invalidating_findings": [],
+  "material_remaining_limits": [
+    "One-percent statement applies to the mean across low-k shells in each non-late snapshot, not to every shell.",
+    "Maximum mass-ionization bias is unchanged; budget closure is distinct from absorption prediction accuracy.",
+    "Fresh test has six independent seeds and fixed physical parameters in three supported geometries.",
+    "Late absolute brightness residual and ionized MFP maximum CDF discrepancy regress slightly; the latter has no declared acceptance threshold."
+  ]
+}

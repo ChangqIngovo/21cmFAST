@@ -155,6 +155,48 @@ def test_fully_ionized_loss_is_absolute_and_finite() -> None:
     assert np.isfinite(gradient).all()
 
 
+@pytest.mark.parametrize("floor", [0.0, -1e-8, np.nan, np.inf])
+def test_shell_variance_floor_must_be_positive_and_finite(floor: float) -> None:
+    """Reject floors that leave a zero-power teacher shell unregularized."""
+    frame = _fixture()
+    frame.teacher[:] = 0.5
+    frame.shell_variance_floor = floor
+    with pytest.raises(ValueError, match="Invalid supervised spectral snapshot"):
+        frame.__post_init__()
+
+
+def test_zero_power_teacher_has_finite_regularized_spectral_loss() -> None:
+    """A uniform partially neutral teacher has zero power in every fitted shell."""
+    shape = (8, 8, 8)
+    atoms = np.ones(shape)
+    source = np.full(shape, 0.5)
+    teacher = np.full(shape, 0.5)
+    basis = np.zeros((FIELD_TERMS, atoms.size))
+    basis[0] = np.broadcast_to(
+        np.cos(2 * np.pi * np.arange(8) / 8)[:, None, None], shape
+    ).ravel()
+    features = FieldInputs(
+        upper=np.ones(shape),
+        latent=teacher.copy(),
+        basis=basis,
+        reservoir=np.zeros(5),
+        load=0.5,
+    )
+    frame = SpectralTrainingFrame(
+        source, atoms, teacher, features, np.zeros(5), 50.0
+    )
+    assert not frame.late
+    np.testing.assert_array_equal(frame.teacher_power, 0)
+    coefficients = np.zeros(FIELD_TERMS)
+    coefficients[0] = 0.01
+    loss, gradient, _ = projected_frame_objective(
+        coefficients, frame, power_weight=1.0
+    )
+    assert loss > 0
+    assert np.isfinite(loss)
+    assert np.isfinite(gradient).all()
+
+
 def test_clipped_boundary_cancellation_has_zero_derivative() -> None:
     """Clipped boundary cancellation has zero derivative."""
     upper = np.array([0.1, 0.3, 0.0])

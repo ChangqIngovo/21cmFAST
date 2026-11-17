@@ -7,6 +7,7 @@ train/validation splits. Test labels are never accepted by this entry point.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import multiprocessing
 import shutil
@@ -15,6 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
+from research.pc_analytic_emulator.data import compatibility_signature, load_dataset
 from research.pc_analytic_emulator.exposure_emulator import (
     ExposureEmulator,
 )
@@ -31,7 +33,7 @@ def _validate_records(rows: list[dict], model: ExposureEmulator) -> dict[str, se
     """Recheck cohort separation at preparation and again before fitting."""
     if not rows:
         raise ValueError("Refinement records must be nonempty")
-    seen, names = set(), set()
+    seen, names, archives = set(), set(), {}
     seeds = {"train": set(), "validation": set()}
     for row in rows:
         split = row["split"]
@@ -53,6 +55,12 @@ def _validate_records(rows: list[dict], model: ExposureEmulator) -> dict[str, se
         seen.add(key)
         names.add(name)
         seeds[split].add(row["seed"])
+        archive_hash = row["native_sha256"]
+        if archive_hash in archives and archives[archive_hash] != split:
+            raise ValueError(
+                "Duplicate native archive across training/validation splits"
+            )
+        archives[archive_hash] = split
         if "dimension" in row:
             geometry = {
                 "DIM": row["dim"],
@@ -70,6 +78,128 @@ def _validate_records(rows: list[dict], model: ExposureEmulator) -> dict[str, se
     if seeds["validation"] & base_train or seeds["train"] & base_validation:
         raise ValueError("Refinement split leaks frozen-base development labels")
     return seeds
+
+
+def _binding(row: dict) -> dict:
+    return {
+        key: row[key]
+        for key in ("seed", "redshift", "dim", "dimension", "box_len", "native_sha256")
+    }
+
+
+def _audit_sources(
+    parent: Path, rows: list[dict], model: ExposureEmulator
+) -> tuple[list[dict], dict]:
+    """Bind supervised arrays to independently audited native/teacher receipts."""
+    datasets, checked, files = {}, [], {}
+    for row in rows:
+        if not row.get("teacher_root"):
+            raise ValueError(
+                "New refinement inputs require an audited teacher_root campaign"
+            )
+        root = (parent / row["teacher_root"]).resolve()
+        if root not in datasets:
+            dataset = load_dataset(root)
+            signature = compatibility_signature(dataset, allow_mixed_geometry=True)
+            if signature != model.metadata["teacher_signature"]:
+                raise ValueError(
+                    "Refinement teacher physics or numerical signature differs from base model"
+                )
+            datasets[root] = {(s.seed, s.redshift): s for s in dataset.samples}
+            files.update(dataset.file_hashes)
+        sample = datasets[root].get((row["seed"], row["redshift"]))
+        if sample is None:
+            raise ValueError(
+                "Refinement seed/redshift is absent from audited teacher campaign"
+            )
+        options = sample.metadata["input"]["inputs"]["simulation_options"]
+        expected = {
+            "seed": sample.seed,
+            "redshift": sample.redshift,
+            "dim": options["DIM"],
+            "dimension": sample.dimension,
+            "box_len": sample.box_len,
+            "native_sha256": files[str(sample.fields_path.resolve())],
+        }
+        actual = {**row, "dimension": row.get("dimension", sample.dimension)}
+        if _binding(actual) != expected:
+            raise ValueError(
+                "Refinement sample identity differs from audited teacher receipt"
+            )
+        native_json = json.loads((sample.native_directory / "native.json").read_text())
+        checked.append(
+            {
+                **actual,
+                "provenance": {
+                    "sample": expected,
+                    "teacher_receipt_sha256": files[
+                        str((sample.fields_path.parent / "receipt.json").resolve())
+                    ],
+                    "native_receipt_sha256": files[
+                        str((sample.native_directory / "receipt.json").resolve())
+                    ],
+                    "initial_conditions_sha256": native_json[
+                        "initial_conditions_sha256"
+                    ],
+                },
+            }
+        )
+    _validate_provenance(checked, model.metadata["teacher_signature"], model)
+    return checked, files
+
+
+def _validate_provenance(
+    rows: list[dict], signature: dict, model: ExposureEmulator
+) -> None:
+    """Recheck portable audited bindings without following original source paths."""
+    if signature != model.metadata["teacher_signature"]:
+        raise ValueError(
+            "Refinement teacher physics or numerical signature differs from base model"
+        )
+    initial_splits = {}
+    for row in rows:
+        provenance = row.get("provenance", {})
+        if provenance.get("sample") != _binding(row):
+            raise ValueError(
+                "Cached sample identity differs from audited teacher binding"
+            )
+        for name in (
+            "teacher_receipt_sha256",
+            "native_receipt_sha256",
+            "initial_conditions_sha256",
+        ):
+            value = provenance.get(name)
+            if (
+                not isinstance(value, str)
+                or len(value) != 64
+                or any(c not in "0123456789abcdef" for c in value)
+            ):
+                raise ValueError("Invalid audited teacher provenance checksum")
+        initial = provenance["initial_conditions_sha256"]
+        if initial in initial_splits and initial_splits[initial] != row["split"]:
+            raise ValueError("Training/validation share initial conditions")
+        initial_splits[initial] = row["split"]
+
+
+def _validate_cache_provenance(
+    config: dict,
+    model: ExposureEmulator,
+    cache_hash: str,
+    legacy_cache_sha256: str | None,
+) -> None:
+    if config.get("schema") == 1:
+        if legacy_cache_sha256 is None or legacy_cache_sha256 != cache_hash:
+            raise ValueError(
+                "Legacy cache requires explicit matching --legacy-cache-sha256; it has no audited teacher bindings"
+            )
+    elif config.get("schema") == 2:
+        if legacy_cache_sha256 is not None:
+            raise ValueError(
+                "Legacy cache override is not applicable to audited schema 2"
+            )
+        _validate_provenance(config["records"], config.get("teacher_signature"), model)
+    else:
+        raise ValueError("Unsupported refinement cache schema")
 
 
 def _prepare_one(task: tuple[Path, Path, dict, Path]) -> dict:
@@ -139,9 +269,10 @@ def prepare(model_path: Path, manifest: Path, output: Path, workers: int = 1) ->
     manifest_hash = _digest(manifest)
     config = json.loads(manifest.read_text())
     rows = config["records"]
-    if config.get("schema") != 1 or not rows or workers < 1:
+    if config.get("schema") != 2 or not rows or workers < 1:
         raise ValueError("Invalid refinement manifest or worker count")
     seeds = _validate_records(rows, model)
+    rows, audited_files = _audit_sources(manifest.parent, rows, model)
     output.mkdir(parents=True, exist_ok=False)
     tasks = [(model_path, manifest.parent, row, output) for row in rows]
     with ProcessPoolExecutor(
@@ -154,14 +285,18 @@ def prepare(model_path: Path, manifest: Path, output: Path, workers: int = 1) ->
         raise ValueError(
             "Frozen base model or refinement manifest changed during preparation"
         )
+    if any(_digest(Path(path)) != digest for path, digest in audited_files.items()):
+        raise ValueError("Audited teacher campaign changed during preparation")
     payload = {
-        "schema": 1,
+        "schema": 2,
         "records": records,
         "seeds": {k: sorted(v) for k, v in seeds.items()},
         "base_model_sha256": model_hash,
         "manifest_sha256": manifest_hash,
         "depth": model.metadata["depth"],
         "onset_sha256": model.metadata.get("onset_sha256"),
+        "teacher_signature": model.metadata["teacher_signature"],
+        "audited_source_files": audited_files,
     }
     (output / "cache.json").write_text(json.dumps(payload, indent=2, allow_nan=False))
 
@@ -188,13 +323,22 @@ def score(rows: list[dict]) -> tuple[float, float]:
     return max(ratios), float(np.mean([r["MAE"] for r in rows]))
 
 
-def fit(model_path: Path, cache: Path, output: Path, *, maxiter: int = 160) -> dict:
+def fit(
+    model_path: Path,
+    cache: Path,
+    output: Path,
+    *,
+    maxiter: int = 160,
+    legacy_cache_sha256: str | None = None,
+) -> dict:
     """Select geometry coefficients by validation; retain one pure inference graph."""
     model = ExposureEmulator.load(model_path)
-    config = json.loads((cache / "cache.json").read_text())
+    cache_bytes = (cache / "cache.json").read_bytes()
+    config = json.loads(cache_bytes)
+    cache_hash = hashlib.sha256(cache_bytes).hexdigest()
+    _validate_cache_provenance(config, model, cache_hash, legacy_cache_sha256)
     if (
-        config.get("schema") != 1
-        or config["base_model_sha256"] != _digest(model_path / "model.json")
+        config["base_model_sha256"] != _digest(model_path / "model.json")
         or config["depth"] != model.metadata["depth"]
         or config["onset_sha256"] != model.metadata.get("onset_sha256")
     ):
@@ -208,7 +352,11 @@ def fit(model_path: Path, cache: Path, output: Path, *, maxiter: int = 160) -> d
     report = {
         "schema": 1,
         "base_model_sha256": _digest(model_path / "model.json"),
-        "cache_sha256": _digest(cache / "cache.json"),
+        "cache_sha256": cache_hash,
+        "cache_schema": config["schema"],
+        "input_provenance": "audited_teacher_campaigns"
+        if config["schema"] == 2
+        else "legacy_cache_explicit_sha256",
         "geometries": [],
         "target_lowk_mean_absolute_relative_error": 0.01,
         "selection": "Worst normalized validation metric, then field MAE; no test labels",
@@ -261,7 +409,10 @@ def fit(model_path: Path, cache: Path, output: Path, *, maxiter: int = 160) -> d
                 for f in train
             ]
             for spectral_weight, power_weight in (
-                (0.3, 0.0), (1.0, 0.0), (3.0, 0.3), (10.0, 1.0)
+                (0.3, 0.0),
+                (1.0, 0.0),
+                (3.0, 0.3),
+                (10.0, 1.0),
             ):
                 fw, receipt = fit_projected_field(
                     frames,
@@ -299,6 +450,8 @@ def fit(model_path: Path, cache: Path, output: Path, *, maxiter: int = 160) -> d
         (output / "fit.json").write_text(json.dumps(report, indent=2, allow_nan=False))
     if report["base_model_sha256"] != _digest(model_path / "model.json"):
         raise ValueError("Frozen base model changed during fitting")
+    if cache_hash != _digest(cache / "cache.json"):
+        raise ValueError("Frozen refinement cache metadata changed during fitting")
     np.savez(output / "weights.npz", field=field, budget=budget)
     if model.onset_head is not None:
         shutil.copyfile(model_path / "onset.npz", output / "onset.npz")
@@ -310,6 +463,8 @@ def fit(model_path: Path, cache: Path, output: Path, *, maxiter: int = 160) -> d
             "fit_sha256": _digest(output / "fit.json"),
             "objective": "Postprojection field and equal-shell complex brightness",
             "base_model_sha256": report["base_model_sha256"],
+            "cache_schema": report["cache_schema"],
+            "input_provenance": report["input_provenance"],
         },
         "split_seeds": {
             **model.metadata["split_seeds"],
@@ -337,6 +492,10 @@ def main() -> None:
     parser.add_argument("--cache", type=Path)
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--maxiter", type=int, default=160)
+    parser.add_argument(
+        "--legacy-cache-sha256",
+        help="Explicit SHA256 pin for reproducing an archived schema-1 cache",
+    )
     args = parser.parse_args()
     if args.command == "prepare":
         if args.manifest is None:
@@ -345,7 +504,13 @@ def main() -> None:
     else:
         if args.cache is None:
             parser.error("fit requires --cache")
-        fit(args.model, args.cache, args.output, maxiter=args.maxiter)
+        fit(
+            args.model,
+            args.cache,
+            args.output,
+            maxiter=args.maxiter,
+            legacy_cache_sha256=args.legacy_cache_sha256,
+        )
 
 
 if __name__ == "__main__":

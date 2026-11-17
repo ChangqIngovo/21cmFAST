@@ -3,6 +3,8 @@
 The [low-k refinement](LOW_K_REFINEMENT.md) trains through the deployed
 photon-budget projection and reduces the worst independent snapshot mean
 low-k power error to 0.879%. Use its refined model and training recipe.
+The [follow-up audit](LOW_K_AUDIT.md) verifies saved predictions and gradients
+and records the remaining approximation errors.
 
 The model takes the same 21cmFAST cumulative source, atom-capacity and
 excursion-set arrays used by the analytic teacher. It predicts one coeval

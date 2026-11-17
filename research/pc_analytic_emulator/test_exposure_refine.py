@@ -9,6 +9,7 @@ import numpy as np
 import pytest
 
 from research.pc_analytic_emulator import exposure_refine as refine
+from research.pc_analytic_emulator.data import compatibility_signature, load_dataset
 from research.pc_analytic_emulator.exposure_emulator import (
     ExposureEmulator,
     predict_fields,
@@ -16,6 +17,7 @@ from research.pc_analytic_emulator.exposure_emulator import (
 from research.pc_analytic_emulator.exposure_fit import _load
 from research.pc_analytic_emulator.exposure_onset import OnsetHead
 from research.pc_analytic_emulator.predict import _digest
+from research.pc_analytic_emulator.test_data import make_campaign
 
 
 class _SerialPool:
@@ -32,7 +34,7 @@ class _SerialPool:
         return map(function, tasks)
 
 
-def _write_model(path: Path) -> ExposureEmulator:
+def _write_model(path: Path, signature: dict) -> ExposureEmulator:
     path.mkdir()
     np.savez(
         path / "weights.npz",
@@ -58,42 +60,41 @@ def _write_model(path: Path) -> ExposureEmulator:
         "opacity_prefactor": 1.73,
         "weights_sha256": _digest(path / "weights.npz"),
         "onset_sha256": _digest(path / "onset.npz"),
-        "training_geometries": [{"DIM": 96, "HII_DIM": 16, "BOX_LEN": 50.0}],
+        "training_geometries": [{"DIM": 48, "HII_DIM": 16, "BOX_LEN": 50.0}],
         "split_seeds": {"train": [11], "validation": [22]},
-        "teacher_signature": {"test_identity": "unchanged"},
-        "teacher_physics": {"test_physics": "unchanged"},
+        "teacher_signature": signature,
+        "teacher_physics": signature["physics"],
     }
     (path / "model.json").write_text(json.dumps(metadata))
     return ExposureEmulator.load(path)
 
 
-def _native(path: Path, seed: int, split: str) -> dict:
-    rng = np.random.default_rng(seed)
-    atoms = rng.uniform(0.6, 1.4, (16, 16, 16))
-    source = rng.lognormal(-1.1, 1.0, atoms.shape)
-    es = np.clip(1 - source / atoms, 0, 1)
-    teacher = np.clip(es * 0.99, 0, 1)
-    np.savez(path, source=source, capacity=atoms, native_es_xHI=es, teacher_xHI=teacher)
-    return {
-        "seed": seed,
-        "split": split,
-        "dim": 96,
-        "redshift": 7.5,
-        "box_len": 50.0,
-        "native_archive": path.name,
-        "native_sha256": _digest(path),
-    }
-
-
 def _setup(tmp_path: Path, monkeypatch):
+    root = make_campaign(
+        tmp_path / "teachers", seeds=(11, 44), redshifts=(7.5, 7.0), n=16, box_len=50.0
+    )
+    dataset = load_dataset(root)
     model_path = tmp_path / "model"
-    model = _write_model(model_path)
-    rows = [
-        _native(tmp_path / "train.npz", 11, "train"),
-        _native(tmp_path / "validation.npz", 44, "validation"),
-    ]
+    model = _write_model(
+        model_path, compatibility_signature(dataset, allow_mixed_geometry=True)
+    )
+    rows = []
+    for seed, z, split in ((11, 7.5, "train"), (44, 7.0, "validation")):
+        sample = next(s for s in dataset.samples if (s.seed, s.redshift) == (seed, z))
+        rows.append(
+            {
+                "seed": seed,
+                "split": split,
+                "dim": 48,
+                "redshift": z,
+                "box_len": 50.0,
+                "teacher_root": "teachers",
+                "native_archive": str(sample.fields_path.relative_to(tmp_path)),
+                "native_sha256": _digest(sample.fields_path),
+            }
+        )
     manifest = tmp_path / "manifest.json"
-    manifest.write_text(json.dumps({"schema": 1, "records": rows}))
+    manifest.write_text(json.dumps({"schema": 2, "records": rows}))
     monkeypatch.setattr(refine, "ProcessPoolExecutor", _SerialPool)
     return model_path, model, manifest, rows
 
@@ -144,6 +145,121 @@ def test_input_checksum_change_is_rejected(tmp_path, monkeypatch):
     assert not list(output.iterdir())
 
 
+def test_prepare_requires_audited_campaign_and_rejects_changed_physics(
+    tmp_path, monkeypatch
+):
+    """Reject standalone arrays and incompatible independently audited physics."""
+    model_path, _, manifest, rows = _setup(tmp_path, monkeypatch)
+    rows[0].pop("teacher_root")
+    manifest.write_text(json.dumps({"schema": 2, "records": rows}))
+    with pytest.raises(ValueError, match="audited teacher_root"):
+        refine.prepare(model_path, manifest, tmp_path / "missing")
+    make_campaign(
+        tmp_path / "other_physics",
+        seeds=(11,),
+        redshifts=(7.5,),
+        n=16,
+        box_len=50.0,
+        native_changes={"cosmo_params": {"OMm": 0.32}},
+    )
+    rows[0]["teacher_root"] = "other_physics"
+    manifest.write_text(json.dumps({"schema": 2, "records": rows}))
+    with pytest.raises(ValueError, match="physics or numerical signature"):
+        refine.prepare(model_path, manifest, tmp_path / "changed")
+    assert not (tmp_path / "missing").exists()
+    assert not (tmp_path / "changed").exists()
+
+
+def test_prepare_binds_declared_seed_to_teacher_receipts(tmp_path, monkeypatch):
+    """A new seed label cannot disguise an existing realization."""
+    model_path, _, manifest, rows = _setup(tmp_path, monkeypatch)
+    rows[0]["seed"] = 12345
+    manifest.write_text(json.dumps({"schema": 2, "records": rows}))
+    with pytest.raises(ValueError, match="seed/redshift is absent"):
+        refine.prepare(model_path, manifest, tmp_path / "cache")
+
+
+def test_recompressed_alias_cannot_replace_receipt_bound_sample(tmp_path, monkeypatch):
+    """Repacking a training NPZ cannot make it a validation realization."""
+    model_path, _, manifest, rows = _setup(tmp_path, monkeypatch)
+    with np.load(tmp_path / rows[0]["native_archive"], allow_pickle=False) as source:
+        np.savez_compressed(
+            tmp_path / "repacked.npz", **{k: source[k] for k in source.files}
+        )
+    rows[1]["native_archive"] = "repacked.npz"
+    rows[1]["native_sha256"] = _digest(tmp_path / "repacked.npz")
+    assert rows[1]["native_sha256"] != rows[0]["native_sha256"]
+    manifest.write_text(json.dumps({"schema": 2, "records": rows}))
+    with pytest.raises(
+        ValueError, match="identity differs from audited teacher receipt"
+    ):
+        refine.prepare(model_path, manifest, tmp_path / "cache")
+
+
+def test_relabelled_duplicate_archive_is_rejected_even_in_legacy_records(
+    tmp_path, monkeypatch
+):
+    """Identical input bytes cannot occupy both supervised splits."""
+    _, model, _, rows = _setup(tmp_path, monkeypatch)
+    aliased = [rows[0], {**rows[0], "seed": 99, "split": "validation"}]
+    with pytest.raises(ValueError, match="Duplicate native archive"):
+        refine._validate_records(aliased, model)
+
+
+@pytest.mark.parametrize("change", ["seed", "physics", "initial_conditions"])
+def test_fit_rechecks_audited_provenance(tmp_path, monkeypatch, change):
+    """Portable cache bindings retain identity, physics and realization isolation."""
+    model_path, _, manifest, _ = _setup(tmp_path, monkeypatch)
+    cache = tmp_path / "cache"
+    refine.prepare(model_path, manifest, cache)
+    path = cache / "cache.json"
+    config = json.loads(path.read_text())
+    if change == "seed":
+        config["records"][0]["seed"] = 99
+        config["seeds"]["train"] = [99]
+    elif change == "physics":
+        config["teacher_signature"]["physics"]["cosmo_params"]["OMm"] = 0.32
+    else:
+        config["records"][1]["provenance"]["initial_conditions_sha256"] = config[
+            "records"
+        ][0]["provenance"]["initial_conditions_sha256"]
+    path.write_text(json.dumps(config))
+    with pytest.raises(
+        ValueError,
+        match=r"audited teacher binding|physics or numerical signature|share initial conditions",
+    ):
+        refine.fit(model_path, cache, tmp_path / "output", maxiter=1)
+    assert not (tmp_path / "output").exists()
+
+
+def test_legacy_cache_requires_explicit_pin_and_records_exception(
+    tmp_path, monkeypatch
+):
+    """Reproduce legacy arrays only through an explicit whole-manifest checksum."""
+    model_path, _, manifest, _ = _setup(tmp_path, monkeypatch)
+    cache = tmp_path / "cache"
+    refine.prepare(model_path, manifest, cache)
+    path = cache / "cache.json"
+    config = json.loads(path.read_text())
+    config["schema"] = 1
+    config.pop("teacher_signature")
+    config.pop("audited_source_files")
+    for row in config["records"]:
+        row.pop("provenance")
+    path.write_text(json.dumps(config))
+    for pin in (None, "0" * 64):
+        with pytest.raises(ValueError, match="Legacy cache requires explicit"):
+            refine.fit(model_path, cache, tmp_path / "output", legacy_cache_sha256=pin)
+    monkeypatch.setattr(
+        refine, "fit_projected_field", lambda frames, initial, **kwargs: (initial, {})
+    )
+    report = refine.fit(
+        model_path, cache, tmp_path / "output", legacy_cache_sha256=_digest(path)
+    )
+    assert report["input_provenance"] == "legacy_cache_explicit_sha256"
+    assert report["cache_schema"] == 1
+
+
 @pytest.mark.parametrize(
     "case",
     [
@@ -177,7 +293,7 @@ def test_prepare_rejects_cohort_leakage_and_ambiguous_records(
     else:
         rows[0]["redshift"] = 7.5000001
         rows.append({**rows[0], "redshift": 7.5000002})
-    manifest.write_text(json.dumps({"schema": 1, "records": rows}))
+    manifest.write_text(json.dumps({"schema": 2, "records": rows}))
     with pytest.raises(ValueError, match=r"disjoint|frozen-base|Only train|Duplicate"):
         refine.prepare(model_path, manifest, tmp_path / "cache")
     assert not (tmp_path / "cache").exists()
@@ -220,7 +336,8 @@ def test_fit_revalidates_frozen_cache(tmp_path, monkeypatch, change):
         config["seeds"]["validation"] = [55]
     config_path.write_text(json.dumps(config))
     with pytest.raises(
-        ValueError, match=r"frozen-base|checksum|deployed base|geometry|seed index"
+        ValueError,
+        match=r"frozen-base|checksum|deployed base|geometry|seed index|audited teacher binding",
     ):
         refine.fit(model_path, cache, tmp_path / "output", maxiter=1)
     assert not (tmp_path / "output" / "model.json").exists()

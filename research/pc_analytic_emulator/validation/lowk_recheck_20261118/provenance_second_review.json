@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "scope": "Independent second review of new refinement data provenance checks; no edits by reviewer",
+  "reviewed_sha256": {
+    "exposure_refine.py": "7f340b1fd7185700f8f5a5f07aea655ae46c9e8b5ce023d0eb0f9b39e5c20c91",
+    "test_exposure_refine.py": "36ef60658ec446e50a22d5405bde6c0568d183c211b795db1ec1b60e37d7795d"
+  },
+  "checks": {
+    "teacher_campaign_integrity": "load_dataset verifies source/teacher receipts, native array digests, physical settings, solver settings and field photon inventories",
+    "supervised_array_binding": "native_sha256 must equal audited teacher fields archive SHA256, then worker rehashes actual NPZ before and after reading",
+    "sample_identity_binding": "seed, redshift, DIM, HII_DIM, BOX_LEN and fields archive hash matched against independent campaign record",
+    "physical_signature_binding": "full compatibility_signature must equal frozen base teacher_signature",
+    "cohort_alias_protection": "seed disjointness, repeated archive hash across splits and initial-condition digest across splits are rejected",
+    "portable_cache_provenance": "per-record sample binding and teacher_signature rechecked beforefit; each NPZ SHA256 verified by loader",
+    "legacy_compatibility": "schema1 requires explicit exact cache.json hash pin and reports legacy provenance distinctly",
+    "cache_pin_read_consistency": "cache JSON and its SHA256 derived from same read_bytes payload; end-of-fit currentfile digest checked again"
+  },
+  "test_command": "OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 /workspace/scratch/c8ee7ea91934/21cmFAST_training/.venv/bin/python -m pytest -q research/pc_analytic_emulator/test_exposure_refine.py",
+  "test_result": {
+    "passed": 26,
+    "failed": 0,
+    "warnings": "Unrelated installed anyio pytest plugin deprecation"
+  },
+  "blocking_findings": [],
+  "suggestion_resolved": "Bind cache JSON parsing and explicit legacy checksum to the same byte payload to avoid a concurrent replacement between parse and initial digest."
+}

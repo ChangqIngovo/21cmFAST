@@ -97,7 +97,7 @@ class SpectralTrainingFrame:
             or not np.isfinite(self.box_len)
             or self.box_len <= 0
             or not np.isfinite(self.shell_variance_floor)
-            or self.shell_variance_floor < 0
+            or self.shell_variance_floor <= 0
             or not 0 < self.late_threshold < 1
         ):
             raise ValueError("Invalid supervised spectral snapshot")
