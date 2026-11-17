@@ -1,5 +1,9 @@
 # Emulator of the analytic coeval photon-conserving teacher
 
+The [pure exposure emulator](EXPOSURE_EMULATOR.md) learns saturation timing,
+spatial absorption and the global photon reserve. It uses one fixed
+inference graph for every snapshot in the supported geometries.
+
 The [validation-gated inference workflow](finalization_20261117/README.md) adds
 optional geometry-conditioned photon budgets and balanced residual training.
 It can freeze an empirically validated surrogate route for each geometry and
