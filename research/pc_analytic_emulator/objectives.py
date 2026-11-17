@@ -157,6 +157,7 @@ def projected_objective(
     spectral_weight: float = 0.1,
     spectral_power_floor: float = 1e-4,
     front_weight: float = 1.0,
+    phase_balance_weight: float = 0.0,
     field_variance_floor: float = 0.01,
     k_fraction: float = 0.5,
 ) -> tuple[float, NDArray[np.float64], dict[str, Any]]:
@@ -185,6 +186,14 @@ def projected_objective(
         Extra field-loss weight for teacher cells adjacent, through any of six
         periodic neighbours, to the opposite side of xHII=0.5. Weights are
         normalized to mean one separately in each snapshot.
+    phase_balance_weight
+        Blend in [0, 1] between ordinary field weights and inverse phase-volume
+        weights. The latter uses continuous teacher xHI/xHII and a fixed 0.01
+        phase-fraction floor to avoid an unbounded weight for disappearing
+        islands. Zero preserves the original objective; one gives equal total
+        weight to two binary phases before front weighting when each exceeds
+        the floor. This changes
+        supervised loss weighting only, never inference inputs or budgets.
     field_variance_floor
         Positive lower bound on the teacher-field variance used to normalize
         the field MSE. This prevents trivial or nearly uniform snapshots from
@@ -228,6 +237,9 @@ def projected_objective(
     spectral_weight = _control(spectral_weight, "spectral_weight")
     spectral_power_floor = _control(spectral_power_floor, "spectral_power_floor")
     front_weight = _control(front_weight, "front_weight")
+    phase_balance_weight = _control(phase_balance_weight, "phase_balance_weight")
+    if phase_balance_weight > 1:
+        raise ValueError("phase_balance_weight must lie in [0, 1]")
     field_variance_floor = _control(
         field_variance_floor, "field_variance_floor", positive=True
     )
@@ -240,6 +252,15 @@ def projected_objective(
         for direction in (-1, 1):
             front |= phase != np.roll(phase, direction, axis=axis)
     weights = 1 + front_weight * front
+    phase_fraction_floor = 0.01
+    if phase_balance_weight:
+        ionized_mean = float(np.mean(teacher))
+        balanced = 0.5 * (
+            teacher / max(ionized_mean, phase_fraction_floor)
+            + (1 - teacher) / max(1 - ionized_mean, phase_fraction_floor)
+        )
+        balanced /= balanced.mean()
+        weights *= 1 - phase_balance_weight + phase_balance_weight * balanced
     weights /= weights.mean()
     scale = max(float(np.var(teacher)), field_variance_floor)
     error = prediction - teacher
@@ -258,6 +279,9 @@ def projected_objective(
         field_MSE=float(np.mean(error**2)),
         field_variance_scale=scale,
         front_fraction=float(np.mean(front)),
+        phase_balance_weight=phase_balance_weight,
+        phase_fraction_floor=phase_fraction_floor,
+        maximum_field_weight=float(np.max(weights)),
         spectral_weight=spectral_weight,
         spectral_loss_contribution=spectral_weight * spectral,
     )

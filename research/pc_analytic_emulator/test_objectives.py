@@ -292,3 +292,56 @@ def test_invalid_density_and_shape_are_rejected() -> None:
     capacity[0, 0, 0] = -1
     with pytest.raises(ValueError, match="Capacity"):
         projected_objective(predicted, teacher, capacity, 256)
+
+
+def test_phase_balancing_gives_rare_neutral_island_equal_total_weight() -> None:
+    """Both binary phases contribute equally despite unequal cell counts."""
+    teacher = np.ones((4, 4, 4))
+    teacher[0, 0, 0] = 0
+    prediction = teacher * 0.8 + 0.1
+    _, gradient, diagnostics = projected_objective(
+        prediction,
+        teacher,
+        np.ones_like(teacher),
+        50,
+        spectral_weight=0,
+        front_weight=0,
+        phase_balance_weight=1,
+    )
+    assert abs(gradient[0, 0, 0]) == pytest.approx(
+        np.sum(np.abs(gradient[teacher == 1])),
+        rel=1e-12,
+    )
+    assert diagnostics["phase_balance_weight"] == 1
+    assert diagnostics["phase_fraction_floor"] == 0.01
+
+
+def test_phase_balanced_objective_gradient_and_uniform_limit() -> None:
+    """The phase weight depends only on labels and remains finite at endpoints."""
+    predicted, teacher, capacity = sample_fields()
+    options = {"phase_balance_weight": 0.7, "spectral_weight": 0.3}
+    _, gradient, _ = projected_objective(predicted, teacher, capacity, 50, **options)
+    direction = np.random.default_rng(71).normal(size=teacher.shape)
+    direction /= np.linalg.norm(direction)
+    step = 1e-5
+    plus = projected_objective(
+        predicted + step * direction, teacher, capacity, 50, **options
+    )[0]
+    minus = projected_objective(
+        predicted - step * direction, teacher, capacity, 50, **options
+    )[0]
+    assert (plus - minus) / (2 * step) == pytest.approx(
+        np.sum(gradient * direction),
+        rel=2e-7,
+        abs=1e-10,
+    )
+    for value in (0.0, 1.0):
+        truth = np.full(teacher.shape, value)
+        standard = projected_objective(predicted, truth, capacity, 50)
+        balanced = projected_objective(
+            predicted, truth, capacity, 50, phase_balance_weight=1
+        )
+        assert balanced[0] == pytest.approx(standard[0], rel=1e-14)
+        np.testing.assert_allclose(balanced[1], standard[1], rtol=1e-14, atol=1e-15)
+    with pytest.raises(ValueError, match="phase_balance_weight"):
+        projected_objective(predicted, teacher, capacity, 50, phase_balance_weight=1.1)

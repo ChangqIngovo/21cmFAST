@@ -72,11 +72,13 @@ DEFAULTS = {
     "feature_set": "legacy",
     "field_feature_scale_floor": 0.0,
     "zero_constant_features": False,
+    "geometry_balanced_sampling": False,
     "allow_empty_test": False,
     "budget_epochs": None,
     "frame_cache_MiB": 512,
     "include_deficit_budget": False,
     "include_geometry_budget": False,
+    "include_geometry_tabulated_budget": False,
     "deficit_relative_weight": 0.1,
     "deficit_neutral_floor": 0.01,
     "budget_candidate_kinds": None,
@@ -86,6 +88,7 @@ DEFAULTS = {
     "spectral_weight": 0.1,
     "spectral_power_floor": 1e-4,
     "front_weight": 1.0,
+    "phase_balance_weight": 0.0,
     "raw_weight": 0.05,
     "field_variance_floor": 0.01,
     "k_fraction": 0.5,
@@ -193,6 +196,13 @@ def _validate_optins(result: dict[str, Any]) -> None:
         "warm_started_v3",
     }:
         raise ValueError("Unknown training_method")
+    if (
+        result["geometry_balanced_sampling"] is True
+        and result["training_method"] == "legacy"
+    ):
+        raise ValueError(
+            "geometry_balanced_sampling requires projected or warm-start residual training"
+        )
     if result["feature_set"] not in {
         "legacy",
         "multiscale_local",
@@ -203,7 +213,9 @@ def _validate_optins(result: dict[str, Any]) -> None:
         "allow_empty_test",
         "include_deficit_budget",
         "include_geometry_budget",
+        "include_geometry_tabulated_budget",
         "zero_constant_features",
+        "geometry_balanced_sampling",
     ):
         if type(result[name]) is not bool:
             raise TypeError(f"{name} must be boolean")
@@ -241,6 +253,8 @@ def _validate_optins(result: dict[str, Any]) -> None:
         allowed.add("deficit_mlp")
     if result["include_geometry_budget"]:
         allowed.update(("local_geometry_k3", "local_geometry_k5"))
+    if result["include_geometry_tabulated_budget"]:
+        allowed.add("geometry_tabulated")
     if kinds is not None and (
         not isinstance(kinds, list)
         or not kinds
@@ -253,6 +267,7 @@ def _validate_optins(result: dict[str, Any]) -> None:
     if (
         result["include_deficit_budget"]
         or result["include_geometry_budget"]
+        or result["include_geometry_tabulated_budget"]
         or kinds is not None
     ) and result["training_method"] != "warm_started_v3":
         raise ValueError(
@@ -287,6 +302,7 @@ def _validate_extended_controls(result: dict[str, Any]) -> None:
         "spectral_weight",
         "spectral_power_floor",
         "front_weight",
+        "phase_balance_weight",
         "raw_weight",
         "field_variance_floor",
         "k_fraction",
@@ -303,6 +319,8 @@ def _validate_extended_controls(result: dict[str, Any]) -> None:
         raise ValueError(
             "field_variance_floor must be positive and 0 < k_fraction <= 1"
         )
+    if result["phase_balance_weight"] > 1:
+        raise ValueError("phase_balance_weight must lie in [0, 1]")
     external = result["external_test_root"]
     if external is not None:
         if not isinstance(external, (str, Path)):
@@ -352,6 +370,7 @@ def _implementation_hashes() -> dict[str, str]:
         "research/pc_analytic_emulator/objectives.py",
         "research/pc_analytic_emulator/projection.py",
         "research/pc_analytic_emulator/budget.py",
+        "research/pc_analytic_emulator/geometry_budget.py",
         "research/pc_analytic_emulator/latent.py",
         "research/pc_analytic_emulator/prepare.py",
         "research/pc_field_emulator/model.py",
@@ -670,6 +689,9 @@ def _prepare_v3_budget(
             hidden=tuple(config["budget_hidden"]),
             include_deficit=config.get("include_deficit_budget", False),
             include_geometry_local=config.get("include_geometry_budget", False),
+            include_geometry_tabulated=config.get(
+                "include_geometry_tabulated_budget", False
+            ),
             deficit_relative_weight=config.get("deficit_relative_weight", 0.1),
             deficit_neutral_floor=config.get("deficit_neutral_floor", 0.01),
         )
@@ -960,6 +982,7 @@ def _fit_v2_trial(task: dict[str, Any]) -> dict[str, Any]:
             "spectral_weight",
             "spectral_power_floor",
             "front_weight",
+            "phase_balance_weight",
             "field_variance_floor",
             "k_fraction",
             "raw_weight",
@@ -987,6 +1010,7 @@ def _fit_v2_trial(task: dict[str, Any]) -> dict[str, Any]:
         frame_cache_max_bytes=config.get("frame_cache_MiB", 512) * 1024**2,
         field_feature_scale_floor=config.get("field_feature_scale_floor", 0.0),
         zero_constant_features=config.get("zero_constant_features", False),
+        geometry_balanced_sampling=config.get("geometry_balanced_sampling", False),
     )
     width = len(details["field_feature_names"])
     zero = LatentFieldModel(

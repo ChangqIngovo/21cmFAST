@@ -14,6 +14,7 @@ from typing import Any
 
 import numpy as np
 
+from research.pc_analytic_emulator.geometry_budget import GeometryTabulatedBudgetModel
 from research.pc_field_emulator.model import MLPModel, train
 
 
@@ -404,7 +405,12 @@ def constant_efficiency_model(feature_count: int) -> MLPModel:
 
 def load_budget(
     path: str | Path,
-) -> MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel:
+) -> (
+    MLPModel
+    | TabulatedBudgetModel
+    | LocalDeficitBudgetModel
+    | GeometryTabulatedBudgetModel
+):
     """Restore a tagged table or a residual/direct-sigmoid budget network.
 
     Parameters
@@ -414,7 +420,7 @@ def load_budget(
 
     Returns
     -------
-    MLPModel, TabulatedBudgetModel or LocalDeficitBudgetModel
+    MLPModel, TabulatedBudgetModel, LocalDeficitBudgetModel or GeometryTabulatedBudgetModel
         Restored predictor with its original training normalization/table.
     """
     with np.load(path, allow_pickle=False) as saved:
@@ -423,11 +429,16 @@ def load_budget(
         return TabulatedBudgetModel.load(path)
     if kind == "local_deficit":
         return LocalDeficitBudgetModel.load(path)
+    if kind == "geometry_tabulated_efficiency":
+        return GeometryTabulatedBudgetModel.load(path)
     return MLPModel.load(path)
 
 
 def predict_efficiency(
-    model: MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel,
+    model: MLPModel
+    | TabulatedBudgetModel
+    | LocalDeficitBudgetModel
+    | GeometryTabulatedBudgetModel,
     features: np.ndarray,
 ) -> np.ndarray:
     """Apply the saved budget head's output convention consistently.
@@ -844,10 +855,17 @@ def fit_budget_v3(
     hidden: tuple[int, ...] = (8,),
     include_deficit: bool = False,
     include_geometry_local: bool = False,
+    include_geometry_tabulated: bool = False,
     deficit_relative_weight: float = 0.1,
     deficit_neutral_floor: float = 0.01,
 ) -> tuple[
-    dict[str, MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel],
+    dict[
+        str,
+        MLPModel
+        | TabulatedBudgetModel
+        | LocalDeficitBudgetModel
+        | GeometryTabulatedBudgetModel,
+    ],
     dict[str, Any],
 ]:
     """Retain budget candidates for controlled fixed-field comparisons.
@@ -869,6 +887,9 @@ def fit_budget_v3(
     include_geometry_local
         Retain two additional local-deficit candidates with native cell width
         and box length coordinates. False preserves the original candidate set.
+    include_geometry_tabulated
+        Opt in to separate photon-load tables for each training geometry.
+        False preserves all previous candidate sets and selection behavior.
     deficit_relative_weight, deficit_neutral_floor
         Relative-neutral coefficient and denominator floor for deficit fitting
         and, when enabled, the common validation ranking of every candidate.
@@ -891,6 +912,8 @@ def fit_budget_v3(
         raise ValueError("include_deficit must be a boolean")
     if type(include_geometry_local) is not bool:
         raise ValueError("include_geometry_local must be a boolean")
+    if type(include_geometry_tabulated) is not bool:
+        raise ValueError("include_geometry_tabulated must be a boolean")
     if include_deficit:
         _relative_controls(deficit_relative_weight, deficit_neutral_floor)
     candidates, report = _fit_base_candidates(
@@ -963,6 +986,29 @@ def fit_budget_v3(
                 "validation_maximum_absolute_mass_error": float(np.max(np.abs(error))),
                 "validation_efficiencies": predicted.tolist(),
             }
+        )
+    if include_geometry_tabulated:
+        geometry_table = GeometryTabulatedBudgetModel.from_training(xt, yt)
+        models["geometry_tabulated"] = geometry_table
+        predicted = predict_efficiency(geometry_table, xv)
+        error = sv * (predicted - yv)
+        report["candidates"].append(
+            {
+                "kind": "geometry_tabulated",
+                "validation_mass_mse": float(np.mean(error**2)),
+                "validation_mass_MAE": float(np.mean(np.abs(error))),
+                "validation_maximum_absolute_mass_error": float(np.max(np.abs(error))),
+                "validation_efficiencies": predicted.tolist(),
+            }
+        )
+        report["geometry_table_fit_scope"] = (
+            "Training means grouped by geometry and redshift only; no validation/test labels define knots"
+        )
+        report["geometry_table_transfer"] = (
+            "Exact training geometry uses its own table; other geometries explicitly fall back to the original geometry-agnostic training table"
+        )
+        report["geometry_table_extrapolation"] = (
+            "Constant photon-load endpoints retain observed training efficiencies; no full-absorption override"
         )
     if include_deficit:
         if np.any(st > 0) and np.any(sv > 0):

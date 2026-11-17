@@ -182,6 +182,7 @@ def fit_trial(task: dict[str, Any]) -> dict[str, Any]:
             "spectral_weight",
             "spectral_power_floor",
             "front_weight",
+            "phase_balance_weight",
             "field_variance_floor",
             "k_fraction",
             "raw_weight",
@@ -274,6 +275,7 @@ def fit_trial(task: dict[str, Any]) -> dict[str, Any]:
         frame_cache_max_bytes=config.get("frame_cache_MiB", 512) * 1024**2,
         field_feature_scale_floor=config.get("field_feature_scale_floor", 0.0),
         zero_constant_features=config.get("zero_constant_features", False),
+        geometry_balanced_sampling=config.get("geometry_balanced_sampling", False),
     )
     residual = Emulator(
         field,

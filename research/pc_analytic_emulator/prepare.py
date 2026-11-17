@@ -168,7 +168,9 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
     for env_name, key in (
         ("PC_ALLOW_EMPTY_TEST", "allow_empty_test"),
         ("PC_INCLUDE_DEFICIT_BUDGET", "include_deficit_budget"),
+        ("PC_INCLUDE_GEOMETRY_TABULATED_BUDGET", "include_geometry_tabulated_budget"),
         ("PC_ZERO_CONSTANT_FEATURES", "zero_constant_features"),
+        ("PC_GEOMETRY_BALANCED_SAMPLING", "geometry_balanced_sampling"),
     ):
         if env_name in environment:
             text = environment[env_name].strip().lower()
@@ -216,6 +218,7 @@ def configuration(input_root: Path, environment: Mapping[str, str]) -> dict[str,
                 environment.get("PC_SPECTRAL_POWER_FLOOR", "0.0001")
             ),
             front_weight=float(environment.get("PC_FRONT_WEIGHT", "1")),
+            phase_balance_weight=float(environment.get("PC_PHASE_BALANCE_WEIGHT", "0")),
             raw_weight=float(environment.get("PC_RAW_WEIGHT", "0.05")),
             field_variance_floor=float(
                 environment.get("PC_FIELD_VARIANCE_FLOOR", "0.01")

@@ -28,6 +28,9 @@ if TYPE_CHECKING:
         LocalDeficitBudgetModel,
         TabulatedBudgetModel,
     )
+    from research.pc_analytic_emulator.geometry_budget import (
+        GeometryTabulatedBudgetModel,
+    )
     from research.pc_analytic_emulator.latent import LatentFieldModel
 
 DEFAULT_RADII = (6.25, 12.5, 25.0, 50.0)
@@ -259,7 +262,12 @@ class Emulator:
     """
 
     field_model: MLPModel | LatentFieldModel
-    budget_model: MLPModel | TabulatedBudgetModel | LocalDeficitBudgetModel
+    budget_model: (
+        MLPModel
+        | TabulatedBudgetModel
+        | LocalDeficitBudgetModel
+        | GeometryTabulatedBudgetModel
+    )
     radii_cMpc: tuple[float, ...] = DEFAULT_RADII
     metadata: dict[str, Any] = field(default_factory=dict)
     projection_mode: str = "log_odds"
@@ -297,7 +305,12 @@ class Emulator:
             if budget_mode == "efficiency"
             else "mlp"
         )
-        if budget_kind not in ("mlp", "tabulated", "local_deficit"):
+        if budget_kind not in (
+            "mlp",
+            "tabulated",
+            "local_deficit",
+            "geometry_tabulated",
+        ):
             raise ValueError("Unsupported budget model serialization kind")
         return (
             "latent_linear" if field_mode == "latent_linear" else "mlp",
@@ -520,7 +533,7 @@ class Emulator:
             field_model = MLPModel.load(directory / "field_model.npz")
         else:
             raise ValueError("Unsupported saved field model kind")
-        if budget_kind in ("tabulated", "local_deficit"):
+        if budget_kind in ("tabulated", "local_deficit", "geometry_tabulated"):
             from research.pc_analytic_emulator.budget import load_budget
 
             budget_model = load_budget(directory / "budget_model.npz")

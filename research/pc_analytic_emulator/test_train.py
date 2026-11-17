@@ -468,3 +468,41 @@ def test_projected_training_uses_full_cubes_and_separate_external_test(
         legacy_model.read_bytes(),
         legacy_model.stat().st_mtime_ns,
     )
+
+
+def test_phase_and_geometry_training_options_are_explicit_optins(
+    tmp_path: Path,
+) -> None:
+    """Keep old defaults while validating new numerical training controls."""
+    config = train.validate_config({"input_root": str(tmp_path)})
+    assert config["phase_balance_weight"] == 0
+    assert config["geometry_balanced_sampling"] is False
+    assert config["include_geometry_tabulated_budget"] is False
+    improved = train.validate_config(
+        {
+            "input_root": str(tmp_path),
+            "training_method": "warm_started_v3",
+            "phase_balance_weight": 1,
+            "geometry_balanced_sampling": True,
+            "include_geometry_tabulated_budget": True,
+            "budget_candidate_kinds": ["geometry_tabulated"],
+        }
+    )
+    assert improved["phase_balance_weight"] == 1
+    assert improved["geometry_balanced_sampling"] is True
+    with pytest.raises(ValueError, match="phase_balance_weight"):
+        train.validate_config(
+            {"input_root": str(tmp_path), "phase_balance_weight": 1.1}
+        )
+    with pytest.raises(TypeError, match="geometry_balanced_sampling"):
+        train.validate_config(
+            {"input_root": str(tmp_path), "geometry_balanced_sampling": 1}
+        )
+
+
+def test_balanced_sampling_cannot_be_silently_ignored_by_legacy(tmp_path: Path) -> None:
+    """Only the full-snapshot trainer implements geometry-balanced sampling."""
+    with pytest.raises(ValueError, match="residual training"):
+        train.validate_config(
+            {"input_root": str(tmp_path), "geometry_balanced_sampling": True}
+        )

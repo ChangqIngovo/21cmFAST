@@ -38,6 +38,7 @@ OBJECTIVE_DEFAULTS = {
     "spectral_weight": 0.1,
     "spectral_power_floor": 1e-4,
     "front_weight": 1.0,
+    "phase_balance_weight": 0.0,
     "field_variance_floor": 0.01,
     "k_fraction": 0.5,
     "raw_weight": 0.05,
@@ -205,6 +206,8 @@ def _options(config: dict[str, Any] | None) -> dict[str, float]:
             raise ValueError(f"{name} must be nonnegative")
     if values["field_variance_floor"] <= 0 or not 0 < values["k_fraction"] <= 1:
         raise ValueError("Positive variance floor and k_fraction in (0, 1] required")
+    if values["phase_balance_weight"] > 1:
+        raise ValueError("phase_balance_weight must lie in [0, 1]")
     return {name: float(value) for name, value in values.items()}
 
 
@@ -599,6 +602,7 @@ def fit_field(
     frame_cache_max_bytes: int = FRAME_CACHE_MAX_BYTES,
     field_feature_scale_floor: float = 0.0,
     zero_constant_features: bool = False,
+    geometry_balanced_sampling: bool = False,
 ) -> tuple[LatentFieldModel, list[dict[str, Any]]]:
     """Train full snapshots with differentiation through a fixed photon budget.
 
@@ -645,6 +649,12 @@ def fit_field(
         Opt in to zero first-layer weights for exact training constants.
         Their means are the exact training value; validation support is unused.
 
+    geometry_balanced_sampling
+        Opt in to equal optimizer exposure for each (box length, grid side).
+        Each epoch draws ceil(Nsnapshots/Ngeometries) examples per geometry;
+        smaller groups are sampled with replacement. Standardization uses all
+        training cells and validation remains equal-snapshot, unchanged.
+
     Returns
     -------
     model : LatentFieldModel
@@ -654,6 +664,8 @@ def fit_field(
         Losses for each epoch containing optimizer updates.
     """
     _validate_fit_options(seed, hidden, epochs, patience, learning_rate, min_delta)
+    if type(geometry_balanced_sampling) is not bool:
+        raise TypeError("geometry_balanced_sampling must be boolean")
     options = _options(objective_config)
     if not training_frames or not validation_frames:
         raise ValueError("Training and validation each require at least one snapshot")
@@ -664,6 +676,12 @@ def fit_field(
         field_feature_scale_floor=field_feature_scale_floor,
         zero_constant_features=zero_constant_features,
     )
+    geometry_groups: dict[tuple[float, int], list[int]] = {}
+    if geometry_balanced_sampling:
+        for index, record in enumerate(training_frames):
+            frame = _load_frame(record)
+            key = (frame["box_len"], frame["capacity"].shape[0])
+            geometry_groups.setdefault(key, []).append(index)
     base_digest = _inference_digest(base_model) if base_model is not None else None
     model.metadata.update(
         training_method="warm_started_v3"
@@ -688,6 +706,11 @@ def fit_field(
         if base_model is not None
         else "native ES input field",
         frame_cache_max_bytes=frame_cache_max_bytes,
+        geometry_balanced_sampling=geometry_balanced_sampling,
+        training_geometry_counts=[
+            {"box_len": key[0], "dimension": key[1], "snapshots": len(indices)}
+            for key, indices in sorted(geometry_groups.items())
+        ],
         frame_cache_scope="per fit; read-only LRU; resolved-path file metadata checked per access",
     )
     if base_model is not None:
@@ -715,7 +738,22 @@ def fit_field(
     best_epoch, stalled, iteration = 0, 0, 0
     history = []
     for epoch in range(1, epochs + 1):
-        for index in random.permutation(len(training_frames)):
+        if geometry_groups:
+            group_size = (len(training_frames) + len(geometry_groups) - 1) // len(
+                geometry_groups
+            )
+            epoch_indices = np.concatenate(
+                [
+                    random.choice(
+                        indices, group_size, replace=len(indices) < group_size
+                    )
+                    for indices in geometry_groups.values()
+                ]
+            )
+            random.shuffle(epoch_indices)
+        else:
+            epoch_indices = random.permutation(len(training_frames))
+        for index in epoch_indices:
             frame = _load_frame(training_frames[index])
             _, gradients = _frame_gradient(
                 model, frame, budget_model, options, base_model=base_model
@@ -759,7 +797,7 @@ def fit_field(
                 np.mean([entry["raw_auxiliary_loss"] for entry in validation_metrics])
             ),
             "selected": improved,
-            "snapshot_updates": len(training_frames),
+            "snapshot_updates": len(epoch_indices),
         }
         history.append(row)
         if on_epoch is not None:

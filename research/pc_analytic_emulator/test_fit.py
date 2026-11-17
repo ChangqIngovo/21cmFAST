@@ -541,3 +541,33 @@ def test_invalid_cache_limits_are_rejected(limit: object) -> None:
     """Memory caps must be explicit nonnegative byte counts."""
     with pytest.raises(ValueError, match="cache"):
         fit._FrameCache(limit)
+
+
+def test_geometry_balanced_sampling_equalizes_snapshot_updates(tmp_path: Path) -> None:
+    """A rare geometry receives equal updates without adding validation examples."""
+    records = [_frame(tmp_path / f"train{i}.npz") for i in range(5)]
+    rare = Path(records[-1]["cache"])
+    with np.load(rare) as data:
+        arrays = dict(data)
+    arrays["box_len"] = np.asarray(32.0)
+    np.savez(rare, **arrays)
+    validation = _frame(tmp_path / "validation.npz")
+    model, history = fit.fit_field(
+        records,
+        [validation],
+        _budget(),
+        seed=23,
+        hidden=(3,),
+        epochs=1,
+        geometry_balanced_sampling=True,
+    )
+    assert model.metadata["training_geometry_counts"] == [
+        {"box_len": 16.0, "dimension": 4, "snapshots": 4},
+        {"box_len": 32.0, "dimension": 4, "snapshots": 1},
+    ]
+    assert history[0]["snapshot_updates"] == 6
+    assert model.metadata["optimizer_updates"] == 6
+    with pytest.raises(TypeError, match="geometry_balanced_sampling"):
+        fit.fit_field(
+            records, [validation], _budget(), seed=23, geometry_balanced_sampling=1
+        )

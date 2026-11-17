@@ -1,5 +1,11 @@
 # Emulator of the analytic coeval photon-conserving teacher
 
+The [validation-gated inference workflow](finalization_20261117/README.md) adds
+optional geometry-conditioned photon budgets and balanced residual training.
+It can freeze an empirically validated surrogate route for each geometry and
+redshift, using a fresh analytic solve where the surrogate is unsupported.
+Hybrid and learned-only accuracy and timing are reported separately.
+
 The [mixed-geometry workflow](refinement_20261117/reproduction/README.md) adds
 optional feature-normalization safeguards, an explicit box-size descriptor and
 geometry-aware dataset validation. It supports native generation or training
